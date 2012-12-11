@@ -15,6 +15,7 @@ def _afterpoint(string):
     "Symbols after a decimal point."
     if _isnumber(string):
         pos = string.rfind(".")
+        pos = string.lower().rfind("e") if pos < 0 else pos
         if pos >= 0:
             return len(string) - pos - 1
         else:
