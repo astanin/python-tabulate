@@ -36,16 +36,16 @@ def tabulate(list_of_lists, headers=[], colsep=" ", numfmt=None):
 
     # format rows and columns, convert numeric values to strings
     cols = zip(*list_of_lists)
-    isnums = [ all(map(_isnumber, c)) for c in cols ]
-    cols = [ [ _format(v, numfmt, isnum) for v in c ]
-             for c, isnum in zip(cols, isnums) ]
+    isnums = [all(map(_isnumber, c)) for c in cols]
+    cols = [[_format(v, numfmt, isnum) for v in c]
+            for c, isnum in zip(cols, isnums)]
     rows = zip(*cols)
 
     # calculate width of every column and decimal point position
-    widths = [ max(map(len, c)) for c in cols ]
+    widths = [max(map(len, c)) for c in cols]
     if headers:
-        widths = [ max(w, len(h)) for w, h in zip(widths, headers) ]
-    pointpads = [ max(map(_afterpoint, c)) for c in cols ]
+        widths = [max(w, len(h)) for w, h in zip(widths, headers)]
+    pointpads = [max(map(_afterpoint, c)) for c in cols]
 
     # add headers if necessary
     lines = []
@@ -53,20 +53,20 @@ def tabulate(list_of_lists, headers=[], colsep=" ", numfmt=None):
         ln = []
         for s, width, isnum in zip(headers, widths, isnums):
             if isnum:
-                ln.append(("{:>%ds}"%width).format(s))
+                ln.append(("{:>%ds}" % width).format(s))
             else:
-                ln.append(("{:<%ds}"%width).format(s))
+                ln.append(("{:<%ds}" % width).format(s))
         lines.append(colsep.join(ln))
-        lines.append(colsep.join([ '-'*w for w in widths ]))
+        lines.append(colsep.join(['-' * w for w in widths]))
 
     # format table rows
     for row in rows:
         ln = []
         for s, width, maxpad in zip(row, widths, pointpads):
             if _isnumber(s):
-                rpad = " "*(maxpad-_afterpoint(s))
-                ln.append(("{:>%ds}"%width).format(s + rpad))
+                rpad = " " * (maxpad - _afterpoint(s))
+                ln.append(("{:>%ds}" % width).format(s + rpad))
             else:
-                ln.append(("{:<%ds}"%width).format(s))
+                ln.append(("{:<%ds}" % width).format(s))
         lines.append(colsep.join(ln))
     return "\n".join(lines)
