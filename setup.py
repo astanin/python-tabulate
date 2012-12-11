@@ -5,7 +5,7 @@ from distutils.core import setup
 LICENSE = open("LICENSE").read()
 
 setup(name='tabulate',
-   version='0.1',
+   version='0.2',
    description='Pretty-print tabular data',
    author='Sergey Astanin',
    author_email='s.astanin@gmail.com',
