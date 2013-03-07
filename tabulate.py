@@ -2,12 +2,53 @@
 
 from __future__ import print_function
 
+from collections import namedtuple
 
-__all__ = ["tabulate", "ALIGN_LEFT", "ALIGN_RIGHT",
-           "ALIGN_CENTER", "ALIGN_DECIMAL"]
+
+__all__ = ["tabulate", "TableFormat",
+           "ALIGN_LEFT", "ALIGN_RIGHT", "ALIGN_CENTER", "ALIGN_DECIMAL",
+           "TABLE_SIMPLE", "TABLE_GRID", "TABLE_PIPE", "TABLE_ORGTBL"]
 
 
 ALIGN_LEFT, ALIGN_RIGHT, ALIGN_CENTER, ALIGN_DECIMAL = range(4)
+TABLE_SIMPLE, TABLE_GRID, TABLE_PIPE, TABLE_ORGTBL = range(4)
+
+
+TableFormat = namedtuple("TableFormat", ["lineabove", "linebelow",
+                                         "headersline", "rowline",
+                                         "colsep", "intersect", "edgeintersect",
+                                         "rowbegin", "rowend",
+                                         "colons_align_columns"])
+
+_table_formats = {"simple":
+                  TableFormat(lineabove=None, linebelow="-",
+                              headersline="-", rowline=None,
+                              colsep="  ", intersect="  ", edgeintersect="",
+                              rowbegin="", rowend="",
+                              colons_align_columns=False),
+                  "grid":
+                  TableFormat(lineabove="-", linebelow="-",
+                              headersline="=", rowline="-",
+                              colsep="|", intersect="+", edgeintersect="+",
+                              rowbegin="|", rowend="|",
+                              colons_align_columns=False),
+                  "pipe":
+                  TableFormat(lineabove=None, linebelow=None,
+                              headersline="-", rowline=None,
+                              colsep="|", intersect="|", edgeintersect="|",
+                              rowbegin="|", rowend="|",
+                              colons_align_columns=True),
+                  "orgtbl":
+                  TableFormat(lineabove=None, linebelow=None,
+                              headersline="-", rowline=None,
+                              colsep="|", intersect="+", edgeintersect="|",
+                              rowbegin="|", rowend="|",
+                              colons_align_columns=False) }
+
+
+for key,strkey in zip([TABLE_SIMPLE, TABLE_GRID, TABLE_PIPE, TABLE_ORGTBL],
+                      ["simple", "grid", "pipe", "orgtbl"]):
+    _table_formats[key] = _table_formats[strkey]
 
 
 def _isconvertible(conv, string):
@@ -165,14 +206,55 @@ def _align_header(header, alignment, width):
         return _padleft(width, header)
 
 
-def tabulate(list_of_lists, headers=[], colsep="  ",
+def tabulate(list_of_lists, headers=[], tablefmt="simple",
              floatfmt="g", numalign="decimal", stralign="left"):
     """Format a fixed width table for pretty printing.
 
     >>> print(tabulate([[1, 2.34], [-56.7, "8.999"], ["2", "10001"]]))
+    -----  ---------
       1        2.34
     -56.7      8.999
       2    10001
+    -----  ---------
+
+    If headers is not empty, it is used as a list of column names
+    to print a nice header. Otherwise a headerless table is produced.
+
+    Supported plain-text table formats (`tablefmt`) are: 'simple'
+    (like Pandoc's simple_tables), 'grid' (like Emacs' table.el
+    tables, with "=" used to show separated the headers), 'pipe'
+    (like in PHP Markdown Extra), 'orgtbl' (like Emacs' orgtbl-mode).
+
+    `floatfmt` is a format specification used for columns which
+    contain numeric data with a decimal point.
+
+    Possible column alignments (`numalign`, `stralign`): right,
+    center, left, decimal (for `numalign`).
+
+    Various table formats:
+
+    >>> print(tabulate([["foo","bar"]], ["spam","eggs"], tablefmt="simple"))
+    spam    eggs
+    ------  ------
+    foo     bar
+    ------  ------
+
+    >>> print(tabulate([["foo","bar"]], ["spam","eggs"],tablefmt="grid"))
+    +------+------+
+    |spam  |eggs  |
+    +======+======+
+    |foo   |bar   |
+    +------+------+
+
+    >>> print(tabulate([["foo","bar"]], ["spam","eggs"],tablefmt="pipe"))
+    |spam  |eggs  |
+    |------|------|
+    |foo   |bar   |
+
+    >>> print(tabulate([["foo","bar"]], ["spam","eggs"],tablefmt="orgtbl"))
+    |spam  |eggs  |
+    |------+------|
+    |foo   |bar   |
 
     """
     # format rows and columns, convert numeric values to strings
@@ -192,10 +274,52 @@ def tabulate(list_of_lists, headers=[], colsep="  ",
         minwidths = [max(minw, len(c[0])) for minw, c in zip(minwidths, cols)]
         headers = [_align_header(h, a, minw)
                    for h, a, minw in zip(headers, aligns, minwidths)]
-        hlines = ["-" * minw for minw in minwidths]
-        rows = [headers, hlines] + zip(*cols)
+        rows = zip(*cols)
     else:
+        minwidths = [len(c[0]) for c in cols]
         rows = zip(*cols)
 
-    lines = [colsep.join(r).rstrip() for r in rows]
+    tablefmt = _table_formats.get(tablefmt, _table_formats["simple"])
+    return _format_table(tablefmt, headers, rows, minwidths)
+
+
+def _format_table(fmt, headers, rows, colwidths):
+    """Produce a plain-text representation of the table."""
+    lines = []
+
+    def build_line(cells, sep, begin="", end=""):
+        return (begin + sep.join(cells) + end).rstrip()
+
+    def fill_cells(fill):
+        cells = [fill*w for w in colwidths]
+        return cells
+
+    if fmt.lineabove:
+        lines.append(build_line(fill_cells(fmt.lineabove), fmt.intersect,
+                                fmt.edgeintersect, fmt.edgeintersect))
+
+    if headers:
+        lines.append(build_line(headers, fmt.colsep, fmt.rowbegin, fmt.rowend))
+
+    if fmt.headersline:
+        # TODO: consider colons_align_columns
+        lines.append(build_line(fill_cells(fmt.headersline), fmt.intersect,
+                                fmt.edgeintersect, fmt.edgeintersect))
+
+    if rows and fmt.rowline:  # with lines between rows
+        # initial rows with a lines below
+        for row in rows[:-1]:
+            lines.append(build_line(row, fmt.colsep, fmt.rowbegin, fmt.rowend))
+            lines.append(build_line(fill_cells(fmt.rowline), fmt.intersect,
+                                    fmt.edgeintersect, fmt.edgeintersect))
+        # the last row without a line below
+        lines.append(build_line(rows[-1], fmt.colsep, fmt.rowbegin, fmt.rowend))
+    else:  # no lines between rows of data
+        for row in rows:
+            lines.append(build_line(row, fmt.colsep, fmt.rowbegin, fmt.rowend))
+
+    if fmt.linebelow:
+        lines.append(build_line(fill_cells(fmt.linebelow), fmt.intersect,
+                                fmt.edgeintersect, fmt.edgeintersect))
+
     return "\n".join(lines)
