@@ -5,13 +5,7 @@ from __future__ import print_function
 from collections import namedtuple
 
 
-__all__ = ["tabulate", "TableFormat",
-           "ALIGN_LEFT", "ALIGN_RIGHT", "ALIGN_CENTER", "ALIGN_DECIMAL",
-           "TABLE_SIMPLE", "TABLE_GRID", "TABLE_PIPE", "TABLE_ORGTBL"]
-
-
-ALIGN_LEFT, ALIGN_RIGHT, ALIGN_CENTER, ALIGN_DECIMAL = range(4)
-TABLE_SIMPLE, TABLE_GRID, TABLE_PIPE, TABLE_ORGTBL = range(4)
+__all__ = ["tabulate", "TableFormat" ]
 
 
 TableFormat = namedtuple("TableFormat", ["lineabove", "linebelow",
@@ -20,7 +14,13 @@ TableFormat = namedtuple("TableFormat", ["lineabove", "linebelow",
                                          "rowbegin", "rowend",
                                          "colons_align_columns"])
 
-_table_formats = {"simple":
+_table_formats = {"plain":
+                  TableFormat(lineabove=None, linebelow=None,
+                              headersline=None, rowline=None,
+                              colsep="  ", intersect="  ", edgeintersect="  ",
+                              rowbegin="", rowend="",
+                              colons_align_columns=False),
+                  "simple":
                   TableFormat(lineabove=None, linebelow="-",
                               headersline="-", rowline=None,
                               colsep="  ", intersect="  ", edgeintersect="",
@@ -44,11 +44,6 @@ _table_formats = {"simple":
                               colsep="|", intersect="+", edgeintersect="|",
                               rowbegin="|", rowend="|",
                               colons_align_columns=False) }
-
-
-for key,strkey in zip([TABLE_SIMPLE, TABLE_GRID, TABLE_PIPE, TABLE_ORGTBL],
-                      ["simple", "grid", "pipe", "orgtbl"]):
-    _table_formats[key] = _table_formats[strkey]
 
 
 def _isconvertible(conv, string):
@@ -145,13 +140,13 @@ def _align_column(strings, alignment, minwidth=0):
     ['   12.345  ', '-1234.5    ', '    1.23   ', ' 1234.5    ', '    1e+234 ', '    1.0e234']
 
     """
-    if alignment in [ALIGN_RIGHT, "right"]:
+    if alignment == "right":
         strings = [s.strip() for s in strings]
         padfn = _padleft
-    elif alignment in [ALIGN_CENTER, "center"]:
+    elif alignment in "center":
         strings = [s.strip() for s in strings]
         padfn = _padboth
-    elif alignment in [ALIGN_DECIMAL, "decimal"]:
+    elif alignment in "decimal":
         decimals = map(_afterpoint, strings)
         maxdecimals = max(decimals)
         strings = [s + (maxdecimals - decs) * " "
@@ -198,9 +193,9 @@ def _format(val, valtype, floatfmt):
 
 
 def _align_header(header, alignment, width):
-    if alignment in [ALIGN_LEFT, "left"]:
+    if alignment == "left":
         return _padright(width, header)
-    elif alignment in [ALIGN_CENTER, "center"]:
+    elif alignment == "center":
         return _padboth(width, header)
     else:
         return _padleft(width, header)
@@ -210,51 +205,79 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
              floatfmt="g", numalign="decimal", stralign="left"):
     """Format a fixed width table for pretty printing.
 
-    >>> print(tabulate([[1, 2.34], [-56.7, "8.999"], ["2", "10001"]]))
-    -----  ---------
-      1        2.34
-    -56.7      8.999
-      2    10001
-    -----  ---------
+    >>> print(tabulate([[1, 2.34], [-56, "8.999"], ["2", "10001"]]))
+    ---  ---------
+      1      2.34
+    -56      8.999
+      2  10001
+    ---  ---------
 
     If headers is not empty, it is used as a list of column names
     to print a nice header. Otherwise a headerless table is produced.
 
-    Supported plain-text table formats (`tablefmt`) are: 'simple'
-    (like Pandoc's simple_tables), 'grid' (like Emacs' table.el
-    tables, with "=" used to show separated the headers), 'pipe'
-    (like in PHP Markdown Extra), 'orgtbl' (like Emacs' orgtbl-mode).
+    `tabulate` tries to detect column types automatically, and aligns
+    the values properly. By default it aligns decimal points of the
+    numbers (or flushes integer numbers to the right), and flushes
+    everything else to the left. Possible column alignments
+    (`numalign`, `stralign`) are: right, center, left, decimal (only
+    for `numalign`).
 
     `floatfmt` is a format specification used for columns which
     contain numeric data with a decimal point.
 
-    Possible column alignments (`numalign`, `stralign`): right,
-    center, left, decimal (for `numalign`).
+    Various plain-text table formats (`tablefmt`) are supported:
+    'plain', 'simple', 'grid', 'pipe', and 'orgtbl'.
 
-    Various table formats:
+    "plain" format doesn't use any pseudographics to draw tables,
+    it separates columns with a double space:
 
-    >>> print(tabulate([["foo","bar"]], ["spam","eggs"], tablefmt="simple"))
-    spam    eggs
-    ------  ------
-    foo     bar
-    ------  ------
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                 ["strings", "numbers"], "plain"))
+    strings      numbers
+    spam         41.9999
+    eggs        451
 
-    >>> print(tabulate([["foo","bar"]], ["spam","eggs"],tablefmt="grid"))
-    +------+------+
-    |spam  |eggs  |
-    +======+======+
-    |foo   |bar   |
-    +------+------+
+    "simple" format is like Pandoc's simple_tables:
 
-    >>> print(tabulate([["foo","bar"]], ["spam","eggs"],tablefmt="pipe"))
-    |spam  |eggs  |
-    |------|------|
-    |foo   |bar   |
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                 ["strings", "numbers"], "simple"))
+    strings      numbers
+    ---------  ---------
+    spam         41.9999
+    eggs        451
+    ---------  ---------
 
-    >>> print(tabulate([["foo","bar"]], ["spam","eggs"],tablefmt="orgtbl"))
-    |spam  |eggs  |
-    |------+------|
-    |foo   |bar   |
+    "grid" is similar to Emacs' table.el tables or Padoc's grid_tables:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "grid"))
+    +---------+---------+
+    |strings  |  numbers|
+    +=========+=========+
+    |spam     |  41.9999|
+    +---------+---------+
+    |eggs     | 451     |
+    +---------+---------+
+
+    "pipe" is like PHP Markdown Extra or Pandoc's pipe_tables:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "pipe"))
+    |strings  |  numbers|
+    |:--------|--------:|
+    |spam     |  41.9999|
+    |eggs     | 451     |
+
+    "orgtbl" is like tables in Emacs orgtbl-mode. It is slightly
+    different from"pipe" format by not using colons to define column alignment,
+    and using a "+" sign to indicate line intersections:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "orgtbl"))
+    |strings  |  numbers|
+    |---------+---------|
+    |spam     |  41.9999|
+    |eggs     | 451     |
 
     """
     # format rows and columns, convert numeric values to strings
@@ -280,10 +303,10 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
         rows = zip(*cols)
 
     tablefmt = _table_formats.get(tablefmt, _table_formats["simple"])
-    return _format_table(tablefmt, headers, rows, minwidths)
+    return _format_table(tablefmt, headers, rows, minwidths, aligns)
 
 
-def _format_table(fmt, headers, rows, colwidths):
+def _format_table(fmt, headers, rows, colwidths, colaligns):
     """Produce a plain-text representation of the table."""
     lines = []
 
@@ -294,6 +317,16 @@ def _format_table(fmt, headers, rows, colwidths):
         cells = [fill*w for w in colwidths]
         return cells
 
+    def fill_cell_with_colons(fill, align, colwidth):
+        if align in ["right", "decimal"]:
+            return (fill * (colwidth - 1)) + ":"
+        elif align == "center":
+            return ":" + (fill * (colwidth - 2)) + ":"
+        elif align == "left":
+            return ":" + (fill * (colwidth - 1))
+        else:
+            return fill * colwidth
+
     if fmt.lineabove:
         lines.append(build_line(fill_cells(fmt.lineabove), fmt.intersect,
                                 fmt.edgeintersect, fmt.edgeintersect))
@@ -302,8 +335,13 @@ def _format_table(fmt, headers, rows, colwidths):
         lines.append(build_line(headers, fmt.colsep, fmt.rowbegin, fmt.rowend))
 
     if fmt.headersline:
-        # TODO: consider colons_align_columns
-        lines.append(build_line(fill_cells(fmt.headersline), fmt.intersect,
+        fill = fmt.headersline
+        if fmt.colons_align_columns:
+            cells = [fill_cell_with_colons(fill, a, w)
+                     for w, a in zip(colwidths, colaligns)]
+        else:
+            cells = fill_cells(fill)
+        lines.append(build_line(cells, fmt.intersect,
                                 fmt.edgeintersect, fmt.edgeintersect))
 
     if rows and fmt.rowline:  # with lines between rows
