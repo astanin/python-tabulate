@@ -67,6 +67,18 @@ _table_formats = {"simple":
                               without_header_hide=["linebelowheader"])}
 
 
+def simple_separated_format(separator):
+    """Construct a simple TableFormat with columns separated by a separator.
+
+    >>> tsv = simple_separated_format("\t") ; \
+        tabulate([["foo", 1], ["spam", 23]], tablefmt=tsv)
+    'foo \\t 1\\nspam\\t23'
+
+    """
+    return TableFormat(None, None, None, None,
+                       datarow=DataRow('', '\t', ''), **_format_defaults)
+
+
 def _isconvertible(conv, string):
     try:
         n = conv(string)
@@ -352,7 +364,9 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
         minwidths = [len(c[0]) for c in cols]
         rows = zip(*cols)
 
-    tablefmt = _table_formats.get(tablefmt, _table_formats["simple"])
+    if not isinstance(tablefmt, TableFormat):
+        tablefmt = _table_formats.get(tablefmt, _table_formats["simple"])
+
     return _format_table(tablefmt, headers, rows, minwidths, aligns)
 
 
