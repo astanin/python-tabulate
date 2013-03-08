@@ -5,45 +5,66 @@ from __future__ import print_function
 from collections import namedtuple
 
 
-__all__ = ["tabulate", "TableFormat" ]
+__all__ = ["tabulate"]
 
 
-TableFormat = namedtuple("TableFormat", ["lineabove", "linebelow",
-                                         "headersline", "rowline",
-                                         "colsep", "intersect", "edgeintersect",
-                                         "rowbegin", "rowend",
-                                         "colons_align_columns"])
+Line = namedtuple("Line", ["begin", "hline", "sep", "end"])
 
-_table_formats = {"plain":
-                  TableFormat(lineabove=None, linebelow=None,
-                              headersline=None, rowline=None,
-                              colsep="  ", intersect="  ", edgeintersect="  ",
-                              rowbegin="", rowend="",
-                              colons_align_columns=False),
-                  "simple":
-                  TableFormat(lineabove=None, linebelow="-",
-                              headersline="-", rowline=None,
-                              colsep="  ", intersect="  ", edgeintersect="",
-                              rowbegin="", rowend="",
-                              colons_align_columns=False),
+
+DataRow = namedtuple("DataRow", ["begin", "sep", "end"])
+
+
+TableFormat = namedtuple("TableFormat", ["lineabove", "linebelowheader",
+                                         "linebetweenrows", "linebelow",
+                                         "datarow", "usecolons",
+                                         "with_header_hide",
+                                         "without_header_hide"])
+
+
+_format_defaults = {"usecolons": False,
+                    "with_header_hide": [],
+                    "without_header_hide": []}
+
+
+_table_formats = {"simple":
+                  TableFormat(lineabove=None,
+                              linebelowheader=Line("", "-", "  ", ""),
+                              linebetweenrows=None,
+                              linebelow=Line("", "-", "  ", ""),
+                              datarow=DataRow("", "  ", ""),
+                              usecolons=False,
+                              with_header_hide=["linebelow"],
+                              without_header_hide=[]),
+                  "plain":
+                  TableFormat(None, None, None, None,
+                              DataRow("", "  ", ""), **_format_defaults),
                   "grid":
-                  TableFormat(lineabove="-", linebelow="-",
-                              headersline="=", rowline="-",
-                              colsep="|", intersect="+", edgeintersect="+",
-                              rowbegin="|", rowend="|",
-                              colons_align_columns=False),
+                  TableFormat(lineabove=Line("+-", "-", "-+-", "-+"),
+                              linebelowheader=Line("+=", "=", "=+=", "=+"),
+                              linebetweenrows=Line("+-", "-", "-+-", "-+"),
+                              linebelow=Line("+-", "-", "-+-", "-+"),
+                              datarow=DataRow("| ", " | ", " |"),
+                              usecolons=False,
+                              with_header_hide=[],
+                              without_header_hide=["linebelowheader"]),
                   "pipe":
-                  TableFormat(lineabove=None, linebelow=None,
-                              headersline="-", rowline=None,
-                              colsep="|", intersect="|", edgeintersect="|",
-                              rowbegin="|", rowend="|",
-                              colons_align_columns=True),
+                  TableFormat(lineabove=None,
+                              linebelowheader=Line("| ", "-", " | ", " |"),
+                              linebetweenrows=None,
+                              linebelow=None,
+                              datarow=DataRow("| ", " | ", " |"),
+                              usecolons=True,
+                              with_header_hide=[],
+                              without_header_hide=[]),
                   "orgtbl":
-                  TableFormat(lineabove=None, linebelow=None,
-                              headersline="-", rowline=None,
-                              colsep="|", intersect="+", edgeintersect="|",
-                              rowbegin="|", rowend="|",
-                              colons_align_columns=False) }
+                  TableFormat(lineabove=None,
+                              linebelowheader=Line("|-", "-", "-+-", "-|"),
+                              linebetweenrows=None,
+                              linebelow=None,
+                              datarow=DataRow("| ", " | ", " |"),
+                              usecolons=False,
+                              with_header_hide=[],
+                              without_header_hide=["linebelowheader"])}
 
 
 def _isconvertible(conv, string):
@@ -237,7 +258,11 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
     spam         41.9999
     eggs        451
 
-    "simple" format is like Pandoc's simple_tables:
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="plain"))
+    spam   41.9999
+    eggs  451
+
+    "simple" format is like Pandoc simple_tables:
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
     ...                 ["strings", "numbers"], "simple"))
@@ -245,39 +270,64 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
     ---------  ---------
     spam         41.9999
     eggs        451
-    ---------  ---------
 
-    "grid" is similar to Emacs' table.el tables or Pandoc's grid_tables:
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="simple"))
+    ----  --------
+    spam   41.9999
+    eggs  451
+    ----  --------
+
+    "grid" is similar to tables produced by Emacs table.el package or
+    Pandoc grid_tables:
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
     ...                ["strings", "numbers"], "grid"))
-    +---------+---------+
-    |strings  |  numbers|
-    +=========+=========+
-    |spam     |  41.9999|
-    +---------+---------+
-    |eggs     | 451     |
-    +---------+---------+
+    +-----------+-----------+
+    | strings   |   numbers |
+    +===========+===========+
+    | spam      |   41.9999 |
+    +-----------+-----------+
+    | eggs      |  451      |
+    +-----------+-----------+
 
-    "pipe" is like PHP Markdown Extra or Pandoc's pipe_tables:
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="grid"))
+    +------+----------+
+    | spam |  41.9999 |
+    +------+----------+
+    | eggs | 451      |
+    +------+----------+
+
+    "pipe" is like tables in PHP Markdown Extra extension or Pandoc
+    pipe_tables:
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
     ...                ["strings", "numbers"], "pipe"))
-    |strings  |  numbers|
-    |:--------|--------:|
-    |spam     |  41.9999|
-    |eggs     | 451     |
+    | strings   |   numbers |
+    |:----------|----------:|
+    | spam      |   41.9999 |
+    | eggs      |  451      |
 
-    "orgtbl" is like tables in Emacs orgtbl-mode. It is slightly
-    different from"pipe" format by not using colons to define column
-    alignment, and using a "+" sign to indicate line intersections:
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="pipe"))
+    |:-----|---------:|
+    | spam |  41.9999 |
+    | eggs | 451      |
+
+    "orgtbl" is like tables in Emacs org-mode and orgtbl-mode. They
+    are slightly different from "pipe" format by not using colons to
+    define column alignment, and using a "+" sign to indicate line
+    intersections:
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
     ...                ["strings", "numbers"], "orgtbl"))
-    |strings  |  numbers|
-    |---------+---------|
-    |spam     |  41.9999|
-    |eggs     | 451     |
+    | strings   |   numbers |
+    |-----------+-----------|
+    | spam      |   41.9999 |
+    | eggs      |  451      |
+
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="orgtbl"))
+    | spam |  41.9999 |
+    | eggs | 451      |
 
     """
     # format rows and columns, convert numeric values to strings
@@ -306,58 +356,67 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
     return _format_table(tablefmt, headers, rows, minwidths, aligns)
 
 
+def _build_row(cells, begin, sep, end):
+    "Return a string which represents a row of data cells."
+    return (begin + sep.join(cells) + end).rstrip()
+
+
+def _build_line(colwidths, begin, fill, sep,  end):
+    "Return a string which represents a horizontal line."
+    cells = [fill*w for w in colwidths]
+    return _build_row(cells, begin, sep, end)
+
+
+def _line_segment_with_colons(linefmt, align, colwidth):
+    """Return a segment of a horizontal line with optional colons which
+    indicate column's alignment (as in `pipe` output format)."""
+    fill = linefmt.hline
+    # if cells are padded with spaces; .sep should be padded tool
+    # only the first symbol of .begin (and the last of .end) is used;
+    extra_width = max(0, len(linefmt.begin)+len(linefmt.end)-2)
+    w = colwidth + extra_width
+    if align in ["right", "decimal"]:
+        return (fill[0] * (w - 1)) + ":"
+    elif align == "center":
+        return ":" + (fill[0] * (w - 2)) + ":"
+    elif align == "left":
+        return ":" + (fill[0] * (w - 1))
+    else:
+        return fill[0] * w
+
+
 def _format_table(fmt, headers, rows, colwidths, colaligns):
     """Produce a plain-text representation of the table."""
     lines = []
+    hidden = fmt.with_header_hide if headers else fmt.without_header_hide
 
-    def build_line(cells, sep, begin="", end=""):
-        return (begin + sep.join(cells) + end).rstrip()
-
-    def fill_cells(fill):
-        cells = [fill*w for w in colwidths]
-        return cells
-
-    def fill_cell_with_colons(fill, align, colwidth):
-        if align in ["right", "decimal"]:
-            return (fill * (colwidth - 1)) + ":"
-        elif align == "center":
-            return ":" + (fill * (colwidth - 2)) + ":"
-        elif align == "left":
-            return ":" + (fill * (colwidth - 1))
-        else:
-            return fill * colwidth
-
-    if fmt.lineabove:
-        lines.append(build_line(fill_cells(fmt.lineabove), fmt.intersect,
-                                fmt.edgeintersect, fmt.edgeintersect))
+    if fmt.lineabove and "lineabove" not in hidden:
+        lines.append(_build_line(colwidths, *fmt.lineabove))
 
     if headers:
-        lines.append(build_line(headers, fmt.colsep, fmt.rowbegin, fmt.rowend))
+        lines.append(_build_row(headers, *fmt.datarow))
 
-    if fmt.headersline:
-        fill = fmt.headersline
-        if fmt.colons_align_columns:
-            cells = [fill_cell_with_colons(fill, a, w)
-                     for w, a in zip(colwidths, colaligns)]
+    if fmt.linebelowheader and "linebelowheader" not in hidden:
+        begin, fill, sep, end = fmt.linebelowheader
+        if fmt.usecolons:
+            segs = [_line_segment_with_colons(fmt.linebelowheader,a,w)
+                    for w,a in zip(colwidths, colaligns)]
+            lines.append(_build_row(segs, begin[0], sep[len(sep)//2], end[-1]))
         else:
-            cells = fill_cells(fill)
-        lines.append(build_line(cells, fmt.intersect,
-                                fmt.edgeintersect, fmt.edgeintersect))
+            lines.append(_build_line(colwidths, *fmt.linebelowheader))
 
-    if rows and fmt.rowline:  # with lines between rows
-        # initial rows with a lines below
+    if rows and fmt.linebetweenrows and "linebetweenrows" not in hidden:
+        # initial rows with a line below
         for row in rows[:-1]:
-            lines.append(build_line(row, fmt.colsep, fmt.rowbegin, fmt.rowend))
-            lines.append(build_line(fill_cells(fmt.rowline), fmt.intersect,
-                                    fmt.edgeintersect, fmt.edgeintersect))
+            lines.append(_build_row(row, *fmt.datarow))
+            lines.append(_build_line(colwidths, *fmt.linebetweenrows))
         # the last row without a line below
-        lines.append(build_line(rows[-1], fmt.colsep, fmt.rowbegin, fmt.rowend))
-    else:  # no lines between rows of data
+        lines.append(_build_row(rows[-1], *fmt.datarow))
+    else:
         for row in rows:
-            lines.append(build_line(row, fmt.colsep, fmt.rowbegin, fmt.rowend))
+            lines.append(_build_row(row, *fmt.datarow))
 
-    if fmt.linebelow:
-        lines.append(build_line(fill_cells(fmt.linebelow), fmt.intersect,
-                                fmt.edgeintersect, fmt.edgeintersect))
+    if fmt.linebelow and "linebelow" not in hidden:
+        lines.append(_build_line(colwidths, *fmt.linebelow))
 
     return "\n".join(lines)
