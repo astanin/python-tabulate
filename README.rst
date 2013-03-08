@@ -63,7 +63,6 @@ argument ``headers=...``::
     Earth         6371        5973.6
     Moon          1737          73.5
     Mars          3390         641.85
-    --------  --------  -------------------
 
 
 Table format
@@ -101,44 +100,42 @@ extensions::
     spam       42
     eggs      451
     bacon       0
-    ------  -----
 
 ``grid`` is like tables formatted by Emacs' [table.el][table.el]
 package.  It corresponds to ``grid_tables`` in Pandoc Markdown
 extensions::
 
     >>> print(tabulate(table, headers, tablefmt="grid"))
-    +------+-----+
-    |item  |  qty|
-    +======+=====+
-    |spam  |   42|
-    +------+-----+
-    |eggs  |  451|
-    +------+-----+
-    |bacon |    0|
-    +------+-----+
+    +--------+-------+
+    | item   |   qty |
+    +========+=======+
+    | spam   |    42 |
+    +--------+-------+
+    | eggs   |   451 |
+    +--------+-------+
+    | bacon  |     0 |
+    +--------+-------+
 
 ``pipe`` follows the conventions of PHP Markdown Extra extension.  It
 corresponds to ``pipe_tables`` in Pandoc. This format uses colons to
 indicate column alignment::
 
     >>> print(tabulate(table, headers, tablefmt="pipe"))
-    |item  |  qty|
-    |:-----|----:|
-    |spam  |   42|
-    |eggs  |  451|
-    |bacon |    0|
-
+    | item   |   qty |
+    |:-------|------:|
+    | spam   |    42 |
+    | eggs   |   451 |
+    | bacon  |     0 |
 
 ``orgtbl`` follows the conventions of Emacs [org-mode][org-mode-tables],
 and is editable in the minor `orgtbl-mode`. Hence its name::
 
     >>> print(tabulate(table, headers, tablefmt="orgtbl"))
-    |item  |  qty|
-    |------+-----|
-    |spam  |   42|
-    |eggs  |  451|
-    |bacon |    0|
+    | item   |   qty |
+    |--------+-------|
+    | spam   |    42 |
+    | eggs   |   451 |
+    | bacon  |     0 |
 
 [table.el]: http://table.sourceforge.net/
 [org-mode-tables]: http://orgmode.org/manual/Tables.html
@@ -234,26 +231,18 @@ generation, and simple formatting and joining cell values with a tab::
 
     >>> # conversion to CSV
     >>> import csv ; from StringIO import StringIO
-    >>> %timeit csv.writer(StringIO()).writerows(table)
-    10000 loops, best of 3: 30.8 us per loop
+    >>> csv.writer(StringIO()).writerows(table)
 
     >>> # joining with tabs
     >>> def tabulate_fast(rows):
     ...     return "\n".join(("\t".join(map(str,row)) for row in rows))
     ...
-    >>> %timeit tabulate_fast(table)
-    10000 loops, best of 3: 22.5 us per loop
-
-    >>> # tabulate() function
-    >>> %timeit tabulate(table)
-    1000 loops, best of 3: 891 us per loop
 
 
 The results::
 
     method               time (us)    rel. time
     -----------------  -----------  -----------
-    csv to StringIO           30.8      1.36889
-    joining with tabs         22.5      1
-    tabulate                 891       39.6
-    -----------------  -----------  -----------
+    csv to StringIO          30.80         1.33
+    joining with tabs        23.10         1.00
+    tabulate                853.00        36.93
