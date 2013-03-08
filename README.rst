@@ -1,0 +1,259 @@
+===============
+python-tabulate
+===============
+
+Pretty-print tabular data in Python.
+
+The main use cases of the library are:
+
+  * printing small tables without hassle: just one function call,
+    formatting is guided by the data itself
+
+  * authoring tabular data for lightweight plain-text markup: multiple
+    output formats suitable for further editing or transformation
+
+  * readable presentation of mixed textual and numeric data: smart
+    column alignment, configurable number formatting, alignment by a
+    decimal point
+
+
+Installation
+------------
+
+::
+
+    pip install tabulate
+
+
+Usage
+-----
+
+The module provides just one function, ``tabulate``, which takes a list
+of lists or a similarly shaped data structure, and outputs a nicely
+formatted plain-text table::
+
+    >>> from __future__ import print_function
+    >>> from tabulate import tabulate
+
+    >>> table = [["Sun",696000,1989100000],["Earth",6371,5973.6],
+    ...          ["Moon",1737,73.5],["Mars",3390,641.85]]
+    >>> print(tabulate(table))
+    -----  ------  -------------
+    Sun    696000     1.9891e+09
+    Earth    6371  5973.6
+    Moon     1737    73.5
+    Mars     3390   641.85
+    -----  ------  -------------
+
+``tabulate`` can pretty-print two-dimensional NumPy arrays too.
+
+
+Headers
+~~~~~~~
+
+If function ``tabulate`` receives two arguments, it considers the
+second argument to be a list of column headers.
+The list of headers may be passed also out-of-order with a named
+argument ``headers=...``::
+
+    >>> print(tabulate(table, headers=["Planet","R (km)", "mass (x 10^29 kg)"]))
+    Planet      R (km)    mass (x 10^29 kg)
+    --------  --------  -------------------
+    Sun         696000           1.9891e+09
+    Earth         6371        5973.6
+    Moon          1737          73.5
+    Mars          3390         641.85
+    --------  --------  -------------------
+
+
+Table format
+~~~~~~~~~~~~
+
+There is more than one way to format a table in plain text. The output
+format of ``tabulate`` is defined by an optional named argument
+``tablefmt``.
+
+Supported table formats are:
+
+- "plain"
+- "simple"
+- "grid"
+- "pipe"
+- "orgtbl"
+
+``plain`` tables do not use any pseudo-graphics to draw lines::
+
+    >>> table = [["spam",42],["eggs",451],["bacon",0]]
+    >>> headers = ["item", "qty"]
+    >>> print(tabulate(table, headers, tablefmt="plain"))
+    item      qty
+    spam       42
+    eggs      451
+    bacon       0
+
+``simple`` is the default format (the default may change in future
+versions).  It corresponds to ``simple_tables`` in Pandoc Markdown
+extensions::
+
+    >>> print(tabulate(table, headers, tablefmt="simple"))
+    item      qty
+    ------  -----
+    spam       42
+    eggs      451
+    bacon       0
+    ------  -----
+
+``grid`` is like tables formatted by Emacs' [table.el][table.el]
+package.  It corresponds to ``grid_tables`` in Pandoc Markdown
+extensions::
+
+    >>> print(tabulate(table, headers, tablefmt="grid"))
+    +------+-----+
+    |item  |  qty|
+    +======+=====+
+    |spam  |   42|
+    +------+-----+
+    |eggs  |  451|
+    +------+-----+
+    |bacon |    0|
+    +------+-----+
+
+``pipe`` follows the conventions of PHP Markdown Extra extension.  It
+corresponds to ``pipe_tables`` in Pandoc. This format uses colons to
+indicate column alignment::
+
+    >>> print(tabulate(table, headers, tablefmt="pipe"))
+    |item  |  qty|
+    |:-----|----:|
+    |spam  |   42|
+    |eggs  |  451|
+    |bacon |    0|
+
+
+``orgtbl`` follows the conventions of Emacs [org-mode][org-mode-tables],
+and is editable in the minor `orgtbl-mode`. Hence its name::
+
+    >>> print(tabulate(table, headers, tablefmt="orgtbl"))
+    |item  |  qty|
+    |------+-----|
+    |spam  |   42|
+    |eggs  |  451|
+    |bacon |    0|
+
+[table.el]: http://table.sourceforge.net/
+[org-mode-tables]: http://orgmode.org/manual/Tables.html
+
+
+Column alignment
+~~~~~~~~~~~~~~~~
+
+``tabulate`` is smart about column alignment. It detects columns which
+contain only numbers, and aligns them by a decimal point (or flushes
+them to the right if they appear to be integers). Text columns are
+flushed to the left.
+
+You can override the default alignment with ``numalign`` and
+``stralign`` named arguments. Possible column alignments are: ``right``,
+``center``, ``left``, ``decimal`` (only for numbers).
+
+Aligning by a decimal point works best when you need to compare
+numbers at a glance::
+
+    >>> print(tabulate([[1.2345],[123.45],[12.345],[12345],[1234.5]]))
+    ----------
+        1.2345
+      123.45
+       12.345
+    12345
+     1234.5
+    ----------
+
+Compare this with a more common right alignment::
+
+    >>> print(tabulate([[1.2345],[123.45],[12.345],[12345],[1234.5]], numalign="right"))
+    ------
+    1.2345
+    123.45
+    12.345
+     12345
+    1234.5
+    ------
+
+For ``tabulate``, anything which can be parsed as a number is a
+number. Even numbers represented as strings are aligned properly. This
+feature comes in handy when reading a mixed table of text and numbers
+from a file:
+
+    >>> import csv ; from StringIO import StringIO
+    >>> table = list(csv.reader(StringIO("spam, 42\neggs, 451\n")))
+    >>> table
+    [['spam', ' 42'], ['eggs', ' 451']]
+    >>> print(tabulate(table))
+    ----  ----
+    spam    42
+    eggs   451
+    ----  ----
+
+
+
+Number formatting
+~~~~~~~~~~~~~~~~~
+
+``tabulate`` allows to define custom number formatting applied to all
+columns of decimal numbers. Use ``floatfmt`` named argument:
+
+
+    >>> print tabulate([["pi",3.141593],["e",2.718282]], floatfmt=".4f")
+    --  ------
+    pi  3.1416
+    e   2.7183
+    --  ------
+
+
+Performance considerations
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Such features as decimal point alignment and trying to parse everything
+as a number imply that ``tabulate``:
+
+  * needs to keep the entire table in-memory
+  * has to "transpose" the table twice
+  * does much more work than it may appear
+
+It may not be suitable to pretty-print really big tables (but who's
+going to do that, anyway?) or printing tables in performance sensitive
+applications. ``tabulate`` is about two orders of magnitude slower
+than simply joining lists of values with a tab, coma or other
+separator.
+
+A micro-benchmark in ipython to compare ``tabulate`` with CSV file
+generation, and simple formatting and joining cell values with a tab::
+
+    >>> # a test table with mixed textual and numeric data
+    >>> table = [["some text"]+range(i,i+9) for i in range(10)]
+
+    >>> # conversion to CSV
+    >>> import csv ; from StringIO import StringIO
+    >>> %timeit csv.writer(StringIO()).writerows(table)
+    10000 loops, best of 3: 30.8 us per loop
+
+    >>> # joining with tabs
+    >>> def tabulate_fast(rows):
+    ...     return "\n".join(("\t".join(map(str,row)) for row in rows))
+    ...
+    >>> %timeit tabulate_fast(table)
+    10000 loops, best of 3: 22.5 us per loop
+
+    >>> # tabulate() function
+    >>> %timeit tabulate(table)
+    1000 loops, best of 3: 891 us per loop
+
+
+The results::
+
+    method               time (us)    rel. time
+    -----------------  -----------  -----------
+    csv to StringIO           30.8      1.36889
+    joining with tabs         22.5      1
+    tabulate                 891       39.6
+    -----------------  -----------  -----------

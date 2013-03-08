@@ -247,7 +247,7 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
     eggs        451
     ---------  ---------
 
-    "grid" is similar to Emacs' table.el tables or Padoc's grid_tables:
+    "grid" is similar to Emacs' table.el tables or Pandoc's grid_tables:
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
     ...                ["strings", "numbers"], "grid"))
@@ -269,8 +269,8 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
     |eggs     | 451     |
 
     "orgtbl" is like tables in Emacs orgtbl-mode. It is slightly
-    different from"pipe" format by not using colons to define column alignment,
-    and using a "+" sign to indicate line intersections:
+    different from"pipe" format by not using colons to define column
+    alignment, and using a "+" sign to indicate line intersections:
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
     ...                ["strings", "numbers"], "orgtbl"))
