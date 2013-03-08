@@ -6,15 +6,15 @@ Pretty-print tabular data in Python.
 
 The main use cases of the library are:
 
-  * printing small tables without hassle: just one function call,
-    formatting is guided by the data itself
+* printing small tables without hassle: just one function call,
+  formatting is guided by the data itself
 
-  * authoring tabular data for lightweight plain-text markup: multiple
-    output formats suitable for further editing or transformation
+* authoring tabular data for lightweight plain-text markup: multiple
+  output formats suitable for further editing or transformation
 
-  * readable presentation of mixed textual and numeric data: smart
-    column alignment, configurable number formatting, alignment by a
-    decimal point
+* readable presentation of mixed textual and numeric data: smart
+  column alignment, configurable number formatting, alignment by a
+  decimal point
 
 
 Installation
@@ -91,8 +91,8 @@ Supported table formats are:
     bacon       0
 
 ``simple`` is the default format (the default may change in future
-versions).  It corresponds to ``simple_tables`` in Pandoc Markdown
-extensions::
+versions).  It corresponds to ``simple_tables`` in `Pandoc Markdown
+extensions`_::
 
     >>> print(tabulate(table, headers, tablefmt="simple"))
     item      qty
@@ -101,7 +101,7 @@ extensions::
     eggs      451
     bacon       0
 
-``grid`` is like tables formatted by Emacs' [table.el][table.el]
+``grid`` is like tables formatted by Emacs' `table.el`_
 package.  It corresponds to ``grid_tables`` in Pandoc Markdown
 extensions::
 
@@ -116,7 +116,7 @@ extensions::
     | bacon  |     0 |
     +--------+-------+
 
-``pipe`` follows the conventions of PHP Markdown Extra extension.  It
+``pipe`` follows the conventions of `PHP Markdown Extra`_ extension.  It
 corresponds to ``pipe_tables`` in Pandoc. This format uses colons to
 indicate column alignment::
 
@@ -127,8 +127,8 @@ indicate column alignment::
     | eggs   |   451 |
     | bacon  |     0 |
 
-``orgtbl`` follows the conventions of Emacs [org-mode][org-mode-tables],
-and is editable in the minor `orgtbl-mode`. Hence its name::
+``orgtbl`` follows the conventions of Emacs `org-mode`_, and is editable
+also in the minor `orgtbl-mode`. Hence its name::
 
     >>> print(tabulate(table, headers, tablefmt="orgtbl"))
     | item   |   qty |
@@ -137,8 +137,10 @@ and is editable in the minor `orgtbl-mode`. Hence its name::
     | eggs   |   451 |
     | bacon  |     0 |
 
-[table.el]: http://table.sourceforge.net/
-[org-mode-tables]: http://orgmode.org/manual/Tables.html
+.. _Pandoc Markdown extensions: http://johnmacfarlane.net/pandoc/README.html#tables
+.. _PHP Markdown Extra: http://michelf.ca/projects/php-markdown/extra/#table
+.. _table.el: http://table.sourceforge.net/
+.. _org-mode: http://orgmode.org/manual/Tables.html
 
 
 Column alignment
@@ -181,6 +183,8 @@ number. Even numbers represented as strings are aligned properly. This
 feature comes in handy when reading a mixed table of text and numbers
 from a file:
 
+::
+
     >>> import csv ; from StringIO import StringIO
     >>> table = list(csv.reader(StringIO("spam, 42\neggs, 451\n")))
     >>> table
@@ -197,7 +201,7 @@ Number formatting
 ~~~~~~~~~~~~~~~~~
 
 ``tabulate`` allows to define custom number formatting applied to all
-columns of decimal numbers. Use ``floatfmt`` named argument:
+columns of decimal numbers. Use ``floatfmt`` named argument::
 
 
     >>> print tabulate([["pi",3.141593],["e",2.718282]], floatfmt=".4f")
@@ -213,9 +217,9 @@ Performance considerations
 Such features as decimal point alignment and trying to parse everything
 as a number imply that ``tabulate``:
 
-  * needs to keep the entire table in-memory
-  * has to "transpose" the table twice
-  * does much more work than it may appear
+* needs to keep the entire table in-memory
+* has to "transpose" the table twice
+* does much more work than it may appear
 
 It may not be suitable to pretty-print really big tables (but who's
 going to do that, anyway?) or printing tables in performance sensitive
