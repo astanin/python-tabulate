@@ -3,8 +3,22 @@
 """Pretty-print tabular data."""
 
 from __future__ import print_function
-
+from __future__ import unicode_literals
 from collections import namedtuple
+from platform import python_version_tuple
+
+
+if python_version_tuple()[0] < "3":
+    _int_type = int
+    _float_type = float
+    _text_type = unicode
+    _binary_type = str
+else:
+    from functools import reduce
+    _int_type = int
+    _float_type = float
+    _text_type = str
+    _binary_type = bytes
 
 
 __all__ = ["tabulate"]
@@ -78,8 +92,8 @@ def simple_separated_format(separator):
     """Construct a simple TableFormat with columns separated by a separator.
 
     >>> tsv = simple_separated_format("\t") ; \
-        tabulate([["foo", 1], ["spam", 23]], tablefmt=tsv)
-    u'foo \\t 1\\nspam\\t23'
+        tabulate([["foo", 1], ["spam", 23]], tablefmt=tsv) == u'foo \\t 1\\nspam\\t23'
+    True
 
     """
     return TableFormat(None, None, None, None,
@@ -91,8 +105,6 @@ def _isconvertible(conv, string):
         n = conv(string)
         return True
     except ValueError:
-        return False
-    except UnicodeEncodeError:
         return False
 
 
@@ -116,19 +128,20 @@ def _isint(string):
     False
     """
     return type(string) is int or \
-           isinstance(string, basestring) and  _isconvertible(int, string)
+           (isinstance(string, _binary_type) or isinstance(string, _text_type)) and \
+           _isconvertible(int, string)
 
 
 def _type(string):
-    "The least generic type (int, float, basestring, unicode)."
+    "The least generic type (int, float, str, unicode)."
     if _isint(string):
         return int
     elif _isnumber(string):
         return float
-    elif _isconvertible(str, string):
-        return basestring
+    elif isinstance(string, _binary_type):
+        return _binary_type
     else:
-        return unicode
+        return _text_type
 
 
 def _afterpoint(string):
@@ -161,8 +174,8 @@ def _afterpoint(string):
 def _padleft(width, s):
     """Flush right.
 
-    >>> _padleft(6, u'\u044f\u0439\u0446\u0430')
-    u'  \u044f\u0439\u0446\u0430'
+    >>> _padleft(6, u'\u044f\u0439\u0446\u0430') == u'  \u044f\u0439\u0446\u0430'
+    True
 
     """
     fmt = u"{:>%ds}" % width
@@ -172,8 +185,8 @@ def _padleft(width, s):
 def _padright(width, s):
     """Flush left.
 
-    >>> _padright(6, u'\u044f\u0439\u0446\u0430')
-    u'\u044f\u0439\u0446\u0430  '
+    >>> _padright(6, u'\u044f\u0439\u0446\u0430') == u'\u044f\u0439\u0446\u0430  '
+    True
 
     """
     fmt = u"{:<%ds}" % width
@@ -183,8 +196,8 @@ def _padright(width, s):
 def _padboth(width, s):
     """Center string.
 
-    >>> _padboth(6, u'\u044f\u0439\u0446\u0430')
-    u' \u044f\u0439\u0446\u0430 '
+    >>> _padboth(6, u'\u044f\u0439\u0446\u0430') == u' \u044f\u0439\u0446\u0430 '
+    True
 
     """
     fmt = u"{:^%ds}" % width
@@ -194,7 +207,7 @@ def _padboth(width, s):
 def _align_column(strings, alignment, minwidth=0):
     """[string] -> [padded_string]
 
-    >>> map(str,_align_column(["12.345", "-1234.5", "1.23", "1234.5", "1e+234", "1.0e234"], "decimal"))
+    >>> list(map(str,_align_column(["12.345", "-1234.5", "1.23", "1234.5", "1e+234", "1.0e234"], "decimal")))
     ['   12.345  ', '-1234.5    ', '    1.23   ', ' 1234.5    ', '    1e+234 ', '    1.0e234']
 
     """
@@ -205,7 +218,7 @@ def _align_column(strings, alignment, minwidth=0):
         strings = [s.strip() for s in strings]
         padfn = _padboth
     elif alignment in "decimal":
-        decimals = map(_afterpoint, strings)
+        decimals = [_afterpoint(s) for s in strings]
         maxdecimals = max(decimals)
         strings = [s + (maxdecimals - decs) * " "
                    for s, decs in zip(strings, decimals)]
@@ -218,23 +231,23 @@ def _align_column(strings, alignment, minwidth=0):
 
 
 def _more_generic(type1, type2):
-    types = { int: 1, float: 2, basestring: 3, unicode: 4 }
-    invtypes = { 4: unicode, 3: basestring, 2: float, 1: int }
-    moregeneric = max(types[type1], types[type2])
+    types = { int: 1, float: 2, _text_type: 4 }
+    invtypes = { 4: _text_type, 2: float, 1: int }
+    moregeneric = max(types.get(type1, 4), types.get(type2, 4))
     return invtypes[moregeneric]
 
 
 def _column_type(strings):
     """The least generic type all column values are convertible to.
 
-    >>> _column_type(["1", "2"])
-    <type 'int'>
-    >>> _column_type(["1", "2.3"])
-    <type 'float'>
-    >>> _column_type(["1", "2.3", "four"])
-    <type 'basestring'>
-    >>> _column_type(["four", u'\u043f\u044f\u0442\u044c'])
-    <type 'unicode'>
+    >>> _column_type(["1", "2"]) is _int_type
+    True
+    >>> _column_type(["1", "2.3"]) is _float_type
+    True
+    >>> _column_type(["1", "2.3", "four"]) is _text_type
+    True
+    >>> _column_type(["four", u'\u043f\u044f\u0442\u044c']) is _text_type
+    True
 
     """
     types = map(_type, strings)
@@ -242,7 +255,18 @@ def _column_type(strings):
 
 
 def _format(val, valtype, floatfmt):
-    if valtype in [int, str, basestring]:
+    """Format a value accoding to its type.
+
+    Unicode is supported:
+
+    >>> hrow = [u'\u0431\u0443\u043a\u0432\u0430', u'\u0446\u0438\u0444\u0440\u0430'] ; \
+        tbl = [[u'\u0430\u0437', 2], [u'\u0431\u0443\u043a\u0438', 4]] ; \
+        good_result = u'\\u0431\\u0443\\u043a\\u0432\\u0430      \\u0446\\u0438\\u0444\\u0440\\u0430\\n-------  -------\\n\\u0430\\u0437             2\\n\\u0431\\u0443\\u043a\\u0438           4' ; \
+        tabulate(tbl, headers=hrow) == good_result
+    True
+
+    """
+    if valtype in [int, _binary_type, _text_type]:
         return u"{}".format(val)
     elif valtype is float:
         return format(float(val), floatfmt)
@@ -272,13 +296,6 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
 
     If headers is not empty, it is used as a list of column names
     to print a nice header. Otherwise a headerless table is produced.
-
-    Unicode is supported:
-
-    >>> hrow = [u'\u0431\u0443\u043a\u0432\u0430', u'\u0446\u0438\u0444\u0440\u0430'] ; \
-        tbl = [[u'\u0430\u0437', 2], [u'\u0431\u0443\u043a\u0438', 4]] ; \
-        tabulate(tbl, headers=hrow)
-    u'\\u0431\\u0443\\u043a\\u0432\\u0430      \\u0446\\u0438\\u0444\\u0440\\u0430\\n-------  -------\\n\\u0430\\u0437             2\\n\\u0431\\u0443\\u043a\\u0438           4'
 
     `tabulate` tries to detect column types automatically, and aligns
     the values properly. By default it aligns decimal points of the
@@ -375,8 +392,8 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
 
     """
     # format rows and columns, convert numeric values to strings
-    cols = zip(*list_of_lists)
-    coltypes = map(_column_type, cols)
+    cols = list(zip(*list_of_lists))
+    coltypes = list(map(_column_type, cols))
     cols = [[_format(v, ct, floatfmt) for v in c]
              for c,ct in zip(cols, coltypes)]
 
@@ -391,10 +408,10 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
         minwidths = [max(minw, len(c[0])) for minw, c in zip(minwidths, cols)]
         headers = [_align_header(h, a, minw)
                    for h, a, minw in zip(headers, aligns, minwidths)]
-        rows = zip(*cols)
+        rows = list(zip(*cols))
     else:
         minwidths = [len(c[0]) for c in cols]
-        rows = zip(*cols)
+        rows = list(zip(*cols))
 
     if not isinstance(tablefmt, TableFormat):
         tablefmt = _table_formats.get(tablefmt, _table_formats["simple"])
