@@ -48,7 +48,7 @@ def texttable(table):
 methods = [("join with tabs and newlines", "join_table(table)"),
            ("csv to StringIO", "csv_table(table)"),
            ("asciitable (0.8)", "asciitable(table)"),
-           ("tabulate (0.4.1)", "tabulate(table)"),
+           ("tabulate (0.4.2)", "tabulate(table)"),
            ("PrettyTable (0.7.1)", "prettytable(table)"),
            ("texttable (0.8.1)", "texttable(table)"),
            ]
