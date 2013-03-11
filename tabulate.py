@@ -85,8 +85,17 @@ _table_formats = {"simple":
                               padding=1,
                               usecolons=False,
                               with_header_hide=[],
+                              without_header_hide=["linebelowheader"]),
+                  "rst":
+                  TableFormat(lineabove=Line("", "=", "  ", ""),
+                              linebelowheader=Line("", "=", "  ", ""),
+                              linebetweenrows=None,
+                              linebelow=Line("", "=", "  ", ""),
+                              datarow=DataRow("", "  ", ""),
+                              padding=0,
+                              usecolons=False,
+                              with_header_hide=[],
                               without_header_hide=["linebelowheader"])}
-
 
 def simple_separated_format(separator):
     """Construct a simple TableFormat with columns separated by a separator.
@@ -389,6 +398,24 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="orgtbl"))
     | spam |  41.9999 |
     | eggs | 451      |
+
+    "rst" is like a simple table format from reStructuredText; please
+    note that reStructuredText accepts also "grid" tables:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "rst"))
+    =========  =========
+    strings      numbers
+    =========  =========
+    spam         41.9999
+    eggs        451
+    =========  =========
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="rst"))
+    ====  ========
+    spam   41.9999
+    eggs  451
+    ====  ========
 
     """
     # format rows and columns, convert numeric values to strings
