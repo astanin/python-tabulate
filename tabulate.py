@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """Pretty-print tabular data."""
 
 from __future__ import print_function
@@ -72,7 +74,7 @@ def simple_separated_format(separator):
 
     >>> tsv = simple_separated_format("\t") ; \
         tabulate([["foo", 1], ["spam", 23]], tablefmt=tsv)
-    'foo \\t 1\\nspam\\t23'
+    u'foo \\t 1\\nspam\\t23'
 
     """
     return TableFormat(None, None, None, None,
@@ -152,24 +154,42 @@ def _afterpoint(string):
 
 
 def _padleft(width, s):
-    fmt = "{:>%ds}" % width
+    """Flush right.
+
+    >>> _padleft(6, u'\u044f\u0439\u0446\u0430')
+    u'  \u044f\u0439\u0446\u0430'
+
+    """
+    fmt = u"{:>%ds}" % width
     return fmt.format(s)
 
 
 def _padright(width, s):
-    fmt = "{:<%ds}" % width
+    """Flush left.
+
+    >>> _padright(6, u'\u044f\u0439\u0446\u0430')
+    u'\u044f\u0439\u0446\u0430  '
+
+    """
+    fmt = u"{:<%ds}" % width
     return fmt.format(s)
 
 
 def _padboth(width, s):
-    fmt = "{:^%ds}" % width
+    """Center string.
+
+    >>> _padboth(6, u'\u044f\u0439\u0446\u0430')
+    u' \u044f\u0439\u0446\u0430 '
+
+    """
+    fmt = u"{:^%ds}" % width
     return fmt.format(s)
 
 
 def _align_column(strings, alignment, minwidth=0):
     """[string] -> [padded_string]
 
-    >>> _align_column(["12.345", "-1234.5", "1.23", "1234.5", "1e+234", "1.0e234"], "decimal")
+    >>> map(str,_align_column(["12.345", "-1234.5", "1.23", "1234.5", "1e+234", "1.0e234"], "decimal"))
     ['   12.345  ', '-1234.5    ', '    1.23   ', ' 1234.5    ', '    1e+234 ', '    1.0e234']
 
     """
@@ -218,7 +238,7 @@ def _column_type(strings):
 
 def _format(val, valtype, floatfmt):
     if valtype in [int, str, basestring]:
-        return "{}".format(val)
+        return u"{}".format(val)
     elif valtype is float:
         return format(float(val), floatfmt)
     else:
@@ -247,6 +267,13 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
 
     If headers is not empty, it is used as a list of column names
     to print a nice header. Otherwise a headerless table is produced.
+
+    Unicode is supported:
+
+    >>> hrow = [u'\u0431\u0443\u043a\u0432\u0430', u'\u0446\u0438\u0444\u0440\u0430'] ; \
+        tbl = [[u'\u0430\u0437', 2], [u'\u0431\u0443\u043a\u0438', 4]] ; \
+        tabulate(tbl, headers=hrow)
+    u'\\u0431\\u0443\\u043a\\u0432\\u0430      \\u0446\\u0438\\u0444\\u0440\\u0430\\n-------  -------\\n\\u0430\\u0437             2\\n\\u0431\\u0443\\u043a\\u0438           4'
 
     `tabulate` tries to detect column types automatically, and aligns
     the values properly. By default it aligns decimal points of the
