@@ -244,17 +244,17 @@ separator.
 
 In the same time ``tabulate`` is comparable to other table
 pretty-printers. It appears to be slightly slower than ``asciitable``,
-and much faster than ``PrettyTable``.
+and much faster than ``PrettyTable``::
 
-===========================  ==========  ===========
-Table formatter                time, μs    rel. time
-===========================  ==========  ===========
-join with tabs and newlines        23.0          1.0
-csv to StringIO                    32.8          1.4
-asciitable (0.8)                  855.8         37.1
-tabulate (0.4)                   1092.2         47.4
-PrettyTable (0.7.1)              3729.5        161.9
-===========================  ==========  ===========
+    ===========================  ==========  ===========
+    Table formatter                time, μs    rel. time
+    ===========================  ==========  ===========
+    join with tabs and newlines        23.0          1.0
+    csv to StringIO                    32.8          1.4
+    asciitable (0.8)                  855.8         37.1
+    tabulate (0.4)                   1092.2         47.4
+    PrettyTable (0.7.1)              3729.5        161.9
+    ===========================  ==========  ===========
 
 
 Version history
