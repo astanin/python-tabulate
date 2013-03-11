@@ -6,7 +6,7 @@ LICENSE = open("LICENSE").read()
 LONG_DESCRIPTION = open("README.rst").read()
 
 setup(name='tabulate',
-   version='0.4',
+   version='0.4.1',
    description='Pretty-print tabular data',
    long_description=LONG_DESCRIPTION,
    author='Sergey Astanin',
