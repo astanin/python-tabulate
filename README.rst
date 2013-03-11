@@ -77,7 +77,7 @@ Supported table formats are:
 
 - "plain"
 - "simple"
-q- "grid"
+- "grid"
 - "pipe"
 - "orgtbl"
 - "rst"
@@ -227,7 +227,7 @@ columns of decimal numbers. Use ``floatfmt`` named argument::
 
 
 Performance considerations
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------
 
 Such features as decimal point alignment and trying to parse everything
 as a number imply that ``tabulate``:
