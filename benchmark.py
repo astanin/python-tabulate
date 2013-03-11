@@ -9,6 +9,7 @@ from StringIO import StringIO
 from tabulate import tabulate
 from prettytable import PrettyTable
 from asciitable import write, FixedWidth
+from texttable import Texttable
 
 table=[["some text"]+range(i,i+9) for i in range(10)]
 
@@ -29,18 +30,27 @@ def prettytable(table):
         pp.add_row(row)
     return str(pp)
 
+
 def asciitable(table):
     buf = StringIO()
     write(table, output=buf, Writer=FixedWidth)
     return buf.getvalue()
+
+
+def texttable(table):
+    pp = Texttable()
+    pp.set_cols_align(["l"] + ["r"]*9)
+    pp.add_rows(table)
+    return pp.draw()
 
 """
 
 methods = [("join with tabs and newlines", "join_table(table)"),
            ("csv to StringIO", "csv_table(table)"),
            ("asciitable (0.8)", "asciitable(table)"),
-           ("tabulate (0.4)", "tabulate(table)"),
+           ("tabulate (0.4.1)", "tabulate(table)"),
            ("PrettyTable (0.7.1)", "prettytable(table)"),
+           ("texttable (0.8.1)", "texttable(table)"),
            ]
 
 

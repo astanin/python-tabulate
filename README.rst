@@ -243,22 +243,29 @@ than simply joining lists of values with a tab, coma or other
 separator.
 
 In the same time ``tabulate`` is comparable to other table
-pretty-printers. It appears to be slightly slower than ``asciitable``,
-and much faster than ``PrettyTable``::
+pretty-printers. Given a 10x10 table (a list of lists) of mixed text
+and numeric data, ``tabulate`` appears to be slightly slower than
+``asciitable``, and much faster than ``PrettyTable`` and
+``texttable``
+
+::
 
     ===========================  ==========  ===========
     Table formatter                time, μs    rel. time
     ===========================  ==========  ===========
-    join with tabs and newlines        23.0          1.0
-    csv to StringIO                    32.8          1.4
-    asciitable (0.8)                  855.8         37.1
-    tabulate (0.4)                   1092.2         47.4
-    PrettyTable (0.7.1)              3729.5        161.9
+    join with tabs and newlines        22.5          1.0
+    csv to StringIO                    32.1          1.4
+    asciitable (0.8)                  855.2         38.0
+    tabulate (0.4.1)                 1099.6         48.9
+    PrettyTable (0.7.1)              3729.6        165.9
+    texttable (0.8.1)                4166.3        185.3
     ===========================  ==========  ===========
 
 
 Version history
-~~~~~~~~~~~~~~~
+---------------
 
-- 0.4 Unicode support, Python3 support, ``rst`` tables
-- 0.3 Initial PyPI release. Table formats: ``simple``, ``plain``, ``grid``, ``pipe``, and ``orgtbl``.
+- 0.4.1: Update license and documentation.
+- 0.4: Unicode support, Python3 support, ``rst`` tables
+- 0.3: Initial PyPI release. Table formats: ``simple``, ``plain``,
+  ``grid``, ``pipe``, and ``orgtbl``.
