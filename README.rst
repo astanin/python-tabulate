@@ -32,12 +32,11 @@ The module provides just one function, ``tabulate``, which takes a list
 of lists or a similarly shaped data structure, and outputs a nicely
 formatted plain-text table::
 
-    >>> from __future__ import print_function
     >>> from tabulate import tabulate
 
     >>> table = [["Sun",696000,1989100000],["Earth",6371,5973.6],
     ...          ["Moon",1737,73.5],["Mars",3390,641.85]]
-    >>> print(tabulate(table))
+    >>> print tabulate(table)
     -----  ------  -------------
     Sun    696000     1.9891e+09
     Earth    6371  5973.6
@@ -46,6 +45,8 @@ formatted plain-text table::
     -----  ------  -------------
 
 ``tabulate`` can pretty-print two-dimensional NumPy arrays too.
+
+Examples in this file use Python2. Tabulate supports Python3 too.
 
 
 Headers
@@ -56,7 +57,7 @@ second argument to be a list of column headers.
 The list of headers may be passed also out-of-order with a named
 argument ``headers=...``::
 
-    >>> print(tabulate(table, headers=["Planet","R (km)", "mass (x 10^29 kg)"]))
+    >>> print tabulate(table, headers=["Planet","R (km)", "mass (x 10^29 kg)"])
     Planet      R (km)    mass (x 10^29 kg)
     --------  --------  -------------------
     Sun         696000           1.9891e+09
@@ -76,15 +77,16 @@ Supported table formats are:
 
 - "plain"
 - "simple"
-- "grid"
+q- "grid"
 - "pipe"
 - "orgtbl"
+- "rst"
 
 ``plain`` tables do not use any pseudo-graphics to draw lines::
 
     >>> table = [["spam",42],["eggs",451],["bacon",0]]
     >>> headers = ["item", "qty"]
-    >>> print(tabulate(table, headers, tablefmt="plain"))
+    >>> print tabulate(table, headers, tablefmt="plain")
     item      qty
     spam       42
     eggs      451
@@ -94,7 +96,7 @@ Supported table formats are:
 versions).  It corresponds to ``simple_tables`` in `Pandoc Markdown
 extensions`_::
 
-    >>> print(tabulate(table, headers, tablefmt="simple"))
+    >>> print tabulate(table, headers, tablefmt="simple")
     item      qty
     ------  -----
     spam       42
@@ -102,10 +104,10 @@ extensions`_::
     bacon       0
 
 ``grid`` is like tables formatted by Emacs' `table.el`_
-package.  It corresponds to ``grid_tables`` in Pandoc Markdown
+  package.  It corresponds to ``grid_tables`` in Pandoc Markdown
 extensions::
 
-    >>> print(tabulate(table, headers, tablefmt="grid"))
+    >>> print tabulate(table, headers, tablefmt="grid")
     +--------+-------+
     | item   |   qty |
     +========+=======+
@@ -120,7 +122,7 @@ extensions::
 corresponds to ``pipe_tables`` in Pandoc. This format uses colons to
 indicate column alignment::
 
-    >>> print(tabulate(table, headers, tablefmt="pipe"))
+    >>> print tabulate(table, headers, tablefmt="pipe")
     | item   |   qty |
     |:-------|------:|
     | spam   |    42 |
@@ -130,17 +132,30 @@ indicate column alignment::
 ``orgtbl`` follows the conventions of Emacs `org-mode`_, and is editable
 also in the minor `orgtbl-mode`. Hence its name::
 
-    >>> print(tabulate(table, headers, tablefmt="orgtbl"))
+    >>> print tabulate(table, headers, tablefmt="orgtbl")
     | item   |   qty |
     |--------+-------|
     | spam   |    42 |
     | eggs   |   451 |
     | bacon  |     0 |
 
+``rst`` formats data like a simple table of the `reStructuredText`_ format::
+
+    >>> print tabulate(table, headers, tablefmt="rst")
+    ======  =====
+    item      qty
+    ======  =====
+    spam       42
+    eggs      451
+    bacon       0
+    ======  =====
+
+
 .. _Pandoc Markdown extensions: http://johnmacfarlane.net/pandoc/README.html#tables
 .. _PHP Markdown Extra: http://michelf.ca/projects/php-markdown/extra/#table
 .. _table.el: http://table.sourceforge.net/
 .. _org-mode: http://orgmode.org/manual/Tables.html
+.. _reStructuredText: http://docutils.sourceforge.net/docs/user/rst/quickref.html#tables
 
 
 Column alignment
@@ -158,7 +173,7 @@ You can override the default alignment with ``numalign`` and
 Aligning by a decimal point works best when you need to compare
 numbers at a glance::
 
-    >>> print(tabulate([[1.2345],[123.45],[12.345],[12345],[1234.5]]))
+    >>> print tabulate([[1.2345],[123.45],[12.345],[12345],[1234.5]])
     ----------
         1.2345
       123.45
@@ -169,7 +184,7 @@ numbers at a glance::
 
 Compare this with a more common right alignment::
 
-    >>> print(tabulate([[1.2345],[123.45],[12.345],[12345],[1234.5]], numalign="right"))
+    >>> print tabulate([[1.2345],[123.45],[12.345],[12345],[1234.5]], numalign="right")
     ------
     1.2345
     123.45
@@ -189,7 +204,7 @@ from a file:
     >>> table = list(csv.reader(StringIO("spam, 42\neggs, 451\n")))
     >>> table
     [['spam', ' 42'], ['eggs', ' 451']]
-    >>> print(tabulate(table))
+    >>> print tabulate(table)
     ----  ----
     spam    42
     eggs   451
@@ -221,32 +236,29 @@ as a number imply that ``tabulate``:
 * has to "transpose" the table twice
 * does much more work than it may appear
 
-It may not be suitable to pretty-print really big tables (but who's
+It may not be suitable for serializing really big tables (but who's
 going to do that, anyway?) or printing tables in performance sensitive
 applications. ``tabulate`` is about two orders of magnitude slower
 than simply joining lists of values with a tab, coma or other
 separator.
 
-A micro-benchmark in ipython to compare ``tabulate`` with CSV file
-generation, and simple formatting and joining cell values with a tab::
+In the same time ``tabulate`` is comparable to other table
+pretty-printers. It appears to be slightly slower than ``asciitable``,
+and much faster than ``PrettyTable``.
 
-    >>> # a test table with mixed textual and numeric data
-    >>> table = [["some text"]+range(i,i+9) for i in range(10)]
-
-    >>> # conversion to CSV
-    >>> import csv ; from StringIO import StringIO
-    >>> csv.writer(StringIO()).writerows(table)
-
-    >>> # joining with tabs
-    >>> def tabulate_fast(rows):
-    ...     return "\n".join(("\t".join(map(str,row)) for row in rows))
-    ...
+===========================  ==========  ===========
+Table formatter                time, μs    rel. time
+===========================  ==========  ===========
+join with tabs and newlines        23.0          1.0
+csv to StringIO                    32.8          1.4
+asciitable (0.8)                  855.8         37.1
+tabulate (0.4)                   1092.2         47.4
+PrettyTable (0.7.1)              3729.5        161.9
+===========================  ==========  ===========
 
 
-The results::
+Version history
+~~~~~~~~~~~~~~~
 
-    method               time (us)    rel. time
-    -----------------  -----------  -----------
-    csv to StringIO          30.80         1.33
-    joining with tabs        23.10         1.00
-    tabulate                853.00        36.93
+- 0.4 Unicode support, Python3 support, ``rst`` tables
+- 0.3 Initial PyPI release. Table formats: ``simple``, ``plain``, ``grid``, ``pipe``, and ``orgtbl``.
