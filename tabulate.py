@@ -18,12 +18,13 @@ DataRow = namedtuple("DataRow", ["begin", "sep", "end"])
 
 TableFormat = namedtuple("TableFormat", ["lineabove", "linebelowheader",
                                          "linebetweenrows", "linebelow",
-                                         "datarow", "usecolons",
+                                         "datarow", "padding", "usecolons",
                                          "with_header_hide",
                                          "without_header_hide"])
 
 
-_format_defaults = {"usecolons": False,
+_format_defaults = {"padding": 0,
+                    "usecolons": False,
                     "with_header_hide": [],
                     "without_header_hide": []}
 
@@ -34,6 +35,7 @@ _table_formats = {"simple":
                               linebetweenrows=None,
                               linebelow=Line("", "-", "  ", ""),
                               datarow=DataRow("", "  ", ""),
+                              padding=0,
                               usecolons=False,
                               with_header_hide=["linebelow"],
                               without_header_hide=[]),
@@ -41,29 +43,32 @@ _table_formats = {"simple":
                   TableFormat(None, None, None, None,
                               DataRow("", "  ", ""), **_format_defaults),
                   "grid":
-                  TableFormat(lineabove=Line("+-", "-", "-+-", "-+"),
-                              linebelowheader=Line("+=", "=", "=+=", "=+"),
-                              linebetweenrows=Line("+-", "-", "-+-", "-+"),
-                              linebelow=Line("+-", "-", "-+-", "-+"),
-                              datarow=DataRow("| ", " | ", " |"),
+                  TableFormat(lineabove=Line("+", "-", "+", "+"),
+                              linebelowheader=Line("+", "=", "+", "+"),
+                              linebetweenrows=Line("+", "-", "+", "+"),
+                              linebelow=Line("+", "-", "+", "+"),
+                              datarow=DataRow("|", "|", "|"),
+                              padding=1,
                               usecolons=False,
                               with_header_hide=[],
                               without_header_hide=["linebelowheader"]),
                   "pipe":
                   TableFormat(lineabove=None,
-                              linebelowheader=Line("| ", "-", " | ", " |"),
+                              linebelowheader=Line("|", "-", "|", "|"),
                               linebetweenrows=None,
                               linebelow=None,
-                              datarow=DataRow("| ", " | ", " |"),
+                              datarow=DataRow("|", "|", "|"),
+                              padding=1,
                               usecolons=True,
                               with_header_hide=[],
                               without_header_hide=[]),
                   "orgtbl":
                   TableFormat(lineabove=None,
-                              linebelowheader=Line("|-", "-", "-+-", "-|"),
+                              linebelowheader=Line("|", "-", "+", "|"),
                               linebetweenrows=None,
                               linebelow=None,
-                              datarow=DataRow("| ", " | ", " |"),
+                              datarow=DataRow("|", "|", "|"),
+                              padding=1,
                               usecolons=False,
                               with_header_hide=[],
                               without_header_hide=["linebelowheader"])}
@@ -397,25 +402,24 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
     return _format_table(tablefmt, headers, rows, minwidths, aligns)
 
 
-def _build_row(cells, begin, sep, end):
+def _build_row(cells, padding, begin, sep, end):
     "Return a string which represents a row of data cells."
-    return (begin + sep.join(cells) + end).rstrip()
+    pad = u" "*padding
+    padded_cells = [pad + cell + pad for cell in cells]
+    return (begin + sep.join(padded_cells) + end).rstrip()
 
 
-def _build_line(colwidths, begin, fill, sep,  end):
+def _build_line(colwidths, padding, begin, fill, sep,  end):
     "Return a string which represents a horizontal line."
-    cells = [fill*w for w in colwidths]
-    return _build_row(cells, begin, sep, end)
+    cells = [fill*(w + 2*padding) for w in colwidths]
+    return _build_row(cells, 0, begin, sep, end)
 
 
 def _line_segment_with_colons(linefmt, align, colwidth):
     """Return a segment of a horizontal line with optional colons which
     indicate column's alignment (as in `pipe` output format)."""
     fill = linefmt.hline
-    # if cells are padded with spaces; .sep should be padded tool
-    # only the first symbol of .begin (and the last of .end) is used;
-    extra_width = max(0, len(linefmt.begin)+len(linefmt.end)-2)
-    w = colwidth + extra_width
+    w = colwidth
     if align in ["right", "decimal"]:
         return (fill[0] * (w - 1)) + ":"
     elif align == "center":
@@ -430,34 +434,35 @@ def _format_table(fmt, headers, rows, colwidths, colaligns):
     """Produce a plain-text representation of the table."""
     lines = []
     hidden = fmt.with_header_hide if headers else fmt.without_header_hide
+    pad = fmt.padding
 
     if fmt.lineabove and "lineabove" not in hidden:
-        lines.append(_build_line(colwidths, *fmt.lineabove))
+        lines.append(_build_line(colwidths, pad, *fmt.lineabove))
 
     if headers:
-        lines.append(_build_row(headers, *fmt.datarow))
+        lines.append(_build_row(headers, pad, *fmt.datarow))
 
     if fmt.linebelowheader and "linebelowheader" not in hidden:
         begin, fill, sep, end = fmt.linebelowheader
         if fmt.usecolons:
-            segs = [_line_segment_with_colons(fmt.linebelowheader,a,w)
+            segs = [_line_segment_with_colons(fmt.linebelowheader, a, w + 2*pad)
                     for w,a in zip(colwidths, colaligns)]
-            lines.append(_build_row(segs, begin[0], sep[len(sep)//2], end[-1]))
+            lines.append(_build_row(segs, 0, begin, sep, end))
         else:
-            lines.append(_build_line(colwidths, *fmt.linebelowheader))
+            lines.append(_build_line(colwidths, pad, *fmt.linebelowheader))
 
     if rows and fmt.linebetweenrows and "linebetweenrows" not in hidden:
         # initial rows with a line below
         for row in rows[:-1]:
-            lines.append(_build_row(row, *fmt.datarow))
-            lines.append(_build_line(colwidths, *fmt.linebetweenrows))
+            lines.append(_build_row(row, pad, *fmt.datarow))
+            lines.append(_build_line(colwidths, pad, *fmt.linebetweenrows))
         # the last row without a line below
-        lines.append(_build_row(rows[-1], *fmt.datarow))
+        lines.append(_build_row(rows[-1], pad, *fmt.datarow))
     else:
         for row in rows:
-            lines.append(_build_row(row, *fmt.datarow))
+            lines.append(_build_row(row, pad, *fmt.datarow))
 
     if fmt.linebelow and "linebelow" not in hidden:
-        lines.append(_build_line(colwidths, *fmt.linebelow))
+        lines.append(_build_line(colwidths, pad, *fmt.linebelow))
 
     return "\n".join(lines)
