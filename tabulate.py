@@ -143,7 +143,9 @@ def _isint(string):
 
 def _type(string):
     "The least generic type (int, float, str, unicode)."
-    if _isint(string):
+    if string is None:
+        return _text_type
+    elif _isint(string):
         return int
     elif _isnumber(string):
         return float
@@ -256,6 +258,8 @@ def _column_type(strings):
     >>> _column_type(["1", "2.3", "four"]) is _text_type
     True
     >>> _column_type(["four", u'\u043f\u044f\u0442\u044c']) is _text_type
+    True
+    >>> _column_type([None, "brux"]) is _text_type
     True
 
     """
