@@ -265,6 +265,7 @@ and numeric data, ``tabulate`` appears to be slightly slower than
 Version history
 ---------------
 
+- 0.4.3: Bug fix, None as a missing value
 - 0.4.2: Fix manifest file
 - 0.4.1: Update license and documentation.
 - 0.4: Unicode support, Python3 support, ``rst`` tables
