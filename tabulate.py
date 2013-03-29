@@ -9,12 +9,14 @@ from platform import python_version_tuple
 
 
 if python_version_tuple()[0] < "3":
+    _none_type = type(None)
     _int_type = int
     _float_type = float
     _text_type = unicode
     _binary_type = str
 else:
     from functools import reduce
+    _none_type = type(None)
     _int_type = int
     _float_type = float
     _text_type = str
@@ -142,9 +144,18 @@ def _isint(string):
 
 
 def _type(string):
-    "The least generic type (int, float, str, unicode)."
+    """The least generic type (type(None), int, float, str, unicode).
+
+    >>> _type(None) is type(None)
+    True
+    >>> _type("foo") is type("")
+    True
+    >>> _type("1") is type(1)
+    True
+
+    """
     if string is None:
-        return _text_type
+        return _none_type
     elif _isint(string):
         return int
     elif _isnumber(string):
@@ -242,8 +253,8 @@ def _align_column(strings, alignment, minwidth=0):
 
 
 def _more_generic(type1, type2):
-    types = { int: 1, float: 2, _text_type: 4 }
-    invtypes = { 4: _text_type, 2: float, 1: int }
+    types = { _none_type: 0, int: 1, float: 2, _text_type: 4 }
+    invtypes = { 4: _text_type, 2: float, 1: int, 0: _none_type }
     moregeneric = max(types.get(type1, 4), types.get(type2, 4))
     return invtypes[moregeneric]
 
@@ -261,13 +272,15 @@ def _column_type(strings):
     True
     >>> _column_type([None, "brux"]) is _text_type
     True
+    >>> _column_type([1, 2, None]) is _int_type
+    True
 
     """
     types = map(_type, strings)
     return reduce(_more_generic, types, int)
 
 
-def _format(val, valtype, floatfmt):
+def _format(val, valtype, floatfmt, missingval=u""):
     """Format a value accoding to its type.
 
     Unicode is supported:
@@ -279,6 +292,9 @@ def _format(val, valtype, floatfmt):
     True
 
     """
+    if val is None:
+        return missingval
+
     if valtype in [int, _binary_type, _text_type]:
         return u"{}".format(val)
     elif valtype is float:
@@ -297,7 +313,8 @@ def _align_header(header, alignment, width):
 
 
 def tabulate(list_of_lists, headers=[], tablefmt="simple",
-             floatfmt="g", numalign="decimal", stralign="left"):
+             floatfmt="g", numalign="decimal", stralign="left",
+             missingval=u""):
     """Format a fixed width table for pretty printing.
 
     >>> print(tabulate([[1, 2.34], [-56, "8.999"], ["2", "10001"]]))
@@ -319,6 +336,17 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
 
     `floatfmt` is a format specification used for columns which
     contain numeric data with a decimal point.
+
+    `None` values are replaced with a `missingval` string:
+
+    >>> print(tabulate([["spam", 1, None],
+    ...                 ["eggs", 42, 3.14],
+    ...                 ["other", None, 2.7]], missingval="?"))
+    -----  --  ----
+    spam    1  ?
+    eggs   42  3.14
+    other   ?  2.7
+    -----  --  ----
 
     Various plain-text table formats (`tablefmt`) are supported:
     'plain', 'simple', 'grid', 'pipe', and 'orgtbl'.
@@ -425,7 +453,7 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
     # format rows and columns, convert numeric values to strings
     cols = list(zip(*list_of_lists))
     coltypes = list(map(_column_type, cols))
-    cols = [[_format(v, ct, floatfmt) for v in c]
+    cols = [[_format(v, ct, floatfmt, missingval) for v in c]
              for c,ct in zip(cols, coltypes)]
 
     # align columns
