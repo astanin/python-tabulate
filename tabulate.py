@@ -200,7 +200,7 @@ def _padleft(width, s):
     True
 
     """
-    fmt = u"{:>%ds}" % width
+    fmt = u"{0:>%ds}" % width
     return fmt.format(s)
 
 
@@ -211,7 +211,7 @@ def _padright(width, s):
     True
 
     """
-    fmt = u"{:<%ds}" % width
+    fmt = u"{0:<%ds}" % width
     return fmt.format(s)
 
 
@@ -222,7 +222,7 @@ def _padboth(width, s):
     True
 
     """
-    fmt = u"{:^%ds}" % width
+    fmt = u"{0:^%ds}" % width
     return fmt.format(s)
 
 
@@ -296,11 +296,11 @@ def _format(val, valtype, floatfmt, missingval=u""):
         return missingval
 
     if valtype in [int, _binary_type, _text_type]:
-        return u"{}".format(val)
+        return u"{0}".format(val)
     elif valtype is float:
         return format(float(val), floatfmt)
     else:
-        return u"{}".format(val)
+        return u"{0}".format(val)
 
 
 def _align_header(header, alignment, width):
