@@ -253,18 +253,19 @@ and numeric data, ``tabulate`` appears to be slightly slower than
     ===========================  ==========  ===========
     Table formatter                time, μs    rel. time
     ===========================  ==========  ===========
-    join with tabs and newlines        22.8          1.0
-    csv to StringIO                    32.8          1.4
-    asciitable (0.8)                  852.5         37.4
-    tabulate (0.4.2)                 1098.9         48.3
-    PrettyTable (0.7.1)              3781.5        166.1
-    texttable (0.8.1)                4173.0        183.3
+    join with tabs and newlines        22.7          1.0
+    csv to StringIO                    31.9          1.4
+    asciitable (0.8.0)                841.3         37.0
+    tabulate (0.4.4)                 1109.8         48.9
+    PrettyTable (0.7.1)              3795.6        167.1
+    texttable (0.8.1)                4032.9        177.5
     ===========================  ==========  ===========
 
 
 Version history
 ---------------
 
+- 0.4.4: Python 2.6 support
 - 0.4.3: Bug fix, None as a missing value
 - 0.4.2: Fix manifest file
 - 0.4.1: Update license and documentation.
