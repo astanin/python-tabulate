@@ -3,7 +3,9 @@
 from distutils.core import setup
 
 LICENSE = open("LICENSE").read()
-LONG_DESCRIPTION = open("README.rst").read()
+
+# strip links from the descripton on the PyPI
+LONG_DESCRIPTION = open("README.rst").read().replace("`_", "`")
 
 setup(name='tabulate',
    version='0.4.3',
