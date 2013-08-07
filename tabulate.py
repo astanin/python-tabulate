@@ -357,8 +357,31 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
       2  10001
     ---  ---------
 
-    If headers is not empty, it is used as a list of column names
-    to print a nice header. Otherwise a headerless table is produced.
+
+    Table headers
+    -------------
+
+    To print nice column headers, supply the second argument (`headers`):
+
+      - `headers` can be an explicit list of column headers
+      - if `headers="firstrow"`, then the first row of data is used
+
+    Otherwise a headerless table is produced.
+
+    If the number of headers is less than the number of columns, they
+    are supposed to be names of the last columns. This is consistent
+    with the plain-text format of R and Pandas' dataframes.
+
+    >>> print(tabulate([["sex","age"],["Alice","F",24],["Bob","M",19]],
+    ...       headers="firstrow"))
+           sex      age
+    -----  -----  -----
+    Alice  F         24
+    Bob    M         19
+
+
+    Column alignment
+    ----------------
 
     `tabulate` tries to detect column types automatically, and aligns
     the values properly. By default it aligns decimal points of the
@@ -366,6 +389,10 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
     everything else to the left. Possible column alignments
     (`numalign`, `stralign`) are: right, center, left, decimal (only
     for `numalign`).
+
+
+    Table formats
+    -------------
 
     `floatfmt` is a format specification used for columns which
     contain numeric data with a decimal point.
@@ -483,6 +510,18 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
     ====  ========
 
     """
+
+    # take headers from the first row if necessary
+    if headers == "firstrow" and len(list_of_lists) > 0:
+        headers = list_of_lists[0]
+        list_of_lists = list_of_lists[1:]
+
+    # pad with empty headers for initial columns if necessary
+    if headers and len(list_of_lists) > 0:
+       nhs = len(headers)
+       ncols = len(list_of_lists[0])
+       headers = [u""]*(ncols - nhs) + list(headers)
+
     # format rows and columns, convert numeric values to strings
     cols = list(zip(*list_of_lists))
     coltypes = list(map(_column_type, cols))
