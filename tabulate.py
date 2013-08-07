@@ -6,6 +6,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from collections import namedtuple
 from platform import python_version_tuple
+import re
 
 
 if python_version_tuple()[0] < "3":
@@ -99,6 +100,10 @@ _table_formats = {"simple":
                               usecolons=False,
                               with_header_hide=[],
                               without_header_hide=["linebelowheader"])}
+
+
+_invisible_codes = re.compile("\x1b\[\d*m")  # ANSI color codes
+
 
 def simple_separated_format(separator):
     """Construct a simple TableFormat with columns separated by a separator.
@@ -201,7 +206,8 @@ def _padleft(width, s):
     True
 
     """
-    fmt = u"{0:>%ds}" % width
+    iwidth = width + len(s) - len(_strip_invisible(s))
+    fmt = u"{0:>%ds}" % iwidth
     return fmt.format(s)
 
 
@@ -212,7 +218,8 @@ def _padright(width, s):
     True
 
     """
-    fmt = u"{0:<%ds}" % width
+    iwidth = width + len(s) - len(_strip_invisible(s))
+    fmt = u"{0:<%ds}" % iwidth
     return fmt.format(s)
 
 
@@ -223,8 +230,24 @@ def _padboth(width, s):
     True
 
     """
-    fmt = u"{0:^%ds}" % width
+    iwidth = width + len(s) - len(_strip_invisible(s))
+    fmt = u"{0:^%ds}" % iwidth
     return fmt.format(s)
+
+
+def _strip_invisible(s):
+    "Remove invisible ANSI color codes."
+    return re.sub(_invisible_codes, "", s)
+
+
+def _visible_width(s):
+    """Visible width of a printed string. ANSI color codes are removed.
+
+    >>> _visible_width('\x1b[31mhello\x1b[0m'), _visible_width("world")
+    (5, 5)
+
+    """
+    return len(_strip_invisible(s))
 
 
 def _align_column(strings, alignment, minwidth=0):
@@ -249,8 +272,9 @@ def _align_column(strings, alignment, minwidth=0):
     else:
         strings = [s.strip() for s in strings]
         padfn = _padright
-    maxwidth = max(max(map(len, strings)), minwidth)
-    return [padfn(maxwidth, s) for s in strings]
+    maxwidth = max(max(map(_visible_width, strings)), minwidth)
+    padded_strings = [padfn(maxwidth, s) for s in strings]
+    return padded_strings
 
 
 def _more_generic(type1, type2):
@@ -459,18 +483,18 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
 
     # align columns
     aligns = [numalign if ct in [int,float] else stralign for ct in coltypes]
-    minwidths = [len(h) + 2 for h in headers] if headers else [0]*len(cols)
+    minwidths = [_visible_width(h)+2 for h in headers] if headers else [0]*len(cols)
     cols = [_align_column(c, a, minw)
             for c, a, minw in zip(cols, aligns, minwidths)]
 
     if headers:
         # align headers and add headers
-        minwidths = [max(minw, len(c[0])) for minw, c in zip(minwidths, cols)]
+        minwidths = [max(minw, _visible_width(c[0])) for minw, c in zip(minwidths, cols)]
         headers = [_align_header(h, a, minw)
                    for h, a, minw in zip(headers, aligns, minwidths)]
         rows = list(zip(*cols))
     else:
-        minwidths = [len(c[0]) for c in cols]
+        minwidths = [_visible_width(c[0]) for c in cols]
         rows = list(zip(*cols))
 
     if not isinstance(tablefmt, TableFormat):
