@@ -158,8 +158,16 @@ def _type(string):
     True
     >>> _type("1") is type(1)
     True
+    >>> _type(u'\x1b[31m42\x1b[0m') is type(42)
+    True
+    >>> _type('\x1b[31m42\x1b[0m') is type(42)
+    True
 
     """
+
+    if isinstance(string, _text_type) or isinstance(string, _binary_type):
+        string = _strip_invisible(string)
+
     if string is None:
         return _none_type
     elif _isint(string):
