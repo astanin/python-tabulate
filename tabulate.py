@@ -10,12 +10,14 @@ import re
 
 
 if python_version_tuple()[0] < "3":
+    from itertools import izip_longest
     _none_type = type(None)
     _int_type = int
     _float_type = float
     _text_type = unicode
     _binary_type = str
 else:
+    from itertools import zip_longest as izip_longest
     from functools import reduce
     _none_type = type(None)
     _int_type = int
@@ -255,7 +257,10 @@ def _visible_width(s):
     (5, 5)
 
     """
-    return len(_strip_invisible(s))
+    if isinstance(s, _text_type) or isinstance(s, _binary_type):
+        return len(_strip_invisible(s))
+    else:
+        return len(_text_type(s))
 
 
 def _align_column(strings, alignment, minwidth=0):
@@ -345,7 +350,63 @@ def _align_header(header, alignment, width):
         return _padleft(width, header)
 
 
-def tabulate(list_of_lists, headers=[], tablefmt="simple",
+def _normalize_tabular_data(tabular_data, headers):
+    """Transform a supported data type to a list of lists, and a list of headers.
+
+    Supported tabular data types:
+
+    * list-of-lists or another iterable of iterables
+
+    * 2D NumPy arrays
+
+    * dict of iterables (usually used with headers="keys")
+
+    * pandas.DataFrame (usually used with headers="keys")
+
+    The first row can be used as headers if headers="firstrow",
+    column indices can be used as headers if headers="keys".
+
+    """
+
+    if hasattr(tabular_data, "keys") and hasattr(tabular_data, "values"):
+        # dict-like and pandas.DataFrame?
+        if hasattr(tabular_data.values, "__call__"):
+            # likely a conventional dict
+            keys = tabular_data.keys()
+            rows = list(izip_longest(*tabular_data.values()))  # columns have to be transposed
+        elif hasattr(tabular_data, "index"):
+            # values is a property, has .index => it's likely a pandas.DataFrame (pandas 0.11.0)
+            keys = tabular_data.keys()
+            vals = tabular_data.values  # values matrix doesn't need to be transposed
+            names = tabular_data.index
+            rows = [[v]+list(row) for v,row in zip(names, vals)]
+        else:
+            raise ValueError("tabular data doesn't appear to be a dict or a DataFrame")
+
+        if headers == "keys":
+            headers = list(map(_text_type,keys))  # headers should be strings
+
+    else:  # it's a usual an iterable of iterables, or a NumPy array
+        rows = tabular_data
+
+        if headers == "keys" and len(rows) > 0:  # keys are column indices
+            headers = list(map(_text_type, range(len(rows[0]))))
+
+    # take headers from the first row if necessary
+    if headers == "firstrow" and len(rows) > 0:
+        headers = list(map(_text_type, rows[0])) # headers should be strings
+        rows = list(rows[1:])
+
+    # pad with empty headers for initial columns if necessary
+    if headers and len(rows) > 0:
+       nhs = len(headers)
+       ncols = len(rows[0])
+       headers = [u""]*(ncols - nhs) + list(headers)
+
+    return rows, headers
+
+
+def tabulate(tabular_data, headers=[], tablefmt="simple",
              floatfmt="g", numalign="decimal", stralign="left",
              missingval=u""):
     """Format a fixed width table for pretty printing.
@@ -357,6 +418,10 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
       2  10001
     ---  ---------
 
+    The first required argument (`tabular_data`) can be a
+    list-of-lists (or another iterable or iterables), a dictionary of
+    iterables, a two-dimensional NumPy array, or a Pandas' dataframe.
+
 
     Table headers
     -------------
@@ -365,6 +430,7 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
 
       - `headers` can be an explicit list of column headers
       - if `headers="firstrow"`, then the first row of data is used
+      - if `headers="keys"`, then dictionary keys or column indices are used
 
     Otherwise a headerless table is produced.
 
@@ -511,16 +577,7 @@ def tabulate(list_of_lists, headers=[], tablefmt="simple",
 
     """
 
-    # take headers from the first row if necessary
-    if headers == "firstrow" and len(list_of_lists) > 0:
-        headers = list_of_lists[0]
-        list_of_lists = list_of_lists[1:]
-
-    # pad with empty headers for initial columns if necessary
-    if headers and len(list_of_lists) > 0:
-       nhs = len(headers)
-       ncols = len(list_of_lists[0])
-       headers = [u""]*(ncols - nhs) + list(headers)
+    list_of_lists, headers = _normalize_tabular_data(tabular_data, headers)
 
     # format rows and columns, convert numeric values to strings
     cols = list(zip(*list_of_lists))
