@@ -27,7 +27,7 @@ else:
 
 
 __all__ = ["tabulate"]
-__version__ = "0.4.4"
+__version__ = "0.5"
 
 
 Line = namedtuple("Line", ["begin", "hline", "sep", "end"])

@@ -28,9 +28,9 @@ Installation
 Usage
 -----
 
-The module provides just one function, ``tabulate``, which takes a list
-of lists or a similarly shaped data structure, and outputs a nicely
-formatted plain-text table::
+The module provides just one function, ``tabulate``, which takes a
+list of lists or another tabular data type as the first argument,
+and outputs a nicely formatted plain-text table::
 
     >>> from tabulate import tabulate
 
@@ -44,18 +44,21 @@ formatted plain-text table::
     Mars     3390   641.85
     -----  ------  -------------
 
-``tabulate`` can pretty-print two-dimensional NumPy arrays too.
+The following tabular data types are supported:
 
-Examples in this file use Python2. Tabulate supports Python3 too.
+* list of lists or another iterable of iterables
+* dict of iterables
+* two-dimensional NumPy array
+* pandas.DataFrame
+
+Examples in this file use Python2. Tabulate supports Python3 too (Python >= 3.3).
 
 
 Headers
 ~~~~~~~
 
-If function ``tabulate`` receives two arguments, it considers the
-second argument to be a list of column headers.
-The list of headers may be passed also out-of-order with a named
-argument ``headers=...``::
+The second optional argument named ``headers`` defines a list of
+column headers to be used::
 
     >>> print tabulate(table, headers=["Planet","R (km)", "mass (x 10^29 kg)"])
     Planet      R (km)    mass (x 10^29 kg)
@@ -64,6 +67,26 @@ argument ``headers=...``::
     Earth         6371        5973.6
     Moon          1737          73.5
     Mars          3390         641.85
+
+If `headers="firstrow", then the first row of data is used::
+
+    >>> print tabulate([["Name","Age"],["Alice",24],["Bob",19]],
+    ...                headers="firstrow")
+    Name      Age
+    ------  -----
+    Alice      24
+    Bob        19
+
+
+If `headers="keys"`, then the keys of a dictionary/dataframe,
+or column indices are used::
+
+    >>> print tabulate({"Name": ["Alice", "Bob"],
+    ...                 "Age": [24, 19]}, headers="keys")
+      Age  Name
+    -----  ------
+       24  Alice
+       19  Bob
 
 
 Table format
@@ -232,6 +255,7 @@ Performance considerations
 Such features as decimal point alignment and trying to parse everything
 as a number imply that ``tabulate``:
 
+* has to "guess" how to print a particular tabular data type
 * needs to keep the entire table in-memory
 * has to "transpose" the table twice
 * does much more work than it may appear
@@ -244,27 +268,27 @@ separator.
 
 In the same time ``tabulate`` is comparable to other table
 pretty-printers. Given a 10x10 table (a list of lists) of mixed text
-and numeric data, ``tabulate`` appears to be slightly slower than
-``asciitable``, and much faster than ``PrettyTable`` and
-``texttable``
+and numeric data, ``tabulate`` appears to be slower than
+``asciitable``, and faster than ``PrettyTable`` and ``texttable``
 
 ::
 
     ===========================  ==========  ===========
     Table formatter                time, μs    rel. time
     ===========================  ==========  ===========
-    join with tabs and newlines        22.7          1.0
-    csv to StringIO                    31.9          1.4
-    asciitable (0.8.0)                841.3         37.0
-    tabulate (0.4.4)                 1109.8         48.9
-    PrettyTable (0.7.1)              3795.6        167.1
-    texttable (0.8.1)                4032.9        177.5
+    join with tabs and newlines        23.0          1.0
+    csv to StringIO                    32.4          1.4
+    asciitable (0.8.0)                842.0         36.7
+    tabulate (0.5)                   1892.9         82.5
+    PrettyTable (0.7.1)              3711.1        161.7
+    texttable (0.8.1)                3927.5        171.1
     ===========================  ==========  ===========
 
 
 Version history
 ---------------
 
+- 0.5: ANSI color sequences. Printing dicts of iterables and Pandas' dataframes.
 - 0.4.4: Python 2.6 support
 - 0.4.3: Bug fix, None as a missing value
 - 0.4.2: Fix manifest file
