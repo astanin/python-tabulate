@@ -68,7 +68,7 @@ column headers to be used::
     Moon          1737          73.5
     Mars          3390         641.85
 
-If `headers="firstrow", then the first row of data is used::
+If `headers="firstrow"`, then the first row of data is used::
 
     >>> print tabulate([["Name","Age"],["Alice",24],["Bob",19]],
     ...                headers="firstrow")
@@ -127,7 +127,7 @@ extensions`_::
     bacon       0
 
 ``grid`` is like tables formatted by Emacs' `table.el`_
-  package.  It corresponds to ``grid_tables`` in Pandoc Markdown
+package.  It corresponds to ``grid_tables`` in Pandoc Markdown
 extensions::
 
     >>> print tabulate(table, headers, tablefmt="grid")
