@@ -151,7 +151,7 @@ def _isint(string):
            _isconvertible(int, string)
 
 
-def _type(string):
+def _type(string, has_invisible=True):
     """The least generic type (type(None), int, float, str, unicode).
 
     >>> _type(None) is type(None)
@@ -167,7 +167,8 @@ def _type(string):
 
     """
 
-    if isinstance(string, _text_type) or isinstance(string, _binary_type):
+    if has_invisible and \
+       (isinstance(string, _text_type) or isinstance(string, _binary_type)):
         string = _strip_invisible(string)
 
     if string is None:
@@ -209,38 +210,38 @@ def _afterpoint(string):
         return -1  # not a number
 
 
-def _padleft(width, s):
+def _padleft(width, s, has_invisible=True):
     """Flush right.
 
     >>> _padleft(6, u'\u044f\u0439\u0446\u0430') == u'  \u044f\u0439\u0446\u0430'
     True
 
     """
-    iwidth = width + len(s) - len(_strip_invisible(s))
+    iwidth = width + len(s) - len(_strip_invisible(s)) if has_invisible else width
     fmt = u"{0:>%ds}" % iwidth
     return fmt.format(s)
 
 
-def _padright(width, s):
+def _padright(width, s, has_invisible=True):
     """Flush left.
 
     >>> _padright(6, u'\u044f\u0439\u0446\u0430') == u'\u044f\u0439\u0446\u0430  '
     True
 
     """
-    iwidth = width + len(s) - len(_strip_invisible(s))
+    iwidth = width + len(s) - len(_strip_invisible(s)) if has_invisible else width
     fmt = u"{0:<%ds}" % iwidth
     return fmt.format(s)
 
 
-def _padboth(width, s):
+def _padboth(width, s, has_invisible=True):
     """Center string.
 
     >>> _padboth(6, u'\u044f\u0439\u0446\u0430') == u' \u044f\u0439\u0446\u0430 '
     True
 
     """
-    iwidth = width + len(s) - len(_strip_invisible(s))
+    iwidth = width + len(s) - len(_strip_invisible(s)) if has_invisible else width
     fmt = u"{0:^%ds}" % iwidth
     return fmt.format(s)
 
@@ -263,7 +264,7 @@ def _visible_width(s):
         return len(_text_type(s))
 
 
-def _align_column(strings, alignment, minwidth=0):
+def _align_column(strings, alignment, minwidth=0, has_invisible=True):
     """[string] -> [padded_string]
 
     >>> list(map(str,_align_column(["12.345", "-1234.5", "1.23", "1234.5", "1e+234", "1.0e234"], "decimal")))
@@ -285,8 +286,14 @@ def _align_column(strings, alignment, minwidth=0):
     else:
         strings = [s.strip() for s in strings]
         padfn = _padright
-    maxwidth = max(max(map(_visible_width, strings)), minwidth)
-    padded_strings = [padfn(maxwidth, s) for s in strings]
+
+    if has_invisible:
+        width_fn = _visible_width
+    else:
+        width_fn = len
+
+    maxwidth = max(max(map(width_fn, strings)), minwidth)
+    padded_strings = [padfn(maxwidth, s, has_invisible) for s in strings]
     return padded_strings
 
 
@@ -297,7 +304,7 @@ def _more_generic(type1, type2):
     return invtypes[moregeneric]
 
 
-def _column_type(strings):
+def _column_type(strings, has_invisible=True):
     """The least generic type all column values are convertible to.
 
     >>> _column_type(["1", "2"]) is _int_type
@@ -314,7 +321,7 @@ def _column_type(strings):
     True
 
     """
-    types = map(_type, strings)
+    types = [_type(s, has_invisible) for s in strings ]
     return reduce(_more_generic, types, int)
 
 
@@ -403,7 +410,7 @@ def _normalize_tabular_data(tabular_data, headers):
        ncols = len(rows[0])
        headers = [u""]*(ncols - nhs) + list(headers)
 
-    return rows, headers
+    return list(map(list,rows)), list(headers)
 
 
 def tabulate(tabular_data, headers=[], tablefmt="simple",
@@ -579,6 +586,16 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
 
     list_of_lists, headers = _normalize_tabular_data(tabular_data, headers)
 
+    # optimization: look for ANSI control codes once,
+    # enable smart width functions only if a control code is found
+    plain_text = u'\n'.join(['\t'.join(map(_text_type, headers))] + \
+                            [u'\t'.join(map(_text_type, row)) for row in list_of_lists])
+    has_invisible = re.search(_invisible_codes, plain_text)
+    if has_invisible:
+        width_fn = _visible_width
+    else:
+        width_fn = len
+
     # format rows and columns, convert numeric values to strings
     cols = list(zip(*list_of_lists))
     coltypes = list(map(_column_type, cols))
@@ -587,18 +604,18 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
 
     # align columns
     aligns = [numalign if ct in [int,float] else stralign for ct in coltypes]
-    minwidths = [_visible_width(h)+2 for h in headers] if headers else [0]*len(cols)
-    cols = [_align_column(c, a, minw)
+    minwidths = [width_fn(h)+2 for h in headers] if headers else [0]*len(cols)
+    cols = [_align_column(c, a, minw, has_invisible)
             for c, a, minw in zip(cols, aligns, minwidths)]
 
     if headers:
         # align headers and add headers
-        minwidths = [max(minw, _visible_width(c[0])) for minw, c in zip(minwidths, cols)]
+        minwidths = [max(minw, width_fn(c[0])) for minw, c in zip(minwidths, cols)]
         headers = [_align_header(h, a, minw)
                    for h, a, minw in zip(headers, aligns, minwidths)]
         rows = list(zip(*cols))
     else:
-        minwidths = [_visible_width(c[0]) for c in cols]
+        minwidths = [width_fn(c[0]) for c in cols]
         rows = list(zip(*cols))
 
     if not isinstance(tablefmt, TableFormat):
