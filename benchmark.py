@@ -5,6 +5,8 @@ import tabulate
 import asciitable
 import prettytable
 import texttable
+import sys
+import codecs
 
 setup_code = r"""
 from csv import writer
@@ -51,23 +53,36 @@ def run_tabulate(table):
 
 """
 
-methods = [("join with tabs and newlines", "join_table(table)"),
-           ("csv to StringIO", "csv_table(table)"),
-           ("asciitable (%s)" % asciitable.__version__, "run_asciitable(table)"),
-           ("tabulate (%s)" % tabulate.__version__, "run_tabulate(table)"),
-           ("PrettyTable (%s)" % prettytable.__version__, "run_prettytable(table)"),
-           ("texttable (%s)" % texttable.__version__, "run_texttable(table)"),
+methods = [(u"join with tabs and newlines", "join_table(table)"),
+           (u"csv to StringIO", "csv_table(table)"),
+           (u"asciitable (%s)" % asciitable.__version__, "run_asciitable(table)"),
+           (u"tabulate (%s)" % tabulate.__version__, "run_tabulate(table)"),
+           (u"PrettyTable (%s)" % prettytable.__version__, "run_prettytable(table)"),
+           (u"texttable (%s)" % texttable.__version__, "run_texttable(table)"),
            ]
 
 
 def benchmark(n):
+    global methods
+    if '--onlyself' in sys.argv[1:]:
+        methods = [ m for m in methods if m[0].startswith("tabulate") ]
+    else:
+        methods = methods
+
     results = [(desc, timeit(code, setup_code, number=n)/n * 1e6)
                for desc, code in methods]
     mintime = min(map(lambda x: x[1], results))
-    results = [(desc, t, t/mintime) for desc, t in results]
-    print tabulate.tabulate(results,
-                            ["Table formatter", "time, μs", "rel. time"],
-                            "rst", floatfmt=".1f")
+    results = [(desc, t, t/mintime) for desc, t in
+               sorted(results, key=lambda x: x[1])]
+    table = tabulate.tabulate(results,
+                              [u"Table formatter", u"time, μs", u"rel. time"],
+                              u"rst", floatfmt=".1f")
+    print codecs.encode(table, "utf-8")
 
 
-benchmark(10000)
+if __name__ == "__main__":
+    if sys.argv[1:]:
+        n = int(sys.argv[1])
+    else:
+        n = 10000
+    benchmark(n)
