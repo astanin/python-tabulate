@@ -276,19 +276,19 @@ and numeric data, ``tabulate`` appears to be slower than
     ===========================  ==========  ===========
     Table formatter                time, μs    rel. time
     ===========================  ==========  ===========
-    join with tabs and newlines        23.0          1.0
-    csv to StringIO                    32.4          1.4
-    asciitable (0.8.0)                842.0         36.7
-    tabulate (0.5)                   1892.9         82.5
-    PrettyTable (0.7.1)              3711.1        161.7
-    texttable (0.8.1)                3927.5        171.1
+    join with tabs and newlines        22.7          1.0
+    csv to StringIO                    32.7          1.4
+    asciitable (0.8.0)                837.7         36.9
+    tabulate (0.5.1)                 1283.5         56.5
+    PrettyTable (0.7.1)              3681.6        162.1
+    texttable (0.8.1)                3975.3        175.1
     ===========================  ==========  ===========
 
 
 Version history
 ---------------
 
-- 0.5.1: Fix README.rst formatting.
+- 0.5.1: Fix README.rst formatting. Optimize (performance similar to 0.4.4).
 - 0.5: ANSI color sequences. Printing dicts of iterables and Pandas' dataframes.
 - 0.4.4: Python 2.6 support
 - 0.4.3: Bug fix, None as a missing value
