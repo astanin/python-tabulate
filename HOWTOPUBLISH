@@ -1,0 +1,5 @@
+# bump version number in setup.py and tabulate.py
+python2 benchmark.py  # then update README
+tox -e py26,py27-extra,py33-extra
+python2 setup.py register -n
+python2 setup.py register sdist upload
