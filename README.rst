@@ -288,6 +288,7 @@ and numeric data, ``tabulate`` appears to be slower than
 Version history
 ---------------
 
+- 0.5.1: Fix README.rst formatting.
 - 0.5: ANSI color sequences. Printing dicts of iterables and Pandas' dataframes.
 - 0.4.4: Python 2.6 support
 - 0.4.3: Bug fix, None as a missing value
