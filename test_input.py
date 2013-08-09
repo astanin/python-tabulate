@@ -28,6 +28,17 @@ def test_iterable_of_iterables_headers():
     assert expected == result
 
 
+def test_iterable_of_iterables_firstrow():
+    "Printing an interable of iterables."
+    ii = iter(map(lambda x: iter(x), ["abcde", range(5), range(5,0,-1)]))
+    expected = u'  a    b    c    d    e\n---  ---  ---  ---  ---\n' + \
+               u'  0    1    2    3    4\n  5    4    3    2    1'
+    result   = tabulate(ii, "firstrow")
+    print("Expected:\n%s\n" % expected)
+    print("Got:\n%s\n" % result)
+    assert expected == result
+
+
 def test_list_of_lists():
     "Printing a list of lists."
     ll = [["a","one",1],["b","two",None]]
