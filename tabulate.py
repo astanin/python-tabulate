@@ -428,15 +428,19 @@ def _normalize_tabular_data(tabular_data, headers):
     # take headers from the first row if necessary
     if headers == "firstrow" and len(rows) > 0:
         headers = list(map(_text_type, rows[0])) # headers should be strings
-        rows = list(rows[1:])
+        rows = rows[1:]
+
+    headers = list(headers)
+    rows = list(map(list,rows))
 
     # pad with empty headers for initial columns if necessary
     if headers and len(rows) > 0:
        nhs = len(headers)
        ncols = len(rows[0])
-       headers = [u""]*(ncols - nhs) + list(headers)
+       if nhs < ncols:
+           headers = [u""]*(ncols - nhs) + headers
 
-    return list(map(list,rows)), list(headers)
+    return rows, headers
 
 
 def tabulate(tabular_data, headers=[], tablefmt="simple",
