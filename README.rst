@@ -306,6 +306,7 @@ and numeric data, ``tabulate`` appears to be slower than
 Version history
 ---------------
 
+- 0.6: ``mediawiki`` tables, bug fixes
 - 0.5.1: Fix README.rst formatting. Optimize (performance similar to 0.4.4).
 - 0.5: ANSI color sequences. Printing dicts of iterables and Pandas' dataframes.
 - 0.4.4: Python 2.6 support
