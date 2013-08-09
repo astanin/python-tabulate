@@ -92,9 +92,9 @@ or column indices are used::
 Table format
 ~~~~~~~~~~~~
 
-There is more than one way to format a table in plain text. The output
-format of ``tabulate`` is defined by an optional named argument
-``tablefmt``.
+There is more than one way to format a table in plain text.
+The third optional argument named ``tablefmt`` defines
+how the table is formatted.
 
 Supported table formats are:
 
@@ -294,12 +294,12 @@ and numeric data, ``tabulate`` appears to be slower than
     ===========================  ==========  ===========
     Table formatter                time, μs    rel. time
     ===========================  ==========  ===========
-    join with tabs and newlines        22.7          1.0
-    csv to StringIO                    32.7          1.4
-    asciitable (0.8.0)                837.7         36.9
-    tabulate (0.5.1)                 1283.5         56.5
-    PrettyTable (0.7.1)              3681.6        162.1
-    texttable (0.8.1)                3975.3        175.1
+    join with tabs and newlines        34.7          1.0
+    csv to StringIO                    49.1          1.4
+    asciitable (0.8.0)               1272.1         36.7
+    tabulate (0.6)                   1964.5         56.6
+    PrettyTable (0.7.1)              5678.9        163.7
+    texttable (0.8.1)                6005.2        173.1
     ===========================  ==========  ===========
 
 
