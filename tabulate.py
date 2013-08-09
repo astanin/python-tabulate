@@ -394,7 +394,7 @@ def _normalize_tabular_data(tabular_data, headers):
             headers = list(map(_text_type,keys))  # headers should be strings
 
     else:  # it's a usual an iterable of iterables, or a NumPy array
-        rows = tabular_data
+        rows = list(tabular_data)
 
         if headers == "keys" and len(rows) > 0:  # keys are column indices
             headers = list(map(_text_type, range(len(rows[0]))))
