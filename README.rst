@@ -68,7 +68,7 @@ column headers to be used::
     Moon          1737          73.5
     Mars          3390         641.85
 
-If `headers="firstrow"`, then the first row of data is used::
+If ``headers="firstrow"``, then the first row of data is used::
 
     >>> print tabulate([["Name","Age"],["Alice",24],["Bob",19]],
     ...                headers="firstrow")
@@ -78,7 +78,7 @@ If `headers="firstrow"`, then the first row of data is used::
     Bob        19
 
 
-If `headers="keys"`, then the keys of a dictionary/dataframe,
+If ``headers="keys"``, then the keys of a dictionary/dataframe,
 or column indices are used::
 
     >>> print tabulate({"Name": ["Alice", "Bob"],
@@ -104,6 +104,7 @@ Supported table formats are:
 - "pipe"
 - "orgtbl"
 - "rst"
+- "mediawiki"
 
 ``plain`` tables do not use any pseudo-graphics to draw lines::
 
@@ -173,12 +174,29 @@ also in the minor `orgtbl-mode`. Hence its name::
     bacon       0
     ======  =====
 
+``mediawiki`` format produces a table markup used in `Wikipedia`_ and on
+other MediaWiki-based sites::
+
+    >>> print tabulate(table, headers, tablefmt="mediawiki")
+    {| class="wikitable" style="text-align: left;"
+    |+ <!-- caption -->
+    |-
+    ! item   !! align="right"|   qty
+    |-
+    | spam   || align="right"|    42
+    |-
+    | eggs   || align="right"|   451
+    |-
+    | bacon  || align="right"|     0
+    |}
+
 
 .. _Pandoc Markdown extensions: http://johnmacfarlane.net/pandoc/README.html#tables
 .. _PHP Markdown Extra: http://michelf.ca/projects/php-markdown/extra/#table
 .. _table.el: http://table.sourceforge.net/
 .. _org-mode: http://orgmode.org/manual/Tables.html
 .. _reStructuredText: http://docutils.sourceforge.net/docs/user/rst/quickref.html#tables
+.. _Wikipedia: http://www.mediawiki.org/wiki/Help:Tables
 
 
 Column alignment
