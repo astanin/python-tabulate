@@ -134,6 +134,31 @@ def test_numpy_2d_keys():
         pass   # this test is optional
 
 
+def test_numpy_record_array():
+    "Printing a two-dimensional NumPy record array."
+    try:
+        import numpy
+        # Numpy currently cannot handle unicode field names
+        descriptor = [("a".encode("utf-8"), "f"), 
+                      ("b".encode("utf-8"), "b"), 
+                      ("c".encode("utf-8"), "S8")]
+        na = numpy.zeros(2, dtype=descriptor)
+        na[:] = [(0.5, True, u"xxx"), 
+                 (1.0, False, u"yyyyyy")]
+        tabulate(na)
+        expected = ( u"  a    b  c\n"
+                     u"---  ---  ------\n"
+                     u"0.5    1  xxx\n"
+                     u"1      0  yyyyyy" )
+        result   = tabulate(na, headers="keys")
+        print("Expected:\n%s\n" % expected)
+        print("Got:\n%s\n" % result)
+        assert expected == result
+    except ImportError:
+        print("test_numpy_2d_keys is skipped")
+        pass   # this test is optional
+
+
 def test_pandas():
     "Printing a Pandas DataFrame."
     try:
