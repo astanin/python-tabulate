@@ -127,7 +127,19 @@ _table_formats = {"simple":
                               usecolons=False,
                               usehtmlattrs=True,
                               with_header_hide=[],
-                              without_header_hide=["linebelowheader"])}
+                              without_header_hide=["linebelowheader"]),
+                  "latex":
+                  TableFormat(lineabove=Line("\\begin{tabular}{r", "", "r", "}\n\hline"),
+                              linebelowheader=Line("\\hline", "", "", ""),
+                              linebetweenrows=None,
+                              linebelow=Line("\\hline\n\\end{tabular}", "", "", ""),
+                              headerrow=DataRow("", "&", "\\\\"),
+                              datarow=DataRow("", "&", "\\\\"),
+                              padding=1,
+                              usecolons=False,
+                              usehtmlattrs=False,
+                              with_header_hide=[],
+                              without_header_hide=[])}
 
 
 _invisible_codes = re.compile("\x1b\[\d*m")  # ANSI color codes
