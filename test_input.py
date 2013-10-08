@@ -134,6 +134,68 @@ def test_numpy_2d_keys():
         pass   # this test is optional
 
 
+def test_numpy_record_array():
+    "Printing a two-dimensional NumPy record array without header"
+    try:
+        import numpy
+        na = numpy.asarray([("Alice", 23, 169.5), 
+                            ("Bob", 27, 175.0)], 
+                           dtype={"names":["name","age","height"], 
+                                  "formats":["a32","uint8","f32"]})
+        expected = "\n".join([ "-----  --  -----",
+                               "Alice  23  169.5",
+                               "Bob    27  175",
+                               "-----  --  -----" ])
+        result   = tabulate(na)
+        print("Expected:\n%s\n" % expected)
+        print("Got:\n%s\n" % result)
+        assert expected == result
+    except ImportError:
+        print("test_numpy_2d_keys is skipped")
+        pass   # this test is optional
+    
+    
+def test_numpy_record_array_keys():
+    "Printing a two-dimensional NumPy record array with headers from fields"
+    try:
+        import numpy
+        na = numpy.asarray([("Alice", 23, 169.5), 
+                            ("Bob", 27, 175.0)], 
+                           dtype={"names":["name","age","height"], 
+                                  "formats":["a32","uint8","f32"]})
+        expected = "\n".join([ "name      age    height",
+                               "------  -----  --------",
+                               "Alice      23     169.5",
+                               "Bob        27     175"  ])
+        result   = tabulate(na, headers="keys")
+        print("Expected:\n%s\n" % expected)
+        print("Got:\n%s\n" % result)
+        assert expected == result
+    except ImportError:
+        print("test_numpy_2d_keys is skipped")
+        pass   # this test is optional
+    
+def test_numpy_record_array_headers():
+    "Printing a two-dimensional NumPy record array with user-supplied headers"
+    try:
+        import numpy
+        na = numpy.asarray([("Alice", 23, 169.5), 
+                            ("Bob", 27, 175.0)], 
+                           dtype={"names":["name","age","height"], 
+                                  "formats":["a32","uint8","f32"]})
+        expected = "\n".join([ "person      years     cm",
+                               "--------  -------  -----",
+                               "Alice          23  169.5",
+                               "Bob            27  175" ])
+        result   = tabulate(na, headers=["person", "years", "cm"])
+        print("Expected:\n%s\n" % expected)
+        print("Got:\n%s\n" % result)
+        assert expected == result
+    except ImportError:
+        print("test_numpy_2d_keys is skipped")
+        pass   # this test is optional
+    
+
 def test_pandas():
     "Printing a Pandas DataFrame."
     try:
