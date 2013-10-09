@@ -438,6 +438,11 @@ def _normalize_tabular_data(tabular_data, headers):
             getattr(tabular_data.dtype, "names")):
             # numpy record array
             headers = tabular_data.dtype.names        
+        elif (headers == "keys" 
+              and len(rows) > 0 
+              and isinstance(rows[0], tuple) 
+              and hasattr(rows[0], "_fields")): # namedtuple
+            headers = list(map(_text_type, rows[0]._fields))
         elif headers == "keys" and len(rows) > 0:  # keys are column indices
             headers = list(map(_text_type, range(len(rows[0]))))
 
