@@ -245,3 +245,13 @@ def test_pandas_keys():
     except ImportError:
         print("test_pandas_keys is skipped")
         pass   # this test is optional
+
+
+def test_list_of_namedtuples(): 
+    "List of named tuples with field names as headers." 
+    from collections import namedtuple
+    NT = namedtuple("NT", ['foo', 'bar'])
+    lt = [NT(1,2), NT(3,4)]
+    expected = u'  foo    bar\n-----  -----\n    1      2\n    3      4'
+    result = tabulate(lt, headers="keys")
+    assert expected == result
