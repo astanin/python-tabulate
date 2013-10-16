@@ -407,7 +407,11 @@ def _normalize_tabular_data(tabular_data, headers):
 
     * list-of-lists or another iterable of iterables
 
+    * list of named tuples (usually used with headers="keys")
+
     * 2D NumPy arrays
+
+    * NumPy record arrays (usually used with headers="keys")
 
     * dict of iterables (usually used with headers="keys")
 
@@ -483,8 +487,9 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
     ---  ---------
 
     The first required argument (`tabular_data`) can be a
-    list-of-lists (or another iterable or iterables), a dictionary of
-    iterables, a two-dimensional NumPy array, or a Pandas' dataframe.
+    list-of-lists (or another iterable of iterables), a list of named
+    tuples, a dictionary of iterables, a two-dimensional NumPy array,
+    NumPy record array, or a Pandas' dataframe.
 
 
     Table headers
@@ -662,7 +667,6 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
     |-
     | spam || align="right"| 23
     |}
-
 
     """
 
