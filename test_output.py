@@ -24,5 +24,3 @@ def test_latex():
     print("Expected:\n%s\n" % expected)
     print("Got:\n%s\n" % result)
     assert expected == result
-    
-    
