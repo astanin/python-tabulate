@@ -316,3 +316,9 @@ Version history
 - 0.4: Unicode support, Python3 support, ``rst`` tables
 - 0.3: Initial PyPI release. Table formats: ``simple``, ``plain``,
   ``grid``, ``pipe``, and ``orgtbl``.
+
+
+Contributors
+------------
+
+Sergey Astanin, Pau Tallada Crespí, Erwin Marsi, Mik Kocikowski.
