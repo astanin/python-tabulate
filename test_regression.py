@@ -46,3 +46,15 @@ def test_iter_of_iters_with_headers():
     expected = u'  a    b    c\n---  ---  ---\n  0    1    2\n  0    1    2\n  0    1    2'
     print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
     assert expected == formatted
+
+
+def test_datetime_values():
+    "Datetime, date, and time values in cells (issue #10)."
+    import datetime
+    dt = datetime.datetime(1991,2,19,17,35,26)
+    d = datetime.date(1991,2,19)
+    t = datetime.time(17,35,26)
+    formatted = tabulate([[dt, d, t]])
+    expected = u'-------------------  ----------  --------\n1991-02-19 17:35:26  1991-02-19  17:35:26\n-------------------  ----------  --------'
+    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    assert expected == formatted

@@ -211,6 +211,8 @@ def _type(string, has_invisible=True):
 
     if string is None:
         return _none_type
+    elif hasattr(string, "isoformat"):  # datetime.datetime, date, and time
+        return _text_type
     elif _isint(string):
         return int
     elif _isnumber(string):
@@ -356,6 +358,9 @@ def _column_type(strings, has_invisible=True):
     >>> _column_type([None, "brux"]) is _text_type
     True
     >>> _column_type([1, 2, None]) is _int_type
+    True
+    >>> import datetime as dt
+    >>> _column_type([dt.datetime(1991,2,19), dt.time(17,35)]) is _text_type
     True
 
     """
