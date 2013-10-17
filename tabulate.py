@@ -147,7 +147,7 @@ _table_formats = {"simple":
                               usecolons=False,
                               usehtmlattrs=False,
                               with_header_hide=[],
-                              without_header_hide=[])}
+                              without_header_hide=["linebelowheader"])}
 
 
 tabulate_formats = list(sorted(_table_formats.keys()))
