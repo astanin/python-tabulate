@@ -252,6 +252,28 @@ def test_list_of_namedtuples():
     from collections import namedtuple
     NT = namedtuple("NT", ['foo', 'bar'])
     lt = [NT(1,2), NT(3,4)]
-    expected = u'  foo    bar\n-----  -----\n    1      2\n    3      4'
+    expected = u"\n".join([
+        u'-  -',
+        u'1  2',
+        u'3  4',
+        u'-  -'])
+    result = tabulate(lt)
+    print("Expected:\n%s\n" % expected)
+    print("Got:\n%s\n" % result)
+    assert expected == result
+
+
+def test_list_of_namedtuples_keys():
+    "Printing a list of named tuples with field names as headers."
+    from collections import namedtuple
+    NT = namedtuple("NT", ['foo', 'bar'])
+    lt = [NT(1,2), NT(3,4)]
+    expected = u"\n".join([
+        u'  foo    bar',
+        u'-----  -----',
+        u'    1      2',
+        u'    3      4'])
     result = tabulate(lt, headers="keys")
+    print("Expected:\n%s\n" % expected)
+    print("Got:\n%s\n" % result)
     assert expected == result
