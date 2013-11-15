@@ -324,4 +324,4 @@ Version history
 Contributors
 ------------
 
-Sergey Astanin, Pau Tallada Crespí, Erwin Marsi, Mik Kocikowski.
+Sergey Astanin, Pau Tallada Crespí, Erwin Marsi, Mik Kocikowski, Bill Ryder.
