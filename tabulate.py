@@ -44,11 +44,19 @@ TableFormat = namedtuple("TableFormat", ["lineabove", "linebelowheader",
                                          "without_header_hide"])
 
 
-_format_defaults = {"padding": 0,
-                    "usecolons": False,
-                    "usehtmlattrs": False,
-                    "with_header_hide": [],
-                    "without_header_hide": []}
+if python_version_tuple() >= ('2', '6', '5'):
+    _format_defaults = {"padding": 0,
+                        "usecolons": False,
+                        "usehtmlattrs": False,
+                        "with_header_hide": [],
+                        "without_header_hide": []}
+else:
+    # workaround for Python 2.6.4 and earlier
+    _format_defaults = {b"padding": 0,
+                        b"usecolons": False,
+                        b"usehtmlattrs": False,
+                        b"with_header_hide": [],
+                        b"without_header_hide": []}
 
 
 _table_formats = {"simple":
