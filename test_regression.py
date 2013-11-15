@@ -58,3 +58,13 @@ def test_datetime_values():
     expected = u'-------------------  ----------  --------\n1991-02-19 17:35:26  1991-02-19  17:35:26\n-------------------  ----------  --------'
     print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
     assert expected == formatted
+
+
+def test_simple_separated_format():
+    "simple_separated_format() accepts any separator (fixed in 33c8bc6)"
+    from tabulate import simple_separated_format
+    fmt = simple_separated_format(u"!")
+    expected = u'spam!eggs'
+    formatted = tabulate([[u"spam", u"eggs"]], tablefmt=fmt)
+    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    assert expected == formatted
