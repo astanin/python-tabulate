@@ -44,14 +44,11 @@ TableFormat = namedtuple("TableFormat", ["lineabove", "linebelowheader",
                                          "without_header_hide"])
 
 
-# Note the 'b' string literal is to deal with a bug 
-# in pre python 2.6.5 which unfortunately I have to deal with. This removes the
-# TypeError: __new__() keywords must be strings - when ** _format_defaults is used
-_format_defaults = {b"padding": 0,
-                    b"usecolons": False,
-                    b"usehtmlattrs": False,
-                    b"with_header_hide": [],
-                    b"without_header_hide": []}
+_format_defaults = {"padding": 0,
+                    "usecolons": False,
+                    "usehtmlattrs": False,
+                    "with_header_hide": [],
+                    "without_header_hide": []}
 
 
 _table_formats = {"simple":
