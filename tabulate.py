@@ -26,7 +26,7 @@ else:
     _binary_type = bytes
 
 
-__all__ = ["tabulate"]
+__all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
 __version__ = "0.6"
 
 
@@ -148,6 +148,9 @@ _table_formats = {"simple":
                               usehtmlattrs=False,
                               with_header_hide=[],
                               without_header_hide=[])}
+
+
+tabulate_formats = list(sorted(_table_formats.keys()))
 
 
 _invisible_codes = re.compile("\x1b\[\d*m")  # ANSI color codes
@@ -552,7 +555,9 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
     -----  --  ----
 
     Various plain-text table formats (`tablefmt`) are supported:
-    'plain', 'simple', 'grid', 'pipe', 'orgtbl', 'rst', and 'mediawiki'.
+    'plain', 'simple', 'grid', 'pipe', 'orgtbl', 'rst', 'mediawiki',
+    and 'latex'. Variable `tabulate_formats` contains the list of
+    currently supported formats.
 
     "plain" format doesn't use any pseudographics to draw tables,
     it separates columns with a double space:
