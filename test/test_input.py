@@ -8,7 +8,7 @@ from tabulate import tabulate
 
 
 def test_iterable_of_iterables():
-    "Printing an interable of iterables."
+    "Input: an interable of iterables."
     ii = iter(map(lambda x: iter(x), [range(5), range(5,0,-1)]))
     expected = u'-  -  -  -  -\n0  1  2  3  4\n5  4  3  2  1\n-  -  -  -  -'
     result   = tabulate(ii)
@@ -18,7 +18,7 @@ def test_iterable_of_iterables():
 
 
 def test_iterable_of_iterables_headers():
-    "Printing an interable of iterables."
+    "Input: an interable of iterables with headers."
     ii = iter(map(lambda x: iter(x), [range(5), range(5,0,-1)]))
     expected = u'  a    b    c    d    e\n---  ---  ---  ---  ---\n' + \
                u'  0    1    2    3    4\n  5    4    3    2    1'
@@ -29,7 +29,7 @@ def test_iterable_of_iterables_headers():
 
 
 def test_iterable_of_iterables_firstrow():
-    "Printing an interable of iterables."
+    "Input: an interable of iterables with the first row as headers"
     ii = iter(map(lambda x: iter(x), ["abcde", range(5), range(5,0,-1)]))
     expected = u'  a    b    c    d    e\n---  ---  ---  ---  ---\n' + \
                u'  0    1    2    3    4\n  5    4    3    2    1'
@@ -40,7 +40,7 @@ def test_iterable_of_iterables_firstrow():
 
 
 def test_list_of_lists():
-    "Printing a list of lists."
+    "Input: a list of lists with headers."
     ll = [["a","one",1],["b","two",None]]
     expected = u'    string      number\n--  --------  --------\n' + \
                u'a   one              1\nb   two'
@@ -51,7 +51,7 @@ def test_list_of_lists():
 
 
 def test_list_of_lists_firstrow():
-    "Printing an interable of iterables with firstrow as headers."
+    "Input: a list of lists with the first row as headers."
     ll = [["string","number"],["a","one",1],["b","two",None]]
     expected = u'    string      number\n--  --------  --------\n' + \
                u'a   one              1\nb   two'
@@ -62,7 +62,7 @@ def test_list_of_lists_firstrow():
 
 
 def test_list_of_lists_keys():
-    "Printing an interable of iterables with column indices as headers."
+    "Input: a list of lists with column indices as headers."
     ll = [["a","one",1],["b","two",None]]
     expected = u'0    1      2\n---  ---  ---\na    one    1\nb    two'
     result   = tabulate(ll, headers="keys")
@@ -72,7 +72,7 @@ def test_list_of_lists_keys():
 
 
 def test_dict_like():
-    "Printing a dict of iterables with keys as headers."
+    "Input: a dict of iterables with keys as headers."
     # columns should be padded with None, keys should be used as headers
     dd = {"a": range(3), "b": range(101,105)}
     # keys' order (hence columns' order) is not deterministic in Python 3
@@ -88,7 +88,7 @@ def test_dict_like():
 
 
 def test_numpy_2d():
-    "Printing a two-dimensional NumPy array."
+    "Input: a two-dimensional NumPy array with headers."
     try:
         import numpy
         na = (numpy.arange(1,10, dtype=numpy.float32).reshape((3,3))**3)*0.5
@@ -104,7 +104,7 @@ def test_numpy_2d():
 
 
 def test_numpy_2d_firstrow():
-    "Printing a two-dimensional NumPy array with the first row as headers."
+    "Input: a two-dimensional NumPy array with the first row as headers."
     try:
         import numpy
         na = (numpy.arange(1,10, dtype=numpy.int32).reshape((3,3))**3)
@@ -119,7 +119,7 @@ def test_numpy_2d_firstrow():
 
 
 def test_numpy_2d_keys():
-    "Printing a two-dimensional NumPy array with column indices as headers."
+    "Input: a two-dimensional NumPy array with column indices as headers."
     try:
         import numpy
         na = (numpy.arange(1,10, dtype=numpy.float32).reshape((3,3))**3)*0.5
@@ -135,7 +135,7 @@ def test_numpy_2d_keys():
 
 
 def test_numpy_record_array():
-    "Printing a two-dimensional NumPy record array without header"
+    "Input: a two-dimensional NumPy record array without header."
     try:
         import numpy
         na = numpy.asarray([("Alice", 23, 169.5),
@@ -156,7 +156,7 @@ def test_numpy_record_array():
 
 
 def test_numpy_record_array_keys():
-    "Printing a two-dimensional NumPy record array with headers from fields"
+    "Input: a two-dimensional NumPy record array with column names as headers."
     try:
         import numpy
         na = numpy.asarray([("Alice", 23, 169.5),
@@ -176,7 +176,7 @@ def test_numpy_record_array_keys():
         pass   # this test is optional
 
 def test_numpy_record_array_headers():
-    "Printing a two-dimensional NumPy record array with user-supplied headers"
+    "Input: a two-dimensional NumPy record array with user-supplied headers."
     try:
         import numpy
         na = numpy.asarray([("Alice", 23, 169.5),
@@ -197,7 +197,7 @@ def test_numpy_record_array_headers():
 
 
 def test_pandas():
-    "Printing a Pandas DataFrame."
+    "Input: a Pandas DataFrame."
     try:
         import pandas
         df = pandas.DataFrame([["one",1],["two",None]], index=["a","b"])
@@ -213,7 +213,7 @@ def test_pandas():
 
 
 def test_pandas_firstrow():
-    "Printing a Pandas DataFrame with the first row as headers."
+    "Input: a Pandas DataFrame with the first row as headers."
     try:
         import pandas
         df = pandas.DataFrame([["one",1],["two",None]],
@@ -230,7 +230,7 @@ def test_pandas_firstrow():
 
 
 def test_pandas_keys():
-    "Printing a Pandas DataFrame with keys as headers."
+    "Input: a Pandas DataFrame with keys as headers."
     try:
         import pandas
         df = pandas.DataFrame([["one",1],["two",None]],
@@ -248,7 +248,7 @@ def test_pandas_keys():
 
 
 def test_list_of_namedtuples():
-    "List of named tuples with field names as headers."
+    "Input: of named tuples with field names as headers."
     from collections import namedtuple
     NT = namedtuple("NT", ['foo', 'bar'])
     lt = [NT(1,2), NT(3,4)]
