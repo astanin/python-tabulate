@@ -29,7 +29,8 @@ Build status
 ------------
 
 .. image:: https://drone.io/bitbucket.org/astanin/python-tabulate/status.png
-   :alt: Build status: https://drone.io/bitbucket.org/astanin/python-tabulate/latest
+   :alt: Build status
+   :target: https://drone.io/bitbucket.org/astanin/python-tabulate/latest
 
 
 Usage
