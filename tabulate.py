@@ -37,11 +37,6 @@ Line = namedtuple("Line", ["begin", "hline", "sep", "end"])
 DataRow = namedtuple("DataRow", ["begin", "sep", "end"])
 
 
-# with_header_hide (a list of strings) is a list of elements to be not
-# displayed if a table has column headers.
-#
-HidingRules = namedtuple("HidingRules", ["with_header_hide"])
-
 # A table structure is suppposed to be:
 #
 #     --- lineabove ---------
@@ -68,15 +63,15 @@ HidingRules = namedtuple("HidingRules", ["with_header_hide"])
 #
 # padding (an integer) is the amount of white space around data values.
 #
-# hiding can be
+# with_header_hide:
 #
 #   - either None, to display all table elements unconditionally,
-#   - or a HidingRules tuple.
+#   - or a list of elements not to be displayed if the table has column headers.
 #
 TableFormat = namedtuple("TableFormat", ["lineabove", "linebelowheader",
                                          "linebetweenrows", "linebelow",
                                          "headerrow", "datarow",
-                                         "padding", "hiding"])
+                                         "padding", "with_header_hide"])
 
 
 def _pipe_segment_with_colons(align, colwidth):
@@ -108,13 +103,13 @@ _table_formats = {"simple":
                               headerrow=DataRow("", "  ", ""),
                               datarow=DataRow("", "  ", ""),
                               padding=0,
-                              hiding=HidingRules(with_header_hide=["lineabove", "linebelow"])),
+                              with_header_hide=["lineabove", "linebelow"]),
                   "plain":
                   TableFormat(lineabove=None, linebelowheader=None,
                               linebetweenrows=None, linebelow=None,
                               headerrow=DataRow("", "  ", ""),
                               datarow=DataRow("", "  ", ""),
-                              padding=0, hiding=None),
+                              padding=0, with_header_hide=None),
                   "grid":
                   TableFormat(lineabove=Line("+", "-", "+", "+"),
                               linebelowheader=Line("+", "=", "+", "+"),
@@ -122,7 +117,7 @@ _table_formats = {"simple":
                               linebelow=Line("+", "-", "+", "+"),
                               headerrow=DataRow("|", "|", "|"),
                               datarow=DataRow("|", "|", "|"),
-                              padding=1, hiding=None),
+                              padding=1, with_header_hide=None),
                   "pipe":
                   TableFormat(lineabove=_pipe_line_with_colons,
                               linebelowheader=_pipe_line_with_colons,
@@ -131,7 +126,7 @@ _table_formats = {"simple":
                               headerrow=DataRow("|", "|", "|"),
                               datarow=DataRow("|", "|", "|"),
                               padding=1,
-                              hiding=HidingRules(with_header_hide=["lineabove"])),
+                              with_header_hide=["lineabove"]),
                   "orgtbl":
                   TableFormat(lineabove=None,
                               linebelowheader=Line("|", "-", "+", "|"),
@@ -139,7 +134,7 @@ _table_formats = {"simple":
                               linebelow=None,
                               headerrow=DataRow("|", "|", "|"),
                               datarow=DataRow("|", "|", "|"),
-                              padding=1, hiding=None),
+                              padding=1, with_header_hide=None),
                   "rst":
                   TableFormat(lineabove=Line("", "=", "  ", ""),
                               linebelowheader=Line("", "=", "  ", ""),
@@ -147,7 +142,7 @@ _table_formats = {"simple":
                               linebelow=Line("", "=", "  ", ""),
                               headerrow=DataRow("", "  ", ""),
                               datarow=DataRow("", "  ", ""),
-                              padding=0, hiding=None),
+                              padding=0, with_header_hide=None),
                   "mediawiki":  # TODO: row alignment
                   TableFormat(lineabove=Line("{| class=\"wikitable\" style=\"text-align: left;\"",
                                              "", "", "\n|+ <!-- caption -->\n|-"),
@@ -156,7 +151,7 @@ _table_formats = {"simple":
                               linebelow=Line("|}", "", "", ""),
                               headerrow=DataRow("!", "!!", ""),
                               datarow=DataRow("|", "||", ""),
-                              padding=1, hiding=None),
+                              padding=1, with_header_hide=None),
                   "latex":  # TODO: row alignment
                   TableFormat(lineabove=Line("\\begin{tabular}{r", "", "r", "}\n\hline"),
                               linebelowheader=Line("\\hline", "", "", ""),
@@ -164,7 +159,7 @@ _table_formats = {"simple":
                               linebelow=Line("\\hline\n\\end{tabular}", "", "", ""),
                               headerrow=DataRow("", "&", "\\\\"),
                               datarow=DataRow("", "&", "\\\\"),
-                              padding=1, hiding=None)}
+                              padding=1, with_header_hide=None)}
 
 
 tabulate_formats = list(sorted(_table_formats.keys()))
@@ -183,7 +178,7 @@ def simple_separated_format(separator):
     """
     return TableFormat(None, None, None, None,
                        headerrow=None, datarow=DataRow('', separator, ''),
-                       padding=0, hiding=None)
+                       padding=0, with_header_hide=None)
 
 
 def _isconvertible(conv, string):
@@ -780,7 +775,7 @@ def _mediawiki_cell_attrs(row, colaligns):
 def _format_table(fmt, headers, rows, colwidths, colaligns):
     """Produce a plain-text representation of the table."""
     lines = []
-    hidden = fmt.hiding.with_header_hide if (fmt.hiding and headers) else []
+    hidden = fmt.with_header_hide if (headers and fmt.with_header_hide) else []
     pad = fmt.padding
     headerrow = fmt.headerrow
 
