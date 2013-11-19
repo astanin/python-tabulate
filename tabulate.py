@@ -6,12 +6,12 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from collections import namedtuple
 from platform import python_version_tuple
-from inspect import isfunction
 import re
 
 
 if python_version_tuple()[0] < "3":
     from itertools import izip_longest
+    from functools import partial
     _none_type = type(None)
     _int_type = int
     _float_type = float
@@ -19,7 +19,7 @@ if python_version_tuple()[0] < "3":
     _binary_type = str
 else:
     from itertools import zip_longest as izip_longest
-    from functools import reduce
+    from functools import reduce, partial
     _none_type = type(None)
     _int_type = int
     _float_type = float
@@ -95,6 +95,18 @@ def _pipe_line_with_colons(colwidths, colaligns):
     return u"|" + u"|".join(segments) + u"|"
 
 
+def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
+    alignment = { "left":    '',
+                  "right":   'align="right"| ',
+                  "center":  'align="center"| ',
+                  "decimal": 'align="right"| ' }
+    # hard-coded padding _around_ align attribute and value together
+    # rather than padding parameter which affects only the value
+    values_with_attrs = [' ' + alignment[a] + c + ' '
+                         for c, a in zip(cell_values, colaligns)]
+    colsep = separator*2
+    return (separator + colsep.join(values_with_attrs)).rstrip()
+
 _table_formats = {"simple":
                   TableFormat(lineabove=Line("", "-", "  ", ""),
                               linebelowheader=Line("", "-", "  ", ""),
@@ -143,15 +155,15 @@ _table_formats = {"simple":
                               headerrow=DataRow("", "  ", ""),
                               datarow=DataRow("", "  ", ""),
                               padding=0, with_header_hide=None),
-                  "mediawiki":  # TODO: row alignment
+                  "mediawiki":
                   TableFormat(lineabove=Line("{| class=\"wikitable\" style=\"text-align: left;\"",
                                              "", "", "\n|+ <!-- caption -->\n|-"),
                               linebelowheader=Line("|-", "", "", ""),
                               linebetweenrows=Line("|-", "", "", ""),
                               linebelow=Line("|}", "", "", ""),
-                              headerrow=DataRow("!", "!!", ""),
-                              datarow=DataRow("|", "||", ""),
-                              padding=1, with_header_hide=None),
+                              headerrow=partial(_mediawiki_row_with_attrs, "!"),
+                              datarow=partial(_mediawiki_row_with_attrs, "|"),
+                              padding=0, with_header_hide=None),
                   "latex":  # TODO: row alignment
                   TableFormat(lineabove=Line("\\begin{tabular}{r", "", "r", "}\n\hline"),
                               linebelowheader=Line("\\hline", "", "", ""),
@@ -747,7 +759,7 @@ def _build_row(padded_cells, colwidths, colaligns, rowfmt):
     if not rowfmt:
         return None
     if hasattr(rowfmt, "__call__"):
-        raise NotImplementedError("function row format")
+        return rowfmt(padded_cells, colwidths, colaligns)
     else:
         return _build_simple_row(padded_cells, rowfmt)
 
