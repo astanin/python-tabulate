@@ -79,6 +79,27 @@ TableFormat = namedtuple("TableFormat", ["lineabove", "linebelowheader",
                                          "padding", "hiding"])
 
 
+def _pipe_segment_with_colons(align, colwidth):
+    """Return a segment of a horizontal line with optional colons which
+    indicate column's alignment (as in `pipe` output format)."""
+    w = colwidth
+    if align in ["right", "decimal"]:
+        return ('-' * (w - 1)) + ":"
+    elif align == "center":
+        return ":" + ('-' * (w - 2)) + ":"
+    elif align == "left":
+        return ":" + ('-' * (w - 1))
+    else:
+        return '-' * w
+
+
+def _pipe_line_with_colons(colwidths, colaligns):
+    """Return a horizontal line with optional colons to indicate column's
+    alignment (as in `pipe` output format)."""
+    segments = [_pipe_segment_with_colons(a, w) for a, w in zip(colaligns, colwidths)]
+    return u"|" + u"|".join(segments) + u"|"
+
+
 _table_formats = {"simple":
                   TableFormat(lineabove=Line("", "-", "  ", ""),
                               linebelowheader=Line("", "-", "  ", ""),
@@ -102,14 +123,15 @@ _table_formats = {"simple":
                               headerrow=DataRow("|", "|", "|"),
                               datarow=DataRow("|", "|", "|"),
                               padding=1, hiding=None),
-                  "pipe":  # TODO: colons in linebelowheader
-                  TableFormat(lineabove=None,
-                              linebelowheader=Line("|", "-", "|", "|"),
+                  "pipe":
+                  TableFormat(lineabove=_pipe_line_with_colons,
+                              linebelowheader=_pipe_line_with_colons,
                               linebetweenrows=None,
                               linebelow=None,
                               headerrow=DataRow("|", "|", "|"),
                               datarow=DataRow("|", "|", "|"),
-                              padding=1, hiding=None),
+                              padding=1,
+                              hiding=HidingRules(with_header_hide=["lineabove"])),
                   "orgtbl":
                   TableFormat(lineabove=None,
                               linebelowheader=Line("|", "-", "+", "|"),
@@ -732,12 +754,13 @@ def _build_row(cells, padding, rowfmt):
         return (begin + sep.join(padded_cells) + end).rstrip()
 
 
-def _build_line(colwidths, padding, linefmt):
+def _build_line(colwidths, colaligns, padding, linefmt):
     "Return a string which represents a horizontal line."
     if not linefmt:
         return None
     if isfunction(linefmt):
-        raise NotImplementedError("line format as a function")
+        padded_widths = [w + 2*padding for w in colwidths]
+        return linefmt(padded_widths, colaligns)
     else:
         begin, fill, sep,  end = linefmt
         cells = [fill*(w + 2*padding) for w in colwidths]
@@ -754,21 +777,6 @@ def _mediawiki_cell_attrs(row, colaligns):
     return row2
 
 
-def _line_segment_with_colons(linefmt, align, colwidth):
-    """Return a segment of a horizontal line with optional colons which
-    indicate column's alignment (as in `pipe` output format)."""
-    fill = linefmt.hline
-    w = colwidth
-    if align in ["right", "decimal"]:
-        return (fill[0] * (w - 1)) + ":"
-    elif align == "center":
-        return ":" + (fill[0] * (w - 2)) + ":"
-    elif align == "left":
-        return ":" + (fill[0] * (w - 1))
-    else:
-        return fill[0] * w
-
-
 def _format_table(fmt, headers, rows, colwidths, colaligns):
     """Produce a plain-text representation of the table."""
     lines = []
@@ -777,18 +785,18 @@ def _format_table(fmt, headers, rows, colwidths, colaligns):
     headerrow = fmt.headerrow
 
     if fmt.lineabove and "lineabove" not in hidden:
-        lines.append(_build_line(colwidths, pad, fmt.lineabove))
+        lines.append(_build_line(colwidths, colaligns, pad, fmt.lineabove))
 
     if headers:
         lines.append(_build_row(headers, pad, headerrow))
         if fmt.linebelowheader and "linebelowheader" not in hidden:
-            lines.append(_build_line(colwidths, pad, fmt.linebelowheader))
+            lines.append(_build_line(colwidths, colaligns, pad, fmt.linebelowheader))
 
     if rows and fmt.linebetweenrows and "linebetweenrows" not in hidden:
         # initial rows with a line below
         for row in rows[:-1]:
             lines.append(_build_row(row, pad, fmt.datarow))
-            lines.append(_build_line(colwidths, pad, fmt.linebetweenrows))
+            lines.append(_build_line(colwidths, colaligns, pad, fmt.linebetweenrows))
         # the last row without a line below
         lines.append(_build_row(rows[-1], pad, fmt.datarow))
     else:
@@ -796,6 +804,6 @@ def _format_table(fmt, headers, rows, colwidths, colaligns):
             lines.append(_build_row(row, pad, fmt.datarow))
 
     if fmt.linebelow and "linebelow" not in hidden:
-        lines.append(_build_line(colwidths, pad, fmt.linebelow))
+        lines.append(_build_line(colwidths, colaligns, pad, fmt.linebelow))
 
     return "\n".join(lines)
