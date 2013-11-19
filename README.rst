@@ -320,12 +320,12 @@ and numeric data, ``tabulate`` appears to be slower than
     ===========================  ==========  ===========
     Table formatter                time, μs    rel. time
     ===========================  ==========  ===========
-    join with tabs and newlines        34.7          1.0
-    csv to StringIO                    49.1          1.4
-    asciitable (0.8.0)               1272.1         36.7
-    tabulate (0.6)                   1964.5         56.6
-    PrettyTable (0.7.1)              5678.9        163.7
-    texttable (0.8.1)                6005.2        173.1
+    join with tabs and newlines        22.9          1.0
+    csv to StringIO                    32.1          1.4
+    asciitable (0.8.0)                837.0         36.6
+    tabulate (0.7)                   1371.8         60.0
+    PrettyTable (0.7.1)              3758.3        164.3
+    texttable (0.8.1)                3892.6        170.2
     ===========================  ==========  ===========
 
 
