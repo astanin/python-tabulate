@@ -40,10 +40,7 @@ DataRow = namedtuple("DataRow", ["begin", "sep", "end"])
 # with_header_hide (a list of strings) is a list of elements to be not
 # displayed if a table has column headers.
 #
-# without_header_hide (a list of strings) is a list of elements to be
-# not displayed if a table doesn't have column headers.
-#
-HidingRules = namedtuple("HidingRules", ["with_header_hide", "without_header_hide"])
+HidingRules = namedtuple("HidingRules", ["with_header_hide"])
 
 # A table structure is suppposed to be:
 #
@@ -90,8 +87,7 @@ _table_formats = {"simple":
                               headerrow=DataRow("", "  ", ""),
                               datarow=DataRow("", "  ", ""),
                               padding=0,
-                              hiding=HidingRules(with_header_hide=["lineabove", "linebelow"],
-                                                 without_header_hide=[])),
+                              hiding=HidingRules(with_header_hide=["lineabove", "linebelow"])),
                   "plain":
                   TableFormat(lineabove=None, linebelowheader=None,
                               linebetweenrows=None, linebelow=None,
@@ -776,13 +772,7 @@ def _line_segment_with_colons(linefmt, align, colwidth):
 def _format_table(fmt, headers, rows, colwidths, colaligns):
     """Produce a plain-text representation of the table."""
     lines = []
-    if fmt.hiding:
-        if headers:
-            hidden = fmt.hiding.with_header_hide
-        else:
-            hidden = fmt.hiding.without_header_hide
-    else:
-        hidden = []
+    hidden = fmt.hiding.with_header_hide if (fmt.hiding and headers) else []
     pad = fmt.padding
     headerrow = fmt.headerrow
 
