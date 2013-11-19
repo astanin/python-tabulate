@@ -707,12 +707,12 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
     "latex" produces a tabular environment of LaTeX document markup:
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="latex"))
-    \begin{tabular}{lr}
-    \hline
-     spam &  41.9999 \\
-     eggs & 451      \\
-    \hline
-    \end{tabular}
+    \\begin{tabular}{lr}
+    \\hline
+     spam &  41.9999 \\\\
+     eggs & 451      \\\\
+    \\hline
+    \\end{tabular}
 
     """
 
