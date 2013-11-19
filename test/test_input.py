@@ -305,7 +305,7 @@ def test_pandas_keys():
 
 
 def test_list_of_namedtuples():
-    "Input: of named tuples with field names as headers."
+    "Input: a list of named tuples with field names as headers."
     from collections import namedtuple
     NT = namedtuple("NT", ['foo', 'bar'])
     lt = [NT(1,2), NT(3,4)]
