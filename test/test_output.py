@@ -171,7 +171,7 @@ def test_mediawiki_headerless():
 
 
 def test_latex():
-    "Output: LaTeX with headers"
+    "Output: latex with headers"
     result   = tabulate(_test_table, _test_table_headers, tablefmt="latex")
     expected = "\n".join([r"\begin{tabular}{lr}",
                           r"\hline",
@@ -185,7 +185,7 @@ def test_latex():
 
 
 def test_latex_headerless():
-    "Output: LaTeX without headers"
+    "Output: latex without headers"
     result   = tabulate(_test_table, tablefmt="latex")
     expected = "\n".join([r"\begin{tabular}{lr}",
                           r"\hline",

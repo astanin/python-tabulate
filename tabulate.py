@@ -107,6 +107,13 @@ def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
     colsep = separator*2
     return (separator + colsep.join(values_with_attrs)).rstrip()
 
+
+def _latex_line_begin_tabular(colwidths, colaligns):
+    alignment = { "left": "l", "right": "r", "center": "c", "decimal": "r" }
+    tabular_columns_fmt = "".join([alignment[a] for a in colaligns])
+    return "\\begin{tabular}{" + tabular_columns_fmt + "}\n\hline"
+
+
 _table_formats = {"simple":
                   TableFormat(lineabove=Line("", "-", "  ", ""),
                               linebelowheader=Line("", "-", "  ", ""),
@@ -164,8 +171,8 @@ _table_formats = {"simple":
                               headerrow=partial(_mediawiki_row_with_attrs, "!"),
                               datarow=partial(_mediawiki_row_with_attrs, "|"),
                               padding=0, with_header_hide=None),
-                  "latex":  # TODO: row alignment
-                  TableFormat(lineabove=Line("\\begin{tabular}{r", "", "r", "}\n\hline"),
+                  "latex":
+                  TableFormat(lineabove=_latex_line_begin_tabular,
                               linebelowheader=Line("\\hline", "", "", ""),
                               linebetweenrows=None,
                               linebelow=Line("\\hline\n\\end{tabular}", "", "", ""),
