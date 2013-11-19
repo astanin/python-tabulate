@@ -6,6 +6,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from collections import namedtuple
 from platform import python_version_tuple
+from inspect import isfunction
 import re
 
 
@@ -733,17 +734,29 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
     return _format_table(tablefmt, headers, rows, minwidths, aligns)
 
 
-def _build_row(cells, padding, begin, sep, end):
+def _build_row(cells, padding, rowfmt):
     "Return a string which represents a row of data cells."
-    pad = u" "*padding
-    padded_cells = [pad + cell + pad for cell in cells]
-    return (begin + sep.join(padded_cells) + end).rstrip()
+    if not rowfmt:
+        return None
+    if isfunction(rowfmt):
+        raise NotImplementedError("data row format as a function")
+    else:
+        begin, sep, end = rowfmt
+        pad = u" "*padding
+        padded_cells = [pad + cell + pad for cell in cells]
+        return (begin + sep.join(padded_cells) + end).rstrip()
 
 
-def _build_line(colwidths, padding, begin, fill, sep,  end):
+def _build_line(colwidths, padding, linefmt):
     "Return a string which represents a horizontal line."
-    cells = [fill*(w + 2*padding) for w in colwidths]
-    return _build_row(cells, 0, begin, sep, end)
+    if not linefmt:
+        return None
+    if isfunction(linefmt):
+        raise NotImplementedError("line format as a function")
+    else:
+        begin, fill, sep,  end = linefmt
+        cells = [fill*(w + 2*padding) for w in colwidths]
+        return _build_row(cells, 0, (begin, sep, end))
 
 
 def _mediawiki_cell_attrs(row, colaligns):
@@ -785,27 +798,27 @@ def _format_table(fmt, headers, rows, colwidths, colaligns):
     headerrow = fmt.headerrow
 
     if fmt.lineabove and "lineabove" not in hidden:
-        lines.append(_build_line(colwidths, pad, *fmt.lineabove))
+        lines.append(_build_line(colwidths, pad, fmt.lineabove))
 
     if headers:
-        lines.append(_build_row(headers, pad, *headerrow))
+        lines.append(_build_row(headers, pad, headerrow))
 
     if fmt.linebelowheader and "linebelowheader" not in hidden:
         begin, fill, sep, end = fmt.linebelowheader
-        lines.append(_build_line(colwidths, pad, *fmt.linebelowheader))
+        lines.append(_build_line(colwidths, pad, fmt.linebelowheader))
 
     if rows and fmt.linebetweenrows and "linebetweenrows" not in hidden:
         # initial rows with a line below
         for row in rows[:-1]:
-            lines.append(_build_row(row, pad, *fmt.datarow))
-            lines.append(_build_line(colwidths, pad, *fmt.linebetweenrows))
+            lines.append(_build_row(row, pad, fmt.datarow))
+            lines.append(_build_line(colwidths, pad, fmt.linebetweenrows))
         # the last row without a line below
-        lines.append(_build_row(rows[-1], pad, *fmt.datarow))
+        lines.append(_build_row(rows[-1], pad, fmt.datarow))
     else:
         for row in rows:
-            lines.append(_build_row(row, pad, *fmt.datarow))
+            lines.append(_build_row(row, pad, fmt.datarow))
 
     if fmt.linebelow and "linebelow" not in hidden:
-        lines.append(_build_line(colwidths, pad, *fmt.linebelow))
+        lines.append(_build_line(colwidths, pad, fmt.linebelow))
 
     return "\n".join(lines)
