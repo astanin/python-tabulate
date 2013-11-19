@@ -162,9 +162,9 @@ def test_mediawiki_headerless():
     expected = u'\n'.join([u'{| class="wikitable" style="text-align: left;"',
                            u'|+ <!-- caption -->',
                            u'|-',
-                           u'| eggs || align="right"| 42',
+                           u'| spam || align="right"|  41.9999',
                            u'|-',
-                           u'| spam || align="right"| 23',
+                           u'| eggs || align="right"| 451',
                            u'|}',])
     result = tabulate(_test_table, tablefmt="mediawiki")
     assert_equal(expected, result)
