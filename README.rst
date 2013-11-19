@@ -115,6 +115,7 @@ Supported table formats are:
 - "orgtbl"
 - "rst"
 - "mediawiki"
+- "latex"
 
 ``plain`` tables do not use any pseudo-graphics to draw lines::
 
@@ -199,6 +200,21 @@ other MediaWiki-based sites::
     |-
     | bacon  || align="right"|     0
     |}
+
+
+``latex`` format creates a ``tabular`` environment for LaTeX markup::
+
+    >>> print tabulate(table, headers, tablefmt="latex")
+    \begin{tabular}{lr}
+    \hline
+     item   &   qty \\
+    \hline
+     spam   &    42 \\
+     eggs   &   451 \\
+     bacon  &     0 \\
+    \hline
+    \end{tabular}
+
 
 
 .. _Pandoc Markdown extensions: http://johnmacfarlane.net/pandoc/README.html#tables
@@ -316,7 +332,8 @@ and numeric data, ``tabulate`` appears to be slower than
 Version history
 ---------------
 
-- 0.7: WORK IN PROGRESS: ``latex`` tables. Printing lists of named tuples and NumPy record arrays. Fix printing date and time values.
+- 0.7: ``latex`` tables. Printing lists of named tuples and NumPy
+  record arrays. Fix printing date and time values.
 - 0.6: ``mediawiki`` tables, bug fixes
 - 0.5.1: Fix README.rst formatting. Optimize (performance similar to 0.4.4).
 - 0.5: ANSI color sequences. Printing dicts of iterables and Pandas' dataframes.

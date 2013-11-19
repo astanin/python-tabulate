@@ -704,14 +704,15 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
     | eggs      || align="right"|  451
     |}
 
-    >>> print(tabulate([["eggs", 42], ["spam", 23]], tablefmt="mediawiki", stralign="left"))
-    {| class="wikitable" style="text-align: left;"
-    |+ <!-- caption -->
-    |-
-    | eggs || align="right"| 42
-    |-
-    | spam || align="right"| 23
-    |}
+    "latex" produces a tabular environment of LaTeX document markup:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="latex"))
+    \begin{tabular}{lr}
+    \hline
+     spam &  41.9999 \\
+     eggs & 451      \\
+    \hline
+    \end{tabular}
 
     """
 
