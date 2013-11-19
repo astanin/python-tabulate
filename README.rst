@@ -333,7 +333,7 @@ Version history
 ---------------
 
 - 0.7: ``latex`` tables. Printing lists of named tuples and NumPy
-  record arrays. Fix printing date and time values.
+  record arrays. Fix printing date and time values. Python <= 2.6.4 is supported.
 - 0.6: ``mediawiki`` tables, bug fixes
 - 0.5.1: Fix README.rst formatting. Optimize (performance similar to 0.4.4).
 - 0.5: ANSI color sequences. Printing dicts of iterables and Pandas' dataframes.
