@@ -196,7 +196,8 @@ def simple_separated_format(separator):
 
     """
     return TableFormat(None, None, None, None,
-                       headerrow=None, datarow=DataRow('', separator, ''),
+                       headerrow=DataRow('', separator, ''),
+                       datarow=DataRow('', separator, ''),
                        padding=0, with_header_hide=None)
 
 

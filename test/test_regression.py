@@ -90,3 +90,11 @@ def py3test_require_py3():
     print("Expected Python version: 3.x.x")
     print("Python version used for tests: %s.%s.%s" % python_version_tuple())
     assert python_version_tuple()[0] == '3'
+
+
+def test_simple_separated_format_with_headers():
+    "Regression: simple_separated_format() on tables with headers (issue #15)"
+    from tabulate import simple_separated_format
+    expected = u'  a|  b\n  1|  2'
+    formatted = tabulate([[1,2]], headers=["a", "b"], tablefmt=simple_separated_format("|"))
+    assert expected == formatted
