@@ -357,10 +357,10 @@ def _align_column(strings, alignment, minwidth=0, has_invisible=True):
     if alignment == "right":
         strings = [s.strip() for s in strings]
         padfn = _padleft
-    elif alignment in "center":
+    elif alignment == "center":
         strings = [s.strip() for s in strings]
         padfn = _padboth
-    elif alignment in "decimal":
+    elif alignment == "decimal":
         decimals = [_afterpoint(s) for s in strings]
         maxdecimals = max(decimals)
         strings = [s + (maxdecimals - decs) * " "
