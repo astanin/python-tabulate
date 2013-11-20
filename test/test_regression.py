@@ -82,3 +82,11 @@ def test_simple_separated_format():
     formatted = tabulate([[u"spam", u"eggs"]], tablefmt=fmt)
     print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
     assert expected == formatted
+
+
+def py3test_require_py3():
+    "Regression: py33 tests should actually use Python 3 (issue #13)"
+    from platform import python_version_tuple
+    print("Expected Python version: 3.x.x")
+    print("Python version used for tests: %s.%s.%s" % python_version_tuple())
+    assert python_version_tuple()[0] == '3'
