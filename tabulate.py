@@ -178,7 +178,13 @@ _table_formats = {"simple":
                               linebelow=Line("\\hline\n\\end{tabular}", "", "", ""),
                               headerrow=DataRow("", "&", "\\\\"),
                               datarow=DataRow("", "&", "\\\\"),
-                              padding=1, with_header_hide=None)}
+                              padding=1, with_header_hide=None),
+                  "tsv":
+                  TableFormat(lineabove=None, linebelowheader=None,
+                              linebetweenrows=None, linebelow=None,
+                              headerrow=DataRow("", "\t", ""),
+                              datarow=DataRow("", "\t", ""),
+                              padding=0, with_header_hide=None)}
 
 
 tabulate_formats = list(sorted(_table_formats.keys()))
