@@ -353,6 +353,9 @@ def _align_column(strings, alignment, minwidth=0, has_invisible=True):
     >>> list(map(str,_align_column(["12.345", "-1234.5", "1.23", "1234.5", "1e+234", "1.0e234"], "decimal")))
     ['   12.345  ', '-1234.5    ', '    1.23   ', ' 1234.5    ', '    1e+234 ', '    1.0e234']
 
+    >>> list(map(str,_align_column(['123.4', '56.7890'], None)))
+    ['123.4', '56.7890']
+
     """
     if alignment == "right":
         strings = [s.strip() for s in strings]
@@ -366,6 +369,8 @@ def _align_column(strings, alignment, minwidth=0, has_invisible=True):
         strings = [s + (maxdecimals - decs) * " "
                    for s, decs in zip(strings, decimals)]
         padfn = _padleft
+    elif not alignment:
+        return strings
     else:
         strings = [s.strip() for s in strings]
         padfn = _padright
@@ -439,6 +444,8 @@ def _align_header(header, alignment, width):
         return _padright(width, header)
     elif alignment == "center":
         return _padboth(width, header)
+    elif not alignment:
+        return u"{0}".format(header)
     else:
         return _padleft(width, header)
 
