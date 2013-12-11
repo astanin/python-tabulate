@@ -98,3 +98,11 @@ def test_simple_separated_format_with_headers():
     expected = u'  a|  b\n  1|  2'
     formatted = tabulate([[1,2]], headers=["a", "b"], tablefmt=simple_separated_format("|"))
     assert_equal(expected, formatted)
+
+
+def test_column_type_of_bytestring_columns():
+    "Regression: column type for columns of bytestrings (issue #16)"
+    from tabulate import _column_type, _binary_type
+    result = _column_type([b"foo", b"bar"])
+    expected = _binary_type
+    assert_equal(result, expected)
