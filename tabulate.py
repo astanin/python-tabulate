@@ -110,7 +110,7 @@ def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
 
 def _latex_line_begin_tabular(colwidths, colaligns):
     alignment = { "left": "l", "right": "r", "center": "c", "decimal": "r" }
-    tabular_columns_fmt = "".join([alignment[a] for a in colaligns])
+    tabular_columns_fmt = "".join([alignment.get(a, "l") for a in colaligns])
     return "\\begin{tabular}{" + tabular_columns_fmt + "}\n\hline"
 
 
