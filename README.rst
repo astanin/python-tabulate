@@ -234,8 +234,9 @@ them to the right if they appear to be integers). Text columns are
 flushed to the left.
 
 You can override the default alignment with ``numalign`` and
-``stralign`` named arguments. Possible column alignments are: ``right``,
-``center``, ``left``, ``decimal`` (only for numbers).
+``stralign`` named arguments. Possible column alignments are:
+``right``, ``center``, ``left``, ``decimal`` (only for numbers), and
+``None`` (to disable alignment).
 
 Aligning by a decimal point works best when you need to compare
 numbers at a glance::
@@ -332,6 +333,7 @@ and numeric data, ``tabulate`` appears to be slower than
 Version history
 ---------------
 
+- 0.7.1: Bug fixes. ``tsv`` format. Column alignment can be disabled.
 - 0.7: ``latex`` tables. Printing lists of named tuples and NumPy
   record arrays. Fix printing date and time values. Python <= 2.6.4 is supported.
 - 0.6: ``mediawiki`` tables, bug fixes

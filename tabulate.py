@@ -585,8 +585,8 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
     the values properly. By default it aligns decimal points of the
     numbers (or flushes integer numbers to the right), and flushes
     everything else to the left. Possible column alignments
-    (`numalign`, `stralign`) are: right, center, left, decimal (only
-    for `numalign`).
+    (`numalign`, `stralign`) are: "right", "center", "left", "decimal"
+    (only for `numalign`), and None (to disable alignment).
 
 
     Table formats
