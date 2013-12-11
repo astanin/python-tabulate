@@ -102,7 +102,7 @@ def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
                   "decimal": 'align="right"| ' }
     # hard-coded padding _around_ align attribute and value together
     # rather than padding parameter which affects only the value
-    values_with_attrs = [' ' + alignment[a] + c + ' '
+    values_with_attrs = [' ' + alignment.get(a, '') + c + ' '
                          for c, a in zip(cell_values, colaligns)]
     colsep = separator*2
     return (separator + colsep.join(values_with_attrs)).rstrip()
