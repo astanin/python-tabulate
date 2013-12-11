@@ -5,14 +5,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 from tabulate import tabulate
-
-try:
-    from nose.tools import assert_equal
-except ImportError:
-    def assert_equal(expected, result):
-        print("Expected:\n%s\n" % expected)
-        print("Got:\n%s\n" % result)
-        assert expected == result
+from common import assert_equal
 
 
 # _test_table shows

@@ -5,7 +5,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 from tabulate import tabulate
-
+from common import assert_equal
 
 
 def test_ansi_color_in_table_cells():
@@ -17,7 +17,7 @@ def test_ansi_color_in_table_cells():
                            u'|:-------|:-------|:-------|',
                            u'| test   | \x1b[31mtest\x1b[0m   | \x1b[32mtest\x1b[0m   |'])
     print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
-    assert expected == formatted
+    assert_equal(expected, formatted)
 
 
 def test_alignment_of_colored_cells():
@@ -33,7 +33,7 @@ def test_alignment_of_colored_cells():
                            u'| test   |    101 |    \x1b[32m101\x1b[0m |',
                            u'+--------+--------+--------+'])
     print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
-    assert expected == formatted
+    assert_equal(expected, formatted)
 
 
 def test_iter_of_iters_with_headers():
@@ -57,7 +57,7 @@ def test_iter_of_iters_with_headers():
                            u'  0    1    2',
                            u'  0    1    2'])
     print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
-    assert expected == formatted
+    assert_equal(expected, formatted)
 
 
 def test_datetime_values():
@@ -71,7 +71,7 @@ def test_datetime_values():
                            u'1991-02-19 17:35:26  1991-02-19  17:35:26',
                            u'-------------------  ----------  --------'])
     print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
-    assert expected == formatted
+    assert_equal(expected, formatted)
 
 
 def test_simple_separated_format():
@@ -81,7 +81,7 @@ def test_simple_separated_format():
     expected = u'spam!eggs'
     formatted = tabulate([[u"spam", u"eggs"]], tablefmt=fmt)
     print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
-    assert expected == formatted
+    assert_equal(expected, formatted)
 
 
 def py3test_require_py3():
@@ -89,7 +89,7 @@ def py3test_require_py3():
     from platform import python_version_tuple
     print("Expected Python version: 3.x.x")
     print("Python version used for tests: %s.%s.%s" % python_version_tuple())
-    assert python_version_tuple()[0] == '3'
+    assert_equal(python_version_tuple()[0], '3')
 
 
 def test_simple_separated_format_with_headers():
@@ -97,4 +97,4 @@ def test_simple_separated_format_with_headers():
     from tabulate import simple_separated_format
     expected = u'  a|  b\n  1|  2'
     formatted = tabulate([[1,2]], headers=["a", "b"], tablefmt=simple_separated_format("|"))
-    assert expected == formatted
+    assert_equal(expected, formatted)
