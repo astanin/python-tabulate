@@ -4,7 +4,7 @@
 
 from __future__ import print_function
 from __future__ import unicode_literals
-from tabulate import tabulate
+from tabulate import tabulate, simple_separated_format
 from common import assert_equal
 
 
@@ -210,4 +210,16 @@ def test_column_alignment():
                            u'  Bob  333',
                            u'-----  ---',])
     result = tabulate([['Alice', 1],['Bob', 333]], stralign="right", numalign="center")
+    assert_equal(expected, result)
+
+
+def test_unaligned_separated():
+    "Output: non-aligned data columns"
+    expected = u'\n'.join([u'name|score',
+                           u'Alice|1',
+                           u'Bob|333'])
+    fmt = simple_separated_format("|")
+    result = tabulate([['Alice', 1],['Bob', 333]],
+                      ["name", "score"],
+                      tablefmt=fmt, stralign=None, numalign=None)
     assert_equal(expected, result)
