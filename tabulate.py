@@ -191,6 +191,7 @@ tabulate_formats = list(sorted(_table_formats.keys()))
 
 
 _invisible_codes = re.compile("\x1b\[\d*m")  # ANSI color codes
+_invisible_codes_bytes = re.compile(b"\x1b\[\d*m")  # ANSI color codes
 
 
 def simple_separated_format(separator):
@@ -338,7 +339,10 @@ def _padboth(width, s, has_invisible=True):
 
 def _strip_invisible(s):
     "Remove invisible ANSI color codes."
-    return re.sub(_invisible_codes, "", s)
+    if isinstance(s, _text_type):
+        return re.sub(_invisible_codes, "", s)
+    else:  # a bytestring
+        return re.sub(_invisible_codes_bytes, "", s)
 
 
 def _visible_width(s):
@@ -393,8 +397,8 @@ def _align_column(strings, alignment, minwidth=0, has_invisible=True):
 
 
 def _more_generic(type1, type2):
-    types = { _none_type: 0, int: 1, float: 2, _text_type: 4 }
-    invtypes = { 4: _text_type, 2: float, 1: int, 0: _none_type }
+    types = { _none_type: 0, int: 1, float: 2, _binary_type: 3, _text_type: 4 }
+    invtypes = { 4: _text_type, 3: _binary_type, 2: float, 1: int, 0: _none_type }
     moregeneric = max(types.get(type1, 4), types.get(type2, 4))
     return invtypes[moregeneric]
 
@@ -438,8 +442,10 @@ def _format(val, valtype, floatfmt, missingval=u""):
     if val is None:
         return missingval
 
-    if valtype in [int, _binary_type, _text_type]:
+    if valtype in [int, _text_type]:
         return u"{0}".format(val)
+    elif valtype is _binary_type:
+        return _text_type(val, "ascii")
     elif valtype is float:
         return format(float(val), floatfmt)
     else:
