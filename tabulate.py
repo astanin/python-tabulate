@@ -92,7 +92,7 @@ def _pipe_line_with_colons(colwidths, colaligns):
     """Return a horizontal line with optional colons to indicate column's
     alignment (as in `pipe` output format)."""
     segments = [_pipe_segment_with_colons(a, w) for a, w in zip(colaligns, colwidths)]
-    return u"|" + u"|".join(segments) + u"|"
+    return "|" + "|".join(segments) + "|"
 
 
 def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
@@ -198,7 +198,7 @@ def simple_separated_format(separator):
     """Construct a simple TableFormat with columns separated by a separator.
 
     >>> tsv = simple_separated_format("\\t") ; \
-        tabulate([["foo", 1], ["spam", 23]], tablefmt=tsv) == u'foo \\t 1\\nspam\\t23'
+        tabulate([["foo", 1], ["spam", 23]], tablefmt=tsv) == 'foo \\t 1\\nspam\\t23'
     True
 
     """
@@ -309,7 +309,7 @@ def _padleft(width, s, has_invisible=True):
 
     """
     iwidth = width + len(s) - len(_strip_invisible(s)) if has_invisible else width
-    fmt = u"{0:>%ds}" % iwidth
+    fmt = "{0:>%ds}" % iwidth
     return fmt.format(s)
 
 
@@ -321,7 +321,7 @@ def _padright(width, s, has_invisible=True):
 
     """
     iwidth = width + len(s) - len(_strip_invisible(s)) if has_invisible else width
-    fmt = u"{0:<%ds}" % iwidth
+    fmt = "{0:<%ds}" % iwidth
     return fmt.format(s)
 
 
@@ -333,7 +333,7 @@ def _padboth(width, s, has_invisible=True):
 
     """
     iwidth = width + len(s) - len(_strip_invisible(s)) if has_invisible else width
-    fmt = u"{0:^%ds}" % iwidth
+    fmt = "{0:^%ds}" % iwidth
     return fmt.format(s)
 
 
@@ -427,7 +427,7 @@ def _column_type(strings, has_invisible=True):
     return reduce(_more_generic, types, int)
 
 
-def _format(val, valtype, floatfmt, missingval=u""):
+def _format(val, valtype, floatfmt, missingval=""):
     """Format a value accoding to its type.
 
     Unicode is supported:
@@ -443,13 +443,13 @@ def _format(val, valtype, floatfmt, missingval=u""):
         return missingval
 
     if valtype in [int, _text_type]:
-        return u"{0}".format(val)
+        return "{0}".format(val)
     elif valtype is _binary_type:
         return _text_type(val, "ascii")
     elif valtype is float:
         return format(float(val), floatfmt)
     else:
-        return u"{0}".format(val)
+        return "{0}".format(val)
 
 
 def _align_header(header, alignment, width):
@@ -458,7 +458,7 @@ def _align_header(header, alignment, width):
     elif alignment == "center":
         return _padboth(width, header)
     elif not alignment:
-        return u"{0}".format(header)
+        return "{0}".format(header)
     else:
         return _padleft(width, header)
 
@@ -532,14 +532,14 @@ def _normalize_tabular_data(tabular_data, headers):
        nhs = len(headers)
        ncols = len(rows[0])
        if nhs < ncols:
-           headers = [u""]*(ncols - nhs) + headers
+           headers = [""]*(ncols - nhs) + headers
 
     return rows, headers
 
 
 def tabulate(tabular_data, headers=[], tablefmt="simple",
              floatfmt="g", numalign="decimal", stralign="left",
-             missingval=u""):
+             missingval=""):
     """Format a fixed width table for pretty printing.
 
     >>> print(tabulate([[1, 2.34], [-56, "8.999"], ["2", "10001"]]))
@@ -740,8 +740,8 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
 
     # optimization: look for ANSI control codes once,
     # enable smart width functions only if a control code is found
-    plain_text = u'\n'.join(['\t'.join(map(_text_type, headers))] + \
-                            [u'\t'.join(map(_text_type, row)) for row in list_of_lists])
+    plain_text = '\n'.join(['\t'.join(map(_text_type, headers))] + \
+                            ['\t'.join(map(_text_type, row)) for row in list_of_lists])
     has_invisible = re.search(_invisible_codes, plain_text)
     if has_invisible:
         width_fn = _visible_width
@@ -806,7 +806,7 @@ def _build_line(colwidths, colaligns, linefmt):
 
 def _pad_row(cells, padding):
     if cells:
-        pad = u" "*padding
+        pad = " "*padding
         padded_cells = [pad + cell + pad for cell in cells]
         return padded_cells
     else:

@@ -11,10 +11,10 @@ def test_iterable_of_iterables():
     "Input: an interable of iterables."
     ii = iter(map(lambda x: iter(x), [range(5), range(5,0,-1)]))
     expected = "\n".join(
-        [u'-  -  -  -  -',
-         u'0  1  2  3  4',
-         u'5  4  3  2  1',
-         u'-  -  -  -  -'])
+        ['-  -  -  -  -',
+         '0  1  2  3  4',
+         '5  4  3  2  1',
+         '-  -  -  -  -'])
     result   = tabulate(ii)
     print("Expected:\n%s\n" % expected)
     print("Got:\n%s\n" % result)
@@ -25,10 +25,10 @@ def test_iterable_of_iterables_headers():
     "Input: an interable of iterables with headers."
     ii = iter(map(lambda x: iter(x), [range(5), range(5,0,-1)]))
     expected = "\n".join(
-        [u'  a    b    c    d    e',
-         u'---  ---  ---  ---  ---',
-         u'  0    1    2    3    4',
-         u'  5    4    3    2    1'])
+        ['  a    b    c    d    e',
+         '---  ---  ---  ---  ---',
+         '  0    1    2    3    4',
+         '  5    4    3    2    1'])
     result   = tabulate(ii, "abcde")
     print("Expected:\n%s\n" % expected)
     print("Got:\n%s\n" % result)
@@ -39,10 +39,10 @@ def test_iterable_of_iterables_firstrow():
     "Input: an interable of iterables with the first row as headers"
     ii = iter(map(lambda x: iter(x), ["abcde", range(5), range(5,0,-1)]))
     expected = "\n".join(
-        [u'  a    b    c    d    e',
-         u'---  ---  ---  ---  ---',
-         u'  0    1    2    3    4',
-         u'  5    4    3    2    1'])
+        ['  a    b    c    d    e',
+         '---  ---  ---  ---  ---',
+         '  0    1    2    3    4',
+         '  5    4    3    2    1'])
     result   = tabulate(ii, "firstrow")
     print("Expected:\n%s\n" % expected)
     print("Got:\n%s\n" % result)
@@ -53,10 +53,10 @@ def test_list_of_lists():
     "Input: a list of lists with headers."
     ll = [["a","one",1],["b","two",None]]
     expected = "\n".join([
-        u'    string      number',
-        u'--  --------  --------',
-        u'a   one              1',
-        u'b   two'])
+        '    string      number',
+        '--  --------  --------',
+        'a   one              1',
+        'b   two'])
     result   = tabulate(ll, headers=["string","number"])
     print("Expected:\n%s\n" % expected)
     print("Got:\n%s\n" % result)
@@ -67,10 +67,10 @@ def test_list_of_lists_firstrow():
     "Input: a list of lists with the first row as headers."
     ll = [["string","number"],["a","one",1],["b","two",None]]
     expected = "\n".join([
-        u'    string      number',
-        u'--  --------  --------',
-        u'a   one              1',
-        u'b   two'])
+        '    string      number',
+        '--  --------  --------',
+        'a   one              1',
+        'b   two'])
     result   = tabulate(ll, headers="firstrow")
     print("Expected:\n%s\n" % expected)
     print("Got:\n%s\n" % result)
@@ -81,10 +81,10 @@ def test_list_of_lists_keys():
     "Input: a list of lists with column indices as headers."
     ll = [["a","one",1],["b","two",None]]
     expected = "\n".join([
-        u'0    1      2',
-        u'---  ---  ---',
-        u'a    one    1',
-        u'b    two'])
+        '0    1      2',
+        '---  ---  ---',
+        'a    one    1',
+        'b    two'])
     result   = tabulate(ll, headers="keys")
     print("Expected:\n%s\n" % expected)
     print("Got:\n%s\n" % result)
@@ -98,19 +98,19 @@ def test_dict_like():
     # keys' order (hence columns' order) is not deterministic in Python 3
     # => we have to consider both possible results as valid
     expected1 = "\n".join([
-        u'  a    b',
-        u'---  ---',
-        u'  0  101',
-        u'  1  102',
-        u'  2  103',
-        u'     104'])
+        '  a    b',
+        '---  ---',
+        '  0  101',
+        '  1  102',
+        '  2  103',
+        '     104'])
     expected2 = "\n".join([
-        u'  b    a',
-        u'---  ---',
-        u'101    0',
-        u'102    1',
-        u'103    2',
-        u'104'])
+        '  b    a',
+        '---  ---',
+        '101    0',
+        '102    1',
+        '103    2',
+        '104'])
     result    = tabulate(dd, "keys")
     print("Keys' order: %s" % dd.keys())
     print("Expected 1:\n%s\n" % expected1)
@@ -125,11 +125,11 @@ def test_numpy_2d():
         import numpy
         na = (numpy.arange(1,10, dtype=numpy.float32).reshape((3,3))**3)*0.5
         expected = "\n".join([
-            u'    a      b      c',
-            u'-----  -----  -----',
-            u'  0.5    4     13.5',
-            u' 32     62.5  108',
-            u'171.5  256    364.5'])
+            '    a      b      c',
+            '-----  -----  -----',
+            '  0.5    4     13.5',
+            ' 32     62.5  108',
+            '171.5  256    364.5'])
         result   = tabulate(na, ["a", "b", "c"])
         print("Expected:\n%s\n" % expected)
         print("Got:\n%s\n" % result)
@@ -145,10 +145,10 @@ def test_numpy_2d_firstrow():
         import numpy
         na = (numpy.arange(1,10, dtype=numpy.int32).reshape((3,3))**3)
         expected = "\n".join([
-            u'  1    8    27',
-            u'---  ---  ----',
-            u' 64  125   216',
-            u'343  512   729'])
+            '  1    8    27',
+            '---  ---  ----',
+            ' 64  125   216',
+            '343  512   729'])
         result   = tabulate(na, headers="firstrow")
         print("Expected:\n%s\n" % expected)
         print("Got:\n%r\n" % result)
@@ -164,11 +164,11 @@ def test_numpy_2d_keys():
         import numpy
         na = (numpy.arange(1,10, dtype=numpy.float32).reshape((3,3))**3)*0.5
         expected = "\n".join([
-            u'    0      1      2',
-            u'-----  -----  -----',
-            u'  0.5    4     13.5',
-            u' 32     62.5  108',
-            u'171.5  256    364.5'])
+            '    0      1      2',
+            '-----  -----  -----',
+            '  0.5    4     13.5',
+            ' 32     62.5  108',
+            '171.5  256    364.5'])
         result   = tabulate(na, headers="keys")
         print("Expected:\n%s\n" % expected)
         print("Got:\n%s\n" % result)
@@ -250,10 +250,10 @@ def test_pandas():
         import pandas
         df = pandas.DataFrame([["one",1],["two",None]], index=["a","b"])
         expected = "\n".join([
-            u'    string      number',
-            u'--  --------  --------',
-            u'a   one              1',
-            u'b   two            nan'])
+            '    string      number',
+            '--  --------  --------',
+            'a   one              1',
+            'b   two            nan'])
         result   = tabulate(df, headers=["string", "number"])
         print("Expected:\n%s\n" % expected)
         print("Got:\n%s\n" % result)
@@ -271,9 +271,9 @@ def test_pandas_firstrow():
                               columns=["string","number"],
                               index=["a","b"])
         expected = "\n".join([
-            u'a    one      1.0',
-            u'---  -----  -----',
-            u'b    two      nan'])
+            'a    one      1.0',
+            '---  -----  -----',
+            'b    two      nan'])
         result   = tabulate(df, headers="firstrow")
         print("Expected:\n%s\n" % expected)
         print("Got:\n%s\n" % result)
@@ -291,10 +291,10 @@ def test_pandas_keys():
                               columns=["string","number"],
                               index=["a","b"])
         expected = "\n".join(
-            [u'    string      number',
-             u'--  --------  --------',
-             u'a   one              1',
-             u'b   two            nan'])
+            ['    string      number',
+             '--  --------  --------',
+             'a   one              1',
+             'b   two            nan'])
         result   = tabulate(df, headers="keys")
         print("Expected:\n%s\n" % expected)
         print("Got:\n%s\n" % result)
@@ -309,11 +309,11 @@ def test_list_of_namedtuples():
     from collections import namedtuple
     NT = namedtuple("NT", ['foo', 'bar'])
     lt = [NT(1,2), NT(3,4)]
-    expected = u"\n".join([
-        u'-  -',
-        u'1  2',
-        u'3  4',
-        u'-  -'])
+    expected = "\n".join([
+        '-  -',
+        '1  2',
+        '3  4',
+        '-  -'])
     result = tabulate(lt)
     print("Expected:\n%s\n" % expected)
     print("Got:\n%s\n" % result)
@@ -325,11 +325,11 @@ def test_list_of_namedtuples_keys():
     from collections import namedtuple
     NT = namedtuple("NT", ['foo', 'bar'])
     lt = [NT(1,2), NT(3,4)]
-    expected = u"\n".join([
-        u'  foo    bar',
-        u'-----  -----',
-        u'    1      2',
-        u'    3      4'])
+    expected = "\n".join([
+        '  foo    bar',
+        '-----  -----',
+        '    1      2',
+        '    3      4'])
     result = tabulate(lt, headers="keys")
     print("Expected:\n%s\n" % expected)
     print("Got:\n%s\n" % result)

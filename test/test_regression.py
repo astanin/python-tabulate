@@ -13,9 +13,9 @@ def test_ansi_color_in_table_cells():
     colortable = [('test', '\x1b[31mtest\x1b[0m', '\x1b[32mtest\x1b[0m')]
     colorlessheaders = ('test', 'test', 'test')
     formatted = tabulate(colortable, colorlessheaders, 'pipe')
-    expected = u"\n".join([u'| test   | test   | test   |',
-                           u'|:-------|:-------|:-------|',
-                           u'| test   | \x1b[31mtest\x1b[0m   | \x1b[32mtest\x1b[0m   |'])
+    expected = "\n".join(['| test   | test   | test   |',
+                          '|:-------|:-------|:-------|',
+                          '| test   | \x1b[31mtest\x1b[0m   | \x1b[32mtest\x1b[0m   |'])
     print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
     assert_equal(expected, formatted)
 
@@ -25,13 +25,13 @@ def test_alignment_of_colored_cells():
     colortable = [('test', 42, '\x1b[31m42\x1b[0m'), ('test', 101, '\x1b[32m101\x1b[0m')]
     colorheaders = ('test', '\x1b[34mtest\x1b[0m', 'test')
     formatted = tabulate(colortable, colorheaders, 'grid')
-    expected = u'\n'.join([u'+--------+--------+--------+',
-                           u'| test   |   \x1b[34mtest\x1b[0m |   test |',
-                           u'+========+========+========+',
-                           u'| test   |     42 |     \x1b[31m42\x1b[0m |',
-                           u'+--------+--------+--------+',
-                           u'| test   |    101 |    \x1b[32m101\x1b[0m |',
-                           u'+--------+--------+--------+'])
+    expected = '\n'.join(['+--------+--------+--------+',
+                          '| test   |   \x1b[34mtest\x1b[0m |   test |',
+                          '+========+========+========+',
+                          '| test   |     42 |     \x1b[31m42\x1b[0m |',
+                          '+--------+--------+--------+',
+                          '| test   |    101 |    \x1b[32m101\x1b[0m |',
+                          '+--------+--------+--------+'])
     print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
     assert_equal(expected, formatted)
 
@@ -51,11 +51,11 @@ def test_iter_of_iters_with_headers():
             yield h
 
     formatted = tabulate(mk_iter_of_iters(), headers=mk_headers())
-    expected = u'\n'.join([u'  a    b    c',
-                           u'---  ---  ---',
-                           u'  0    1    2',
-                           u'  0    1    2',
-                           u'  0    1    2'])
+    expected = '\n'.join(['  a    b    c',
+                          '---  ---  ---',
+                          '  0    1    2',
+                          '  0    1    2',
+                          '  0    1    2'])
     print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
     assert_equal(expected, formatted)
 
@@ -67,9 +67,9 @@ def test_datetime_values():
     d = datetime.date(1991,2,19)
     t = datetime.time(17,35,26)
     formatted = tabulate([[dt, d, t]])
-    expected = u'\n'.join([u'-------------------  ----------  --------',
-                           u'1991-02-19 17:35:26  1991-02-19  17:35:26',
-                           u'-------------------  ----------  --------'])
+    expected = '\n'.join(['-------------------  ----------  --------',
+                          '1991-02-19 17:35:26  1991-02-19  17:35:26',
+                          '-------------------  ----------  --------'])
     print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
     assert_equal(expected, formatted)
 
@@ -77,9 +77,9 @@ def test_datetime_values():
 def test_simple_separated_format():
     "Regression: simple_separated_format() accepts any separator (issue #12)"
     from tabulate import simple_separated_format
-    fmt = simple_separated_format(u"!")
-    expected = u'spam!eggs'
-    formatted = tabulate([[u"spam", u"eggs"]], tablefmt=fmt)
+    fmt = simple_separated_format("!")
+    expected = 'spam!eggs'
+    formatted = tabulate([["spam", "eggs"]], tablefmt=fmt)
     print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
     assert_equal(expected, formatted)
 
@@ -95,7 +95,7 @@ def py3test_require_py3():
 def test_simple_separated_format_with_headers():
     "Regression: simple_separated_format() on tables with headers (issue #15)"
     from tabulate import simple_separated_format
-    expected = u'  a|  b\n  1|  2'
+    expected = '  a|  b\n  1|  2'
     formatted = tabulate([[1,2]], headers=["a", "b"], tablefmt=simple_separated_format("|"))
     assert_equal(expected, formatted)
 

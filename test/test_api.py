@@ -20,7 +20,7 @@ def test_tabulate_formats():
     print("tabulate_formats = %r" % supported)
     assert type(supported) is list
     for fmt in supported:
-        assert type(fmt) is type(u"")
+        assert type(fmt) is type("")
 
 
 def _check_signature(function, expected_sig):
