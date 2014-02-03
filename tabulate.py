@@ -249,7 +249,7 @@ def _type(string, has_invisible=True):
     True
     >>> _type("1") is type(1)
     True
-    >>> _type(u'\x1b[31m42\x1b[0m') is type(42)
+    >>> _type('\x1b[31m42\x1b[0m') is type(42)
     True
     >>> _type('\x1b[31m42\x1b[0m') is type(42)
     True
@@ -304,7 +304,7 @@ def _afterpoint(string):
 def _padleft(width, s, has_invisible=True):
     """Flush right.
 
-    >>> _padleft(6, u'\u044f\u0439\u0446\u0430') == u'  \u044f\u0439\u0446\u0430'
+    >>> _padleft(6, '\u044f\u0439\u0446\u0430') == '  \u044f\u0439\u0446\u0430'
     True
 
     """
@@ -316,7 +316,7 @@ def _padleft(width, s, has_invisible=True):
 def _padright(width, s, has_invisible=True):
     """Flush left.
 
-    >>> _padright(6, u'\u044f\u0439\u0446\u0430') == u'\u044f\u0439\u0446\u0430  '
+    >>> _padright(6, '\u044f\u0439\u0446\u0430') == '\u044f\u0439\u0446\u0430  '
     True
 
     """
@@ -328,7 +328,7 @@ def _padright(width, s, has_invisible=True):
 def _padboth(width, s, has_invisible=True):
     """Center string.
 
-    >>> _padboth(6, u'\u044f\u0439\u0446\u0430') == u' \u044f\u0439\u0446\u0430 '
+    >>> _padboth(6, '\u044f\u0439\u0446\u0430') == ' \u044f\u0439\u0446\u0430 '
     True
 
     """
@@ -412,7 +412,7 @@ def _column_type(strings, has_invisible=True):
     True
     >>> _column_type(["1", "2.3", "four"]) is _text_type
     True
-    >>> _column_type(["four", u'\u043f\u044f\u0442\u044c']) is _text_type
+    >>> _column_type(["four", '\u043f\u044f\u0442\u044c']) is _text_type
     True
     >>> _column_type([None, "brux"]) is _text_type
     True
@@ -432,9 +432,9 @@ def _format(val, valtype, floatfmt, missingval=""):
 
     Unicode is supported:
 
-    >>> hrow = [u'\u0431\u0443\u043a\u0432\u0430', u'\u0446\u0438\u0444\u0440\u0430'] ; \
-        tbl = [[u'\u0430\u0437', 2], [u'\u0431\u0443\u043a\u0438', 4]] ; \
-        good_result = u'\\u0431\\u0443\\u043a\\u0432\\u0430      \\u0446\\u0438\\u0444\\u0440\\u0430\\n-------  -------\\n\\u0430\\u0437             2\\n\\u0431\\u0443\\u043a\\u0438           4' ; \
+    >>> hrow = ['\u0431\u0443\u043a\u0432\u0430', '\u0446\u0438\u0444\u0440\u0430'] ; \
+        tbl = [['\u0430\u0437', 2], ['\u0431\u0443\u043a\u0438', 4]] ; \
+        good_result = '\\u0431\\u0443\\u043a\\u0432\\u0430      \\u0446\\u0438\\u0444\\u0440\\u0430\\n-------  -------\\n\\u0430\\u0437             2\\n\\u0431\\u0443\\u043a\\u0438           4' ; \
         tabulate(tbl, headers=hrow) == good_result
     True
 
