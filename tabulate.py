@@ -4,7 +4,7 @@
 
 from __future__ import print_function
 from __future__ import unicode_literals
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 from platform import python_version_tuple
 import re
 
@@ -472,6 +472,10 @@ def _normalize_tabular_data(tabular_data, headers):
 
     * list of named tuples (usually used with headers="keys")
 
+    * list of dicts (usually used with headers="keys")
+
+    * list of OrderedDicts (usually used with headers="keys")
+
     * 2D NumPy arrays
 
     * NumPy record arrays (usually used with headers="keys")
@@ -516,6 +520,31 @@ def _normalize_tabular_data(tabular_data, headers):
               and isinstance(rows[0], tuple)
               and hasattr(rows[0], "_fields")): # namedtuple
             headers = list(map(_text_type, rows[0]._fields))
+        elif (len(rows) > 0
+              and isinstance(rows[0], OrderedDict)):
+              # OrderedDict
+            mmap = {} # implements hashed lookup
+            keys = [] # storage for set
+            for row in rows :
+                for k in row.keys():
+                    #Save unique items in input order
+                    if k not in mmap:
+                        mmap[k] = 1
+                        keys.append(k)
+            keys = list(map(_text_type, keys))
+            rows = [[row.get(k) for k in keys] for row in rows]
+            if headers == 'keys' :
+                headers = keys
+        elif (len(rows) > 0
+              and isinstance(rows[0], dict)):
+              # dict
+            keys = set()
+            for row in rows :
+                keys.update(row.keys())
+            keys = list(map(_text_type, keys))
+            rows = [[row.get(k) for k in keys] for row in rows]
+            if headers == 'keys' :
+                headers = keys
         elif headers == "keys" and len(rows) > 0:  # keys are column indices
             headers = list(map(_text_type, range(len(rows[0]))))
 

@@ -334,3 +334,43 @@ def test_list_of_namedtuples_keys():
     print("Expected:\n%s\n" % expected)
     print("Got:\n%s\n" % result)
     assert expected == result
+
+def test_list_of_dicts():
+    "Input: a list of dictionaries."
+    lod = [{'foo' : 1, 'bar' : 2}, {'foo' : 3, 'bar' : 4}]
+    expected = "\n".join([
+        '-  -',
+        '1  2',
+        '3  4',
+        '-  -'])
+    result = tabulate(lod)
+    print("Expected:\n%s\n" % expected)
+    print("Got:\n%s\n" % result)
+    assert expected == result
+
+def test_list_of_dicts_keys():
+    "Input: a list of dictionaries, with keys as headers."
+    lod = [{'foo' : 1, 'bar' : 2}, {'foo' : 3, 'bar' : 4}]
+    expected = "\n".join([
+        '  foo    bar',
+        '-----  -----',
+        '    1      2',
+        '    3      4'])
+    result = tabulate(lod, headers="keys")
+    print("Expected:\n%s\n" % expected)
+    print("Got:\n%s\n" % result)
+    assert expected == result
+
+def test_list_of_dicts_with_different_keys():
+    "Input: a list of dictionaries, with keys as headers."
+    from collections import OrderedDict
+    lod = [OrderedDict([('foo', 2)]), OrderedDict([('bar', 3)])]
+    expected = "\n".join([
+        '  foo    bar',
+        '-----  -----',
+        '    2',
+        '           3'])
+    result = tabulate(lod, headers="keys")
+    print("Expected:\n%s\n" % expected)
+    print("Got:\n%s\n" % result)
+    assert expected == result
