@@ -4,7 +4,7 @@
 
 from __future__ import print_function
 from __future__ import unicode_literals
-from collections import namedtuple, OrderedDict
+from collections import namedtuple
 from platform import python_version_tuple
 import re
 
@@ -521,8 +521,8 @@ def _normalize_tabular_data(tabular_data, headers):
               and hasattr(rows[0], "_fields")): # namedtuple
             headers = list(map(_text_type, rows[0]._fields))
         elif (len(rows) > 0
-              and isinstance(rows[0], OrderedDict)):
-              # OrderedDict
+              and isinstance(rows[0], dict)):
+              # works for dict and OrderedDict
             mmap = {} # implements hashed lookup
             keys = [] # storage for set
             for row in rows :
@@ -531,16 +531,6 @@ def _normalize_tabular_data(tabular_data, headers):
                     if k not in mmap:
                         mmap[k] = 1
                         keys.append(k)
-            keys = list(map(_text_type, keys))
-            rows = [[row.get(k) for k in keys] for row in rows]
-            if headers == 'keys' :
-                headers = keys
-        elif (len(rows) > 0
-              and isinstance(rows[0], dict)):
-              # dict
-            keys = set()
-            for row in rows :
-                keys.update(row.keys())
             keys = list(map(_text_type, keys))
             rows = [[row.get(k) for k in keys] for row in rows]
             if headers == 'keys' :
