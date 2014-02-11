@@ -363,8 +363,7 @@ def test_list_of_dicts_keys():
 
 def test_list_of_dicts_with_different_keys():
     "Input: a list of dictionaries, with keys as headers."
-    from collections import OrderedDict
-    lod = [OrderedDict([('foo', 2)]), OrderedDict([('bar', 3)])]
+    lod = [{"foo": 2}, {"bar": 3}]
     expected = "\n".join([
         '  foo    bar',
         '-----  -----',
