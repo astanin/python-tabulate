@@ -55,9 +55,10 @@ and outputs a nicely formatted plain-text table::
 The following tabular data types are supported:
 
 * list of lists or another iterable of iterables
-* dict of iterables
+* list or another iterable of dicts (keys as columns)
+* dict of iterables (keys as columns)
 * two-dimensional NumPy array
-* NumPy record arrays
+* NumPy record arrays (names as columns)
 * pandas.DataFrame
 
 Examples in this file use Python2. Tabulate supports Python3 too (Python >= 3.3).
@@ -89,7 +90,7 @@ If ``headers="firstrow"``, then the first row of data is used::
 
 If ``headers="keys"``, then the keys of a dictionary/dataframe, or
 column indices are used. It also works for NumPy record arrays and
-lists of named tuples::
+lists of dictionaries or named tuples::
 
     >>> print tabulate({"Name": ["Alice", "Bob"],
     ...                 "Age": [24, 19]}, headers="keys")
@@ -333,6 +334,7 @@ and numeric data, ``tabulate`` appears to be slower than
 Version history
 ---------------
 
+- 0.7.3: Iterables of dictionaries.
 - 0.7.2: Python 3.2 Support.
 - 0.7.1: Bug fixes. ``tsv`` format. Column alignment can be disabled.
 - 0.7: ``latex`` tables. Printing lists of named tuples and NumPy
@@ -352,4 +354,4 @@ Version history
 Contributors
 ------------
 
-Sergey Astanin, Pau Tallada Crespí, Erwin Marsi, Mik Kocikowski, Bill Ryder.
+Sergey Astanin, Pau Tallada Crespí, Erwin Marsi, Mik Kocikowski, Bill Ryder, Zach Dwiel.
