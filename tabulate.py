@@ -552,7 +552,7 @@ def _normalize_tabular_data(tabular_data, headers):
         headers = list(map(_text_type, rows[0])) # headers should be strings
         rows = rows[1:]
 
-    headers = list(headers)
+    headers = list(map(_text_type,headers))
     rows = list(map(list,rows))
 
     # pad with empty headers for initial columns if necessary

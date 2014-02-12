@@ -106,3 +106,22 @@ def test_column_type_of_bytestring_columns():
     result = _column_type([b"foo", b"bar"])
     expected = _binary_type
     assert_equal(result, expected)
+
+
+def test_numeric_column_headers():
+    "Regression: numbers as column headers (issue #22)"
+    result = tabulate([[1],[2]], [42])
+    expected = '  42\n----\n   1\n   2'
+    assert_equal(result, expected)
+
+    lod = [dict((p,i) for p in range(5)) for i in range(5)]
+    result = tabulate(lod, "keys")
+    expected = "\n".join([
+        "  0    1    2    3    4",
+        "---  ---  ---  ---  ---",
+        "  0    0    0    0    0",
+        "  1    1    1    1    1",
+        "  2    2    2    2    2",
+        "  3    3    3    3    3",
+        "  4    4    4    4    4",])
+    assert_equal(result, expected)
