@@ -17,9 +17,7 @@ def test_iterable_of_iterables():
          '5  4  3  2  1',
          '-  -  -  -  -'])
     result   = tabulate(ii)
-    print("Expected:\n%s\n" % expected)
-    print("Got:\n%s\n" % result)
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_iterable_of_iterables_headers():
@@ -31,9 +29,7 @@ def test_iterable_of_iterables_headers():
          '  0    1    2    3    4',
          '  5    4    3    2    1'])
     result   = tabulate(ii, "abcde")
-    print("Expected:\n%s\n" % expected)
-    print("Got:\n%s\n" % result)
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_iterable_of_iterables_firstrow():
@@ -45,9 +41,7 @@ def test_iterable_of_iterables_firstrow():
          '  0    1    2    3    4',
          '  5    4    3    2    1'])
     result   = tabulate(ii, "firstrow")
-    print("Expected:\n%s\n" % expected)
-    print("Got:\n%s\n" % result)
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_list_of_lists():
@@ -59,9 +53,7 @@ def test_list_of_lists():
         'a   one              1',
         'b   two'])
     result   = tabulate(ll, headers=["string","number"])
-    print("Expected:\n%s\n" % expected)
-    print("Got:\n%s\n" % result)
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_list_of_lists_firstrow():
@@ -73,9 +65,7 @@ def test_list_of_lists_firstrow():
         'a   one              1',
         'b   two'])
     result   = tabulate(ll, headers="firstrow")
-    print("Expected:\n%s\n" % expected)
-    print("Got:\n%s\n" % result)
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_list_of_lists_keys():
@@ -87,9 +77,7 @@ def test_list_of_lists_keys():
         'a    one    1',
         'b    two'])
     result   = tabulate(ll, headers="keys")
-    print("Expected:\n%s\n" % expected)
-    print("Got:\n%s\n" % result)
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_dict_like():
@@ -129,9 +117,7 @@ def test_numpy_2d():
             ' 32     62.5  108',
             '171.5  256    364.5'])
         result   = tabulate(na, ["a", "b", "c"])
-        print("Expected:\n%s\n" % expected)
-        print("Got:\n%s\n" % result)
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         print("test_numpy_2d is skipped")
         pass   # this test is optional
@@ -148,9 +134,7 @@ def test_numpy_2d_firstrow():
             ' 64  125   216',
             '343  512   729'])
         result   = tabulate(na, headers="firstrow")
-        print("Expected:\n%s\n" % expected)
-        print("Got:\n%r\n" % result)
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         print("test_numpy_2d_firstrow is skipped")
         pass   # this test is optional
@@ -168,9 +152,7 @@ def test_numpy_2d_keys():
             ' 32     62.5  108',
             '171.5  256    364.5'])
         result   = tabulate(na, headers="keys")
-        print("Expected:\n%s\n" % expected)
-        print("Got:\n%s\n" % result)
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         print("test_numpy_2d_keys is skipped")
         pass   # this test is optional
@@ -190,9 +172,7 @@ def test_numpy_record_array():
             "Bob    27  175",
             "-----  --  -----" ])
         result   = tabulate(na)
-        print("Expected:\n%s\n" % expected)
-        print("Got:\n%s\n" % result)
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         print("test_numpy_2d_keys is skipped")
         pass   # this test is optional
@@ -212,9 +192,7 @@ def test_numpy_record_array_keys():
             "Alice      23     169.5",
             "Bob        27     175"  ])
         result   = tabulate(na, headers="keys")
-        print("Expected:\n%s\n" % expected)
-        print("Got:\n%s\n" % result)
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         print("test_numpy_2d_keys is skipped")
         pass   # this test is optional
@@ -234,9 +212,7 @@ def test_numpy_record_array_headers():
             "Alice          23  169.5",
             "Bob            27  175" ])
         result   = tabulate(na, headers=["person", "years", "cm"])
-        print("Expected:\n%s\n" % expected)
-        print("Got:\n%s\n" % result)
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         print("test_numpy_2d_keys is skipped")
         pass   # this test is optional
@@ -253,9 +229,7 @@ def test_pandas():
             'a   one              1',
             'b   two            nan'])
         result   = tabulate(df, headers=["string", "number"])
-        print("Expected:\n%s\n" % expected)
-        print("Got:\n%s\n" % result)
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         print("test_pandas is skipped")
         pass   # this test is optional
@@ -273,9 +247,7 @@ def test_pandas_firstrow():
             '---  -----  -----',
             'b    two      nan'])
         result   = tabulate(df, headers="firstrow")
-        print("Expected:\n%s\n" % expected)
-        print("Got:\n%s\n" % result)
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         print("test_pandas_firstrow is skipped")
         pass   # this test is optional
@@ -294,9 +266,7 @@ def test_pandas_keys():
              'a   one              1',
              'b   two            nan'])
         result   = tabulate(df, headers="keys")
-        print("Expected:\n%s\n" % expected)
-        print("Got:\n%s\n" % result)
-        assert expected == result
+        assert_equal(expected, result)
     except ImportError:
         print("test_pandas_keys is skipped")
         pass   # this test is optional
@@ -313,9 +283,7 @@ def test_list_of_namedtuples():
         '3  4',
         '-  -'])
     result = tabulate(lt)
-    print("Expected:\n%s\n" % expected)
-    print("Got:\n%s\n" % result)
-    assert expected == result
+    assert_equal(expected, result)
 
 
 def test_list_of_namedtuples_keys():
@@ -329,9 +297,8 @@ def test_list_of_namedtuples_keys():
         '    1      2',
         '    3      4'])
     result = tabulate(lt, headers="keys")
-    print("Expected:\n%s\n" % expected)
-    print("Got:\n%s\n" % result)
-    assert expected == result
+    assert_equal(expected, result)
+
 
 def test_list_of_dicts():
     "Input: a list of dictionaries."
