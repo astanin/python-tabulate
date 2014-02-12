@@ -15,7 +15,7 @@ if python_version_tuple()[:2] >= ('2', '7'):
 
 
 setup(name='tabulate',
-   version='0.7.2',
+   version='0.7.3',
    description='Pretty-print tabular data',
    long_description=LONG_DESCRIPTION,
    author='Sergey Astanin',
