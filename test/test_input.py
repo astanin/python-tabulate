@@ -345,3 +345,17 @@ def test_list_of_dicts_with_missing_keys():
         '    4             3'])
     result = tabulate(lod, headers="keys")
     assert_equal(expected, result)
+
+
+def test_py27orlater_list_of_ordereddicts():
+    "Input: a list of OrderedDicts."
+    from collections import OrderedDict
+    od = OrderedDict([('b', 1), ('a', 2)])
+    lod = [od, od]
+    expected = "\n".join([
+        '  b    a',
+        '---  ---',
+        '  1    2',
+        '  1    2'])
+    result = tabulate(lod, headers="keys")
+    assert_equal(expected, result)
