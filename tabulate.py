@@ -518,24 +518,33 @@ def _normalize_tabular_data(tabular_data, headers):
         elif (headers == "keys"
               and len(rows) > 0
               and isinstance(rows[0], tuple)
-              and hasattr(rows[0], "_fields")): # namedtuple
+              and hasattr(rows[0], "_fields")):
+            # namedtuple
             headers = list(map(_text_type, rows[0]._fields))
         elif (len(rows) > 0
               and isinstance(rows[0], dict)):
-              # works for dict and OrderedDict
-            mmap = {} # implements hashed lookup
+            # dict or OrderedDict
+            uniq_keys = set() # implements hashed lookup
             keys = [] # storage for set
-            for row in rows :
+            if headers == "firstrow":
+                firstdict = rows[0] if len(rows) > 0 else {}
+                keys.extend(firstdict.keys())
+                uniq_keys.update(keys)
+                rows = rows[1:]
+            for row in rows:
                 for k in row.keys():
                     #Save unique items in input order
-                    if k not in mmap:
-                        mmap[k] = 1
+                    if k not in uniq_keys:
                         keys.append(k)
-            keys = list(map(_text_type, keys))
-            rows = [[row.get(k) for k in keys] for row in rows]
-            if headers == 'keys' :
+                        uniq_keys.add(k)
+            if headers == 'keys':
                 headers = keys
-        elif headers == "keys" and len(rows) > 0:  # keys are column indices
+            elif headers == "firstrow" and len(rows) > 0:
+                headers = [firstdict.get(k, k) for k in keys]
+                headers = list(map(_text_type, headers))
+            rows = [[row.get(k) for k in keys] for row in rows]
+        elif headers == "keys" and len(rows) > 0:
+            # keys are column indices
             headers = list(map(_text_type, range(len(rows[0]))))
 
     # take headers from the first row if necessary
