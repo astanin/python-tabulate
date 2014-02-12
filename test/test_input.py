@@ -347,6 +347,22 @@ def test_list_of_dicts_with_missing_keys():
     assert_equal(expected, result)
 
 
+def test_list_of_dicts_firstrow():
+    "Input: a list of dictionaries, with the first dict as headers."
+    lod = [{'foo' : "FOO", 'bar' : "BAR"}, {'foo' : 3, 'bar': 4, 'baz': 5}]
+    # if some key is missing in the first dict, use the key name instead
+    expected1 = "\n".join([
+        '  FOO    BAR    baz',
+        '-----  -----  -----',
+        '    3      4      5'])
+    expected2 = "\n".join([
+        '  BAR    FOO    baz',
+        '-----  -----  -----',
+        '    4      3      5'])
+    result = tabulate(lod, headers="firstrow")
+    assert_in(result, [expected1, expected2])
+
+
 def test_py27orlater_list_of_ordereddicts():
     "Input: a list of OrderedDicts."
     from collections import OrderedDict
