@@ -5,6 +5,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 from tabulate import tabulate
+from common import assert_equal, assert_in
 
 
 def test_iterable_of_iterables():
@@ -113,10 +114,7 @@ def test_dict_like():
         '104'])
     result    = tabulate(dd, "keys")
     print("Keys' order: %s" % dd.keys())
-    print("Expected 1:\n%s\n" % expected1)
-    print("Expected 2:\n%s\n" % expected2)
-    print("Got:\n%s\n" % result)
-    assert result in [expected1, expected2]
+    assert_in(result, [expected1, expected2])
 
 
 def test_numpy_2d():
@@ -338,30 +336,38 @@ def test_list_of_namedtuples_keys():
 def test_list_of_dicts():
     "Input: a list of dictionaries."
     lod = [{'foo' : 1, 'bar' : 2}, {'foo' : 3, 'bar' : 4}]
-    expected = "\n".join([
+    expected1 = "\n".join([
         '-  -',
         '1  2',
         '3  4',
         '-  -'])
+    expected2 = "\n".join([
+        '-  -',
+        '2  1',
+        '4  3',
+        '-  -'])
     result = tabulate(lod)
-    print("Expected:\n%s\n" % expected)
-    print("Got:\n%s\n" % result)
-    assert expected == result
+    assert_in(result, [expected1, expected2])
+
 
 def test_list_of_dicts_keys():
     "Input: a list of dictionaries, with keys as headers."
     lod = [{'foo' : 1, 'bar' : 2}, {'foo' : 3, 'bar' : 4}]
-    expected = "\n".join([
+    expected1 = "\n".join([
         '  foo    bar',
         '-----  -----',
         '    1      2',
         '    3      4'])
+    expected2 = "\n".join([
+        '  bar    foo',
+        '-----  -----',
+        '    2      1',
+        '    4      3'])
     result = tabulate(lod, headers="keys")
-    print("Expected:\n%s\n" % expected)
-    print("Got:\n%s\n" % result)
-    assert expected == result
+    assert_in(result, [expected1, expected2])
 
-def test_list_of_dicts_with_different_keys():
+
+def test_list_of_dicts_with_missing_keys():
     "Input: a list of dictionaries, with keys as headers."
     lod = [{"foo": 2}, {"bar": 3}]
     expected = "\n".join([
@@ -370,6 +376,4 @@ def test_list_of_dicts_with_different_keys():
         '    2',
         '           3'])
     result = tabulate(lod, headers="keys")
-    print("Expected:\n%s\n" % expected)
-    print("Got:\n%s\n" % result)
-    assert expected == result
+    assert_equal(expected, result)
