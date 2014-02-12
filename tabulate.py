@@ -570,8 +570,9 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
 
     The first required argument (`tabular_data`) can be a
     list-of-lists (or another iterable of iterables), a list of named
-    tuples, a dictionary of iterables, a two-dimensional NumPy array,
-    NumPy record array, or a Pandas' dataframe.
+    tuples, a dictionary of iterables, an iterable of dictionaries,
+    a two-dimensional NumPy array, NumPy record array, or a Pandas'
+    dataframe.
 
 
     Table headers
