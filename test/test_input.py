@@ -335,12 +335,13 @@ def test_list_of_dicts_keys():
 
 
 def test_list_of_dicts_with_missing_keys():
-    "Input: a list of dictionaries, with keys as headers."
-    lod = [{"foo": 2}, {"bar": 3}]
+    "Input: a list of dictionaries, with missing keys."
+    lod = [{"foo": 1}, {"bar": 2}, {"foo":4, "baz": 3}]
     expected = "\n".join([
-        '  foo    bar',
-        '-----  -----',
-        '    2',
-        '           3'])
+        '  foo    bar    baz',
+        '-----  -----  -----',
+        '    1',
+        '           2',
+        '    4             3'])
     result = tabulate(lod, headers="keys")
     assert_equal(expected, result)
