@@ -61,7 +61,7 @@ The following tabular data types are supported:
 * NumPy record arrays (names as columns)
 * pandas.DataFrame
 
-Examples in this file use Python2. Tabulate supports Python3 too (Python >= 3.3).
+Examples in this file use Python2. Tabulate supports Python3 too.
 
 
 Headers
