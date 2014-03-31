@@ -207,8 +207,8 @@ _table_formats = {"simple":
 tabulate_formats = list(sorted(_table_formats.keys()))
 
 
-_invisible_codes = re.compile("\x1b\[\d*m")  # ANSI color codes
-_invisible_codes_bytes = re.compile(b"\x1b\[\d*m")  # ANSI color codes
+_invisible_codes = re.compile(r"\x1b\[\d*m|\x1b\[\d*\;\d*\;\d*m")  # ANSI color codes
+_invisible_codes_bytes = re.compile(b"\x1b\[\d*m|\x1b\[\d*\;\d*\;\d*m")  # ANSI color codes
 
 
 def simple_separated_format(separator):
