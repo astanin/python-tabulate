@@ -31,6 +31,9 @@ __all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
 __version__ = "0.7.3"
 
 
+MIN_PADDING = 2
+
+
 Line = namedtuple("Line", ["begin", "hline", "sep", "end"])
 
 
@@ -764,7 +767,8 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
     \\end{tabular}
 
     """
-
+    if tabular_data is None:
+        tabular_data = []
     list_of_lists, headers = _normalize_tabular_data(tabular_data, headers)
 
     # optimization: look for ANSI control codes once,
@@ -785,15 +789,17 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
 
     # align columns
     aligns = [numalign if ct in [int,float] else stralign for ct in coltypes]
-    minwidths = [width_fn(h)+2 for h in headers] if headers else [0]*len(cols)
+    minwidths = [width_fn(h) + MIN_PADDING for h in headers] if headers else [0]*len(cols)
     cols = [_align_column(c, a, minw, has_invisible)
             for c, a, minw in zip(cols, aligns, minwidths)]
 
     if headers:
         # align headers and add headers
-        minwidths = [max(minw, width_fn(c[0])) for minw, c in zip(minwidths, cols)]
+        t_cols = cols or [['']] * len(headers)
+        t_aligns = aligns or [stralign] * len(headers)
+        minwidths = [max(minw, width_fn(c[0])) for minw, c in zip(minwidths, t_cols)]
         headers = [_align_header(h, a, minw)
-                   for h, a, minw in zip(headers, aligns, minwidths)]
+                   for h, a, minw in zip(headers, t_aligns, minwidths)]
         rows = list(zip(*cols))
     else:
         minwidths = [width_fn(c[0]) for c in cols]

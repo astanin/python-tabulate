@@ -189,6 +189,36 @@ def test_latex_headerless():
     assert_equal(expected, result)
 
 
+def test_no_data():
+    "Output: table with no data"
+    expected = "\n".join(['strings    numbers',
+                          '---------  ---------'])
+    result = tabulate(None, _test_table_headers, tablefmt="simple")
+    assert_equal(expected, result)
+
+
+def test_empty_data():
+    "Output: table with empty data"
+    expected = "\n".join(['strings    numbers',
+                          '---------  ---------'])
+    result = tabulate([], _test_table_headers, tablefmt="simple")
+    assert_equal(expected, result)
+
+
+def test_no_data_without_headers():
+    "Output: table with no data and no headers"
+    expected = "\n"
+    result = tabulate(None, tablefmt="simple")
+    assert_equal(expected, result)
+
+
+def test_empty_data_without_headers():
+    "Output: table with empty data and no headers"
+    expected = "\n"
+    result = tabulate([], tablefmt="simple")
+    assert_equal(expected, result)
+
+
 def test_floatfmt():
     "Output: floating point format"
     result = tabulate([['1.23456789'],[1.0]], floatfmt=".3f", tablefmt="plain")
