@@ -215,7 +215,7 @@ def _isconvertible(conv, string):
     try:
         n = conv(string)
         return True
-    except ValueError:
+    except (ValueError, TypeError):
         return False
 
 
