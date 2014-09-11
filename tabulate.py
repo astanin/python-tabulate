@@ -108,11 +108,10 @@ def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
     return (separator + colsep.join(values_with_attrs)).rstrip()
 
 
-def _latex_line_begin_tabular(colwidths, colaligns):
+def _latex_line_begin_tabular(colwidths, colaligns,booktabs=False):
     alignment = { "left": "l", "right": "r", "center": "c", "decimal": "r" }
     tabular_columns_fmt = "".join([alignment.get(a, "l") for a in colaligns])
-    return "\\begin{tabular}{" + tabular_columns_fmt + "}\n\hline"
-
+    return "\\begin{tabular}{" + tabular_columns_fmt + "}\n" + "\\toprule" if booktabs else "\hline"
 
 _table_formats = {"simple":
                   TableFormat(lineabove=Line("", "-", "  ", ""),
@@ -567,7 +566,7 @@ def _normalize_tabular_data(tabular_data, headers):
 
 def tabulate(tabular_data, headers=[], tablefmt="simple",
              floatfmt="g", numalign="decimal", stralign="left",
-             missingval=""):
+             missingval="",booktabs="False"):
     """Format a fixed width table for pretty printing.
 
     >>> print(tabulate([[1, 2.34], [-56, "8.999"], ["2", "10001"]]))
@@ -764,6 +763,16 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
     \\end{tabular}
 
     """
+    # If users have the booktabs package loaded in LaTeX and set the booktabs argument to True,
+    # modify the rules inserted into the table.
+    if booktabs:
+        _table_formats["latex"] = TableFormat(lineabove=lambda x,y:_latex_line_begin_tabular(x,y,True),
+                                                linebelowheader=Line("\\midrule", "", "", ""),
+                                                linebetweenrows=None,
+                                                linebelow=Line("\\bottomrule\\end{tabular}", "", "", ""),
+                                                headerrow=DataRow("", "&", "\\\\"),
+                                                datarow=DataRow("", "&", "\\\\"),
+                                                padding=1, with_header_hide=None)
 
     list_of_lists, headers = _normalize_tabular_data(tabular_data, headers)
 
