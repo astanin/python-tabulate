@@ -171,13 +171,21 @@ _table_formats = {"simple":
                               datarow=partial(_mediawiki_row_with_attrs, "|"),
                               padding=0, with_header_hide=None),
                   "latex":
-                  TableFormat(lineabove=_latex_line_begin_tabular,
+                  TableFormat(lineabove=lambda x,y:_latex_line_begin_tabular(x,y,False),
                               linebelowheader=Line("\\hline", "", "", ""),
                               linebetweenrows=None,
                               linebelow=Line("\\hline\n\\end{tabular}", "", "", ""),
                               headerrow=DataRow("", "&", "\\\\"),
                               datarow=DataRow("", "&", "\\\\"),
                               padding=1, with_header_hide=None),
+                "latex_booktabs":
+                TableFormat(lineabove=lambda x,y:_latex_line_begin_tabular(x,y,True),
+                                                        linebelowheader=Line("\\midrule", "", "", ""),
+                                                        linebetweenrows=None,
+                                                        linebelow=Line("\\bottomrule\n\\end{tabular}", "", "", ""),
+                                                        headerrow=DataRow("", "&", "\\\\"),
+                                                        datarow=DataRow("", "&", "\\\\"),
+                                                        padding=1, with_header_hide=None),
                   "tsv":
                   TableFormat(lineabove=None, linebelowheader=None,
                               linebetweenrows=None, linebelow=None,
@@ -566,7 +574,7 @@ def _normalize_tabular_data(tabular_data, headers):
 
 def tabulate(tabular_data, headers=[], tablefmt="simple",
              floatfmt="g", numalign="decimal", stralign="left",
-             missingval="",booktabs="False"):
+             missingval=""):
     """Format a fixed width table for pretty printing.
 
     >>> print(tabulate([[1, 2.34], [-56, "8.999"], ["2", "10001"]]))
@@ -636,7 +644,7 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
 
     Various plain-text table formats (`tablefmt`) are supported:
     'plain', 'simple', 'grid', 'pipe', 'orgtbl', 'rst', 'mediawiki',
-    and 'latex'. Variable `tabulate_formats` contains the list of
+     'latex', and 'latex_booktabs'. Variable `tabulate_formats` contains the list of
     currently supported formats.
 
     "plain" format doesn't use any pseudographics to draw tables,
@@ -762,17 +770,17 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
     \\hline
     \\end{tabular}
 
+    "latex_booktabs" produces a tabular environment of LaTeX document markup
+    using the booktabs.sty package:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="latex_booktabs"))
+    \\begin{tabular}{lr}
+    \\toprule
+     spam &  41.9999 \\\\
+     eggs & 451      \\\\
+    \\bottomrule
+    \end{tabular}
     """
-    # If users have the booktabs package loaded in LaTeX and set the booktabs argument to True,
-    # modify the rules inserted into the table.
-    if booktabs:
-        _table_formats["latex"] = TableFormat(lineabove=lambda x,y:_latex_line_begin_tabular(x,y,True),
-                                                linebelowheader=Line("\\midrule", "", "", ""),
-                                                linebetweenrows=None,
-                                                linebelow=Line("\\bottomrule\\end{tabular}", "", "", ""),
-                                                headerrow=DataRow("", "&", "\\\\"),
-                                                datarow=DataRow("", "&", "\\\\"),
-                                                padding=1, with_header_hide=None)
 
     list_of_lists, headers = _normalize_tabular_data(tabular_data, headers)
 
