@@ -111,10 +111,11 @@ def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
     return (separator + colsep.join(values_with_attrs)).rstrip()
 
 
-def _latex_line_begin_tabular(colwidths, colaligns,booktabs=False):
+def _latex_line_begin_tabular(colwidths, colaligns, booktabs=False):
     alignment = { "left": "l", "right": "r", "center": "c", "decimal": "r" }
     tabular_columns_fmt = "".join([alignment.get(a, "l") for a in colaligns])
-    return "\\begin{tabular}{" + tabular_columns_fmt + "}\n" + "\\toprule" if booktabs else "\hline"
+    return "\n".join(["\\begin{tabular}{" + tabular_columns_fmt + "}",
+                      "\\toprule" if booktabs else "\hline"])
 
 LATEX_ESCAPE_RULES = {r"&": r"\&", r"%": r"\%", r"$": r"\$", r"#": r"\#",
                       r"_": r"\_", r"^": r"\^{}", r"{": r"\{", r"}": r"\}",
@@ -188,21 +189,21 @@ _table_formats = {"simple":
                               datarow=partial(_mediawiki_row_with_attrs, "|"),
                               padding=0, with_header_hide=None),
                   "latex":
-                  TableFormat(lineabove=lambda x,y:_latex_line_begin_tabular(x,y,False),
+                  TableFormat(lineabove=_latex_line_begin_tabular,
                               linebelowheader=Line("\\hline", "", "", ""),
                               linebetweenrows=None,
                               linebelow=Line("\\hline\n\\end{tabular}", "", "", ""),
                               headerrow=_latex_row,
                               datarow=_latex_row,
                               padding=1, with_header_hide=None),
-                "latex_booktabs":
-                TableFormat(lineabove=lambda x,y:_latex_line_begin_tabular(x,y,True),
-                                                        linebelowheader=Line("\\midrule", "", "", ""),
-                                                        linebetweenrows=None,
-                                                        linebelow=Line("\\bottomrule\n\\end{tabular}", "", "", ""),
-                                                        headerrow=DataRow("", "&", "\\\\"),
-                                                        datarow=DataRow("", "&", "\\\\"),
-                                                        padding=1, with_header_hide=None),
+                  "latex_booktabs":
+                  TableFormat(lineabove=partial(_latex_line_begin_tabular, booktabs=True),
+                              linebelowheader=Line("\\midrule", "", "", ""),
+                              linebetweenrows=None,
+                              linebelow=Line("\\bottomrule\n\\end{tabular}", "", "", ""),
+                              headerrow=_latex_row,
+                              datarow=_latex_row,
+                              padding=1, with_header_hide=None),
                   "tsv":
                   TableFormat(lineabove=None, linebelowheader=None,
                               linebetweenrows=None, linebelow=None,
