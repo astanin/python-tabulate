@@ -559,9 +559,18 @@ def _normalize_tabular_data(tabular_data, headers):
                         uniq_keys.add(k)
             if headers == 'keys':
                 headers = keys
-            elif headers == "firstrow" and len(rows) > 0:
-                headers = [firstdict.get(k, k) for k in keys]
+            elif isinstance(headers, dict):
+                # a dict of headers for a list of dicts
+                headers = [headers.get(k, k) for k in keys]
                 headers = list(map(_text_type, headers))
+            elif headers == "firstrow":
+                if len(rows) > 0:
+                    headers = [firstdict.get(k, k) for k in keys]
+                    headers = list(map(_text_type, headers))
+                else:
+                    headers = []
+            elif headers:
+                raise ValueError('headers for a list of dicts is not a dict or a keyword')
             rows = [[row.get(k) for k in keys] for row in rows]
         elif headers == "keys" and len(rows) > 0:
             # keys are column indices

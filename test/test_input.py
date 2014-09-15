@@ -5,7 +5,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 from tabulate import tabulate
-from common import assert_equal, assert_in
+from common import assert_equal, assert_in, assert_raises
 
 
 def test_iterable_of_iterables():
@@ -361,6 +361,30 @@ def test_list_of_dicts_firstrow():
         '    4      3      5'])
     result = tabulate(lod, headers="firstrow")
     assert_in(result, [expected1, expected2])
+
+
+def test_list_of_dicts_with_dict_of_headers():
+    "Input: a dict of user headers for a list of dicts (issue #23)"
+    table = [{"letters": "ABCDE", "digits": 12345}]
+    headers = {"digits": "DIGITS", "letters": "LETTERS"}
+    expected1 = "\n".join([
+        '  DIGITS  LETTERS',
+        '--------  ---------',
+        '   12345  ABCDE'])
+    expected2 = "\n".join([
+        'LETTERS      DIGITS',
+        '---------  --------',
+        'ABCDE         12345'])
+    result = tabulate(table, headers=headers)
+    assert_in(result, [expected1, expected2])
+
+
+def test_list_of_dicts_with_list_of_headers():
+    "Input: a list of headers for a list of dicts, raise ValueError (issue #23)"
+    table = [{"letters": "ABCDE", "digits": 12345}]
+    headers = ["DIGITS", "LETTERS"]
+    with assert_raises(ValueError):
+        tabulate(table, headers=headers)
 
 
 def test_py27orlater_list_of_ordereddicts():
