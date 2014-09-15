@@ -337,6 +337,7 @@ and numeric data, ``tabulate`` appears to be slower than
 Version history
 ---------------
 
+- 0.7.4: FUTURE VERSION
 - 0.7.3: Bug fixes. Python 3.4 support. Iterables of dicts. ``latex_booktabs`` format.
 - 0.7.2: Python 3.2 support.
 - 0.7.1: Bug fixes. ``tsv`` format. Column alignment can be disabled.
