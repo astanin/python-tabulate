@@ -188,6 +188,31 @@ def test_latex_headerless():
                           r"\end{tabular}"])
     assert_equal(expected, result)
 
+def test_latex_booktabs():
+    "Output: latex with headers, using the booktabs format"
+    result   = tabulate(_test_table, _test_table_headers, tablefmt="latex_booktabs")
+    expected = "\n".join([r"\begin{tabular}{lr}",
+                          r"\toprule",
+                          r" strings   &   numbers \\",
+                          r"\midrule",
+                          r" spam      &   41.9999 \\",
+                          r" eggs      &  451      \\",
+                          r"\bottomrule",
+                          r"\end{tabular}"])
+    assert_equal(expected, result)
+
+
+def test_latex_booktabs_headerless():
+    "Output: latex without headers, using the booktabs format"
+    result   = tabulate(_test_table, tablefmt="latex_booktabs")
+    expected = "\n".join([r"\begin{tabular}{lr}",
+                          r"\toprule",
+                          r" spam &  41.9999 \\",
+                          r" eggs & 451      \\",
+                          r"\bottomrule",
+                          r"\end{tabular}"])
+    assert_equal(expected, result)
+
 
 def test_no_data():
     "Output: table with no data"
