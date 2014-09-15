@@ -127,6 +127,20 @@ def test_numeric_column_headers():
     assert_equal(result, expected)
 
 
+def test_88_256_ANSI_color_codes():
+    "Regression: color codes for terminals with 88/256 colors (issue #26)"
+    colortable = [('\x1b[48;5;196mred\x1b[49m',
+                   '\x1b[38;5;196mred\x1b[39m')]
+    colorlessheaders = ('background', 'foreground')
+    formatted = tabulate(colortable, colorlessheaders, 'pipe')
+    expected = "\n".join([
+        '| background   | foreground   |',
+        '|:-------------|:-------------|',
+        '| \x1b[48;5;196mred\x1b[49m          | \x1b[38;5;196mred\x1b[39m          |'])
+    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    assert_equal(expected, formatted)
+
+
 def test_column_with_mixed_value_types():
     "Regression: mixed value types in the same column (issue #31)"
     expected = '\n'.join([
