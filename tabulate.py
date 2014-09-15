@@ -17,6 +17,10 @@ if python_version_tuple()[0] < "3":
     _float_type = float
     _text_type = unicode
     _binary_type = str
+
+    def _is_file(f):
+        return isinstance(f, file)
+
 else:
     from itertools import zip_longest as izip_longest
     from functools import reduce, partial
@@ -25,6 +29,10 @@ else:
     _float_type = float
     _text_type = str
     _binary_type = bytes
+
+    import io
+    def _is_file(f):
+        return isinstance(f, io.IOBase)
 
 
 __all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
@@ -926,3 +934,71 @@ def _format_table(fmt, headers, rows, colwidths, colaligns):
         lines.append(_build_line(padded_widths, colaligns, fmt.linebelow))
 
     return "\n".join(lines)
+
+
+def _main():
+    """\
+    Usage: tabulate [options] [FILENAME]
+
+    Pretty-print tabular data.
+
+    FILENAME              if "-" or missing, read data from stdin.
+
+    Options:
+
+    -1, --header           use the first row of data as a table header
+    -f FMT, --format FMT   table format; supported table formats are
+                           plain, simple, grid, pipe, orgtbl, rst,
+                           mediawiki, latex, latex_booktabs (default: simple)
+    -s S, --sep SEP        a regular expression to split columns (default: '\s+')
+    -h, --help             show this message
+
+    """
+    import getopt
+    import sys
+    import textwrap
+    usage = textwrap.dedent(_main.__doc__)
+    try:
+        opts, args = getopt.getopt(sys.argv[1:],
+                                   "h1f:s:",
+                                   ["help", "header", "format", "separator"])
+    except getopt.GetoptError as e:
+        print(e)
+        print(usage)
+        sys.exit(2)
+    headers = []
+    tablefmt = "simple"
+    sep = r"\s+"
+    for opt, value in opts:
+        if opt in ["-1", "--header"]:
+            headers = "firstrow"
+        elif opt in ["-f", "--format"]:
+            if value not in tabulate_formats:
+                print("%s is not a supported table format" % value)
+                print(usage)
+                sys.exit(3)
+            tablefmt = value
+        elif opt in ["-s", "--sep"]:
+            sep = value
+        elif opt in ["-h", "--help"]:
+            print(usage)
+            sys.exit(0)
+    files = [sys.stdin] if not args else args
+    for f in files:
+        if f == "-":
+            f = sys.stdin
+        if _is_file(f):
+            _pprint_file(f, headers=headers, tablefmt=tablefmt, sep=sep)
+        else:
+            with open(f) as fobj:
+                _pprint_file(fobj)
+
+
+def _pprint_file(fobject, headers, tablefmt, sep):
+    rows = fobject.readlines()
+    table = [re.split(sep, r) for r in rows]
+    print(tabulate(table, headers, tablefmt))
+
+
+if __name__ == "__main__":
+    _main()
