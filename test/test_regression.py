@@ -125,3 +125,19 @@ def test_numeric_column_headers():
         "  3    3    3    3    3",
         "  4    4    4    4    4",])
     assert_equal(result, expected)
+
+
+def test_column_with_mixed_value_types():
+    "Regression: mixed value types in the same column (issue #31)"
+    expected = '\n'.join([
+        '-----',
+        '',
+        'a',
+        'я',
+        '0',
+        'False',
+        '-----',
+    ])
+    data = [[None], ['a'], ['\u044f'], [0], [False]]
+    table = tabulate(data)
+    assert_equal(table, expected)

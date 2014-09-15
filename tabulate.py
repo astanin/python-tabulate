@@ -448,7 +448,10 @@ def _format(val, valtype, floatfmt, missingval=""):
     if valtype in [int, _text_type]:
         return "{0}".format(val)
     elif valtype is _binary_type:
-        return _text_type(val, "ascii")
+        try:
+            return _text_type(val, "ascii")
+        except TypeError:
+            return _text_type(val)
     elif valtype is float:
         return format(float(val), floatfmt)
     else:
