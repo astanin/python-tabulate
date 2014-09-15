@@ -117,6 +117,20 @@ def _latex_line_begin_tabular(colwidths, colaligns):
     return "\\begin{tabular}{" + tabular_columns_fmt + "}\n\hline"
 
 
+LATEX_ESCAPE_RULES = {r"&": r"\&", r"%": r"\%", r"$": r"\$", r"#": r"\#",
+                      r"_": r"\_", r"^": r"\^{}", r"{": r"\{", r"}": r"\}",
+                      r"~": r"\textasciitilde{}", "\\": r"\textbackslash{}",
+                      r"<": r"\ensuremath{<}", r">": r"\ensuremath{>}"}
+
+
+def _latex_row(cell_values, colwidths, colaligns):
+    def escape_char(c):
+        return LATEX_ESCAPE_RULES.get(c, c)
+    escaped_values = ["".join(map(escape_char, cell)) for cell in cell_values]
+    rowfmt = DataRow("", "&", "\\\\")
+    return _build_simple_row(escaped_values, rowfmt)
+
+
 _table_formats = {"simple":
                   TableFormat(lineabove=Line("", "-", "  ", ""),
                               linebelowheader=Line("", "-", "  ", ""),
@@ -179,8 +193,8 @@ _table_formats = {"simple":
                               linebelowheader=Line("\\hline", "", "", ""),
                               linebetweenrows=None,
                               linebelow=Line("\\hline\n\\end{tabular}", "", "", ""),
-                              headerrow=DataRow("", "&", "\\\\"),
-                              datarow=DataRow("", "&", "\\\\"),
+                              headerrow=_latex_row,
+                              datarow=_latex_row,
                               padding=1, with_header_hide=None),
                   "tsv":
                   TableFormat(lineabove=None, linebelowheader=None,

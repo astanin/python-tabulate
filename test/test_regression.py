@@ -141,3 +141,17 @@ def test_column_with_mixed_value_types():
     data = [[None], ['a'], ['\u044f'], [0], [False]]
     table = tabulate(data)
     assert_equal(table, expected)
+
+
+def test_latex_escape_special_chars():
+    "Regression: escape special characters in LaTeX output (issue #32)"
+    expected = "\n".join([
+        r'\begin{tabular}{l}',
+        r'\hline',
+        r' foo\^{}bar     \\',
+        r'\hline',
+        r' \&\%\^{}\_\$\#\{\}\ensuremath{<}\ensuremath{>}\textasciitilde{} \\',
+        r'\hline',
+        r'\end{tabular}'])
+    result = tabulate([["&%^_$#{}<>~"]], ["foo^bar"], tablefmt="latex")
+    assert_equal(result, expected)
