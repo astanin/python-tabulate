@@ -117,6 +117,7 @@ Supported table formats are:
 - "rst"
 - "mediawiki"
 - "latex"
+- "latex_booktabs"
 
 ``plain`` tables do not use any pseudo-graphics to draw lines::
 
@@ -216,6 +217,8 @@ other MediaWiki-based sites::
     \hline
     \end{tabular}
 
+``latex_booktabs`` creates a ``tabular`` environment for LaTeX markup
+using spacing and style from the ``booktabs`` package.
 
 
 .. _Pandoc Markdown extensions: http://johnmacfarlane.net/pandoc/README.html#tables
@@ -322,20 +325,20 @@ and numeric data, ``tabulate`` appears to be slower than
     ===========================  ==========  ===========
     Table formatter                time, μs    rel. time
     ===========================  ==========  ===========
-    join with tabs and newlines        22.6          1.0
+    join with tabs and newlines        22.7          1.0
     csv to StringIO                    31.6          1.4
-    asciitable (0.8.0)                777.6         34.4
-    tabulate (0.7.2)                 1374.9         60.9
-    PrettyTable (0.7.2)              3640.3        161.2
-    texttable (0.8.1)                3901.3        172.8
+    asciitable (0.8.0)                779.6         34.4
+    tabulate (0.7.3)                 1343.9         59.3
+    PrettyTable (0.7.2)              3781.8        166.8
+    texttable (0.8.1)                3923.3        173.1
     ===========================  ==========  ===========
 
 
 Version history
 ---------------
 
-- 0.7.3: Iterables of dictionaries.
-- 0.7.2: Python 3.2 Support.
+- 0.7.3: Bug fixes. Python 3.4 support. Iterables of dicts. ``latex_booktabs`` format.
+- 0.7.2: Python 3.2 support.
 - 0.7.1: Bug fixes. ``tsv`` format. Column alignment can be disabled.
 - 0.7: ``latex`` tables. Printing lists of named tuples and NumPy
   record arrays. Fix printing date and time values. Python <= 2.6.4 is supported.
@@ -354,4 +357,6 @@ Version history
 Contributors
 ------------
 
-Sergey Astanin, Pau Tallada Crespí, Erwin Marsi, Mik Kocikowski, Bill Ryder, Zach Dwiel.
+Sergey Astanin, Pau Tallada Crespí, Erwin Marsi, Mik Kocikowski, Bill Ryder,
+Zach Dwiel, Frederik Rietdijk, Philipp Bogensberger, Greg (anonymous),
+Stefan Tatschner, Emiel van Miltenburg.
