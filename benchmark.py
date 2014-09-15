@@ -15,6 +15,8 @@ import tabulate
 import asciitable
 import prettytable
 import texttable
+import tabletext
+
 
 table=[["some text"]+range(i,i+9) for i in range(10)]
 
@@ -48,8 +50,14 @@ def run_texttable(table):
     pp.add_rows(table)
     return pp.draw()
 
+
+def  run_tabletext(table):
+    return tabletext.to_text(table)
+
+
 def run_tabulate(table):
     return tabulate.tabulate(table)
+
 
 """
 
@@ -59,6 +67,7 @@ methods = [(u"join with tabs and newlines", "join_table(table)"),
            (u"tabulate (%s)" % tabulate.__version__, "run_tabulate(table)"),
            (u"PrettyTable (%s)" % prettytable.__version__, "run_prettytable(table)"),
            (u"texttable (%s)" % texttable.__version__, "run_texttable(table)"),
+           (u"tabletext (0.1)", "run_tabletext(table)"),
            ]
 
 
