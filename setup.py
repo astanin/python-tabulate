@@ -1,17 +1,23 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+
+
 from platform import python_version_tuple
 import re
 
+
 LICENSE = open("LICENSE").read()
+
 
 # strip links from the descripton on the PyPI
 LONG_DESCRIPTION = open("README.rst").read().replace("`_", "`")
 # strip Build Status from the PyPI package
 if python_version_tuple()[:2] >= ('2', '7'):
     LONG_DESCRIPTION = re.sub("^Build status\n(.*\n){7}", "", LONG_DESCRIPTION, flags=re.M)
-
 
 
 setup(name='tabulate',
@@ -31,4 +37,5 @@ setup(name='tabulate',
                   "Programming Language :: Python :: 3.3",
                   "Programming Language :: Python :: 3.4",
                   "Topic :: Software Development :: Libraries" ],
-   py_modules = ['tabulate'])
+    py_modules = ['tabulate'],
+    entry_points = {'console_scripts': ['tabulate = tabulate:_main']})
