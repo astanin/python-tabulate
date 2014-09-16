@@ -123,6 +123,7 @@ Supported table formats are:
 - "plain"
 - "simple"
 - "grid"
+- "fancy_grid"
 - "pipe"
 - "orgtbl"
 - "rst"
@@ -165,6 +166,19 @@ extensions::
     +--------+-------+
     | bacon  |     0 |
     +--------+-------+
+
+``fancy_grid`` draws a grid using box-drawing characters:
+
+    >>> print tabulate(table, headers, tablefmt="fancy_grid")
+    ╒════════╤═══════╕
+    │ item   │   qty │
+    ╞════════╪═══════╡
+    │ spam   │    42 │
+    ├────────┼───────┤
+    │ eggs   │   451 │
+    ├────────┼───────┤
+    │ bacon  │     0 │
+    ╘════════╧═══════╛
 
 ``pipe`` follows the conventions of `PHP Markdown Extra`_ extension.  It
 corresponds to ``pipe_tables`` in Pandoc. This format uses colons to
@@ -348,7 +362,7 @@ and numeric data, ``tabulate`` appears to be slower than
 Version history
 ---------------
 
-- 0.7.4: FUTURE VERSION
+- 0.7.4: FUTURE VERSION. ``fancy_grid`` format. Optional command line utility.
 - 0.7.3: Bug fixes. Python 3.4 support. Iterables of dicts. ``latex_booktabs`` format.
 - 0.7.2: Python 3.2 support.
 - 0.7.1: Bug fixes. ``tsv`` format. Column alignment can be disabled.

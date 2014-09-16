@@ -162,6 +162,14 @@ _table_formats = {"simple":
                               headerrow=DataRow("|", "|", "|"),
                               datarow=DataRow("|", "|", "|"),
                               padding=1, with_header_hide=None),
+                  "fancy_grid":
+                  TableFormat(lineabove=Line("╒", "═", "╤", "╕"),
+                              linebelowheader=Line("╞", "═", "╪", "╡"),
+                              linebetweenrows=Line("├", "─", "┼", "┤"),
+                              linebelow=Line("╘", "═", "╧", "╛"),
+                              headerrow=DataRow("│", "│", "│"),
+                              datarow=DataRow("│", "│", "│"),
+                              padding=1, with_header_hide=None),
                   "pipe":
                   TableFormat(lineabove=_pipe_line_with_colons,
                               linebelowheader=_pipe_line_with_colons,
@@ -732,6 +740,18 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
     +------+----------+
     | eggs | 451      |
     +------+----------+
+
+    "fancy_grid" draws a grid using box-drawing characters:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "fancy_grid"))
+    ╒═══════════╤═══════════╕
+    │ strings   │   numbers │
+    ╞═══════════╪═══════════╡
+    │ spam      │   41.9999 │
+    ├───────────┼───────────┤
+    │ eggs      │  451      │
+    ╘═══════════╧═══════════╛
 
     "pipe" is like tables in PHP Markdown Extra extension or Pandoc
     pipe_tables:

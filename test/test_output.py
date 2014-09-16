@@ -77,6 +77,32 @@ def test_grid_headerless():
     assert_equal(expected, result)
 
 
+def test_fancy_grid():
+    "Output: fancy_grid with headers"
+    expected = '\n'.join([
+        '╒═══════════╤═══════════╕',
+        '│ strings   │   numbers │',
+        '╞═══════════╪═══════════╡',
+        '│ spam      │   41.9999 │',
+        '├───────────┼───────────┤',
+        '│ eggs      │  451      │',
+        '╘═══════════╧═══════════╛',])
+    result = tabulate(_test_table, _test_table_headers, tablefmt="fancy_grid")
+    assert_equal(expected, result)
+
+
+def test_fancy_grid_headerless():
+    "Output: fancy_grid without headers"
+    expected = '\n'.join([
+        '╒══════╤══════════╕',
+        '│ spam │  41.9999 │',
+        '├──────┼──────────┤',
+        '│ eggs │ 451      │',
+        '╘══════╧══════════╛',])
+    result = tabulate(_test_table, tablefmt="fancy_grid")
+    assert_equal(expected, result)
+
+
 def test_pipe():
     "Output: pipe with headers"
     expected = '\n'.join(['| strings   |   numbers |',
