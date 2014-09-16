@@ -169,3 +169,13 @@ def test_latex_escape_special_chars():
         r'\end{tabular}'])
     result = tabulate([["&%^_$#{}<>~"]], ["foo^bar"], tablefmt="latex")
     assert_equal(result, expected)
+
+
+def test_isconvertible_on_set_values():
+    "Regression: don't fail with TypeError on set values (issue #35)"
+    expected = "\n".join([
+        'a    b',
+        '---  -------',
+        'Foo  set([])',])
+    result = tabulate([["Foo",set()]], headers=["a","b"])
+    assert_equal(result, expected)
