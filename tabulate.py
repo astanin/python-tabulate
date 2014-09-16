@@ -940,9 +940,9 @@ def _main():
     """\
     Usage: tabulate [options] [FILENAME]
 
-    Pretty-print tabular data.
+    Pretty-print tabular data. See also https://bitbucket.org/astanin/python-tabulate
 
-    FILENAME              if "-" or missing, read data from stdin.
+    FILENAME               if "-" or missing, read data from stdin.
 
     Options:
 
