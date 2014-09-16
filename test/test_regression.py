@@ -5,7 +5,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 from tabulate import tabulate
-from common import assert_equal
+from common import assert_equal, assert_in
 
 
 def test_ansi_color_in_table_cells():
@@ -173,9 +173,13 @@ def test_latex_escape_special_chars():
 
 def test_isconvertible_on_set_values():
     "Regression: don't fail with TypeError on set values (issue #35)"
-    expected = "\n".join([
+    expected_py2 = "\n".join([
         'a    b',
         '---  -------',
         'Foo  set([])',])
+    expected_py3 = "\n".join([
+        'a    b',
+        '---  -----',
+        'Foo  set()',])
     result = tabulate([["Foo",set()]], headers=["a","b"])
-    assert_equal(result, expected)
+    assert_in(result, [expected_py2, expected_py3])
