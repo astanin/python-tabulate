@@ -119,6 +119,16 @@ def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
     return (separator + colsep.join(values_with_attrs)).rstrip()
 
 
+def _html_row_with_attrs(celltag, cell_values, colwidths, colaligns):
+    alignment = { "left":    '',
+                  "right":   ' style="text-align: right;"',
+                  "center":  ' style="text-align: center;"',
+                  "decimal": ' style="text-align: right;"' }
+    values_with_attrs = ["<{0}{1}>{2}</{0}>".format(celltag, alignment.get(a, ''), c)
+                         for c, a in zip(cell_values, colaligns)]
+    return "<tr>" + "".join(values_with_attrs).rstrip() + "</tr>"
+
+
 def _latex_line_begin_tabular(colwidths, colaligns, booktabs=False):
     alignment = { "left": "l", "right": "r", "center": "c", "decimal": "r" }
     tabular_columns_fmt = "".join([alignment.get(a, "l") for a in colaligns])
@@ -203,6 +213,14 @@ _table_formats = {"simple":
                               linebelow=Line("|}", "", "", ""),
                               headerrow=partial(_mediawiki_row_with_attrs, "!"),
                               datarow=partial(_mediawiki_row_with_attrs, "|"),
+                              padding=0, with_header_hide=None),
+                  "html":
+                  TableFormat(lineabove=Line("<table>", "", "", ""),
+                              linebelowheader=None,
+                              linebetweenrows=None,
+                              linebelow=Line("</table>", "", "", ""),
+                              headerrow=partial(_html_row_with_attrs, "th"),
+                              datarow=partial(_html_row_with_attrs, "td"),
                               padding=0, with_header_hide=None),
                   "latex":
                   TableFormat(lineabove=_latex_line_begin_tabular,
@@ -818,6 +836,16 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
     | eggs      || align="right"|  451
     |}
 
+    "html" produces HTML markup:
+
+    >>> print(tabulate([["strings", "numbers"], ["spam", 41.9999], ["eggs", "451.0"]],
+    ...                headers="firstrow", tablefmt="html"))
+    <table>
+    <tr><th>strings  </th><th style="text-align: right;">  numbers</th></tr>
+    <tr><td>spam     </td><td style="text-align: right;">  41.9999</td></tr>
+    <tr><td>eggs     </td><td style="text-align: right;"> 451     </td></tr>
+    </table>
+
     "latex" produces a tabular environment of LaTeX document markup:
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="latex"))
@@ -972,7 +1000,7 @@ def _main():
     -s REGEXP, --sep REGEXP   use a custom column separator (default: whitespace)
     -f FMT, --format FMT      set output table format; supported formats:
                               plain, simple, grid, fancy_grid, pipe, orgtbl,
-                              rst, mediawiki, latex, latex_booktabs, tsv
+                              rst, mediawiki, html, latex, latex_booktabs, tsv
                               (default: simple)
     """
     import getopt

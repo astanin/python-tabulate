@@ -128,6 +128,7 @@ Supported table formats are:
 - "orgtbl"
 - "rst"
 - "mediawiki"
+- "html"
 - "latex"
 - "latex_booktabs"
 
@@ -228,6 +229,15 @@ other MediaWiki-based sites::
     | bacon  || align="right"|     0
     |}
 
+``html`` produces standard HTML markup::
+
+    >>> print tabulate(table, headers, tablefmt="html")
+    <table>
+    <tr><th>item  </th><th style="text-align: right;">  qty</th></tr>
+    <tr><td>spam  </td><td style="text-align: right;">   42</td></tr>
+    <tr><td>eggs  </td><td style="text-align: right;">  451</td></tr>
+    <tr><td>bacon </td><td style="text-align: right;">    0</td></tr>
+    </table>
 
 ``latex`` format creates a ``tabular`` environment for LaTeX markup::
 
@@ -362,7 +372,7 @@ and numeric data, ``tabulate`` appears to be slower than
 Version history
 ---------------
 
-- 0.7.4: FUTURE VERSION. ``fancy_grid`` format. Optional command line utility.
+- 0.7.4: FUTURE VERSION. ``fancy_grid`` and ``html`` formats. Command line utility.
 - 0.7.3: Bug fixes. Python 3.4 support. Iterables of dicts. ``latex_booktabs`` format.
 - 0.7.2: Python 3.2 support.
 - 0.7.1: Bug fixes. ``tsv`` format. Column alignment can be disabled.
