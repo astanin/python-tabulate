@@ -997,7 +997,7 @@ def _main():
 
 def _pprint_file(fobject, headers, tablefmt, sep):
     rows = fobject.readlines()
-    table = [re.split(sep, r) for r in rows]
+    table = [re.split(sep, r.rstrip()) for r in rows]
     print(tabulate(table, headers, tablefmt))
 
 
