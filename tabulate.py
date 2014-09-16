@@ -938,21 +938,22 @@ def _format_table(fmt, headers, rows, colwidths, colaligns):
 
 def _main():
     """\
-    Usage: tabulate [options] [FILENAME]
+    Usage: tabulate [options] [FILE ...]
 
     Pretty-print tabular data. See also https://bitbucket.org/astanin/python-tabulate
 
-    FILENAME               if "-" or missing, read data from stdin.
+    FILE                      a filename of the file with tabular data;
+                              if "-" or missing, read data from stdin.
 
     Options:
 
-    -1, --header           use the first row of data as a table header
-    -f FMT, --format FMT   table format; supported table formats are
-                           plain, simple, grid, pipe, orgtbl, rst,
-                           mediawiki, latex, latex_booktabs (default: simple)
-    -s S, --sep SEP        a regular expression to split columns (default: '\s+')
-    -h, --help             show this message
-
+    -h, --help                show this message
+    -1, --header              use the first row of data as a table header
+    -s REGEXP, --sep REGEXP   use a custom column separator (default: whitespace)
+    -f FMT, --format FMT      set output table format;
+                              supported formats: plain, simple, grid, pipe,
+                              orgtbl, rst, mediawiki, latex, latex_booktabs
+                              (default: simple)
     """
     import getopt
     import sys
