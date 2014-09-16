@@ -970,9 +970,9 @@ def _main():
     -h, --help                show this message
     -1, --header              use the first row of data as a table header
     -s REGEXP, --sep REGEXP   use a custom column separator (default: whitespace)
-    -f FMT, --format FMT      set output table format;
-                              supported formats: plain, simple, grid, pipe,
-                              orgtbl, rst, mediawiki, latex, latex_booktabs
+    -f FMT, --format FMT      set output table format; supported formats:
+                              plain, simple, grid, fancy_grid, pipe, orgtbl,
+                              rst, mediawiki, latex, latex_booktabs, tsv
                               (default: simple)
     """
     import getopt
