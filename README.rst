@@ -168,7 +168,7 @@ extensions::
     | bacon  |     0 |
     +--------+-------+
 
-``fancy_grid`` draws a grid using box-drawing characters:
+``fancy_grid`` draws a grid using box-drawing characters::
 
     >>> print tabulate(table, headers, tablefmt="fancy_grid")
     ╒════════╤═══════╕
