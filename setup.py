@@ -7,6 +7,7 @@ except ImportError:
 
 
 from platform import python_version_tuple
+import os
 import re
 
 
@@ -20,22 +21,28 @@ if python_version_tuple()[:2] >= ('2', '7'):
     LONG_DESCRIPTION = re.sub("^Build status\n(.*\n){7}", "", LONG_DESCRIPTION, flags=re.M)
 
 
+if os.environ.get("INSTALL_TABULATE_CLI"):
+    console_scripts = ['tabulate = tabulate:_main']
+else:
+    console_scripts = []
+
+
 setup(name='tabulate',
-   version='0.7.4',
-   description='Pretty-print tabular data',
-   long_description=LONG_DESCRIPTION,
-   author='Sergey Astanin',
-   author_email='s.astanin@gmail.com',
-   url='https://bitbucket.org/astanin/python-tabulate',
-   license=LICENSE,
-   classifiers= [ "Development Status :: 4 - Beta",
-                  "License :: OSI Approved :: MIT License",
-                  "Operating System :: OS Independent",
-                  "Programming Language :: Python :: 2.6",
-                  "Programming Language :: Python :: 2.7",
-                  "Programming Language :: Python :: 3.2",
-                  "Programming Language :: Python :: 3.3",
-                  "Programming Language :: Python :: 3.4",
-                  "Topic :: Software Development :: Libraries" ],
-    py_modules = ['tabulate'],
-    entry_points = {'console_scripts': ['tabulate = tabulate:_main']})
+      version='0.7.4',
+      description='Pretty-print tabular data',
+      long_description=LONG_DESCRIPTION,
+      author='Sergey Astanin',
+      author_email='s.astanin@gmail.com',
+      url='https://bitbucket.org/astanin/python-tabulate',
+      license=LICENSE,
+      classifiers= [ "Development Status :: 4 - Beta",
+                     "License :: OSI Approved :: MIT License",
+                     "Operating System :: OS Independent",
+                     "Programming Language :: Python :: 2.6",
+                     "Programming Language :: Python :: 2.7",
+                     "Programming Language :: Python :: 3.2",
+                     "Programming Language :: Python :: 3.3",
+                     "Programming Language :: Python :: 3.4",
+                     "Topic :: Software Development :: Libraries" ],
+      py_modules = ['tabulate'],
+      entry_points = {'console_scripts': console_scripts})
