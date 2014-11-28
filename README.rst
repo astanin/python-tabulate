@@ -181,6 +181,17 @@ extensions::
     │ bacon  │     0 │
     ╘════════╧═══════╛
 
+``psql`` is like tables formatted by Postgres' psql cli::
+
+    >>> print tabulate.tabulate()
+    +--------+-------+
+    | item   |   qty |
+    |--------+-------|
+    | spam   |    42 |
+    | eggs   |   451 |
+    | bacon  |     0 |
+    +--------+-------+
+
 ``pipe`` follows the conventions of `PHP Markdown Extra`_ extension.  It
 corresponds to ``pipe_tables`` in Pandoc. This format uses colons to
 indicate column alignment::
