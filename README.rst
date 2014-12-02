@@ -181,6 +181,17 @@ extensions::
     │ bacon  │     0 │
     ╘════════╧═══════╛
 
+``psql`` is like tables formatted by Postgres' psql cli::
+
+    >>> print tabulate.tabulate()
+    +--------+-------+
+    | item   |   qty |
+    |--------+-------|
+    | spam   |    42 |
+    | eggs   |   451 |
+    | bacon  |     0 |
+    +--------+-------+
+
 ``pipe`` follows the conventions of `PHP Markdown Extra`_ extension.  It
 corresponds to ``pipe_tables`` in Pandoc. This format uses colons to
 indicate column alignment::
@@ -389,6 +400,14 @@ Version history
 - 0.3: Initial PyPI release. Table formats: ``simple``, ``plain``,
   ``grid``, ``pipe``, and ``orgtbl``.
 
+Contribution Guidelines
+-----------------------
+
+Contributions to welcome. Please include a test for the change that is
+proposed.
+
+This project uses ``nose`` as it's test runner. You can run the tests by
+installing ``nose`` and calling ``nosetests`` from the project root. 
 
 Contributors
 ------------
