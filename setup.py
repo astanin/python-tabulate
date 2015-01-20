@@ -49,4 +49,5 @@ setup(name='tabulate',
                      "Programming Language :: Python :: 3.4",
                      "Topic :: Software Development :: Libraries" ],
       py_modules = ['tabulate'],
-      entry_points = {'console_scripts': console_scripts})
+      entry_points = {'console_scripts': console_scripts},
+      test_suite = 'nose.collector')
