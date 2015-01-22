@@ -165,7 +165,7 @@ def test_numpy_record_array():
         na = numpy.asarray([("Alice", 23, 169.5),
                             ("Bob", 27, 175.0)],
                            dtype={"names":["name","age","height"],
-                                  "formats":["a32","uint8","f32"]})
+                                  "formats":["a32","uint8","float32"]})
         expected = "\n".join([
             "-----  --  -----",
             "Alice  23  169.5",
@@ -185,7 +185,7 @@ def test_numpy_record_array_keys():
         na = numpy.asarray([("Alice", 23, 169.5),
                             ("Bob", 27, 175.0)],
                            dtype={"names":["name","age","height"],
-                                  "formats":["a32","uint8","f32"]})
+                                  "formats":["a32","uint8","float32"]})
         expected = "\n".join([
             "name      age    height",
             "------  -----  --------",
@@ -205,7 +205,7 @@ def test_numpy_record_array_headers():
         na = numpy.asarray([("Alice", 23, 169.5),
                             ("Bob", 27, 175.0)],
                            dtype={"names":["name","age","height"],
-                                  "formats":["a32","uint8","f32"]})
+                                  "formats":["a32","uint8","float32"]})
         expected = "\n".join([
             "person      years     cm",
             "--------  -------  -----",
