@@ -494,7 +494,7 @@ def _column_type(strings, has_invisible=True):
     return reduce(_more_generic, types, int)
 
 
-def _format(val, valtype, floatfmt, missingval=""):
+def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
     """Format a value accoding to its type.
 
     Unicode is supported:
@@ -517,7 +517,13 @@ def _format(val, valtype, floatfmt, missingval=""):
         except TypeError:
             return _text_type(val)
     elif valtype is float:
-        return format(float(val), floatfmt)
+        is_a_colored_number = has_invisible and type(val) in [_text_type, _binary_type]
+        if is_a_colored_number:
+            raw_val = _strip_invisible(val)
+            formatted_val = format(float(raw_val), floatfmt)
+            return val.replace(raw_val, formatted_val)
+        else:
+            return format(float(val), floatfmt)
     else:
         return "{0}".format(val)
 
@@ -892,7 +898,7 @@ def tabulate(tabular_data, headers=[], tablefmt="simple",
     # format rows and columns, convert numeric values to strings
     cols = list(zip(*list_of_lists))
     coltypes = list(map(_column_type, cols))
-    cols = [[_format(v, ct, floatfmt, missingval) for v in c]
+    cols = [[_format(v, ct, floatfmt, missingval, has_invisible) for v in c]
              for c,ct in zip(cols, coltypes)]
 
     # align columns

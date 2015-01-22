@@ -183,3 +183,14 @@ def test_isconvertible_on_set_values():
         'Foo  set()',])
     result = tabulate([["Foo",set()]], headers=["a","b"])
     assert_in(result, [expected_py2, expected_py3])
+
+
+def test_ansi_color_for_decimal_numbers():
+    "Regression: ANSI colors for decimal numbers (issue #36)"
+    table = [["Magenta", "\033[95m" + "1.1" + "\033[0m"]]
+    expected = "\n".join([
+        '-------  ---',
+        'Magenta  \x1b[95m1.1\x1b[0m',
+        '-------  ---'])
+    result = tabulate(table)
+    assert_equal(result, expected)
