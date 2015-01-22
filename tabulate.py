@@ -442,7 +442,10 @@ def _align_column(strings, alignment, minwidth=0, has_invisible=True):
         strings = [s.strip() for s in strings]
         padfn = _padboth
     elif alignment == "decimal":
-        decimals = [_afterpoint(s) for s in strings]
+        if has_invisible:
+            decimals = [_afterpoint(_strip_invisible(s)) for s in strings]
+        else:
+            decimals = [_afterpoint(s) for s in strings]
         maxdecimals = max(decimals)
         strings = [s + (maxdecimals - decs) * " "
                    for s, decs in zip(strings, decimals)]

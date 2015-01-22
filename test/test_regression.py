@@ -194,3 +194,15 @@ def test_ansi_color_for_decimal_numbers():
         '-------  ---'])
     result = tabulate(table)
     assert_equal(result, expected)
+
+
+def test_alignment_of_decimal_numbers_with_ansi_color():
+    "Regression: alignment for decimal numbers with ANSI color (issue #42)"
+    v1 = "\033[95m" + "12.34" + "\033[0m"
+    v2 = "\033[95m" + "1.23456" + "\033[0m"
+    table = [[v1], [v2]]
+    expected = "\n".join([
+        '\x1b[95m12.34\x1b[0m',
+        ' \x1b[95m1.23456\x1b[0m'])
+    result = tabulate(table, tablefmt="plain")
+    assert_equal(result, expected)
