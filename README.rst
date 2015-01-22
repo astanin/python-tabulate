@@ -400,14 +400,46 @@ Version history
 - 0.3: Initial PyPI release. Table formats: ``simple``, ``plain``,
   ``grid``, ``pipe``, and ``orgtbl``.
 
-Contribution Guidelines
+
+Contribution guidelines
 -----------------------
 
-Contributions to welcome. Please include a test for the change that is
-proposed.
+Contributions should include tests and an explanation for the changes they
+propose. Documentation (examples, docstrings, README.rst) should be updated
+accordingly.
 
-This project uses ``nose`` as it's test runner. You can run the tests by
-installing ``nose`` and calling ``nosetests`` from the project root. 
+This project uses `nose`_ testing framework and `tox`_ to automate testing in
+different environments. Add tests to one of the files in the ``test/`` folder.
+
+To run tests on all supported Python versions, make sure all Python
+interpreters, ``nose`` and ``tox`` are installed, then run ``tox`` in
+the root of the project source tree.
+
+On Linux ``tox`` expects to find executables like ``python2.6``,
+``python2.7``, ``python3.4`` etc. On Windows it looks for
+``C:\Python26\python.exe``, ``C:\Python27\python.exe`` and
+``C:\Python34\python.exe`` respectively.
+
+To test only some Python environements, use ``-e`` option. For
+example, to test only against Python 2.7 and Python 3.4, run::
+
+    tox -e py27,py34
+
+in the root of the project source tree.
+
+To enable NumPy and Pandas tests, run::
+
+    tox -e py27-extra,py34-extra
+
+(this may take a long time the first time, because NumPy and Pandas
+will have to be installed in the new virtual environments)
+
+See ``tox.ini`` file to learn how to use ``nosetests`` directly to
+test individual Python versions.
+
+.. _nose: https://nose.readthedocs.org/
+.. _tox: http://tox.testrun.org/
+
 
 Contributors
 ------------
