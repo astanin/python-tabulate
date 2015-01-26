@@ -21,18 +21,17 @@ The main use cases of the library are:
 Installation
 ------------
 
-To install just the library::
+To install the Python library and the command line utility, run::
 
     pip install tabulate
 
-To install also the command line utility set ``INSTALL_TABULATE_CLI``
-environment variable. On Unix-like operating systems::
+To install just the library on Unix-like operating systems::
 
-    INSTALL_TABULATE_CLI=yes pip install tabulate
+    TABULATE_INSTALL=lib-only pip install tabulate
 
 On Windows::
 
-    set INSTALL_TABULATE_CLI=yes
+    set TABULATE_INSTALL=lib-only
     pip install tabulate
 
 

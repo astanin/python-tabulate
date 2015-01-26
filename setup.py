@@ -25,10 +25,12 @@ if python_version_tuple()[:2] >= ('2', '7'):
     LONG_DESCRIPTION = re.sub("^Build status\n(.*\n){7}", "", LONG_DESCRIPTION, flags=re.M)
 
 
-if os.environ.get("INSTALL_TABULATE_CLI"):
-    console_scripts = ['tabulate = tabulate:_main']
-else:
+install_options = os.environ.get("TABULATE_INSTALL","").split(",")
+libonly_flags = set(["lib-only", "libonly", "no-cli", "without-cli"])
+if libonly_flags.intersection(install_options):
     console_scripts = []
+else:
+    console_scripts = ['tabulate = tabulate:_main']
 
 
 setup(name='tabulate',
