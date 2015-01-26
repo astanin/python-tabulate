@@ -1005,7 +1005,8 @@ def _main():
     """\
     Usage: tabulate [options] [FILE ...]
 
-    Pretty-print tabular data. See also https://bitbucket.org/astanin/python-tabulate
+    Pretty-print tabular data.
+    See also https://bitbucket.org/astanin/python-tabulate
 
     FILE                      a filename of the file with tabular data;
                               if "-" or missing, read data from stdin.
@@ -1014,6 +1015,7 @@ def _main():
 
     -h, --help                show this message
     -1, --header              use the first row of data as a table header
+    -o FILE, --output FILE    print table to FILE (default: stdout)
     -s REGEXP, --sep REGEXP   use a custom column separator (default: whitespace)
     -f FMT, --format FMT      set output table format; supported formats:
                               plain, simple, grid, fancy_grid, pipe, orgtbl,
@@ -1026,8 +1028,8 @@ def _main():
     usage = textwrap.dedent(_main.__doc__)
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                                   "h1f:s:",
-                                   ["help", "header", "format", "separator"])
+                                   "h1o:s:f:",
+                                   ["help", "header", "output", "separator", "format"])
     except getopt.GetoptError as e:
         print(e)
         print(usage)
@@ -1035,9 +1037,12 @@ def _main():
     headers = []
     tablefmt = "simple"
     sep = r"\s+"
+    outfile = "-"
     for opt, value in opts:
         if opt in ["-1", "--header"]:
             headers = "firstrow"
+        elif opt in ["-o", "--output"]:
+            outfile = value
         elif opt in ["-f", "--format"]:
             if value not in tabulate_formats:
                 print("%s is not a supported table format" % value)
@@ -1050,20 +1055,21 @@ def _main():
             print(usage)
             sys.exit(0)
     files = [sys.stdin] if not args else args
-    for f in files:
-        if f == "-":
-            f = sys.stdin
-        if _is_file(f):
-            _pprint_file(f, headers=headers, tablefmt=tablefmt, sep=sep)
-        else:
-            with open(f) as fobj:
-                _pprint_file(fobj)
+    with (sys.stdout if outfile == "-" else open(outfile, "w")) as out:
+        for f in files:
+            if f == "-":
+                f = sys.stdin
+            if _is_file(f):
+                _pprint_file(f, headers=headers, tablefmt=tablefmt, sep=sep, file=out)
+            else:
+                with open(f) as fobj:
+                    _pprint_file(fobj, file=out)
 
 
-def _pprint_file(fobject, headers, tablefmt, sep):
+def _pprint_file(fobject, headers, tablefmt, sep, file):
     rows = fobject.readlines()
     table = [re.split(sep, r.rstrip()) for r in rows]
-    print(tabulate(table, headers, tablefmt))
+    print(tabulate(table, headers, tablefmt), file=file)
 
 
 if __name__ == "__main__":
