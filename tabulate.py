@@ -1063,7 +1063,7 @@ def _main():
                 _pprint_file(f, headers=headers, tablefmt=tablefmt, sep=sep, file=out)
             else:
                 with open(f) as fobj:
-                    _pprint_file(fobj, file=out)
+                    _pprint_file(fobj, headers=headers, tablefmt=tablefmt, sep=sep, file=out)
 
 
 def _pprint_file(fobject, headers, tablefmt, sep, file):
