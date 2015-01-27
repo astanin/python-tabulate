@@ -6,6 +6,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from tabulate import tabulate
 from common import assert_equal, assert_in, assert_raises
+from nose.plugins.skip import SkipTest
 
 
 def test_iterable_of_iterables():
@@ -120,7 +121,7 @@ def test_numpy_2d():
         assert_equal(expected, result)
     except ImportError:
         print("test_numpy_2d is skipped")
-        pass   # this test is optional
+        raise SkipTest()   # this test is optional
 
 
 def test_numpy_2d_firstrow():
@@ -137,7 +138,8 @@ def test_numpy_2d_firstrow():
         assert_equal(expected, result)
     except ImportError:
         print("test_numpy_2d_firstrow is skipped")
-        pass   # this test is optional
+        raise SkipTest()   # this test is optional
+
 
 
 def test_numpy_2d_keys():
@@ -155,7 +157,7 @@ def test_numpy_2d_keys():
         assert_equal(expected, result)
     except ImportError:
         print("test_numpy_2d_keys is skipped")
-        pass   # this test is optional
+        raise SkipTest()   # this test is optional
 
 
 def test_numpy_record_array():
@@ -175,7 +177,7 @@ def test_numpy_record_array():
         assert_equal(expected, result)
     except ImportError:
         print("test_numpy_2d_keys is skipped")
-        pass   # this test is optional
+        raise SkipTest()   # this test is optional
 
 
 def test_numpy_record_array_keys():
@@ -195,7 +197,7 @@ def test_numpy_record_array_keys():
         assert_equal(expected, result)
     except ImportError:
         print("test_numpy_2d_keys is skipped")
-        pass   # this test is optional
+        raise SkipTest()   # this test is optional
 
 
 def test_numpy_record_array_headers():
@@ -215,7 +217,7 @@ def test_numpy_record_array_headers():
         assert_equal(expected, result)
     except ImportError:
         print("test_numpy_2d_keys is skipped")
-        pass   # this test is optional
+        raise SkipTest()   # this test is optional
 
 
 def test_pandas():
@@ -232,7 +234,7 @@ def test_pandas():
         assert_equal(expected, result)
     except ImportError:
         print("test_pandas is skipped")
-        pass   # this test is optional
+        raise SkipTest()   # this test is optional
 
 
 def test_pandas_firstrow():
@@ -250,7 +252,7 @@ def test_pandas_firstrow():
         assert_equal(expected, result)
     except ImportError:
         print("test_pandas_firstrow is skipped")
-        pass   # this test is optional
+        raise SkipTest()   # this test is optional
 
 
 def test_pandas_keys():
@@ -269,7 +271,7 @@ def test_pandas_keys():
         assert_equal(expected, result)
     except ImportError:
         print("test_pandas_keys is skipped")
-        pass   # this test is optional
+        raise SkipTest()   # this test is optional
 
 
 def test_list_of_namedtuples():
