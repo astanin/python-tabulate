@@ -24,12 +24,23 @@ SAMPLE_SIMPLE_FORMAT = "\n".join(
      '-----  ------  -------------'])
 
 
-def sample_input(sep=' '):
-    table = "\n".join([
-        sep.join(['Sun', '696000', '1.9891e9']),
-        sep.join(['Earth', '6371', '5973.6']),
-        sep.join(['Moon', '1737', '73.5']),
-        sep.join(['Mars', '3390', '641.85'])])
+SAMPLE_SIMPLE_FORMAT_WITH_HEADERS = "\n".join(
+    ['Planet      Radius           Mass',
+     '--------  --------  -------------',
+     'Sun         696000     1.9891e+09',
+     'Earth         6371  5973.6',
+     'Moon          1737    73.5',
+     'Mars          3390   641.85'])
+
+
+def sample_input(sep=' ', with_headers=False):
+    headers = sep.join(['Planet', 'Radius', 'Mass'])
+    rows = [sep.join(['Sun', '696000', '1.9891e9']),
+            sep.join(['Earth', '6371', '5973.6']),
+            sep.join(['Moon', '1737', '73.5']),
+            sep.join(['Mars', '3390', '641.85'])]
+    all_rows = ([headers] + rows) if with_headers else rows
+    table = "\n".join(all_rows)
     return table
 
 
@@ -102,13 +113,25 @@ def test_script_from_file_to_file():
             assert_equal(out.splitlines(), expected.splitlines())
 
 
+def test_script_header_option():
+    """Command line utility: -1, --header option"""
+    for option in ["-1", "--header"]:
+        cmd = ["python", "tabulate.py", option]
+        raw_table = sample_input(with_headers=True)
+        out = run_and_capture_stdout(cmd, input=raw_table)
+        expected = SAMPLE_SIMPLE_FORMAT_WITH_HEADERS
+        print(out)
+        print("got:     ",repr(out))
+        print("expected:",repr(expected))
+        assert_equal(out.splitlines(), expected.splitlines())
+
+
 def test_script_sep_option():
-    """Command line utility: --sep option"""
-    with TemporaryTextFile() as tmpfile:
-        tmpfile.write(sample_input(sep=","))
-        tmpfile.seek(0)
-        cmd = ["python", "tabulate.py", "--sep", ",", tmpfile.name]
-        out = run_and_capture_stdout(cmd)
+    """Command line utility: -s, --sep option"""
+    for option in ["-s", "--sep"]:
+        cmd = ["python", "tabulate.py", option, ","]
+        raw_table = sample_input(sep=",")
+        out = run_and_capture_stdout(cmd, input=raw_table)
         expected = SAMPLE_SIMPLE_FORMAT
         print("got:     ",repr(out))
         print("expected:",repr(expected))
