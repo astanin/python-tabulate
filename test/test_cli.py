@@ -63,7 +63,8 @@ def run_and_capture_stdout(cmd, input=None):
                          stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
-    out, err = x.communicate(input=input)
+    input_buf = input.encode() if input else None
+    out, err = x.communicate(input=input_buf)
     out = out.decode("utf-8")
     if x.returncode != 0:
         raise IOError(err)
