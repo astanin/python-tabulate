@@ -25,6 +25,17 @@ To install the Python library and the command line utility, run::
 
     pip install tabulate
 
+The command line utility will be installed as ``tabulate`` to ``bin`` on Linux
+(e.g. ``/usr/bin``); or as ``tabulate.exe`` to ``Scripts`` in your Python
+installation on Windows (e.g. ``C:\Python27\Scripts\tabulate.exe``).
+
+You may consider installing the library only for the current user::
+
+    pip install tabulate --user
+
+In this case the command line utility will be installed to ``~/.local/bin/tabulate``
+on Linux and to ``%APPDATA%\Python\Scripts\tabulate.exe`` on Windows.
+
 To install just the library on Unix-like operating systems::
 
     TABULATE_INSTALL=lib-only pip install tabulate
@@ -43,8 +54,8 @@ Build status
    :target: https://drone.io/bitbucket.org/astanin/python-tabulate/latest
 
 
-Usage
------
+Library usage
+-------------
 
 The module provides just one function, ``tabulate``, which takes a
 list of lists or another tabular data type as the first argument,
@@ -341,6 +352,28 @@ columns of decimal numbers. Use ``floatfmt`` named argument::
     pi  3.1416
     e   2.7183
     --  ------
+
+
+Usage of the command line utility
+---------------------------------
+
+::
+
+    Usage: tabulate [options] [FILE ...]
+
+    FILE                      a filename of the file with tabular data;
+                              if "-" or missing, read data from stdin.
+
+    Options:
+
+    -h, --help                show this message
+    -1, --header              use the first row of data as a table header
+    -o FILE, --output FILE    print table to FILE (default: stdout)
+    -s REGEXP, --sep REGEXP   use a custom column separator (default: whitespace)
+    -f FMT, --format FMT      set output table format; supported formats:
+                              plain, simple, grid, fancy_grid, pipe, orgtbl,
+                              rst, mediawiki, html, latex, latex_booktabs, tsv
+                              (default: simple)
 
 
 Performance considerations
