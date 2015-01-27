@@ -6,12 +6,17 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from tabulate import tabulate, tabulate_formats, simple_separated_format
 from platform import python_version_tuple
+from nose.plugins.skip import SkipTest
 
 
-if python_version_tuple() >= ('3','3','0'):
-    from inspect import signature, _empty
-else:
-    from funcsigs import signature, _empty
+try:
+    if python_version_tuple() >= ('3','3','0'):
+        from inspect import signature, _empty
+    else:
+        from funcsigs import signature, _empty
+except ImportError:
+    signature = None
+    _empty = None
 
 
 def test_tabulate_formats():
@@ -24,6 +29,8 @@ def test_tabulate_formats():
 
 
 def _check_signature(function, expected_sig):
+    if not signature:
+        raise SkipTest()
     actual_sig = signature(function)
     print("expected: %s\nactual: %s\n" % (expected_sig, str(actual_sig)))
     for (e, ev), (a, av) in zip(expected_sig, actual_sig.parameters.items()):
