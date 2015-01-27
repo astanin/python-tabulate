@@ -37,7 +37,7 @@ def test_script_from_file_to_stdout():
     """CLI: read from file, print to stdout"""
     with tempfile.NamedTemporaryFile("w+") as tmpfile:
         write_sample_input(tmpfile)
-        cmd = ["tabulate", tmpfile.name]
+        cmd = ["python", "tabulate.py", tmpfile.name]
         out = get_stdout_and_stderr(cmd)
         expected = "\n".join([
             '-----  ------  -------------',
