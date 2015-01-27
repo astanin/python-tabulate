@@ -25,7 +25,7 @@ def write_sample_input(tmpfile, sep=' '):
     tmpfile.file.seek(0)
 
 
-def get_stdout_and_stderr(cmd):
+def run_and_capture_stdout(cmd):
     x = subprocess.Popen(cmd,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
@@ -53,7 +53,7 @@ def test_script_from_file_to_stdout():
     with TemporaryTextFile() as tmpfile:
         write_sample_input(tmpfile)
         cmd = ["python", "tabulate.py", tmpfile.name]
-        out = get_stdout_and_stderr(cmd)
+        out = run_and_capture_stdout(cmd)
         expected = "\n".join([
                 '-----  ------  -------------',
                 'Sun    696000     1.9891e+09',
@@ -71,7 +71,7 @@ def test_script_sep_option():
     with TemporaryTextFile() as tmpfile:
         write_sample_input(tmpfile, sep=",")
         cmd = ["python", "tabulate.py", "--sep", ",", tmpfile.name]
-        out = get_stdout_and_stderr(cmd)
+        out = run_and_capture_stdout(cmd)
         expected = "\n".join([
                 '-----  ------  -------------',
                 'Sun    696000     1.9891e+09',
