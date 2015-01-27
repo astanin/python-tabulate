@@ -1029,7 +1029,7 @@ def _main():
     try:
         opts, args = getopt.getopt(sys.argv[1:],
                                    "h1o:s:f:",
-                                   ["help", "header", "output", "separator", "format"])
+                                   ["help", "header", "output", "sep=", "format="])
     except getopt.GetoptError as e:
         print(e)
         print(usage)
