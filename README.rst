@@ -403,19 +403,20 @@ and numeric data, ``tabulate`` appears to be slower than
     ===========================  ==========  ===========
     Table formatter                time, μs    rel. time
     ===========================  ==========  ===========
-    join with tabs and newlines        22.7          1.0
-    csv to StringIO                    31.6          1.4
-    asciitable (0.8.0)                779.6         34.4
-    tabulate (0.7.3)                 1343.9         59.3
-    PrettyTable (0.7.2)              3781.8        166.8
-    texttable (0.8.1)                3923.3        173.1
+    join with tabs and newlines        25.0          1.0
+    csv to StringIO                    32.1          1.3
+    tabletext (0.1)                   565.1         22.6
+    asciitable (0.8.0)                777.0         31.1
+    tabulate (0.7.4)                 1369.6         54.8
+    PrettyTable (0.7.2)              3828.3        153.3
+    texttable (0.8.1)                4005.2        160.3
     ===========================  ==========  ===========
 
 
 Version history
 ---------------
 
-- 0.7.4: FUTURE VERSION. ``fancy_grid`` and ``html`` formats. Command line utility.
+- 0.7.4: Bug fixes. ``fancy_grid`` and ``html`` formats. Command line utility.
 - 0.7.3: Bug fixes. Python 3.4 support. Iterables of dicts. ``latex_booktabs`` format.
 - 0.7.2: Python 3.2 support.
 - 0.7.1: Bug fixes. ``tsv`` format. Column alignment can be disabled.
@@ -433,8 +434,8 @@ Version history
   ``grid``, ``pipe``, and ``orgtbl``.
 
 
-Contribution guidelines
------------------------
+How to contribute
+-----------------
 
 Contributions should include tests and an explanation for the changes they
 propose. Documentation (examples, docstrings, README.rst) should be updated
@@ -478,4 +479,4 @@ Contributors
 
 Sergey Astanin, Pau Tallada Crespí, Erwin Marsi, Mik Kocikowski, Bill Ryder,
 Zach Dwiel, Frederik Rietdijk, Philipp Bogensberger, Greg (anonymous),
-Stefan Tatschner, Emiel van Miltenburg.
+Stefan Tatschner, Emiel van Miltenburg, Brandon Bennett, Amjith Ramanujam.
