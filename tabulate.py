@@ -238,8 +238,6 @@ _table_formats = {"simple":
                               linebelowheader=None,
                               linebetweenrows=None,
                               linebelow=None,
-                              # headerrow=DataRow("||", "||", "||"),
-                              # datarow=DataRow("||", "||", "||"),
                               headerrow=partial(_moin_row_with_attrs,"||",header="'''"),
                               datarow=partial(_moin_row_with_attrs,"||"),
                               padding=1, with_header_hide=None),
