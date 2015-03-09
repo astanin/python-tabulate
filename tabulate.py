@@ -128,7 +128,6 @@ def _html_row_with_attrs(celltag, cell_values, colwidths, colaligns):
                          for c, a in zip(cell_values, colaligns)]
     return "<tr>" + "".join(values_with_attrs).rstrip() + "</tr>"
 
-''' What we want is: ||<style="text-align: right;">right || '''
 def _moin_row_with_attrs(celltag, cell_values, colwidths, colaligns, header=''):
     alignment = { "left":    '',
                   "right":   '<style="text-align: right;">',
