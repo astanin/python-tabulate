@@ -207,6 +207,21 @@ def test_mediawiki_headerless():
     result = tabulate(_test_table, tablefmt="mediawiki")
     assert_equal(expected, result)
 
+def test_moinmoin():
+    "Output: moinmoin with headers"
+    expected = "\n".join(['|| \'\'\' strings   \'\'\' ||<style="text-align: right;"> \'\'\'   numbers \'\'\' ||',
+                          '||  spam       ||<style="text-align: right;">    41.9999  ||',
+                          '||  eggs       ||<style="text-align: right;">   451       ||',])
+    result = tabulate(_test_table, _test_table_headers, tablefmt="moinmoin")
+    assert_equal(expected, result)
+
+def test_moinmoin_headerless():
+    "Output: moinmoin without headers"
+    expected = "\n".join(['||  spam  ||<style="text-align: right;">   41.9999  ||',
+                          '||  eggs  ||<style="text-align: right;">  451       ||',])
+    result = tabulate (_test_table, tablefmt="moinmoin")
+    assert_equal(expected, result)
+
 
 def test_html():
     "Output: html with headers"
@@ -346,4 +361,3 @@ def test_unaligned_separated():
                       ["name", "score"],
                       tablefmt=fmt, stralign=None, numalign=None)
     assert_equal(expected, result)
-

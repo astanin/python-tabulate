@@ -128,6 +128,17 @@ def _html_row_with_attrs(celltag, cell_values, colwidths, colaligns):
                          for c, a in zip(cell_values, colaligns)]
     return "<tr>" + "".join(values_with_attrs).rstrip() + "</tr>"
 
+''' What we want is: ||<style="text-align: right;">right || '''
+def _moin_row_with_attrs(celltag, cell_values, colwidths, colaligns, header=''):
+    alignment = { "left":    '',
+                  "right":   '<style="text-align: right;">',
+                  "center":  '<style="text-align: center;">',
+                  "decimal": '<style="text-align: right;">' }
+    values_with_attrs = ["{0}{1} {2} ".format(celltag,
+                                              alignment.get(a, ''),
+                                              header+c+header)
+                         for c, a in zip(cell_values, colaligns)]
+    return "".join(values_with_attrs)+"||"
 
 def _latex_line_begin_tabular(colwidths, colaligns, booktabs=False):
     alignment = { "left": "l", "right": "r", "center": "c", "decimal": "r" }
@@ -222,6 +233,16 @@ _table_formats = {"simple":
                               headerrow=partial(_mediawiki_row_with_attrs, "!"),
                               datarow=partial(_mediawiki_row_with_attrs, "|"),
                               padding=0, with_header_hide=None),
+                  "moinmoin":
+                  TableFormat(lineabove=None,
+                              linebelowheader=None,
+                              linebetweenrows=None,
+                              linebelow=None,
+                              # headerrow=DataRow("||", "||", "||"),
+                              # datarow=DataRow("||", "||", "||"),
+                              headerrow=partial(_moin_row_with_attrs,"||",header="'''"),
+                              datarow=partial(_moin_row_with_attrs,"||"),
+                              padding=1, with_header_hide=None),
                   "html":
                   TableFormat(lineabove=Line("<table>", "", "", ""),
                               linebelowheader=None,
