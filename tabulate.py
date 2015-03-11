@@ -573,7 +573,7 @@ def _align_header(header, alignment, width):
         return _padleft(width, header)
 
 
-def _normalize_tabular_data(tabular_data, headers):
+def _normalize_tabular_data(tabular_data, headers, index=None):
     """Transform a supported data type to a list of lists, and a list of headers.
 
     Supported tabular data types:
@@ -609,8 +609,10 @@ def _normalize_tabular_data(tabular_data, headers):
             # values is a property, has .index => it's likely a pandas.DataFrame (pandas 0.11.0)
             keys = tabular_data.keys()
             vals = tabular_data.values  # values matrix doesn't need to be transposed
-            names = tabular_data.index
-            rows = [[v]+list(row) for v,row in zip(names, vals)]
+            # For DataFrames add an index per default
+            if index in [None, True]:
+                index = tabular_data.index
+            rows = [list(row) for row in vals]
         else:
             raise ValueError("tabular data doesn't appear to be a dict or a DataFrame")
 
@@ -662,6 +664,7 @@ def _normalize_tabular_data(tabular_data, headers):
             elif headers:
                 raise ValueError('headers for a list of dicts is not a dict or a keyword')
             rows = [[row.get(k) for k in keys] for row in rows]
+
         elif headers == "keys" and len(rows) > 0:
             # keys are column indices
             headers = list(map(_text_type, range(len(rows[0]))))
@@ -670,6 +673,18 @@ def _normalize_tabular_data(tabular_data, headers):
     if headers == "firstrow" and len(rows) > 0:
         headers = list(map(_text_type, rows[0])) # headers should be strings
         rows = rows[1:]
+
+    # Add an index column, either from a supplied list of index values or from the dataframe index
+    # or simple a running count if index==True
+    if index:
+        if index is True:
+            index = range(len(rows))
+        elif index:
+            index = list(index)
+            if len(index) != len(rows):
+                raise ValueError('index must be as long as the rows (excluding a header row if '
+                                 '"headers=firstrow"')
+        rows = [[v]+list(row) for v,row in zip(index, rows)]
 
     headers = list(map(_text_type,headers))
     rows = list(map(list,rows))
@@ -686,7 +701,7 @@ def _normalize_tabular_data(tabular_data, headers):
 
 def tabulate(tabular_data, headers=(), tablefmt="simple",
              floatfmt="g", numalign="decimal", stralign="left",
-             missingval=""):
+             missingval="", index=None):
     """Format a fixed width table for pretty printing.
 
     >>> print(tabulate([[1, 2.34], [-56, "8.999"], ["2", "10001"]]))
@@ -717,6 +732,11 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
     If the number of headers is less than the number of columns, they
     are supposed to be names of the last columns. This is consistent
     with the plain-text format of R and Pandas' dataframes.
+
+    If `index=True` or if `tabular_data` is a pandas.DataFrame, a column with
+    a row count or the index of the dataframe is shown. `index=False` does not
+    show an index. If `index` is an iterable, this value is used as the index
+    row (must be as long as the number of rows).
 
     >>> print(tabulate([["sex","age"],["Alice","F",24],["Bob","M",19]],
     ...       headers="firstrow"))
@@ -917,7 +937,8 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
     """
     if tabular_data is None:
         tabular_data = []
-    list_of_lists, headers = _normalize_tabular_data(tabular_data, headers)
+    list_of_lists, headers = _normalize_tabular_data(tabular_data, headers,
+                                                     index=index)
 
     # optimization: look for ANSI control codes once,
     # enable smart width functions only if a control code is found
