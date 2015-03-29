@@ -209,8 +209,8 @@ def test_alignment_of_decimal_numbers_with_ansi_color():
 
 
 def test_long_integers():
-    "Regression: long integers should be printed as integers (issue #TBD)"
-    table = [[18446744073709551614L]]
+    "Regression: long integers should be printed as integers (issue #48)"
+    table = [[18446744073709551614]]
     result = tabulate(table, tablefmt="plain")
     expected = u"18446744073709551614"
     assert_equal(result, expected)

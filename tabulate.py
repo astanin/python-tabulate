@@ -14,6 +14,7 @@ if python_version_tuple()[0] < "3":
     from functools import partial
     _none_type = type(None)
     _int_type = int
+    _long_type = long
     _float_type = float
     _text_type = unicode
     _binary_type = str
@@ -26,6 +27,7 @@ else:
     from functools import reduce, partial
     _none_type = type(None)
     _int_type = int
+    _long_type = int
     _float_type = float
     _text_type = str
     _binary_type = bytes
@@ -317,8 +319,6 @@ def _type(string, has_invisible=True):
     True
     >>> _type("1") is type(1)
     True
-    >>> _type(1L) is type(1L)
-    True
     >>> _type('\x1b[31m42\x1b[0m') is type(42)
     True
     >>> _type('\x1b[31m42\x1b[0m') is type(42)
@@ -336,8 +336,8 @@ def _type(string, has_invisible=True):
         return _text_type
     elif _isint(string):
         return int
-    elif _isint(string, long):
-        return long
+    elif _isint(string, _long_type):
+        return _long_type
     elif _isnumber(string):
         return float
     elif isinstance(string, _binary_type):
@@ -517,7 +517,7 @@ def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
     if val is None:
         return missingval
 
-    if valtype in [int, long, _text_type]:
+    if valtype in [int, _long_type, _text_type]:
         return "{0}".format(val)
     elif valtype is _binary_type:
         try:
