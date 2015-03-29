@@ -658,7 +658,7 @@ def _normalize_tabular_data(tabular_data, headers):
     return rows, headers
 
 
-def tabulate(tabular_data, headers=[], tablefmt="simple",
+def tabulate(tabular_data, headers=(), tablefmt="simple",
              floatfmt="g", numalign="decimal", stralign="left",
              missingval=""):
     """Format a fixed width table for pretty printing.

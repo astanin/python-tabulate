@@ -41,7 +41,7 @@ def test_tabulate_signature():
     "API: tabulate() type signature is unchanged"""
     assert type(tabulate) is type(lambda: None)
     expected_sig = [("tabular_data", _empty),
-                    ("headers", []),
+                    ("headers", ()),
                     ("tablefmt", "simple"),
                     ("floatfmt", "g"),
                     ("numalign", "decimal"),
