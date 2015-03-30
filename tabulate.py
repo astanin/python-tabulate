@@ -525,7 +525,7 @@ def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
         except TypeError:
             return _text_type(val)
     elif valtype is float:
-        is_a_colored_number = has_invisible and type(val) in [_text_type, _binary_type]
+        is_a_colored_number = has_invisible and isinstance(val, (_text_type, _binary_type))
         if is_a_colored_number:
             raw_val = _strip_invisible(val)
             formatted_val = format(float(raw_val), floatfmt)
