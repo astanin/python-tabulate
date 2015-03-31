@@ -47,6 +47,18 @@ SAMPLE_GRID_FORMAT_WITH_HEADERS = "\n".join(
      '+----------+----------+---------------+'])
 
 
+SAMPLE_GRID_FORMAT_WITH_DOT1E_FLOATS = "\n".join(
+    ['+-------+--------+---------+',
+     '| Sun   | 696000 | 2.0e+09 |',
+     '+-------+--------+---------+',
+     '| Earth |   6371 | 6.0e+03 |',
+     '+-------+--------+---------+',
+     '| Moon  |   1737 | 7.4e+01 |',
+     '+-------+--------+---------+',
+     '| Mars  |   3390 | 6.4e+02 |',
+     '+-------+--------+---------+'])
+
+
 def sample_input(sep=' ', with_headers=False):
     headers = sep.join(['Planet', 'Radius', 'Mass'])
     rows = [sep.join(['Sun', '696000', '1.9891e9']),
@@ -148,6 +160,18 @@ def test_script_sep_option():
         raw_table = sample_input(sep=",")
         out = run_and_capture_stdout(cmd, input=raw_table)
         expected = SAMPLE_SIMPLE_FORMAT
+        print("got:     ",repr(out))
+        print("expected:",repr(expected))
+        assert_equal(out.splitlines(), expected.splitlines())
+
+
+def test_script_floatfmt_option():
+    """Command line utility: -F, --float option"""
+    for option in ["-F", "--float"]:
+        cmd = ["python", "tabulate.py", option, ".1e", "--format", "grid"]
+        raw_table = sample_input()
+        out = run_and_capture_stdout(cmd, input=raw_table)
+        expected = SAMPLE_GRID_FORMAT_WITH_DOT1E_FLOATS
         print("got:     ",repr(out))
         print("expected:",repr(expected))
         assert_equal(out.splitlines(), expected.splitlines())

@@ -1022,6 +1022,7 @@ def _main():
     -1, --header              use the first row of data as a table header
     -o FILE, --output FILE    print table to FILE (default: stdout)
     -s REGEXP, --sep REGEXP   use a custom column separator (default: whitespace)
+    -F FPFMT, --float FPFMT   floating point number format (default: g)
     -f FMT, --format FMT      set output table format; supported formats:
                               plain, simple, grid, fancy_grid, pipe, orgtbl,
                               rst, mediawiki, html, latex, latex_booktabs, tsv
@@ -1033,13 +1034,14 @@ def _main():
     usage = textwrap.dedent(_main.__doc__)
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                                   "h1o:s:f:",
-                                   ["help", "header", "output", "sep=", "format="])
+                     "h1o:s:F:f:",
+                     ["help", "header", "output", "sep=", "float=", "format="])
     except getopt.GetoptError as e:
         print(e)
         print(usage)
         sys.exit(2)
     headers = []
+    floatfmt = "g"
     tablefmt = "simple"
     sep = r"\s+"
     outfile = "-"
@@ -1048,6 +1050,8 @@ def _main():
             headers = "firstrow"
         elif opt in ["-o", "--output"]:
             outfile = value
+        elif opt in ["-F", "--float"]:
+            floatfmt = value
         elif opt in ["-f", "--format"]:
             if value not in tabulate_formats:
                 print("%s is not a supported table format" % value)
@@ -1065,16 +1069,18 @@ def _main():
             if f == "-":
                 f = sys.stdin
             if _is_file(f):
-                _pprint_file(f, headers=headers, tablefmt=tablefmt, sep=sep, file=out)
+                _pprint_file(f, headers=headers, tablefmt=tablefmt,
+                             sep=sep, floatfmt=floatfmt, file=out)
             else:
                 with open(f) as fobj:
-                    _pprint_file(fobj, headers=headers, tablefmt=tablefmt, sep=sep, file=out)
+                    _pprint_file(fobj, headers=headers, tablefmt=tablefmt,
+                                 sep=sep, floatfmt=floatfmt, file=out)
 
 
-def _pprint_file(fobject, headers, tablefmt, sep, file):
+def _pprint_file(fobject, headers, tablefmt, sep, floatfmt, file):
     rows = fobject.readlines()
     table = [re.split(sep, r.rstrip()) for r in rows]
-    print(tabulate(table, headers, tablefmt), file=file)
+    print(tabulate(table, headers, tablefmt, floatfmt=floatfmt), file=file)
 
 
 if __name__ == "__main__":
