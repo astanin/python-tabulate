@@ -370,6 +370,7 @@ Usage of the command line utility
     -1, --header              use the first row of data as a table header
     -o FILE, --output FILE    print table to FILE (default: stdout)
     -s REGEXP, --sep REGEXP   use a custom column separator (default: whitespace)
+    -F FPFMT, --float FPFMT   floating point number format (default: g)
     -f FMT, --format FMT      set output table format; supported formats:
                               plain, simple, grid, fancy_grid, pipe, orgtbl,
                               rst, mediawiki, html, latex, latex_booktabs, tsv
@@ -416,6 +417,7 @@ and numeric data, ``tabulate`` appears to be slower than
 Version history
 ---------------
 
+- 0.7.5: FUTURE RELEASE. Bug fixes. ``--float`` format option for the command line utility.
 - 0.7.4: Bug fixes. ``fancy_grid`` and ``html`` formats. Command line utility.
 - 0.7.3: Bug fixes. Python 3.4 support. Iterables of dicts. ``latex_booktabs`` format.
 - 0.7.2: Python 3.2 support.
