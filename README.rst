@@ -136,6 +136,8 @@ Supported table formats are:
 - "fancy_grid"
 - "pipe"
 - "orgtbl"
+- "jira"
+- "psql"
 - "rst"
 - "mediawiki"
 - "html"
@@ -219,6 +221,14 @@ also in the minor `orgtbl-mode`. Hence its name::
     >>> print tabulate(table, headers, tablefmt="orgtbl")
     | item   |   qty |
     |--------+-------|
+    | spam   |    42 |
+    | eggs   |   451 |
+    | bacon  |     0 |
+
+``jira`` follows the conventions of Atlassian Jira markup language::
+
+    >>> print tabulate(table, headers, tablefmt="jira")
+    || item   ||   qty ||
     | spam   |    42 |
     | eggs   |   451 |
     | bacon  |     0 |

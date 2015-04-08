@@ -199,6 +199,14 @@ _table_formats = {"simple":
                               headerrow=DataRow("|", "|", "|"),
                               datarow=DataRow("|", "|", "|"),
                               padding=1, with_header_hide=None),
+                  "jira":
+                  TableFormat(lineabove=None,
+                              linebelowheader=None,
+                              linebetweenrows=None,
+                              linebelow=None,
+                              headerrow=DataRow("||", "||", "||"),
+                              datarow=DataRow("|", "|", "|"),
+                              padding=1, with_header_hide=None),
                   "psql":
                   TableFormat(lineabove=Line("+", "-", "+", "+"),
                               linebelowheader=Line("|", "-", "+", "|"),

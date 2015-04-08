@@ -159,6 +159,23 @@ def test_psql_headerless():
     result = tabulate(_test_table, tablefmt="psql")
     assert_equal(expected, result)
 
+def test_jira():
+    "Output: jira with headers"
+    expected = '\n'.join(['|| strings   ||   numbers ||',
+                          '| spam      |   41.9999 |',
+                          '| eggs      |  451      |',])
+
+    result = tabulate(_test_table, _test_table_headers, tablefmt="jira")
+    assert_equal(expected, result)
+
+def test_jira_headerless():
+    "Output: jira without headers"
+    expected = '\n'.join(['| spam |  41.9999 |',
+                          '| eggs | 451      |',])
+
+    result = tabulate(_test_table, tablefmt="jira")
+    assert_equal(expected, result)
+
 def test_rst():
     "Output: rst with headers"
     expected = '\n'.join(['=========  =========',
