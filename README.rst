@@ -140,6 +140,7 @@ Supported table formats are:
 - "psql"
 - "rst"
 - "mediawiki"
+- "moinmoin"
 - "html"
 - "latex"
 - "latex_booktabs"
@@ -259,6 +260,15 @@ other MediaWiki-based sites::
     |-
     | bacon  || align="right"|     0
     |}
+
+``moinmoin`` format produces a table markup used in `MoinMoin`_
+wikis::
+
+    >>> print tabulate(d,headers,tablefmt="moinmoin")
+    || ''' item   ''' || ''' quantity   ''' ||
+    ||  spam    ||  41.999      ||
+    ||  eggs    ||  451         ||
+    ||  bacon   ||              ||
 
 ``html`` produces standard HTML markup::
 
