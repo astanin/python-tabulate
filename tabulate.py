@@ -121,6 +121,11 @@ def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
     return (separator + colsep.join(values_with_attrs)).rstrip()
 
 
+def _html_begin_table_without_header(colwidths_ignore, colaligns_ignore):
+    # this table header will be suppressed if there is a header row
+    return "\n".join(["<table>", "<tbody>"])
+
+
 def _html_row_with_attrs(celltag, cell_values, colwidths, colaligns):
     alignment = { "left":    '',
                   "right":   ' style="text-align: right;"',
@@ -128,7 +133,14 @@ def _html_row_with_attrs(celltag, cell_values, colwidths, colaligns):
                   "decimal": ' style="text-align: right;"' }
     values_with_attrs = ["<{0}{1}>{2}</{0}>".format(celltag, alignment.get(a, ''), c)
                          for c, a in zip(cell_values, colaligns)]
-    return "<tr>" + "".join(values_with_attrs).rstrip() + "</tr>"
+    rowhtml = "<tr>" + "".join(values_with_attrs).rstrip() + "</tr>"
+    if celltag == "th":  # it's a header row, create a new table header
+        rowhtml = "\n".join(["<table>",
+                             "<thead>",
+                             rowhtml,
+                             "</thead>",
+                             "<tbody>"])
+    return rowhtml
 
 def _moin_row_with_attrs(celltag, cell_values, colwidths, colaligns, header=''):
     alignment = { "left":    '',
@@ -251,13 +263,13 @@ _table_formats = {"simple":
                               datarow=partial(_moin_row_with_attrs,"||"),
                               padding=1, with_header_hide=None),
                   "html":
-                  TableFormat(lineabove=Line("<table>", "", "", ""),
-                              linebelowheader=None,
+                  TableFormat(lineabove=_html_begin_table_without_header,
+                              linebelowheader="",
                               linebetweenrows=None,
-                              linebelow=Line("</table>", "", "", ""),
+                              linebelow=Line("</tbody>\n</table>", "", "", ""),
                               headerrow=partial(_html_row_with_attrs, "th"),
                               datarow=partial(_html_row_with_attrs, "td"),
-                              padding=0, with_header_hide=None),
+                              padding=0, with_header_hide=["lineabove"]),
                   "latex":
                   TableFormat(lineabove=_latex_line_begin_tabular,
                               linebelowheader=Line("\\hline", "", "", ""),
@@ -889,9 +901,13 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
     >>> print(tabulate([["strings", "numbers"], ["spam", 41.9999], ["eggs", "451.0"]],
     ...                headers="firstrow", tablefmt="html"))
     <table>
+    <thead>
     <tr><th>strings  </th><th style="text-align: right;">  numbers</th></tr>
+    </thead>
+    <tbody>
     <tr><td>spam     </td><td style="text-align: right;">  41.9999</td></tr>
     <tr><td>eggs     </td><td style="text-align: right;"> 451     </td></tr>
+    </tbody>
     </table>
 
     "latex" produces a tabular environment of LaTeX document markup:

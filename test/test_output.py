@@ -244,9 +244,13 @@ def test_html():
     "Output: html with headers"
     expected = '\n'.join([
         '<table>',
+        '<thead>',
         '<tr><th>strings  </th><th style="text-align: right;">  numbers</th></tr>',
+        '</thead>',
+        '<tbody>',
         '<tr><td>spam     </td><td style="text-align: right;">  41.9999</td></tr>',
         '<tr><td>eggs     </td><td style="text-align: right;"> 451     </td></tr>',
+        '</tbody>',
         '</table>',])
     result = tabulate(_test_table, _test_table_headers, tablefmt="html")
     assert_equal(expected, result)
@@ -256,8 +260,10 @@ def test_html_headerless():
     "Output: html without headers"
     expected = '\n'.join([
         '<table>',
+        '<tbody>',
         '<tr><td>spam</td><td style="text-align: right;"> 41.9999</td></tr>',
         '<tr><td>eggs</td><td style="text-align: right;">451     </td></tr>',
+        '</tbody>',
         '</table>',])
     result = tabulate(_test_table, tablefmt="html")
     assert_equal(expected, result)

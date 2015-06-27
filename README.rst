@@ -274,10 +274,12 @@ wikis::
 
     >>> print tabulate(table, headers, tablefmt="html")
     <table>
+    <tbody>
     <tr><th>item  </th><th style="text-align: right;">  qty</th></tr>
     <tr><td>spam  </td><td style="text-align: right;">   42</td></tr>
     <tr><td>eggs  </td><td style="text-align: right;">  451</td></tr>
     <tr><td>bacon </td><td style="text-align: right;">    0</td></tr>
+    </tbody>
     </table>
 
 ``latex`` format creates a ``tabular`` environment for LaTeX markup::
