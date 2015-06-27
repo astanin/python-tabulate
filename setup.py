@@ -6,7 +6,7 @@ except ImportError:
     from distutils.core import setup
 
 
-from platform import python_version_tuple
+from platform import python_version_tuple, python_implementation
 import os
 import re
 
@@ -21,9 +21,16 @@ else:
     LONG_DESCRIPTION = open("README.rst", "r").read().replace("`_", "`")
 
 # strip Build Status from the PyPI package
-if python_version_tuple()[:2] >= ('2', '7'):
-    LONG_DESCRIPTION = re.sub("^Build status\n(.*\n){7}", "", LONG_DESCRIPTION, flags=re.M)
-
+try:
+    if python_version_tuple()[:2] >= ('2', '7'):
+        status_re = "^Build status\n(.*\n){7}"
+        LONG_DESCRIPTION = re.sub(status_re, "", LONG_DESCRIPTION, flags=re.M)
+except TypeError:
+    if python_implementation() == "IronPython":
+        # IronPython doesn't support flags in re.sub (IronPython issue #923)
+        pass
+    else:
+        raise
 
 install_options = os.environ.get("TABULATE_INSTALL","").split(",")
 libonly_flags = set(["lib-only", "libonly", "no-cli", "without-cli"])
