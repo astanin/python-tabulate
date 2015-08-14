@@ -144,6 +144,7 @@ Supported table formats are:
 - "html"
 - "latex"
 - "latex_booktabs"
+- "textile"
 
 ``plain`` tables do not use any pseudo-graphics to draw lines::
 
@@ -270,6 +271,14 @@ wikis::
     ||  eggs    ||  451         ||
     ||  bacon   ||              ||
 
+``textile`` format produces a table markup used in `Textile`_ format::
+
+    >>> print tabulate(table, headers, tablefmt='textile')
+    |_.  item   |_.   qty |
+    |<. spam    |>.    42 |
+    |<. eggs    |>.   451 |
+    |<. bacon   |>.     0 |
+
 ``html`` produces standard HTML markup::
 
     >>> print tabulate(table, headers, tablefmt="html")
@@ -304,6 +313,7 @@ using spacing and style from the ``booktabs`` package.
 .. _table.el: http://table.sourceforge.net/
 .. _org-mode: http://orgmode.org/manual/Tables.html
 .. _reStructuredText: http://docutils.sourceforge.net/docs/user/rst/quickref.html#tables
+.. _Textile: http://redcloth.org/hobix.com/textile/
 .. _Wikipedia: http://www.mediawiki.org/wiki/Help:Tables
 
 
@@ -503,4 +513,5 @@ Contributors
 
 Sergey Astanin, Pau Tallada Crespí, Erwin Marsi, Mik Kocikowski, Bill Ryder,
 Zach Dwiel, Frederik Rietdijk, Philipp Bogensberger, Greg (anonymous),
-Stefan Tatschner, Emiel van Miltenburg, Brandon Bennett, Amjith Ramanujam.
+Stefan Tatschner, Emiel van Miltenburg, Brandon Bennett, Amjith Ramanujam,
+Javier Santacruz López-Cepero.

@@ -320,6 +320,37 @@ def test_latex_booktabs_headerless():
     assert_equal(expected, result)
 
 
+def test_textile():
+    "Output: textile without header"
+    result = tabulate(_test_table, tablefmt="textile")
+    expected = """\
+|<. spam  |>.  41.9999 |
+|<. eggs  |>. 451      |"""
+
+    assert_equal(expected, result)
+
+
+def test_textile_with_header():
+    "Output: textile with header"
+    result = tabulate(_test_table, ['strings', 'numbers'], tablefmt="textile")
+    expected = """\
+|_.  strings   |_.   numbers |
+|<. spam       |>.   41.9999 |
+|<. eggs       |>.  451      |"""
+
+    assert_equal(expected, result)
+
+
+def test_textile_with_center_align():
+    "Output: textile with center align"
+    result = tabulate(_test_table, tablefmt="textile", stralign='center')
+    expected = """\
+|=. spam  |>.  41.9999 |
+|=. eggs  |>. 451      |"""
+
+    assert_equal(expected, result)
+
+
 def test_no_data():
     "Output: table with no data"
     expected = "\n".join(['strings    numbers',
