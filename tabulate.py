@@ -388,7 +388,7 @@ def _type(string, has_invisible=True):
     elif _isint(string):
         return int
     elif _isint(string, _long_type):
-        return _long_type
+        return int
     elif _isnumber(string):
         return float
     elif isinstance(string, _binary_type):
@@ -568,7 +568,7 @@ def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
     if val is None:
         return missingval
 
-    if valtype in [int, _long_type, _text_type]:
+    if valtype in [int, _text_type]:
         return "{0}".format(val)
     elif valtype is _binary_type:
         try:

@@ -216,6 +216,15 @@ def test_long_integers():
     assert_equal(result, expected)
 
 
+def test_align_long_integers():
+    "Regression: long integers should be aligned as integers (issue #61)"
+    table = [[long(1)], [long(234)]]
+    result = tabulate(table, tablefmt="plain")
+    expected = "\n".join(["  1",
+                          "234"])
+    assert_equal(result, expected)
+
+
 def test_colorclass_colors():
     "Regression: ANSI colors in a unicode/str subclass (issue #49)"
     try:
