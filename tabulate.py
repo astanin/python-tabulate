@@ -121,6 +121,13 @@ def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
     return (separator + colsep.join(values_with_attrs)).rstrip()
 
 
+def _textile_row_with_attrs(cell_values, colwidths, colaligns):
+    cell_values[0] += ' '
+    alignment = { "left": "<.", "right": ">.", "center": "=.", "decimal": ">." }
+    values = (alignment.get(a, '') + v for a, v in zip(colaligns, cell_values))
+    return '|' + '|'.join(values) + '|'
+
+
 def _html_begin_table_without_header(colwidths_ignore, colaligns_ignore):
     # this table header will be suppressed if there is a header row
     return "\n".join(["<table>", "<tbody>"])
@@ -291,7 +298,13 @@ _table_formats = {"simple":
                               linebetweenrows=None, linebelow=None,
                               headerrow=DataRow("", "\t", ""),
                               datarow=DataRow("", "\t", ""),
-                              padding=0, with_header_hide=None)}
+                              padding=0, with_header_hide=None),
+                  "textile":
+                  TableFormat(lineabove=None, linebelowheader=None,
+                              linebetweenrows=None, linebelow=None,
+                              headerrow=DataRow("|_. ", "|_.", "|"),
+                              datarow=_textile_row_with_attrs,
+                              padding=1, with_header_hide=None)}
 
 
 tabulate_formats = list(sorted(_table_formats.keys()))
