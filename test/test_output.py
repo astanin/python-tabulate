@@ -417,6 +417,25 @@ def test_unaligned_separated():
     assert_equal(expected, result)
 
 
+def test_pandas_with_index():
+    "Output: a pandas Dataframe with an index"
+    try:
+        import pandas
+        df = pandas.DataFrame([["one",1],["two",None]],
+                              columns=["string","number"],
+                              index=["a","b"])
+        expected = "\n".join(
+            ['    string      number',
+             '--  --------  --------',
+             'a   one              1',
+             'b   two            nan'])
+        result = tabulate(df, headers="keys")
+        assert_equal(expected, result)
+    except ImportError:
+        print("test_pandas_with_index is skipped")
+        raise SkipTest()   # this test is optional
+
+
 def test_pandas_without_index():
     "Output: a pandas Dataframe without an index"
     try:
@@ -429,7 +448,7 @@ def test_pandas_without_index():
              '--------  --------',
              'one              1',
              'two            nan'])
-        result   = tabulate(df, headers="keys", index=False)
+        result = tabulate(df, headers="keys", showindex=False)
         assert_equal(expected, result)
     except ImportError:
         print("test_pandas_without_index is skipped")
@@ -447,7 +466,7 @@ def test_dict_like_with_index():
         ' 0    0  101',
         ' 1    1  102',
         ' 2    2  103'])
-    result    = tabulate(dd, "keys", index=True)
+    result = tabulate(dd, "keys", showindex=True)
     assert_equal(result, expected)
 
 
@@ -462,39 +481,36 @@ def test_list_of_lists_with_index():
         ' 0    0  101',
         ' 1    1  102',
         ' 2    2  103'])
-    result    = tabulate(dd, headers=["a","b"], index=True)
+    result = tabulate(dd, headers=["a","b"], showindex=True)
     assert_equal(result, expected)
 
 def test_list_of_lists_with_supplied_index():
     "Output: a table with a supplied index"
-    dd = zip(*[range(3), range(101,104)])
-    # keys' order (hence columns' order) is not deterministic in Python 3
-    # => we have to consider both possible results as valid
+    dd = zip(*[list(range(3)), list(range(101,104))])
     expected = "\n".join([
         '      a    b',
         '--  ---  ---',
         ' 1    0  101',
         ' 2    1  102',
         ' 3    2  103'])
-    result    = tabulate(dd, headers=["a","b"], index=[1,2,3])
+    result    = tabulate(dd, headers=["a","b"], showindex=[1,2,3])
     assert_equal(result, expected)
+    # TODO: make it a separate test case
     # the index must be as long as the number of rows
-    assert_raises(ValueError, lambda: tabulate(dd, headers=["a","b"], index=[1,2]))
-
+    assert_raises(ValueError, lambda: tabulate(dd, headers=["a","b"], showindex=[1,2]))
 
 
 def test_list_of_lists_with_index_firstrow():
-    "Output: a table with a running index which takes into account header='firstrow'"
-    dd = zip(*[["a"]+range(3), ["b"]+range(101,104)])
-    # keys' order (hence columns' order) is not deterministic in Python 3
-    # => we have to consider both possible results as valid
+    "Output: a table with a running index and header='firstrow'"
+    dd = zip(*[["a"]+list(range(3)), ["b"]+list(range(101,104))])
     expected = "\n".join([
         '      a    b',
         '--  ---  ---',
         ' 0    0  101',
         ' 1    1  102',
         ' 2    2  103'])
-    result    = tabulate(dd, headers="firstrow", index=True)
+    result = tabulate(dd, headers="firstrow", showindex=True)
     assert_equal(result, expected)
-        # the index must be as long as the number of rows
-    assert_raises(ValueError, lambda: tabulate(dd, headers="firstrow", index=[1,2]))
+    # TODO: make it a separate test case
+    # the index must be as long as the number of rows
+    assert_raises(ValueError, lambda: tabulate(dd, headers="firstrow", showindex=[1,2]))

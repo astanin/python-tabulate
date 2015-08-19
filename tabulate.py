@@ -4,7 +4,7 @@
 
 from __future__ import print_function
 from __future__ import unicode_literals
-from collections import namedtuple
+from collections import namedtuple, Iterable
 from platform import python_version_tuple
 import re
 
@@ -598,7 +598,27 @@ def _align_header(header, alignment, width):
         return _padleft(width, header)
 
 
-def _normalize_tabular_data(tabular_data, headers, index=None):
+def _prepend_row_index(rows, index):
+    """Add a left-most index column."""
+    if index is None or index is False:
+        return rows
+    if len(index) != len(rows):
+        print('index=', index)
+        print('rows=', rows)
+        raise ValueError('index must be as long as the number of data rows')
+    rows = [[v]+list(row) for v,row in zip(index, rows)]
+    return rows
+
+
+def _bool(val):
+    "A wrapper around standard bool() which doesn't throw on NumPy arrays"
+    try:
+        return bool(val)
+    except ValueError:  # val is likely to be a numpy array with many elements
+        return False
+
+
+def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     """Transform a supported data type to a list of lists, and a list of headers.
 
     Supported tabular data types:
@@ -622,8 +642,14 @@ def _normalize_tabular_data(tabular_data, headers, index=None):
     The first row can be used as headers if headers="firstrow",
     column indices can be used as headers if headers="keys".
 
+    If showindex="default", show row indices of the pandas.DataFrame.
+    If showindex="always", show row indices for all types of data.
+    If showindex="never", don't show row indices for all types of data.
+    If showindex is an iterable, show its values as row indices.
+
     """
 
+    index = None
     if hasattr(tabular_data, "keys") and hasattr(tabular_data, "values"):
         # dict-like and pandas.DataFrame?
         if hasattr(tabular_data.values, "__call__"):
@@ -634,9 +660,8 @@ def _normalize_tabular_data(tabular_data, headers, index=None):
             # values is a property, has .index => it's likely a pandas.DataFrame (pandas 0.11.0)
             keys = tabular_data.keys()
             vals = tabular_data.values  # values matrix doesn't need to be transposed
-            # For DataFrames add an index per default
-            if index in [None, True]:
-                index = tabular_data.index
+            # for DataFrames add an index per default
+            index = list(tabular_data.index)
             rows = [list(row) for row in vals]
         else:
             raise ValueError("tabular data doesn't appear to be a dict or a DataFrame")
@@ -696,23 +721,29 @@ def _normalize_tabular_data(tabular_data, headers, index=None):
 
     # take headers from the first row if necessary
     if headers == "firstrow" and len(rows) > 0:
-        headers = list(map(_text_type, rows[0])) # headers should be strings
+        if index is not None:
+            headers = [index[0]] + list(rows[0])
+            index = index[1:]
+        else:
+            headers = rows[0]
+        headers = list(map(_text_type, headers)) # headers should be strings
         rows = rows[1:]
-
-    # Add an index column, either from a supplied list of index values or from the dataframe index
-    # or simple a running count if index==True
-    if index:
-        if index is True:
-            index = range(len(rows))
-        elif index:
-            index = list(index)
-            if len(index) != len(rows):
-                raise ValueError('index must be as long as the rows (excluding a header row if '
-                                 '"headers=firstrow"')
-        rows = [[v]+list(row) for v,row in zip(index, rows)]
 
     headers = list(map(_text_type,headers))
     rows = list(map(list,rows))
+
+    # add or remove an index column
+    showindex_is_a_str = type(showindex) in [_text_type, _binary_type]
+    if showindex == "default" and index is not None:
+        rows = _prepend_row_index(rows, index)
+    elif isinstance(showindex, Iterable) and not showindex_is_a_str:
+        rows = _prepend_row_index(rows, list(showindex))
+    elif showindex == "always" or (_bool(showindex) and not showindex_is_a_str):
+        if index is None:
+            index = list(range(len(rows)))
+        rows = _prepend_row_index(rows, index)
+    elif showindex == "never" or (not _bool(showindex) and not showindex_is_a_str):
+        pass
 
     # pad with empty headers for initial columns if necessary
     if headers and len(rows) > 0:
@@ -726,7 +757,7 @@ def _normalize_tabular_data(tabular_data, headers, index=None):
 
 def tabulate(tabular_data, headers=(), tablefmt="simple",
              floatfmt="g", numalign="decimal", stralign="left",
-             missingval="", index=None):
+             missingval="", showindex="default"):
     """Format a fixed width table for pretty printing.
 
     >>> print(tabulate([[1, 2.34], [-56, "8.999"], ["2", "10001"]]))
@@ -758,17 +789,24 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
     are supposed to be names of the last columns. This is consistent
     with the plain-text format of R and Pandas' dataframes.
 
-    If `index=True` or if `tabular_data` is a pandas.DataFrame, a column with
-    a row count or the index of the dataframe is shown. `index=False` does not
-    show an index. If `index` is an iterable, this value is used as the index
-    row (must be as long as the number of rows).
-
     >>> print(tabulate([["sex","age"],["Alice","F",24],["Bob","M",19]],
     ...       headers="firstrow"))
            sex      age
     -----  -----  -----
     Alice  F         24
     Bob    M         19
+
+    By default, pandas.DataFrame data have an additional column called
+    row index. To add a similar column to all other types of data,
+    use `showindex="always"` or `showindex=True`. To suppress row indices
+    for all types of data, pass `showindex="never" or `showindex=False`.
+    To add a custom row index column, pass `showindex=some_iterable`.
+
+    >>> print(tabulate([["F",24],["M",19]], showindex="always"))
+    -  -  --
+    0  F  24
+    1  M  19
+    -  -  --
 
 
     Column alignment
@@ -966,8 +1004,8 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
     """
     if tabular_data is None:
         tabular_data = []
-    list_of_lists, headers = _normalize_tabular_data(tabular_data, headers,
-                                                     index=index)
+    list_of_lists, headers = _normalize_tabular_data(
+            tabular_data, headers, showindex=showindex)
 
     # optimization: look for ANSI control codes once,
     # enable smart width functions only if a control code is found
