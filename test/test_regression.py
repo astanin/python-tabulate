@@ -4,7 +4,7 @@
 
 from __future__ import print_function
 from __future__ import unicode_literals
-from tabulate import tabulate, _text_type
+from tabulate import tabulate, _text_type, _long_type
 from common import assert_equal, assert_in
 
 
@@ -218,7 +218,7 @@ def test_long_integers():
 
 def test_align_long_integers():
     "Regression: long integers should be aligned as integers (issue #61)"
-    table = [[long(1)], [long(234)]]
+    table = [[_long_type(1)], [_long_type(234)]]
     result = tabulate(table, tablefmt="plain")
     expected = "\n".join(["  1",
                           "234"])
