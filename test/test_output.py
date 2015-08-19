@@ -432,7 +432,7 @@ def test_pandas_without_index():
         result   = tabulate(df, headers="keys", index=False)
         assert_equal(expected, result)
     except ImportError:
-        print("test_pandas_keys is skipped")
+        print("test_pandas_without_index is skipped")
         raise SkipTest()   # this test is optional
 
 
