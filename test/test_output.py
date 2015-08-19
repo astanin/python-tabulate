@@ -457,15 +457,13 @@ def test_pandas_without_index():
 
 def test_dict_like_with_index():
     "Output: a table with a running index"
-    dd = {"a": range(3), "b": range(101,104)}
-    # keys' order (hence columns' order) is not deterministic in Python 3
-    # => we have to consider both possible results as valid
+    dd = {"b": range(101,104)}
     expected = "\n".join([
-        '      a    b',
-        '--  ---  ---',
-        ' 0    0  101',
-        ' 1    1  102',
-        ' 2    2  103'])
+        '      b',
+        '--  ---',
+        ' 0  101',
+        ' 1  102',
+        ' 2  103'])
     result = tabulate(dd, "keys", showindex=True)
     assert_equal(result, expected)
 
