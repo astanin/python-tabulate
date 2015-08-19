@@ -121,6 +121,24 @@ lists of dictionaries or named tuples::
        19  Bob
 
 
+Row Indices
+~~~~~~~~~~~
+
+By default, only pandas.DataFrame tables have an additional column
+called row index. To add a similar column to any other type of table,
+pass ``showindex="always"`` or ``showindex=True`` argument to
+``tabulate()``. To suppress row indices for all types of data, pass
+``showindex="never"`` or ``showindex=False``.  To add a custom row
+index column, pass ``showindex=rowIDs``, where ``rowIDs`` is some
+iterable::
+
+    >>> print(tabulate([["F",24],["M",19]], showindex="always"))
+    -  -  --
+    0  F  24
+    1  M  19
+    -  -  --
+
+
 Table format
 ~~~~~~~~~~~~
 
@@ -449,6 +467,7 @@ and numeric data, ``tabulate`` appears to be slower than
 Version history
 ---------------
 
+- 0.8: FUTURE RELEASE
 - 0.7.5: Bug fixes. ``--float`` format option for the command line utility.
 - 0.7.4: Bug fixes. ``fancy_grid`` and ``html`` formats. Command line utility.
 - 0.7.3: Bug fixes. Python 3.4 support. Iterables of dicts. ``latex_booktabs`` format.
@@ -514,4 +533,4 @@ Contributors
 Sergey Astanin, Pau Tallada Crespí, Erwin Marsi, Mik Kocikowski, Bill Ryder,
 Zach Dwiel, Frederik Rietdijk, Philipp Bogensberger, Greg (anonymous),
 Stefan Tatschner, Emiel van Miltenburg, Brandon Bennett, Amjith Ramanujam,
-Simon Percivall, Javier Santacruz López-Cepero.
+Jan Schulz, Simon Percivall, Javier Santacruz López-Cepero.
