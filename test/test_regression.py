@@ -233,6 +233,25 @@ def test_colorclass_colors():
         assert_equal(result, expected)
 
 
+def test_mix_normal_and_wide_characters():
+    "Regression: wide characters in a grid format (issue #51)"
+    try:
+        import wcwidth
+        ru_text = '\u043f\u0440\u0438\u0432\u0435\u0442'
+        cn_text = '\u4f60\u597d'
+        result = tabulate([[ru_text], [cn_text]], tablefmt="grid")
+        expected = "\n".join([
+            '+--------+',
+            '| \u043f\u0440\u0438\u0432\u0435\u0442 |',
+            '+--------+',
+            '| \u4f60\u597d   |',
+            '+--------+'])
+        assert_equal(result, expected)
+    except ImportError:
+        print("test_mix_normal_and_wide_characters is skipped (requires wcwidth lib)")
+        raise SkipTest()
+
+
 def test_align_long_integers():
     "Regression: long integers should be aligned as integers (issue #61)"
     table = [[_long_type(1)], [_long_type(234)]]

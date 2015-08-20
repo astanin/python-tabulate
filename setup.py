@@ -59,4 +59,5 @@ setup(name='tabulate',
                      "Topic :: Software Development :: Libraries" ],
       py_modules = ['tabulate'],
       entry_points = {'console_scripts': console_scripts},
+      extras_require = {'widechars': ['wcwidth']},
       test_suite = 'nose.collector')

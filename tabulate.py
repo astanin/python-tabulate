@@ -36,6 +36,11 @@ else:
     def _is_file(f):
         return isinstance(f, io.IOBase)
 
+try:
+    import wcwidth  # optional wide-character (CJK) support
+except ImportError:
+    wcwidth = None
+
 
 __all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
 __version__ = "0.7.6-dev"
@@ -475,10 +480,12 @@ def _visible_width(s):
     (5, 5)
 
     """
+    # optional wide-character support
+    len_fn = len if wcwidth is None else wcwidth.wcswidth
     if isinstance(s, _text_type) or isinstance(s, _binary_type):
-        return len(_strip_invisible(s))
+        return len_fn(_strip_invisible(s))
     else:
-        return len(_text_type(s))
+        return len_fn(_text_type(s))
 
 
 def _align_column(strings, alignment, minwidth=0, has_invisible=True):
@@ -515,10 +522,22 @@ def _align_column(strings, alignment, minwidth=0, has_invisible=True):
     if has_invisible:
         width_fn = _visible_width
     else:
-        width_fn = len
+        # optional wide-character support if available
+        width_fn = len if wcwidth is None else wcwidth.wcswidth
 
-    maxwidth = max(max(map(width_fn, strings)), minwidth)
-    padded_strings = [padfn(maxwidth, s, has_invisible) for s in strings]
+    s_lens = list(map(len, strings))
+    s_widths = list(map(width_fn, strings))
+    maxwidth = max(max(s_widths), minwidth)
+    if wcwidth is None and not has_invisible:
+        padded_strings = [padfn(maxwidth, s, has_invisible=False)
+                          for s in strings]
+    else:
+        # enable wide-character width corrections
+        visible_widths = [maxwidth - (w - l) for w, l in zip(s_widths, s_lens)]
+        # wcswidth and _visible_width don't count invisible characters;
+        # padfn doesn't need to apply another correction
+        padded_strings = [padfn(w, s, has_invisible=False)
+                          for s, w in zip(strings, visible_widths)]
     return padded_strings
 
 
@@ -1018,11 +1037,13 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
     # enable smart width functions only if a control code is found
     plain_text = '\n'.join(['\t'.join(map(_text_type, headers))] + \
                             ['\t'.join(map(_text_type, row)) for row in list_of_lists])
+
     has_invisible = re.search(_invisible_codes, plain_text)
     if has_invisible:
         width_fn = _visible_width
     else:
-        width_fn = len
+        # optional wide-character support if available
+        width_fn = len if wcwidth is None else wcwidth.wcswidth
 
     # format rows and columns, convert numeric values to strings
     cols = list(zip(*list_of_lists))
