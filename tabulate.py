@@ -429,39 +429,36 @@ def _afterpoint(string):
         return -1  # not a number
 
 
-def _padleft(width, s, has_invisible=True):
+def _padleft(width, s):
     """Flush right.
 
     >>> _padleft(6, '\u044f\u0439\u0446\u0430') == '  \u044f\u0439\u0446\u0430'
     True
 
     """
-    iwidth = width + len(s) - len(_strip_invisible(s)) if has_invisible else width
-    fmt = "{0:>%ds}" % iwidth
+    fmt = "{0:>%ds}" % width
     return fmt.format(s)
 
 
-def _padright(width, s, has_invisible=True):
+def _padright(width, s):
     """Flush left.
 
     >>> _padright(6, '\u044f\u0439\u0446\u0430') == '\u044f\u0439\u0446\u0430  '
     True
 
     """
-    iwidth = width + len(s) - len(_strip_invisible(s)) if has_invisible else width
-    fmt = "{0:<%ds}" % iwidth
+    fmt = "{0:<%ds}" % width
     return fmt.format(s)
 
 
-def _padboth(width, s, has_invisible=True):
+def _padboth(width, s):
     """Center string.
 
     >>> _padboth(6, '\u044f\u0439\u0446\u0430') == ' \u044f\u0439\u0446\u0430 '
     True
 
     """
-    iwidth = width + len(s) - len(_strip_invisible(s)) if has_invisible else width
-    fmt = "{0:^%ds}" % iwidth
+    fmt = "{0:^%ds}" % width
     return fmt.format(s)
 
 
@@ -529,15 +526,13 @@ def _align_column(strings, alignment, minwidth=0, has_invisible=True):
     s_widths = list(map(width_fn, strings))
     maxwidth = max(max(s_widths), minwidth)
     if wcwidth is None and not has_invisible:
-        padded_strings = [padfn(maxwidth, s, has_invisible=False)
-                          for s in strings]
+        padded_strings = [padfn(maxwidth, s) for s in strings]
     else:
         # enable wide-character width corrections
         visible_widths = [maxwidth - (w - l) for w, l in zip(s_widths, s_lens)]
         # wcswidth and _visible_width don't count invisible characters;
         # padfn doesn't need to apply another correction
-        padded_strings = [padfn(w, s, has_invisible=False)
-                          for s, w in zip(strings, visible_widths)]
+        padded_strings = [padfn(w, s) for s, w in zip(strings, visible_widths)]
     return padded_strings
 
 
@@ -606,7 +601,9 @@ def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
         return "{0}".format(val)
 
 
-def _align_header(header, alignment, width):
+def _align_header(header, alignment, width, visible_width):
+    "Pad string header to width chars given known visible_width of the header."
+    width += len(header) - visible_width
     if alignment == "left":
         return _padright(width, header)
     elif alignment == "center":
@@ -1062,7 +1059,7 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
         t_cols = cols or [['']] * len(headers)
         t_aligns = aligns or [stralign] * len(headers)
         minwidths = [max(minw, width_fn(c[0])) for minw, c in zip(minwidths, t_cols)]
-        headers = [_align_header(h, a, minw)
+        headers = [_align_header(h, a, minw, width_fn(h))
                    for h, a, minw in zip(headers, t_aligns, minwidths)]
         rows = list(zip(*cols))
     else:
