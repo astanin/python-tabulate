@@ -46,7 +46,11 @@ __all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
 __version__ = "0.7.6-dev"
 
 
+# minimum extra space in headers
 MIN_PADDING = 2
+
+# if True, enable wide-character (CJK) support
+WIDE_CHARS_MODE = wcwidth is not None
 
 
 Line = namedtuple("Line", ["begin", "hline", "sep", "end"])
@@ -478,7 +482,10 @@ def _visible_width(s):
 
     """
     # optional wide-character support
-    len_fn = len if wcwidth is None else wcwidth.wcswidth
+    if wcwidth is not None and WIDE_CHARS_MODE:
+        len_fn = wcwidth.wcswidth
+    else:
+        len_fn = len
     if isinstance(s, _text_type) or isinstance(s, _binary_type):
         return len_fn(_strip_invisible(s))
     else:
@@ -516,16 +523,18 @@ def _align_column(strings, alignment, minwidth=0, has_invisible=True):
         strings = [s.strip() for s in strings]
         padfn = _padright
 
+    enable_widechars = wcwidth is not None and WIDE_CHARS_MODE
     if has_invisible:
         width_fn = _visible_width
+    elif enable_widechars: # optional wide-character support if available
+        width_fn = wcwidth.wcswidth
     else:
-        # optional wide-character support if available
-        width_fn = len if wcwidth is None else wcwidth.wcswidth
+        width_fn = len
 
     s_lens = list(map(len, strings))
     s_widths = list(map(width_fn, strings))
     maxwidth = max(max(s_widths), minwidth)
-    if wcwidth is None and not has_invisible:
+    if not enable_widechars and not has_invisible:
         padded_strings = [padfn(maxwidth, s) for s in strings]
     else:
         # enable wide-character width corrections
@@ -1036,11 +1045,13 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
                             ['\t'.join(map(_text_type, row)) for row in list_of_lists])
 
     has_invisible = re.search(_invisible_codes, plain_text)
+    enable_widechars = wcwidth is not None and WIDE_CHARS_MODE
     if has_invisible:
         width_fn = _visible_width
+    elif enable_widechars: # optional wide-character support if available
+        width_fn = wcwidth.wcswidth
     else:
-        # optional wide-character support if available
-        width_fn = len if wcwidth is None else wcwidth.wcswidth
+        width_fn = len
 
     # format rows and columns, convert numeric values to strings
     cols = list(zip(*list_of_lists))
