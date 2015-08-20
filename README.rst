@@ -404,6 +404,23 @@ columns of decimal numbers. Use ``floatfmt`` named argument::
     --  ------
 
 
+Wide (fullwidth CJK) symbols
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To properly align tables which contain wide characters (typically fullwidth
+glyphs from Chinese, Japanese or Korean languages), the user should install
+``wcwidth`` library. To install it together with ``tabulate``::
+
+    pip install tabulate[widechars]
+
+Wide character support is enabled automatically if ``wcwidth`` library is
+already installed.  To disable wide characters support without uninstalling
+``wcwidth``, set the global module-level flag ``WIDE_CHARS_MODE``::
+
+    import tabulate
+    tabulate.WIDE_CHARS_MODE = False
+
+
 Usage of the command line utility
 ---------------------------------
 
