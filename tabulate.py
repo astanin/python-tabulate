@@ -1200,7 +1200,7 @@ def _main():
 
 def _pprint_file(fobject, headers, tablefmt, sep, floatfmt, file):
     rows = fobject.readlines()
-    table = [re.split(sep, r.rstrip()) for r in rows]
+    table = [re.split(sep, r.rstrip()) for r in rows if r.strip()]
     print(tabulate(table, headers, tablefmt, floatfmt=floatfmt), file=file)
 
 
