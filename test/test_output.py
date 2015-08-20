@@ -5,7 +5,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 from tabulate import tabulate, simple_separated_format
-from common import assert_equal, assert_raises
+from common import assert_equal, assert_raises, SkipTest
 
 
 # _test_table shows

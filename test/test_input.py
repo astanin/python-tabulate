@@ -5,8 +5,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 from tabulate import tabulate
-from common import assert_equal, assert_in, assert_raises
-from nose.plugins.skip import SkipTest
+from common import assert_equal, assert_in, assert_raises, SkipTest
 
 
 def test_iterable_of_iterables():

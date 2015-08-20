@@ -1,4 +1,19 @@
 try:
+    from nose.plugins.skip import SkipTest
+except ImportError:
+    try:
+        from unittest.case import SkipTest  # Python >= 2.7
+    except ImportError:
+        try:
+            from unittest2.case import SkipTest  # Python < 2.7
+        except ImportError:
+            class SkipTest(Exception):
+                """Raise this exception to mark a test as skipped.
+                """
+                pass
+
+
+try:
     from nose.tools import assert_equal, assert_in, assert_raises
 
 

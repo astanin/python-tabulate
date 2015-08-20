@@ -6,7 +6,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from tabulate import tabulate, tabulate_formats, simple_separated_format
 from platform import python_version_tuple
-from nose.plugins.skip import SkipTest
+from common import SkipTest
 
 
 try:

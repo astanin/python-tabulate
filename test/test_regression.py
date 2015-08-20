@@ -5,7 +5,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 from tabulate import tabulate, _text_type, _long_type
-from common import assert_equal, assert_in
+from common import assert_equal, assert_in, SkipTest
 
 
 def test_ansi_color_in_table_cells():
