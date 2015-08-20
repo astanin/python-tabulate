@@ -106,7 +106,7 @@ def test_dict_like():
 
 
 def test_numpy_2d():
-    "Input: a two-dimensional NumPy array with headers."
+    "Input: a 2D NumPy array with headers."
     try:
         import numpy
         na = (numpy.arange(1,10, dtype=numpy.float32).reshape((3,3))**3)*0.5
@@ -124,7 +124,7 @@ def test_numpy_2d():
 
 
 def test_numpy_2d_firstrow():
-    "Input: a two-dimensional NumPy array with the first row as headers."
+    "Input: a 2D NumPy array with the first row as headers."
     try:
         import numpy
         na = (numpy.arange(1,10, dtype=numpy.int32).reshape((3,3))**3)
@@ -142,7 +142,7 @@ def test_numpy_2d_firstrow():
 
 
 def test_numpy_2d_keys():
-    "Input: a two-dimensional NumPy array with column indices as headers."
+    "Input: a 2D NumPy array with column indices as headers."
     try:
         import numpy
         na = (numpy.arange(1,10, dtype=numpy.float32).reshape((3,3))**3)*0.5
@@ -160,7 +160,7 @@ def test_numpy_2d_keys():
 
 
 def test_numpy_record_array():
-    "Input: a two-dimensional NumPy record array without header."
+    "Input: a 2D NumPy record array without header."
     try:
         import numpy
         na = numpy.asarray([("Alice", 23, 169.5),
@@ -180,7 +180,7 @@ def test_numpy_record_array():
 
 
 def test_numpy_record_array_keys():
-    "Input: a two-dimensional NumPy record array with column names as headers."
+    "Input: a 2D NumPy record array with column names as headers."
     try:
         import numpy
         na = numpy.asarray([("Alice", 23, 169.5),
@@ -200,7 +200,7 @@ def test_numpy_record_array_keys():
 
 
 def test_numpy_record_array_headers():
-    "Input: a two-dimensional NumPy record array with user-supplied headers."
+    "Input: a 2D NumPy record array with user-supplied headers."
     try:
         import numpy
         na = numpy.asarray([("Alice", 23, 169.5),
@@ -381,7 +381,7 @@ def test_list_of_dicts_with_dict_of_headers():
 
 
 def test_list_of_dicts_with_list_of_headers():
-    "Input: a list of headers for a list of dicts, raise ValueError (issue #23)"
+    "Input: ValueError on a list of headers with a list of dicts (issue #23)"
     table = [{"letters": "ABCDE", "digits": 12345}]
     headers = ["DIGITS", "LETTERS"]
     with assert_raises(ValueError):

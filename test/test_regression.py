@@ -37,7 +37,7 @@ def test_alignment_of_colored_cells():
 
 
 def test_iter_of_iters_with_headers():
-    "Regression: Generator of generators with a generator of headers (issue #9)."
+    "Regression: Generator of generators with a gen. of headers (issue #9)."
 
     def mk_iter_of_iters():
         def mk_iter():
