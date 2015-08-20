@@ -451,18 +451,18 @@ and numeric data, ``tabulate`` appears to be slower than
 
 ::
 
-    ===========================  ==========  ===========
-    Table formatter                time, μs    rel. time
-    ===========================  ==========  ===========
-    join with tabs and newlines        36.4          1.0
-    csv to StringIO                    48.6          1.3
-    tabletext (0.1)                   876.9         24.1
-    asciitable (0.8.0)               1198.3         32.9
-    tabulate (0.7.5)                 2211.9         60.8
-    PrettyTable (0.7.2)              5727.3        157.5
-    texttable (0.8.1)                6080.5        167.2
-    ===========================  ==========  ===========
-
+    =====================================  ==========  ===========
+    Table formatter                          time, μs    rel. time
+    =====================================  ==========  ===========
+    join with tabs and newlines                  27.0          1.0
+    csv to StringIO                              38.5          1.4
+    tabletext (0.1)                             529.4         19.6
+    asciitable (0.8.0)                          877.2         32.5
+    tabulate (0.7.6-dev)                       1549.7         57.5
+    tabulate (0.7.6-dev, WIDE_CHARS_MODE)      2271.5         84.2
+    PrettyTable (0.7.2)                        3986.1        147.8
+    texttable (0.8.3)                          4412.8        163.6
+    =====================================  ==========  ===========
 
 Version history
 ---------------

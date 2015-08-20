@@ -55,7 +55,8 @@ def  run_tabletext(table):
     return tabletext.to_text(table)
 
 
-def run_tabulate(table):
+def run_tabulate(table, widechars=False):
+    tabulate.WIDE_CHARS_MODE = tabulate.wcwidth is not None and widechars
     return tabulate.tabulate(table)
 
 
@@ -65,10 +66,15 @@ methods = [(u"join with tabs and newlines", "join_table(table)"),
            (u"csv to StringIO", "csv_table(table)"),
            (u"asciitable (%s)" % asciitable.__version__, "run_asciitable(table)"),
            (u"tabulate (%s)" % tabulate.__version__, "run_tabulate(table)"),
+           (u"tabulate (%s, WIDE_CHARS_MODE)" % tabulate.__version__, "run_tabulate(table, widechars=True)"),
            (u"PrettyTable (%s)" % prettytable.__version__, "run_prettytable(table)"),
            (u"texttable (%s)" % texttable.__version__, "run_texttable(table)"),
            (u"tabletext (0.1)", "run_tabletext(table)"),
            ]
+
+
+if tabulate.wcwidth is None:
+    del(methods[4])
 
 
 def benchmark(n):
