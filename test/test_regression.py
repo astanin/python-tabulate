@@ -216,15 +216,6 @@ def test_long_integers():
     assert_equal(result, expected)
 
 
-def test_align_long_integers():
-    "Regression: long integers should be aligned as integers (issue #61)"
-    table = [[_long_type(1)], [_long_type(234)]]
-    result = tabulate(table, tablefmt="plain")
-    expected = "\n".join(["  1",
-                          "234"])
-    assert_equal(result, expected)
-
-
 def test_colorclass_colors():
     "Regression: ANSI colors in a unicode/str subclass (issue #49)"
     try:
@@ -240,3 +231,24 @@ def test_colorclass_colors():
         result = tabulate([[s]], tablefmt="plain")
         expected = "\x1b[35m3.14\x1b[39m"
         assert_equal(result, expected)
+
+
+def test_align_long_integers():
+    "Regression: long integers should be aligned as integers (issue #61)"
+    table = [[_long_type(1)], [_long_type(234)]]
+    result = tabulate(table, tablefmt="plain")
+    expected = "\n".join(["  1",
+                          "234"])
+    assert_equal(result, expected)
+
+
+def test_numpy_array_as_headers():
+    "Regression: NumPy array used as headers (issue #62)"
+    try:
+        import numpy as np
+        headers = np.array(["foo", "bar"])
+        result = tabulate([], headers, tablefmt="plain")
+        expected = "foo    bar"
+        assert_equal(result, expected)
+    except ImportError:
+        raise SkipTest()

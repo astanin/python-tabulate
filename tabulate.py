@@ -649,6 +649,13 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
     """
 
+    try:
+        bool(headers)
+        is_headers2bool_broken = False
+    except ValueError: # numpy.ndarray, pandas.core.index.Index, ...
+        is_headers2bool_broken = True
+        headers = list(headers)
+
     index = None
     if hasattr(tabular_data, "keys") and hasattr(tabular_data, "values"):
         # dict-like and pandas.DataFrame?
