@@ -455,6 +455,49 @@ def test_pandas_without_index():
         raise SkipTest()   # this test is optional
 
 
+def test_pandas_rst_with_index():
+    "Output: a pandas Dataframe with an index in ReStructuredText format"
+    try:
+        import pandas
+        df = pandas.DataFrame([["one", 1], ["two", None]],
+                              columns=["string", "number"],
+                              index=["a", "b"])
+        expected = "\n".join(
+            ['==  ========  ========',
+             '-   string      number',
+             '==  ========  ========',
+             'a   one              1',
+             'b   two            nan',
+             '==  ========  ========'])
+        result = tabulate(df, tablefmt="rst", headers="keys")
+        assert_equal(expected, result)
+    except ImportError:
+        print("test_pandas_rst_with_index is skipped")
+        raise SkipTest()   # this test is optional
+
+
+def test_pandas_rst_with_named_index():
+    "Output: a pandas Dataframe with a named index in ReStructuredText format"
+    try:
+        import pandas
+        index = pandas.Index(["a", "b"], name='index')
+        df = pandas.DataFrame([["one", 1], ["two", None]],
+                              columns=["string", "number"],
+                              index=index)
+        expected = "\n".join(
+            ['======  ========  ========',
+             'index   string      number',
+             '======  ========  ========',
+             'a      one              1',
+             'b      two            nan',
+             '======  ========  ========'])
+        result = tabulate(df, tablefmt="rst", headers="keys")
+        assert_equal(expected, result)
+    except ImportError:
+        print("test_pandas_rst_with_index is skipped")
+        raise SkipTest()   # this test is optional
+
+
 def test_dict_like_with_index():
     "Output: a table with a running index"
     dd = {"b": range(101,104)}
