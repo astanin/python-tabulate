@@ -1044,6 +1044,9 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
     list_of_lists, headers = _normalize_tabular_data(
             tabular_data, headers, showindex=showindex)
 
+    if tablefmt == 'rst' and len(headers) > 0 and headers[0] == '':
+        headers[0] = '-'
+
     # optimization: look for ANSI control codes once,
     # enable smart width functions only if a control code is found
     plain_text = '\n'.join(['\t'.join(map(_text_type, headers))] + \
