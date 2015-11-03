@@ -690,7 +690,12 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             rows = list(izip_longest(*tabular_data.values()))  # columns have to be transposed
         elif hasattr(tabular_data, "index"):
             # values is a property, has .index => it's likely a pandas.DataFrame (pandas 0.11.0)
-            keys = tabular_data.keys()
+            keys = list(tabular_data)
+            if tabular_data.index.name is not None:
+                if isinstance(tabular_data.index.name, list):
+                    keys[:0] = tabular_data.index.name
+                else:
+                    keys[:0] = [tabular_data.index.name]
             vals = tabular_data.values  # values matrix doesn't need to be transposed
             # for DataFrames add an index per default
             index = list(tabular_data.index)
