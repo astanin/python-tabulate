@@ -273,6 +273,54 @@ def test_pandas_keys():
         raise SkipTest()   # this test is optional
 
 
+def test_sqlite3():
+    "Input: a sqlite3 cursor."
+    try:
+        import sqlite3
+        conn = sqlite3.connect(':memory:')
+        cursor = conn.cursor()
+        cursor.execute('CREATE TABLE people (name, age, height)')
+        for values in [
+            ("Alice", 23, 169.5),
+            ("Bob", 27, 175.0)]:
+            cursor.execute('INSERT INTO people VALUES (?, ?, ?)', values)
+        cursor.execute('SELECT name, age, height FROM people ORDER BY name')
+        result   = tabulate(cursor, headers=["whom", "how old", "how tall"])
+        expected = """\
+whom      how old    how tall
+------  ---------  ----------
+Alice          23       169.5
+Bob            27       175"""
+        assert_equal(expected, result)
+    except ImportError:
+        print("test_sqlite3 is skipped")
+        raise SkipTest()   # this test is optional
+
+
+def test_sqlite3_keys():
+    "Input: a sqlite3 DataFrame with keys as headers."
+    try:
+        import sqlite3
+        conn = sqlite3.connect(':memory:')
+        cursor = conn.cursor()
+        cursor.execute('CREATE TABLE people (name, age, height)')
+        for values in [
+            ("Alice", 23, 169.5),
+            ("Bob", 27, 175.0)]:
+            cursor.execute('INSERT INTO people VALUES (?, ?, ?)', values)
+        cursor.execute('SELECT name "whom", age "how old", height "how tall" FROM people ORDER BY name')
+        result   = tabulate(cursor, headers="keys")
+        expected = """\
+whom      how old    how tall
+------  ---------  ----------
+Alice          23       169.5
+Bob            27       175"""
+        assert_equal(expected, result)
+    except ImportError:
+        print("test_sqlite3_keys is skipped")
+        raise SkipTest()   # this test is optional
+
+
 def test_list_of_namedtuples():
     "Input: a list of named tuples with field names as headers."
     from collections import namedtuple
