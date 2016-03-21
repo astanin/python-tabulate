@@ -13,6 +13,7 @@ if python_version_tuple()[0] < "3":
     from itertools import izip_longest
     from functools import partial
     _none_type = type(None)
+    _bool_type = bool
     _int_type = int
     _long_type = long
     _float_type = float
@@ -26,6 +27,7 @@ else:
     from itertools import zip_longest as izip_longest
     from functools import reduce, partial
     _none_type = type(None)
+    _bool_type = bool
     _int_type = int
     _long_type = int
     _float_type = float
@@ -370,6 +372,18 @@ def _isint(string, inttype=int):
             _isconvertible(inttype, string)
 
 
+def _isbool(string):
+    """
+    >>> _isbool(True)
+    True
+    >>> _isbool("False")
+    True
+    >>> _isbool(1)
+    False
+    """
+    return type(string) is _bool_type or string in ("True", "False")
+
+
 def _type(string, has_invisible=True):
     """The least generic type (type(None), int, float, str, unicode).
 
@@ -394,6 +408,8 @@ def _type(string, has_invisible=True):
         return _none_type
     elif hasattr(string, "isoformat"):  # datetime.datetime, date, and time
         return _text_type
+    elif _isbool(string):
+        return _bool_type
     elif _isint(string):
         return int
     elif _isint(string, _long_type):
@@ -546,15 +562,17 @@ def _align_column(strings, alignment, minwidth=0, has_invisible=True):
 
 
 def _more_generic(type1, type2):
-    types = { _none_type: 0, int: 1, float: 2, _binary_type: 3, _text_type: 4 }
-    invtypes = { 4: _text_type, 3: _binary_type, 2: float, 1: int, 0: _none_type }
-    moregeneric = max(types.get(type1, 4), types.get(type2, 4))
+    types = { _none_type: 0, _bool_type: 1, int: 2, float: 3, _binary_type: 4, _text_type: 5 }
+    invtypes = { 5: _text_type, 4: _binary_type, 3: float, 2: int, 1: _bool_type, 0: _none_type }
+    moregeneric = max(types.get(type1, 5), types.get(type2, 5))
     return invtypes[moregeneric]
 
 
 def _column_type(strings, has_invisible=True):
     """The least generic type all column values are convertible to.
 
+    >>> _column_type([True, False]) is _bool_type
+    True
     >>> _column_type(["1", "2"]) is _int_type
     True
     >>> _column_type(["1", "2.3"]) is _float_type
@@ -573,7 +591,7 @@ def _column_type(strings, has_invisible=True):
 
     """
     types = [_type(s, has_invisible) for s in strings ]
-    return reduce(_more_generic, types, int)
+    return reduce(_more_generic, types, _bool_type)
 
 
 def _format(val, valtype, floatfmt, missingval="", has_invisible=True):

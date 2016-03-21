@@ -272,6 +272,16 @@ def test_numpy_array_as_headers():
     except ImportError:
         raise SkipTest()
 
+
+def test_boolean_columns():
+    "Regression: recognize boolean columns (issue #64)"
+    xortable = [[False, True], [True, False]]
+    expected = "\n".join(["False  True",
+                          "True   False"])
+    result = tabulate(xortable, tablefmt="plain")
+    assert_equal(result, expected)
+
+
 def test_ansi_color_bold_and_fgcolor():
     "Regression: set ANSI color and bold face together (issue #65)"
     table = [["1", "2", "3"], ["4", "\x1b[1;31m5\x1b[1;m", "6"], ["7", "8", "9"]]
