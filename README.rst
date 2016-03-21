@@ -550,4 +550,4 @@ Contributors
 Sergey Astanin, Pau Tallada Crespí, Erwin Marsi, Mik Kocikowski, Bill Ryder,
 Zach Dwiel, Frederik Rietdijk, Philipp Bogensberger, Greg (anonymous),
 Stefan Tatschner, Emiel van Miltenburg, Brandon Bennett, Amjith Ramanujam,
-Jan Schulz, Simon Percivall, Javier Santacruz López-Cepero.
+Jan Schulz, Simon Percivall, Javier Santacruz López-Cepero, Sam Denton.
