@@ -747,6 +747,11 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
                 raise ValueError('headers for a list of dicts is not a dict or a keyword')
             rows = [[row.get(k) for k in keys] for row in rows]
 
+        elif headers == "keys" and hasattr(tabular_data, "description"):
+            # Python Database API cursor object (PEP 0249)
+            # print tabulate(cursor, headers='keys')
+            headers = [column[0] for column in tabular_data.description]
+
         elif headers == "keys" and len(rows) > 0:
             # keys are column indices
             headers = list(map(_text_type, range(len(rows[0]))))
