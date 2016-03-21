@@ -381,7 +381,10 @@ def _isbool(string):
     >>> _isbool(1)
     False
     """
-    return type(string) is _bool_type or string in ("True", "False")
+    return type(string) is _bool_type or\
+           (isinstance(string, (_binary_type, _text_type))\
+            and\
+            string in ("True", "False"))
 
 
 def _type(string, has_invisible=True):
