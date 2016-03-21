@@ -271,3 +271,18 @@ def test_numpy_array_as_headers():
         assert_equal(result, expected)
     except ImportError:
         raise SkipTest()
+
+def test_ansi_color_bold_and_fgcolor():
+    "Regression: set ANSI color and bold face together (issue #65)"
+    table = [["1", "2", "3"], ["4", "\x1b[1;31m5\x1b[1;m", "6"], ["7", "8", "9"]]
+    result = tabulate(table, tablefmt="grid")
+    expected = "\n".join([
+        u'+---+---+---+',
+        u'| 1 | 2 | 3 |',
+        u'+---+---+---+',
+        u'| 4 | \x1b[1;31m5\x1b[1;m | 6 |',
+        u'+---+---+---+',
+        u'| 7 | 8 | 9 |',
+        u'+---+---+---+'])
+    assert_equal(result, expected)
+
