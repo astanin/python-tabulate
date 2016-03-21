@@ -274,7 +274,7 @@ def test_pandas_keys():
 
 
 def test_sqlite3():
-    "Input: a sqlite3 cursor."
+    "Input: an sqlite3 cursor"
     try:
         import sqlite3
         conn = sqlite3.connect(':memory:')
@@ -298,7 +298,7 @@ Bob            27       175"""
 
 
 def test_sqlite3_keys():
-    "Input: a sqlite3 DataFrame with keys as headers."
+    "Input: an sqlite3 cursor with keys as headers"
     try:
         import sqlite3
         conn = sqlite3.connect(':memory:')
