@@ -463,12 +463,12 @@ def test_pandas_rst_with_index():
                               columns=["string", "number"],
                               index=["a", "b"])
         expected = "\n".join(
-            ['===  ========  ========',
-             '-    string      number',
-             '===  ========  ========',
-             'a    one              1',
-             'b    two            nan',
-             '===  ========  ========'])
+            ['====  ========  ========',
+             '..    string      number',
+             '====  ========  ========',
+             'a     one              1',
+             'b     two            nan',
+             '====  ========  ========'])
         result = tabulate(df, tablefmt="rst", headers="keys")
         assert_equal(expected, result)
     except ImportError:

@@ -191,6 +191,24 @@ def _latex_row(cell_values, colwidths, colaligns):
     return _build_simple_row(escaped_values, rowfmt)
 
 
+def _rst_escape_first_column(rows, headers):
+    def escape_empty(val):
+        if isinstance(val, (_text_type, _binary_type)) and val.strip() is "":
+            return ".."
+        else:
+            return val
+    new_headers = list(headers)
+    new_rows = []
+    if headers:
+        new_headers[0] = escape_empty(headers[0])
+    for row in rows:
+        new_row = list(row)
+        if new_row:
+            new_row[0] = escape_empty(row[0])
+        new_rows.append(new_row)
+    return new_rows, new_headers
+
+
 _table_formats = {"simple":
                   TableFormat(lineabove=Line("", "-", "  ", ""),
                               linebelowheader=Line("", "-", "  ", ""),
@@ -1073,8 +1091,10 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
     list_of_lists, headers = _normalize_tabular_data(
             tabular_data, headers, showindex=showindex)
 
-    if tablefmt == 'rst' and len(headers) > 0 and headers[0] == '':
-        headers[0] = '-'
+    # empty values in the first column of RST tables should be escaped (issue #82)
+    # "" should be escaped as "\\ " or ".."
+    if tablefmt == 'rst':
+        list_of_lists, headers = _rst_escape_first_column(list_of_lists, headers)
 
     # optimization: look for ANSI control codes once,
     # enable smart width functions only if a control code is found

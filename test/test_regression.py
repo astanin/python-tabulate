@@ -302,13 +302,13 @@ def test_escape_empty_cell_in_first_column_in_rst():
     table = [["foo", 1], ["", 2], ["bar", 3]]
     headers = ["", "val"]
     expected = "\n".join([
-        u"===  =====",
-        u"\\      val",
-        u"===  =====",
-        u"foo      1",
-        u"\\        2",
-        u"bar      3",
-        u"===  ====="])
+        u"====  =====",
+        u"..      val",
+        u"====  =====",
+        u"foo       1",
+        u"..        2",
+        u"bar       3",
+        u"====  ====="])
     result = tabulate(table, headers, tablefmt="rst")
     assert_equal(result, expected)
 
