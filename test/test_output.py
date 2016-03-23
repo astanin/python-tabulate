@@ -369,14 +369,14 @@ def test_empty_data():
 
 def test_no_data_without_headers():
     "Output: table with no data and no headers"
-    expected = "\n"
+    expected = ""
     result = tabulate(None, tablefmt="simple")
     assert_equal(expected, result)
 
 
 def test_empty_data_without_headers():
     "Output: table with empty data and no headers"
-    expected = "\n"
+    expected = ""
     result = tabulate([], tablefmt="simple")
     assert_equal(expected, result)
 
