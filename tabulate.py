@@ -748,7 +748,10 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     else:  # it's a usual an iterable of iterables, or a NumPy array
         rows = list(tabular_data)
 
-        if (headers == "keys" and
+        if (headers == "keys" and not rows):
+            # an empty table (issue #81)
+            headers = []
+        elif (headers == "keys" and
             hasattr(tabular_data, "dtype") and
             getattr(tabular_data.dtype, "names")):
             # numpy record array
@@ -1210,7 +1213,10 @@ def _format_table(fmt, headers, rows, colwidths, colaligns):
     if fmt.linebelow and "linebelow" not in hidden:
         lines.append(_build_line(padded_widths, colaligns, fmt.linebelow))
 
-    return "\n".join(lines)
+    if headers or rows:
+        return "\n".join(lines)
+    else: # a completely empty table
+        return ""
 
 
 def _main():

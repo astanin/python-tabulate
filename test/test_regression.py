@@ -297,6 +297,13 @@ def test_ansi_color_bold_and_fgcolor():
     assert_equal(result, expected)
 
 
+def test_empty_table_with_keys_as_header():
+    "Regression: headers='keys' on an empty table (issue #81)"
+    result = tabulate([], headers="keys")
+    expected = ""
+    assert_equal(result, expected)
+
+
 def test_escape_empty_cell_in_first_column_in_rst():
     "Regression: escape empty cells of the first column in RST format (issue #82)"
     table = [["foo", 1], ["", 2], ["bar", 3]]
