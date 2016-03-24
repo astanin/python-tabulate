@@ -1111,7 +1111,7 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
         width_fn = len
 
     # format rows and columns, convert numeric values to strings
-    cols = list(zip(*list_of_lists))
+    cols = list(izip_longest(*list_of_lists))
     coltypes = list(map(_column_type, cols))
     cols = [[_format(v, ct, floatfmt, missingval, has_invisible) for v in c]
              for c,ct in zip(cols, coltypes)]
