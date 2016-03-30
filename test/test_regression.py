@@ -321,7 +321,7 @@ def test_escape_empty_cell_in_first_column_in_rst():
 
 
 def test_ragged_rows():
-    "Regression: allow rows with different number of columns (issue #86)"
+    "Regression: allow rows with different number of columns (issue #85)"
     table = [[1,2,3], [1,2], [1,2,3,4]]
     expected = "\n".join([
         u"-  -  -  -",
