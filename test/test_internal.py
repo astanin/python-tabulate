@@ -8,9 +8,35 @@ import tabulate as T
 from common import assert_equal, assert_in, assert_raises, SkipTest
 
 
-def test_align_multiline_column():
+def test_align_column_decimal():
+    "Internal: _align_column(..., 'decimal')"
+    column = ["12.345", "-1234.5", "1.23", "1234.5", "1e+234", "1.0e234"]
+    output = T._align_column(column, "decimal")
+    expected = [
+            '   12.345  ',
+            '-1234.5    ',
+            '    1.23   ',
+            ' 1234.5    ',
+            '    1e+234 ',
+            '    1.0e234']
+    assert_equal(output, expected)
+
+
+def test_align_column_none():
+    "Internal: _align_column(..., None)"
+    column = ['123.4', '56.7890']
+    output = T._align_column(column, None)
+    expected = ['123.4', '56.7890']
+    assert_equal(output, expected)
+
+
+def test_align_column_multiline():
     "Internal: _align_column(..., is_multiline=True)"
     column = ["1", "123", "12345\n6"]
     output = T._align_column(column, "center", is_multiline=True)
-    expected_output = ["  1  ", " 123 ", "12345" + "\n" + "  6  "]
-    assert_equal(output, expected_output)
+    expected = [
+            "  1  ",
+            " 123 ",
+            "12345" + "\n" +
+            "  6  "]
+    assert_equal(output, expected)

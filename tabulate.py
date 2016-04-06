@@ -605,15 +605,7 @@ def _align_column_choose_padfn(strings, alignment, has_invisible):
 
 def _align_column(strings, alignment, minwidth=0,
                   has_invisible=True, enable_widechars=False, is_multiline=False):
-    """[string] -> [padded_string]
-
-    >>> list(map(str,_align_column(["12.345", "-1234.5", "1.23", "1234.5", "1e+234", "1.0e234"], "decimal")))
-    ['   12.345  ', '-1234.5    ', '    1.23   ', ' 1234.5    ', '    1e+234 ', '    1.0e234']
-
-    >>> list(map(str,_align_column(['123.4', '56.7890'], None)))
-    ['123.4', '56.7890']
-
-    """
+    """[string] -> [padded_string]"""
     strings, padfn = _align_column_choose_padfn(strings, alignment, has_invisible)
     width_fn = _choose_width_fn(has_invisible, enable_widechars, is_multiline)
 
