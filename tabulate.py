@@ -351,6 +351,8 @@ _table_formats = {"simple":
 tabulate_formats = list(sorted(_table_formats.keys()))
 
 
+_multiline_codes = re.compile(r"\r|\n|\r\n")
+_multiline_codes_bytes = re.compile(b"\r|\n|\r\n")
 _invisible_codes = re.compile(r"\x1b\[\d+[;\d]*m|\x1b\[\d*\;\d*\;\d*m")  # ANSI color codes
 _invisible_codes_bytes = re.compile(b"\x1b\[\d+[;\d]*m|\x1b\[\d*\;\d*\;\d*m")  # ANSI color codes
 
@@ -515,6 +517,10 @@ def _padboth(width, s):
     return fmt.format(s)
 
 
+def _padnone(ignore_width, s):
+    return s
+
+
 def _strip_invisible(s):
     "Remove invisible ANSI color codes."
     if isinstance(s, _text_type):
@@ -541,16 +547,39 @@ def _visible_width(s):
         return len_fn(_text_type(s))
 
 
-def _align_column(strings, alignment, minwidth=0, has_invisible=True):
-    """[string] -> [padded_string]
+def _is_multiline(s):
+    if isinstance(s, _text_type):
+        return bool(re.search(_multiline_codes, s))
+    else:  # a bytestring
+        return bool(re.search(_multiline_codes_bytes, s))
 
-    >>> list(map(str,_align_column(["12.345", "-1234.5", "1.23", "1234.5", "1e+234", "1.0e234"], "decimal")))
-    ['   12.345  ', '-1234.5    ', '    1.23   ', ' 1234.5    ', '    1e+234 ', '    1.0e234']
 
-    >>> list(map(str,_align_column(['123.4', '56.7890'], None)))
-    ['123.4', '56.7890']
+def _multiline_width(multiline_s, line_width_fn=len):
+    """Visible width of a potentially multiline content.
+
+    >>> _multiline_width("\\n".join(["foo", "barbaz", "spam"]))
+    6
 
     """
+    return max(map(line_width_fn, multiline_s.splitlines()))
+
+
+def _choose_width_fn(has_invisible, enable_widechars, is_multiline):
+    """Return a function to calculate visible cell width."""
+    if has_invisible:
+        line_width_fn = _visible_width
+    elif enable_widechars: # optional wide-character support if available
+        line_width_fn = wcwidth.wcswidth
+    else:
+        line_width_fn = len
+    if is_multiline:
+        width_fn = lambda s: _multiline_width(s, line_width_fn)
+    else:
+        width_fn = line_width_fn
+    return width_fn
+
+
+def _align_column_choose_padfn(strings, alignment, has_invisible):
     if alignment == "right":
         strings = [s.strip() for s in strings]
         padfn = _padleft
@@ -567,30 +596,53 @@ def _align_column(strings, alignment, minwidth=0, has_invisible=True):
                    for s, decs in zip(strings, decimals)]
         padfn = _padleft
     elif not alignment:
-        return strings
+        padfn = _padnone
     else:
         strings = [s.strip() for s in strings]
         padfn = _padright
+    return strings, padfn
 
-    enable_widechars = wcwidth is not None and WIDE_CHARS_MODE
-    if has_invisible:
-        width_fn = _visible_width
-    elif enable_widechars: # optional wide-character support if available
-        width_fn = wcwidth.wcswidth
-    else:
-        width_fn = len
 
-    s_lens = list(map(len, strings))
+def _align_column(strings, alignment, minwidth=0,
+                  has_invisible=True, enable_widechars=False, is_multiline=False):
+    """[string] -> [padded_string]
+
+    >>> list(map(str,_align_column(["12.345", "-1234.5", "1.23", "1234.5", "1e+234", "1.0e234"], "decimal")))
+    ['   12.345  ', '-1234.5    ', '    1.23   ', ' 1234.5    ', '    1e+234 ', '    1.0e234']
+
+    >>> list(map(str,_align_column(['123.4', '56.7890'], None)))
+    ['123.4', '56.7890']
+
+    """
+    strings, padfn = _align_column_choose_padfn(strings, alignment, has_invisible)
+    width_fn = _choose_width_fn(has_invisible, enable_widechars, is_multiline)
+
     s_widths = list(map(width_fn, strings))
     maxwidth = max(max(s_widths), minwidth)
-    if not enable_widechars and not has_invisible:
-        padded_strings = [padfn(maxwidth, s) for s in strings]
-    else:
-        # enable wide-character width corrections
-        visible_widths = [maxwidth - (w - l) for w, l in zip(s_widths, s_lens)]
-        # wcswidth and _visible_width don't count invisible characters;
-        # padfn doesn't need to apply another correction
-        padded_strings = [padfn(w, s) for s, w in zip(strings, visible_widths)]
+    # TODO: refactor column alignment in single-line and multiline modes
+    if is_multiline:
+        if not enable_widechars and not has_invisible:
+            padded_strings = [
+                "\n".join([padfn(maxwidth, s) for s in ms.splitlines()])
+                for ms in strings]
+        else:
+            # enable wide-character width corrections
+            s_lens = [max((len(s) for s in ms.splitlines())) for ms in strings]
+            visible_widths = [maxwidth - (w - l) for w, l in zip(s_widths, s_lens)]
+            # wcswidth and _visible_width don't count invisible characters;
+            # padfn doesn't need to apply another correction
+            padded_strings = ["\n".join([padfn(w, s) for s in ms.splitlines()])
+                              for ms, w in zip(strings, visible_widths)]
+    else:  # single-line cell values
+        if not enable_widechars and not has_invisible:
+            padded_strings = [padfn(maxwidth, s) for s in strings]
+        else:
+            # enable wide-character width corrections
+            s_lens = list(map(len, strings))
+            visible_widths = [maxwidth - (w - l) for w, l in zip(s_widths, s_lens)]
+            # wcswidth and _visible_width don't count invisible characters;
+            # padfn doesn't need to apply another correction
+            padded_strings = [padfn(w, s) for s, w in zip(strings, visible_widths)]
     return padded_strings
 
 
@@ -1143,17 +1195,13 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
 
     # optimization: look for ANSI control codes once,
     # enable smart width functions only if a control code is found
-    plain_text = '\n'.join(['\t'.join(map(_text_type, headers))] + \
+    plain_text = '\t'.join(['\t'.join(map(_text_type, headers))] + \
                             ['\t'.join(map(_text_type, row)) for row in list_of_lists])
 
     has_invisible = re.search(_invisible_codes, plain_text)
     enable_widechars = wcwidth is not None and WIDE_CHARS_MODE
-    if has_invisible:
-        width_fn = _visible_width
-    elif enable_widechars: # optional wide-character support if available
-        width_fn = wcwidth.wcswidth
-    else:
-        width_fn = len
+    is_multiline = _is_multiline(plain_text)
+    width_fn = _choose_width_fn(has_invisible, enable_widechars, is_multiline)
 
     # format rows and columns, convert numeric values to strings
     cols = list(izip_longest(*list_of_lists))
@@ -1178,7 +1226,7 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
     # align columns
     aligns = [numalign if ct in [int,float] else stralign for ct in coltypes]
     minwidths = [width_fn(h) + MIN_PADDING for h in headers] if headers else [0]*len(cols)
-    cols = [_align_column(c, a, minw, has_invisible)
+    cols = [_align_column(c, a, minw, has_invisible, enable_widechars, is_multiline)
             for c, a, minw in zip(cols, aligns, minwidths)]
 
     if headers:
