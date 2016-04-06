@@ -8,6 +8,14 @@ import tabulate as T
 from common import assert_equal, assert_in, assert_raises, SkipTest
 
 
+def test_multiline_width():
+    "Internal: _multiline_width()"
+    multiline_string = "\n".join(["foo", "barbaz", "spam"])
+    assert_equal(T._multiline_width(multiline_string), 6)
+    oneline_string = "12345"
+    assert_equal(T._multiline_width(oneline_string), len(oneline_string))
+
+
 def test_align_column_decimal():
     "Internal: _align_column(..., 'decimal')"
     column = ["12.345", "-1234.5", "1.23", "1234.5", "1e+234", "1.0e234"]

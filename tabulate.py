@@ -555,12 +555,7 @@ def _is_multiline(s):
 
 
 def _multiline_width(multiline_s, line_width_fn=len):
-    """Visible width of a potentially multiline content.
-
-    >>> _multiline_width("\\n".join(["foo", "barbaz", "spam"]))
-    6
-
-    """
+    """Visible width of a potentially multiline content."""
     return max(map(line_width_fn, multiline_s.splitlines()))
 
 
