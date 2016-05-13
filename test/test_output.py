@@ -555,3 +555,40 @@ def test_list_of_lists_with_index_firstrow():
     # TODO: make it a separate test case
     # the index must be as long as the number of rows
     assert_raises(ValueError, lambda: tabulate(dd, headers="firstrow", showindex=[1,2]))
+
+
+def test_disable_numparse_default():
+    "Output: Default table output with number parsing and alignment"
+    expected = "\n".join(['strings      numbers',
+                          '---------  ---------',
+                          'spam         41.9999',
+                          'eggs        451',])
+    result = tabulate(_test_table, _test_table_headers)
+    assert_equal(expected, result)
+    result = tabulate(_test_table, _test_table_headers, disable_numparse=False)
+    assert_equal(expected, result)
+
+def test_disable_numparse_true():
+    "Output: Default table output, but without number parsing and alignment"
+    expected = "\n".join(['strings    numbers',
+                          '---------  ---------',
+                          'spam       41.9999',
+                          'eggs       451.0',])
+    result = tabulate(_test_table, _test_table_headers, disable_numparse=True)
+    assert_equal(expected, result)
+
+def test_disable_numparse_list():
+    "Output: Default table output, but with number parsing selectively disabled"
+    table_headers = ['h1', 'h2', 'h3']
+    test_table = [['foo', 'bar', '42992e1']]
+    expected = "\n".join(['h1    h2    h3',
+                          '----  ----  -------',
+                          'foo   bar   42992e1',])
+    result = tabulate(test_table, table_headers, disable_numparse=[2])
+    assert_equal(expected, result)
+
+    expected = "\n".join(['h1    h2        h3',
+                          '----  ----  ------',
+                          'foo   bar   429920',])
+    result = tabulate(test_table, table_headers, disable_numparse=[0, 1])
+    assert_equal(expected, result)
