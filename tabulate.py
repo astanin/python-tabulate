@@ -405,7 +405,7 @@ def _isbool(string):
             string in ("True", "False"))
 
 
-def _type(string, has_invisible=True):
+def _type(string, has_invisible=True, numparse=True):
     """The least generic type (type(None), int, float, str, unicode).
 
     >>> _type(None) is type(None)
@@ -431,11 +431,11 @@ def _type(string, has_invisible=True):
         return _text_type
     elif _isbool(string):
         return _bool_type
-    elif _isint(string):
+    elif _isint(string) and numparse:
         return int
-    elif _isint(string, _long_type):
+    elif _isint(string, _long_type) and numparse:
         return int
-    elif _isnumber(string):
+    elif _isnumber(string) and numparse:
         return float
     elif isinstance(string, _binary_type):
         return _binary_type
@@ -589,7 +589,7 @@ def _more_generic(type1, type2):
     return invtypes[moregeneric]
 
 
-def _column_type(strings, has_invisible=True):
+def _column_type(strings, has_invisible=True, numparse=True):
     """The least generic type all column values are convertible to.
 
     >>> _column_type([True, False]) is _bool_type
@@ -611,7 +611,7 @@ def _column_type(strings, has_invisible=True):
     True
 
     """
-    types = [_type(s, has_invisible) for s in strings ]
+    types = [_type(s, has_invisible, numparse) for s in strings ]
     return reduce(_more_generic, types, _bool_type)
 
 
@@ -844,7 +844,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
 def tabulate(tabular_data, headers=(), tablefmt="simple",
              floatfmt="g", numalign="decimal", stralign="left",
-             missingval="", showindex="default"):
+             missingval="", showindex="default", disable_numparse=False):
     """Format a fixed width table for pretty printing.
 
     >>> print(tabulate([[1, 2.34], [-56, "8.999"], ["2", "10001"]]))
@@ -1088,6 +1088,20 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
      eggs & 451      \\\\
     \\bottomrule
     \end{tabular}
+
+    Number parsing
+    --------------
+    By default, anything which can be parsed as a number is a number.
+    This ensures numbers represented as strings are aligned properly.
+    This can lead to weird results for particular strings such as
+    specific git SHAs e.g. "42992e1" will be parsed into the number
+    429920 and aligned as such.
+
+    To completely disable number parsing (and alignment), use
+    `disable_numparse=True`. For more fine grained control, a list column
+    indices is used to disable number parsing only on those columns
+    e.g. `disable_numparse=[0, 2]` would disable number parsing only on the
+    first and third columns.
     """
     if tabular_data is None:
         tabular_data = []
@@ -1115,7 +1129,9 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
 
     # format rows and columns, convert numeric values to strings
     cols = list(izip_longest(*list_of_lists))
-    coltypes = list(map(_column_type, cols))
+    numparses = _expand_numparse(disable_numparse, len(cols))
+    coltypes = [_column_type(col, numparse=np) for col, np in
+                zip(cols, numparses)]
     cols = [[_format(v, ct, floatfmt, missingval, has_invisible) for v in c]
              for c,ct in zip(cols, coltypes)]
 
@@ -1141,6 +1157,23 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
         tablefmt = _table_formats.get(tablefmt, _table_formats["simple"])
 
     return _format_table(tablefmt, headers, rows, minwidths, aligns)
+
+
+def _expand_numparse(disable_numparse, column_count):
+    """
+    Return a list of bools of length `column_count` which indicates whether
+    number parsing should be used on each column.
+    If `disable_numparse` is a list of indices, each of those indices are False,
+    and everything else is True.
+    If `disable_numparse` is a bool, then the returned list is all the same.
+    """
+    if isinstance(disable_numparse, Iterable):
+        numparses = [True] * column_count
+        for index in disable_numparse:
+            numparses[index] = False
+        return numparses
+    else:
+        return [not disable_numparse] * column_count
 
 
 def _build_simple_row(padded_cells, rowfmt):
