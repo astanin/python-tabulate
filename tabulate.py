@@ -45,7 +45,7 @@ except ImportError:
 
 
 __all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
-__version__ = "0.7.7-dev"
+__version__ = "0.7.6-dev"
 
 
 # minimum extra space in headers
@@ -170,7 +170,6 @@ def _moin_row_with_attrs(celltag, cell_values, colwidths, colaligns, header=''):
                                               header+c+header)
                          for c, a in zip(cell_values, colaligns)]
     return "".join(values_with_attrs)+"||"
-
 
 def _latex_line_begin_tabular(colwidths, colaligns, booktabs=False):
     alignment = { "left": "l", "right": "r", "center": "c", "decimal": "r" }
