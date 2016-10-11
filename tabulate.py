@@ -912,9 +912,13 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
     -------------
 
     `floatfmt` is a format specification used for columns which
-    contain numeric data with a decimal point.
+    contain numeric data with a decimal point. This can also be
+    a list or tuple of format strings per column, in which case
+    it must be exactly the same length as the number of columns.
 
-    `None` values are replaced with a `missingval` string:
+    `None` values are replaced with a `missingval` string (like 
+    `floatfmt`, this can also be a list of values for different
+    columns):
 
     >>> print(tabulate([["spam", 1, None],
     ...                 ["eggs", 42, 3.14],
