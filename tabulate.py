@@ -33,6 +33,7 @@ else:
     _float_type = float
     _text_type = str
     _binary_type = bytes
+    basestring = str
 
     import io
     def _is_file(f):
@@ -1132,8 +1133,21 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
     numparses = _expand_numparse(disable_numparse, len(cols))
     coltypes = [_column_type(col, numparse=np) for col, np in
                 zip(cols, numparses)]
-    cols = [[_format(v, ct, floatfmt, missingval, has_invisible) for v in c]
-             for c,ct in zip(cols, coltypes)]
+    if isinstance(floatfmt, basestring): #old version
+        float_formats = len(cols) * [floatfmt] # just duplicate the string to use in each column
+    else: # if floatfmt is  list, tuple etc we have one per column
+        float_formats = floatfmt
+        if len(float_formats) != len(cols):
+            raise TypeError("If floatfmt is a list, it must be exactly the same length as the number of columns")
+    if isinstance(missingval, basestring):
+        missing_vals = len(cols) * [missingval] 
+    else:
+        missing_vals = missingval
+        if len(missing_vals) != len(cols):
+            raise TypeError("If missingval is a list, it must be exactly the same length as the number of columns")
+    
+    cols = [[_format(v, ct, fl_fmt, miss_v, has_invisible) for v in c]
+             for c, ct, fl_fmt, miss_v in zip(cols, coltypes, float_formats, missing_vals)]
 
     # align columns
     aligns = [numalign if ct in [int,float] else stralign for ct in coltypes]
