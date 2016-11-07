@@ -12,8 +12,6 @@ from common import SkipTest
 try:
     if python_version_tuple() >= ('3','3','0'):
         from inspect import signature, _empty
-    else:
-        from funcsigs import signature, _empty
 except ImportError:
     signature = None
     _empty = None
