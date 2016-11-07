@@ -474,8 +474,8 @@ and numeric data, ``tabulate`` appears to be slower than
     csv to StringIO                          25.3          1.0
     join with tabs and newlines              33.6          1.3
     asciitable (0.8.0)                      590.0         23.4
-    tabulate (0.7.6)                       1403.5         55.6
-    tabulate (0.7.6, WIDE_CHARS_MODE)      2156.6         85.4
+    tabulate (0.7.7)                       1403.5         55.6
+    tabulate (0.7.7, WIDE_CHARS_MODE)      2156.6         85.4
     PrettyTable (0.7.2)                    3377.0        133.7
     texttable (0.8.6)                      3986.3        157.8
     =================================  ==========  ===========
@@ -485,6 +485,7 @@ Version history
 ---------------
 
 - 0.8: FUTURE RELEASE
+- 0.7.7: Identical to 0.7.6, resolving some PyPI issues.
 - 0.7.6: Bug fixes. New table formats (``psql``, ``jira``, ``moinmoin``, ``textile``).
   Wide character support. Printing from database cursors.
   Option to print row indices. Boolean columns. Ragged rows.
