@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from __future__ import print_function
 from timeit import timeit
 import tabulate
 import asciitable
@@ -10,15 +11,25 @@ import codecs
 
 setup_code = r"""
 from csv import writer
-from StringIO import StringIO
+try: # Python 2
+    from StringIO import StringIO
+except: # Python 3
+    from io import StringIO
 import tabulate
 import asciitable
 import prettytable
 import texttable
-import tabletext
 
 
-table=[["some text"]+range(i,i+9) for i in range(10)]
+import platform
+if platform.platform().startswith("Windows") \
+   and \
+   platform.python_version_tuple() < ('3','6','0'):
+    import win_unicode_console
+    win_unicode_console.enable()
+
+
+table=[["some text"]+list(range(i,i+9)) for i in range(10)]
 
 
 def csv_table(table):
@@ -51,7 +62,7 @@ def run_texttable(table):
     return pp.draw()
 
 
-def  run_tabletext(table):
+def run_tabletext(table):
     return tabletext.to_text(table)
 
 
@@ -69,7 +80,6 @@ methods = [(u"join with tabs and newlines", "join_table(table)"),
            (u"tabulate (%s, WIDE_CHARS_MODE)" % tabulate.__version__, "run_tabulate(table, widechars=True)"),
            (u"PrettyTable (%s)" % prettytable.__version__, "run_prettytable(table)"),
            (u"texttable (%s)" % texttable.__version__, "run_texttable(table)"),
-           (u"tabletext (0.1)", "run_tabletext(table)"),
            ]
 
 
@@ -92,7 +102,12 @@ def benchmark(n):
     table = tabulate.tabulate(results,
                               [u"Table formatter", u"time, μs", u"rel. time"],
                               u"rst", floatfmt=".1f")
-    print codecs.encode(table, "utf-8")
+
+    import platform
+    if platform.platform().startswith("Windows"):
+        print(table)
+    else:
+        print(codecs.encode(table, "utf-8"))
 
 
 if __name__ == "__main__":
