@@ -485,6 +485,10 @@ Version history
 ---------------
 
 - 0.8: FUTURE RELEASE
+- 0.7.6: Bug fixes. New table formats (``psql``, ``jira``, ``moinmoin``, ``textile``).
+  Wide character support. Printing from database cursors.
+  Option to print row indices. Boolean columns. Ragged rows.
+  Option to disable number parsing.
 - 0.7.5: Bug fixes. ``--float`` format option for the command line utility.
 - 0.7.4: Bug fixes. ``fancy_grid`` and ``html`` formats. Command line utility.
 - 0.7.3: Bug fixes. Python 3.4 support. Iterables of dicts. ``latex_booktabs`` format.
@@ -550,4 +554,6 @@ Contributors
 Sergey Astanin, Pau Tallada Crespí, Erwin Marsi, Mik Kocikowski, Bill Ryder,
 Zach Dwiel, Frederik Rietdijk, Philipp Bogensberger, Greg (anonymous),
 Stefan Tatschner, Emiel van Miltenburg, Brandon Bennett, Amjith Ramanujam,
-Jan Schulz, Simon Percivall, Javier Santacruz López-Cepero, Sam Denton.
+Jan Schulz, Simon Percivall, Javier Santacruz López-Cepero, Sam Denton,
+Alexey Ziyangirov, acaird, Cesar Sanchez, naught101, John Vandenberg,
+Zack Dever.
