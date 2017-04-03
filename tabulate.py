@@ -190,6 +190,10 @@ def _latex_row(cell_values, colwidths, colaligns):
     rowfmt = DataRow("", "&", "\\\\")
     return _build_simple_row(escaped_values, rowfmt)
 
+def _latex_row_non_escape(cell_values, colwidths, colaligns):
+    rowfmt = DataRow("", "&", "\\\\")
+    return _build_simple_row(cell_values, rowfmt)
+
 
 def _rst_escape_first_column(rows, headers):
     def escape_empty(val):
@@ -313,6 +317,14 @@ _table_formats = {"simple":
                               linebelow=Line("\\hline\n\\end{tabular}", "", "", ""),
                               headerrow=_latex_row,
                               datarow=_latex_row,
+                              padding=1, with_header_hide=None),
+                  "latex_raw":
+                  TableFormat(lineabove=_latex_line_begin_tabular,
+                              linebelowheader=Line("\\hline", "", "", ""),
+                              linebetweenrows=None,
+                              linebelow=Line("\\hline\n\\end{tabular}", "", "", ""),
+                              headerrow=_latex_row_non_escape,
+                              datarow=_latex_row_non_escape,
                               padding=1, with_header_hide=None),
                   "latex_booktabs":
                   TableFormat(lineabove=partial(_latex_line_begin_tabular, booktabs=True),
