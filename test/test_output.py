@@ -270,18 +270,34 @@ def test_html_headerless():
 
 
 def test_latex():
-    "Output: latex with headers"
-    result   = tabulate(_test_table, _test_table_headers, tablefmt="latex")
+    "Output: latex with headers and replaced characters"
+    this_test_table_headers = list(_test_table_headers)
+    this_test_table_headers[-1] = _test_table_headers[-1] + " ($N_0$)"
+    result   = tabulate(_test_table, this_test_table_headers, tablefmt="latex")
     expected = "\n".join([r"\begin{tabular}{lr}",
                           r"\hline",
-                          r" strings   &   numbers \\",
+                          r" strings   &   numbers (\$N\_0\$) \\",
                           r"\hline",
-                          r" spam      &   41.9999 \\",
-                          r" eggs      &  451      \\",
+                          r" spam      &           41.9999 \\",
+                          r" eggs      &          451      \\",
                           r"\hline",
                           r"\end{tabular}"])
     assert_equal(expected, result)
 
+def test_latex_raw():
+    "Output: raw latex with headers"
+    this_test_table_headers = list(_test_table_headers)
+    this_test_table_headers[-1] = _test_table_headers[-1] + " ($N_0$)"
+    result   = tabulate(_test_table, this_test_table_headers, tablefmt="latex_raw")
+    expected = "\n".join([r"\begin{tabular}{lr}",
+                          r"\hline",
+                          r" strings   &   numbers ($N_0$) \\",
+                          r"\hline",
+                          r" spam      &           41.9999 \\",
+                          r" eggs      &          451      \\",
+                          r"\hline",
+                          r"\end{tabular}"])
+    assert_equal(expected, result)
 
 def test_latex_headerless():
     "Output: latex without headers"
