@@ -1080,13 +1080,25 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
     </tbody>
     </table>
 
-    "latex" produces a tabular environment of LaTeX document markup:
+    "latex" produces a tabular environment of LaTeX document markup and replaces 
+    common characters like `\` and `_` with their LaTeX correspondents:
 
-    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="latex"))
+    >>> print(tabulate([["spam_0", 41.9999], ["eggs\\0", "451.0"]], tablefmt="latex"))
     \\begin{tabular}{lr}
     \\hline
-     spam &  41.9999 \\\\
-     eggs & 451      \\\\
+     spam\\_0 &  41.9999 \\\\
+     eggs\\textbackslash{}0 & 451      \\\\
+    \\hline
+    \\end{tabular}
+
+    "latex_raw" produces a tabular environment of LaTeX document markup without
+    replacement of common ciritical LaTeX characters:
+
+    >>> print(tabulate([["spam_0", 41.9999], ["eggs\\0", "451.0"]], tablefmt="latex_raw"))
+    \\begin{tabular}{lr}
+    \\hline
+     spam_0 &  41.9999 \\\\
+     eggs\\0 & 451      \\\\
     \\hline
     \\end{tabular}
 

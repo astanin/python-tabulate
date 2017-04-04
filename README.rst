@@ -309,7 +309,9 @@ wikis::
     </tbody>
     </table>
 
-``latex`` format creates a ``tabular`` environment for LaTeX markup::
+``latex`` format creates a ``tabular`` environment for LaTeX markup,
+replacing special characters like ``_`` or ``\`` to their LaTeX
+correspondents::
 
     >>> print tabulate(table, headers, tablefmt="latex")
     \begin{tabular}{lr}
@@ -321,6 +323,9 @@ wikis::
      bacon  &     0 \\
     \hline
     \end{tabular}
+
+``latex_raw`` behaves like ``latex`` but does not replace special
+characters.
 
 ``latex_booktabs`` creates a ``tabular`` environment for LaTeX markup
 using spacing and style from the ``booktabs`` package.
