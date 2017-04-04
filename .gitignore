@@ -3,3 +3,4 @@ dist
 .tox
 *~
 *.pyc
+/tabulate.egg-info/
