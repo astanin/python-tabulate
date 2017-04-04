@@ -161,6 +161,7 @@ Supported table formats are:
 - "moinmoin"
 - "html"
 - "latex"
+- "latex_raw"
 - "latex_booktabs"
 - "textile"
 
