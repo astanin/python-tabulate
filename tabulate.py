@@ -938,8 +938,8 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
 
     Various plain-text table formats (`tablefmt`) are supported:
     'plain', 'simple', 'grid', 'pipe', 'orgtbl', 'rst', 'mediawiki',
-     'latex', and 'latex_booktabs'. Variable `tabulate_formats` contains the list of
-    currently supported formats.
+    'latex', 'latex_raw' and 'latex_booktabs'. Variable `tabulate_formats` 
+    contains the list of currently supported formats.
 
     "plain" format doesn't use any pseudographics to draw tables,
     it separates columns with a double space:
@@ -1295,7 +1295,8 @@ def _main():
     -F FPFMT, --float FPFMT   floating point number format (default: g)
     -f FMT, --format FMT      set output table format; supported formats:
                               plain, simple, grid, fancy_grid, pipe, orgtbl,
-                              rst, mediawiki, html, latex, latex_booktabs, tsv
+                              rst, mediawiki, html, latex, latex_raw,
+                              latex_booktabs, tsv
                               (default: simple)
     """
     import getopt

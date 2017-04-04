@@ -445,7 +445,8 @@ Usage of the command line utility
     -F FPFMT, --float FPFMT   floating point number format (default: g)
     -f FMT, --format FMT      set output table format; supported formats:
                               plain, simple, grid, fancy_grid, pipe, orgtbl,
-                              rst, mediawiki, html, latex, latex_booktabs, tsv
+                              rst, mediawiki, html, latex, latex_raw, 
+                              latex_booktabs, tsv
                               (default: simple)
 
 
