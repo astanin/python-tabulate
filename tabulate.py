@@ -932,7 +932,7 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
 
     Various plain-text table formats (`tablefmt`) are supported:
     'plain', 'simple', 'grid', 'pipe', 'orgtbl', 'rst', 'mediawiki',
-    'latex', 'latex_raw' and 'latex_booktabs'. Variable `tabulate_formats` 
+    'latex', 'latex_raw' and 'latex_booktabs'. Variable `tabulate_formats`
     contains the list of currently supported formats.
 
     "plain" format doesn't use any pseudographics to draw tables,
@@ -1074,25 +1074,25 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
     </tbody>
     </table>
 
-    "latex" produces a tabular environment of LaTeX document markup and replaces 
-    common characters like `\` and `_` with their LaTeX correspondents:
+    "latex" produces a tabular environment of LaTeX document markup:
 
-    >>> print(tabulate([["spam_0", 41.9999], ["eggs\\0", "451.0"]], tablefmt="latex"))
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="latex"))
     \\begin{tabular}{lr}
     \\hline
-     spam\\_0 &  41.9999 \\\\
-     eggs\\textbackslash{}0 & 451      \\\\
+     spam &  41.9999 \\\\
+     eggs & 451      \\\\
     \\hline
     \\end{tabular}
 
-    "latex_raw" produces a tabular environment of LaTeX document markup without
-    replacement of common ciritical LaTeX characters:
+    "latex_raw" is similar to "latex", but doesn't escape special characters,
+    such as backslash and underscore, so LaTeX commands may embedded into
+    cells' values:
 
-    >>> print(tabulate([["spam_0", 41.9999], ["eggs\\0", "451.0"]], tablefmt="latex_raw"))
+    >>> print(tabulate([["spam$_9$", 41.9999], ["\\\\emph{eggs}", "451.0"]], tablefmt="latex_raw"))
     \\begin{tabular}{lr}
     \\hline
-     spam_0 &  41.9999 \\\\
-     eggs\\0 & 451      \\\\
+     spam$_9$    &  41.9999 \\\\
+     \\emph{eggs} & 451      \\\\
     \\hline
     \\end{tabular}
 
