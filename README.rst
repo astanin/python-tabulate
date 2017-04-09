@@ -402,12 +402,19 @@ Number formatting
 ``tabulate`` allows to define custom number formatting applied to all
 columns of decimal numbers. Use ``floatfmt`` named argument::
 
-
     >>> print tabulate([["pi",3.141593],["e",2.718282]], floatfmt=".4f")
     --  ------
     pi  3.1416
     e   2.7183
     --  ------
+
+``floatfmt`` argument can be a list or a tuple of format strings,
+one per column, in which case every column may have different number formatting::
+
+    >>> print tabulate([[0.12345, 0.12345, 0.12345]], floatfmt=(".1f", ".3f"))
+    ---  -----  -------
+    0.1  0.123  0.12345
+    ---  -----  -------
 
 
 Wide (fullwidth CJK) symbols
@@ -492,7 +499,7 @@ Version history
 ---------------
 
 - 0.8.1: FUTURE RELEASE
-- 0.8.0: ``latex_raw`` format.
+- 0.8.0: ``latex_raw`` format, column-specific floating point formatting.
   Python 3.5 & 3.6 support. Drop support for Python 2.6, 3.2, 3.3.
 - 0.7.7: Identical to 0.7.6, resolving some PyPI issues.
 - 0.7.6: Bug fixes. New table formats (``psql``, ``jira``, ``moinmoin``, ``textile``).
@@ -566,4 +573,4 @@ Zach Dwiel, Frederik Rietdijk, Philipp Bogensberger, Greg (anonymous),
 Stefan Tatschner, Emiel van Miltenburg, Brandon Bennett, Amjith Ramanujam,
 Jan Schulz, Simon Percivall, Javier Santacruz López-Cepero, Sam Denton,
 Alexey Ziyangirov, acaird, Cesar Sanchez, naught101, John Vandenberg,
-Zack Dever, Christian Clauss, Benjamin Maier.
+Zack Dever, Christian Clauss, Benjamin Maier, Andy MacKinlay.

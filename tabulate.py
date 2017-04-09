@@ -52,6 +52,11 @@ __version__ = "0.8.0"
 # minimum extra space in headers
 MIN_PADDING = 2
 
+
+_DEFAULT_FLOATFMT="g"
+_DEFAULT_MISSINGVAL=""
+
+
 # if True, enable wide-character (CJK) support
 WIDE_CHARS_MODE = wcwidth is not None
 
@@ -849,9 +854,10 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     return rows, headers
 
 
+
 def tabulate(tabular_data, headers=(), tablefmt="simple",
-             floatfmt="g", numalign="decimal", stralign="left",
-             missingval="", showindex="default", disable_numparse=False):
+             floatfmt=_DEFAULT_FLOATFMT, numalign="decimal", stralign="left",
+             missingval=_DEFAULT_MISSINGVAL, showindex="default", disable_numparse=False):
     """Format a fixed width table for pretty printing.
 
     >>> print(tabulate([[1, 2.34], [-56, "8.999"], ["2", "10001"]]))
@@ -919,10 +925,9 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
 
     `floatfmt` is a format specification used for columns which
     contain numeric data with a decimal point. This can also be
-    a list or tuple of format strings per column, in which case
-    it must be exactly the same length as the number of columns.
+    a list or tuple of format strings, one per column.
 
-    `None` values are replaced with a `missingval` string (like 
+    `None` values are replaced with a `missingval` string (like
     `floatfmt`, this can also be a list of values for different
     columns):
 
@@ -1157,17 +1162,16 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
                 zip(cols, numparses)]
     if isinstance(floatfmt, basestring): #old version
         float_formats = len(cols) * [floatfmt] # just duplicate the string to use in each column
-    else: # if floatfmt is  list, tuple etc we have one per column
-        float_formats = floatfmt
-        if len(float_formats) != len(cols):
-            raise TypeError("If floatfmt is a list, it must be exactly the same length as the number of columns")
+    else: # if floatfmt is list, tuple etc we have one per column
+        float_formats = list(floatfmt)
+        if len(float_formats) < len(cols):
+            float_formats.extend( (len(cols)-len(float_formats)) * [_DEFAULT_FLOATFMT] )
     if isinstance(missingval, basestring):
-        missing_vals = len(cols) * [missingval] 
+        missing_vals = len(cols) * [missingval]
     else:
-        missing_vals = missingval
-        if len(missing_vals) != len(cols):
-            raise TypeError("If missingval is a list, it must be exactly the same length as the number of columns")
-    
+        missing_vals = list(missingval)
+        if len(missing_vals) < len(cols):
+            missing_vals.extend( (len(cols)-len(missing_vals)) * [_DEFAULT_MISSINGVAL] )
     cols = [[_format(v, ct, fl_fmt, miss_v, has_invisible) for v in c]
              for c, ct, fl_fmt, miss_v in zip(cols, coltypes, float_formats, missing_vals)]
 
@@ -1324,7 +1328,7 @@ def _main():
         print(usage)
         sys.exit(2)
     headers = []
-    floatfmt = "g"
+    floatfmt = _DEFAULT_FLOATFMT
     tablefmt = "simple"
     sep = r"\s+"
     outfile = "-"

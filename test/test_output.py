@@ -410,8 +410,8 @@ def test_floatfmt():
 
 def test_floatfmt_multi():
     "Output: floating point format different for each column"
-    result = tabulate([['1.23456789', 1.0]], floatfmt=[".1f", ".3f"], tablefmt="plain")
-    expected = '1.2  1.000'
+    result = tabulate([[0.12345, 0.12345, 0.12345]], floatfmt=(".1f", ".3f"), tablefmt="plain")
+    expected = '0.1  0.123  0.12345'
     assert_equal(expected, result)
 
 
@@ -424,8 +424,9 @@ def test_missingval():
 
 def test_missingval_multi():
     "Output: substitution of missing values with different values per column"
-    result = tabulate([[None, 10],['Bob', None]], missingval=["?", "n/a"], tablefmt="plain")
-    expected = '?     10\nBob  n/a'
+    result = tabulate([["Alice", "Bob", "Charlie"], [None, None, None]],
+                      missingval=("n/a", "?"), tablefmt="plain")
+    expected = 'Alice  Bob  Charlie\nn/a    ?'
     assert_equal(expected, result)
 
 
