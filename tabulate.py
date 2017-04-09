@@ -182,18 +182,12 @@ LATEX_ESCAPE_RULES = {r"&": r"\&", r"%": r"\%", r"$": r"\$", r"#": r"\#",
                       r"~": r"\textasciitilde{}", "\\": r"\textbackslash{}",
                       r"<": r"\ensuremath{<}", r">": r"\ensuremath{>}"}
 
-
-def _latex_row(cell_values, colwidths, colaligns):
+def _latex_row(cell_values, colwidths, colaligns, escrules=LATEX_ESCAPE_RULES):
     def escape_char(c):
-        return LATEX_ESCAPE_RULES.get(c, c)
+        return escrules.get(c, c)
     escaped_values = ["".join(map(escape_char, cell)) for cell in cell_values]
     rowfmt = DataRow("", "&", "\\\\")
     return _build_simple_row(escaped_values, rowfmt)
-
-def _latex_row_non_escape(cell_values, colwidths, colaligns):
-    rowfmt = DataRow("", "&", "\\\\")
-    return _build_simple_row(cell_values, rowfmt)
-
 
 def _rst_escape_first_column(rows, headers):
     def escape_empty(val):
@@ -323,8 +317,8 @@ _table_formats = {"simple":
                               linebelowheader=Line("\\hline", "", "", ""),
                               linebetweenrows=None,
                               linebelow=Line("\\hline\n\\end{tabular}", "", "", ""),
-                              headerrow=_latex_row_non_escape,
-                              datarow=_latex_row_non_escape,
+                              headerrow=partial(_latex_row, escrules={}),
+                              datarow=partial(_latex_row, escrules={}),
                               padding=1, with_header_hide=None),
                   "latex_booktabs":
                   TableFormat(lineabove=partial(_latex_line_begin_tabular, booktabs=True),
