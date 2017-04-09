@@ -325,8 +325,8 @@ correspondents::
     \hline
     \end{tabular}
 
-``latex_raw`` behaves like ``latex`` but does not replace special
-characters.
+``latex_raw`` behaves like ``latex`` but does not escape LaTeX commands
+and special characters.
 
 ``latex_booktabs`` creates a ``tabular`` environment for LaTeX markup
 using spacing and style from the ``booktabs`` package.
@@ -446,7 +446,7 @@ Usage of the command line utility
     -F FPFMT, --float FPFMT   floating point number format (default: g)
     -f FMT, --format FMT      set output table format; supported formats:
                               plain, simple, grid, fancy_grid, pipe, orgtbl,
-                              rst, mediawiki, html, latex, latex_raw, 
+                              rst, mediawiki, html, latex, latex_raw,
                               latex_booktabs, tsv
                               (default: simple)
 
@@ -478,20 +478,22 @@ and numeric data, ``tabulate`` appears to be slower than
     =================================  ==========  ===========
     Table formatter                      time, μs    rel. time
     =================================  ==========  ===========
-    csv to StringIO                          25.3          1.0
-    join with tabs and newlines              33.6          1.3
-    asciitable (0.8.0)                      590.0         23.4
-    tabulate (0.7.7)                       1403.5         55.6
-    tabulate (0.7.7, WIDE_CHARS_MODE)      2156.6         85.4
-    PrettyTable (0.7.2)                    3377.0        133.7
-    texttable (0.8.6)                      3986.3        157.8
+    join with tabs and newlines              13.7          1.0
+    csv to StringIO                          17.1          1.3
+    asciitable (0.8.0)                      429.9         31.5
+    tabulate (0.8.0)                        823.8         60.3
+    tabulate (0.8.0, WIDE_CHARS_MODE)      1112.4         81.5
+    PrettyTable (0.7.2)                    1667.2        122.1
+    texttable (0.8.8)                      1919.6        140.6
     =================================  ==========  ===========
 
 
 Version history
 ---------------
 
-- 0.8: FUTURE RELEASE
+- 0.8.1: FUTURE RELEASE
+- 0.8.0: ``latex_raw`` format.
+  Python 3.5 & 3.6 support. Drop support for Python 2.6, 3.2, 3.3.
 - 0.7.7: Identical to 0.7.6, resolving some PyPI issues.
 - 0.7.6: Bug fixes. New table formats (``psql``, ``jira``, ``moinmoin``, ``textile``).
   Wide character support. Printing from database cursors.
@@ -564,4 +566,4 @@ Zach Dwiel, Frederik Rietdijk, Philipp Bogensberger, Greg (anonymous),
 Stefan Tatschner, Emiel van Miltenburg, Brandon Bennett, Amjith Ramanujam,
 Jan Schulz, Simon Percivall, Javier Santacruz López-Cepero, Sam Denton,
 Alexey Ziyangirov, acaird, Cesar Sanchez, naught101, John Vandenberg,
-Zack Dever.
+Zack Dever, Christian Clauss, Benjamin Maier.
