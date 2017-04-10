@@ -556,7 +556,7 @@ def _is_multiline(s):
 
 def _multiline_width(multiline_s, line_width_fn=len):
     """Visible width of a potentially multiline content."""
-    return max(map(line_width_fn, multiline_s.splitlines()))
+    return max(map(line_width_fn, re.split("[\r\n]", multiline_s)))
 
 
 def _choose_width_fn(has_invisible, enable_widechars, is_multiline):
@@ -614,11 +614,11 @@ def _align_column(strings, alignment, minwidth=0,
                 for ms in strings]
         else:
             # enable wide-character width corrections
-            s_lens = [max((len(s) for s in ms.splitlines())) for ms in strings]
+            s_lens = [max((len(s) for s in re.split("[\r\n]", ms))) for ms in strings]
             visible_widths = [maxwidth - (w - l) for w, l in zip(s_widths, s_lens)]
             # wcswidth and _visible_width don't count invisible characters;
             # padfn doesn't need to apply another correction
-            padded_strings = ["\n".join([padfn(w, s) for s in ms.splitlines()])
+            padded_strings = ["\n".join([padfn(w, s) for s in (ms.splitlines() or ms)])
                               for ms, w in zip(strings, visible_widths)]
     else:  # single-line cell values
         if not enable_widechars and not has_invisible:
@@ -1231,7 +1231,7 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
     if not isinstance(tablefmt, TableFormat):
         tablefmt = _table_formats.get(tablefmt, _table_formats["simple"])
 
-    return _format_table(tablefmt, headers, rows, minwidths, aligns)
+    return _format_table(tablefmt, headers, rows, minwidths, aligns, is_multiline)
 
 
 def _expand_numparse(disable_numparse, column_count):
@@ -1251,6 +1251,15 @@ def _expand_numparse(disable_numparse, column_count):
         return [not disable_numparse] * column_count
 
 
+def _pad_row(cells, padding):
+    if cells:
+        pad = " "*padding
+        padded_cells = [pad + cell + pad for cell in cells]
+        return padded_cells
+    else:
+        return cells
+
+
 def _build_simple_row(padded_cells, rowfmt):
     "Format row according to DataRow format without padding."
     begin, sep, end = rowfmt
@@ -1267,6 +1276,24 @@ def _build_row(padded_cells, colwidths, colaligns, rowfmt):
         return _build_simple_row(padded_cells, rowfmt)
 
 
+def _append_basic_row(lines, padded_cells, colwidths, colaligns, rowfmt):
+    lines.append(_build_row(padded_cells, colwidths, colaligns, rowfmt))
+    return lines
+
+
+def _append_multiline_row(lines, padded_multiline_cells, padded_widths, colaligns, rowfmt, pad):
+    colwidths = [w - 2*pad for w in padded_widths]
+    cells_lines = [c.splitlines() for c in padded_multiline_cells]
+    nlines = max(map(len, cells_lines)) # number of lines in the row
+    # vertically pad cells where some lines are missing
+    cells_lines = [(cl + [' '*w]*(nlines - len(cl))) for cl, w in zip(cells_lines, colwidths)]
+    lines_cells = [[cl[i] for cl in cells_lines] for i in range(nlines)]
+    for ln in lines_cells:
+        padded_ln = _pad_row(ln, 1)
+        _append_basic_row(lines, padded_ln, colwidths, colaligns, rowfmt)
+    return lines
+
+
 def _build_line(colwidths, colaligns, linefmt):
     "Return a string which represents a horizontal line."
     if not linefmt:
@@ -1279,16 +1306,12 @@ def _build_line(colwidths, colaligns, linefmt):
         return _build_simple_row(cells, (begin, sep, end))
 
 
-def _pad_row(cells, padding):
-    if cells:
-        pad = " "*padding
-        padded_cells = [pad + cell + pad for cell in cells]
-        return padded_cells
-    else:
-        return cells
+def _append_line(lines, colwidths, colaligns, linefmt):
+    lines.append(_build_line(colwidths, colaligns, linefmt))
+    return lines
 
 
-def _format_table(fmt, headers, rows, colwidths, colaligns):
+def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline):
     """Produce a plain-text representation of the table."""
     lines = []
     hidden = fmt.with_header_hide if (headers and fmt.with_header_hide) else []
@@ -1296,30 +1319,37 @@ def _format_table(fmt, headers, rows, colwidths, colaligns):
     headerrow = fmt.headerrow
 
     padded_widths = [(w + 2*pad) for w in colwidths]
-    padded_headers = _pad_row(headers, pad)
-    padded_rows = [_pad_row(row, pad) for row in rows]
+    if is_multiline:
+        pad_row = lambda row, _: row  # do it later, in _append_multiline_row
+        append_row = partial(_append_multiline_row, pad=pad)
+    else:
+        pad_row = _pad_row
+        append_row = _append_basic_row
+
+    padded_headers = pad_row(headers, pad)
+    padded_rows = [pad_row(row, pad) for row in rows]
 
     if fmt.lineabove and "lineabove" not in hidden:
-        lines.append(_build_line(padded_widths, colaligns, fmt.lineabove))
+        _append_line(lines, padded_widths, colaligns, fmt.lineabove)
 
     if padded_headers:
-        lines.append(_build_row(padded_headers, padded_widths, colaligns, headerrow))
+        append_row(lines, padded_headers, padded_widths, colaligns, headerrow)
         if fmt.linebelowheader and "linebelowheader" not in hidden:
-            lines.append(_build_line(padded_widths, colaligns, fmt.linebelowheader))
+            _append_line(lines, padded_widths, colaligns, fmt.linebelowheader)
 
     if padded_rows and fmt.linebetweenrows and "linebetweenrows" not in hidden:
         # initial rows with a line below
         for row in padded_rows[:-1]:
-            lines.append(_build_row(row, padded_widths, colaligns, fmt.datarow))
-            lines.append(_build_line(padded_widths, colaligns, fmt.linebetweenrows))
+            append_row(lines, row, padded_widths, colaligns, fmt.datarow)
+            _append_line(lines, padded_widths, colaligns, fmt.linebetweenrows)
         # the last row without a line below
-        lines.append(_build_row(padded_rows[-1], padded_widths, colaligns, fmt.datarow))
+        append_row(lines, padded_rows[-1], padded_widths, colaligns, fmt.datarow)
     else:
         for row in padded_rows:
-            lines.append(_build_row(row, padded_widths, colaligns, fmt.datarow))
+            append_row(lines, row, padded_widths, colaligns, fmt.datarow)
 
     if fmt.linebelow and "linebelow" not in hidden:
-        lines.append(_build_line(padded_widths, colaligns, fmt.linebelow))
+        _append_line(lines, padded_widths, colaligns, fmt.linebelow)
 
     if headers or rows:
         return "\n".join(lines)
