@@ -93,6 +93,22 @@ def test_grid_multiline_headerless():
     assert_equal(expected, result)
 
 
+def test_grid_multiline():
+    "Output: grid with multiline cells with headers"
+    table = [[2, "foo\nbar"]]
+    headers = ("more\nspam \x1b[31meggs\x1b[0m", "more spam\n& eggs")
+    expected = "\n".join([
+        "+-------------+-------------+",
+        "|        more | more spam   |",
+        "|   spam \x1b[31meggs\x1b[0m | & eggs      |",
+        "+=============+=============+",
+        "|           2 | foo         |",
+        "|             | bar         |",
+        "+-------------+-------------+"])
+    result = tabulate(table, headers, tablefmt="grid")
+    assert_equal(expected, result)
+
+
 def test_fancy_grid():
     "Output: fancy_grid with headers"
     expected = '\n'.join([
