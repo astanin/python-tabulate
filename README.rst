@@ -586,4 +586,4 @@ Zach Dwiel, Frederik Rietdijk, Philipp Bogensberger, Greg (anonymous),
 Stefan Tatschner, Emiel van Miltenburg, Brandon Bennett, Amjith Ramanujam,
 Jan Schulz, Simon Percivall, Javier Santacruz López-Cepero, Sam Denton,
 Alexey Ziyangirov, acaird, Cesar Sanchez, naught101, John Vandenberg,
-Zack Dever, Christian Clauss, Benjamin Maier, Andy MacKinlay.
+Zack Dever, Christian Clauss, Benjamin Maier, Andy MacKinlay, Thomas Roten.
