@@ -417,6 +417,19 @@ one per column, in which case every column may have different number formatting:
     ---  -----  -------
 
 
+
+Text formatting
+~~~~~~~~~~~~~~~
+
+By default, ``tabulate`` removes leading and trailing whitespace from text
+columns. To disable whitespace removal, set the global module-level flag
+``PRESERVE_WHITESPACE``::
+
+    import tabulate
+    tabulate.PRESERVE_WHITESPACE = True
+
+
+
 Wide (fullwidth CJK) symbols
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -573,4 +586,4 @@ Zach Dwiel, Frederik Rietdijk, Philipp Bogensberger, Greg (anonymous),
 Stefan Tatschner, Emiel van Miltenburg, Brandon Bennett, Amjith Ramanujam,
 Jan Schulz, Simon Percivall, Javier Santacruz López-Cepero, Sam Denton,
 Alexey Ziyangirov, acaird, Cesar Sanchez, naught101, John Vandenberg,
-Zack Dever, Christian Clauss, Benjamin Maier, Andy MacKinlay.
+Zack Dever, Christian Clauss, Benjamin Maier, Andy MacKinlay, Thomas Roten.

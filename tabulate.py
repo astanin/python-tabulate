@@ -52,6 +52,8 @@ __version__ = "0.8.0"
 # minimum extra space in headers
 MIN_PADDING = 2
 
+# Whether or not to preserve leading/trailing whitespace in data.
+PRESERVE_WHITESPACE = False
 
 _DEFAULT_FLOATFMT="g"
 _DEFAULT_MISSINGVAL=""
@@ -552,10 +554,12 @@ def _align_column(strings, alignment, minwidth=0, has_invisible=True):
 
     """
     if alignment == "right":
-        strings = [s.strip() for s in strings]
+        if not PRESERVE_WHITESPACE:
+            strings = [s.strip() for s in strings]
         padfn = _padleft
     elif alignment == "center":
-        strings = [s.strip() for s in strings]
+        if not PRESERVE_WHITESPACE:
+            strings = [s.strip() for s in strings]
         padfn = _padboth
     elif alignment == "decimal":
         if has_invisible:
@@ -569,7 +573,8 @@ def _align_column(strings, alignment, minwidth=0, has_invisible=True):
     elif not alignment:
         return strings
     else:
-        strings = [s.strip() for s in strings]
+        if not PRESERVE_WHITESPACE:
+            strings = [s.strip() for s in strings]
         padfn = _padright
 
     enable_widechars = wcwidth is not None and WIDE_CHARS_MODE

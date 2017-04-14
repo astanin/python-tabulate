@@ -4,6 +4,7 @@
 
 from __future__ import print_function
 from __future__ import unicode_literals
+import tabulate as tabulate_module
 from tabulate import tabulate, simple_separated_format
 from common import assert_equal, assert_raises, SkipTest
 
@@ -627,3 +628,24 @@ def test_disable_numparse_list():
                           'foo   bar   429920',])
     result = tabulate(test_table, table_headers, disable_numparse=[0, 1])
     assert_equal(expected, result)
+
+def test_preserve_whitespace():
+    "Output: Default table output, but with preserved leading whitespace."
+    tabulate_module.PRESERVE_WHITESPACE = True
+    table_headers = ['h1', 'h2', 'h3']
+    test_table = [['  foo', ' bar   ', 'foo']]
+    expected = "\n".join(['h1     h2       h3',
+                          '-----  -------  ----',
+                          '  foo   bar     foo'])
+    result = tabulate(test_table, table_headers)
+    assert_equal(expected, result)
+
+    tabulate_module.PRESERVE_WHITESPACE = False
+    table_headers = ['h1', 'h2', 'h3']
+    test_table = [['  foo', ' bar   ', 'foo']]
+    expected = "\n".join(['h1    h2    h3',
+                          '----  ----  ----',
+                          'foo   bar   foo'])
+    result = tabulate(test_table, table_headers)
+    assert_equal(expected, result)
+
