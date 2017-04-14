@@ -2,3 +2,4 @@ include LICENSE
 include README
 include README.rst
 include test/common.py
+include benchmark.py
