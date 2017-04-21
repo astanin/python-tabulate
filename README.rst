@@ -159,6 +159,7 @@ Supported table formats are:
 - "rst"
 - "mediawiki"
 - "moinmoin"
+- "youtrack"
 - "html"
 - "latex"
 - "latex_raw"
@@ -289,6 +290,15 @@ wikis::
     ||  spam    ||  41.999      ||
     ||  eggs    ||  451         ||
     ||  bacon   ||              ||
+
+``youtrack`` format produces a table markup used in `Youtrack`_
+tickets::
+
+    >>> print tabulate(d,headers,tablefmt="youtrack")
+    ||  item    ||  quantity   ||
+    |   spam    |  41.999      |
+    |   eggs    |  451         |
+    |   bacon   |              |
 
 ``textile`` format produces a table markup used in `Textile`_ format::
 

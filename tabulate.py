@@ -304,6 +304,14 @@ _table_formats = {"simple":
                               headerrow=partial(_moin_row_with_attrs,"||",header="'''"),
                               datarow=partial(_moin_row_with_attrs,"||"),
                               padding=1, with_header_hide=None),
+                  "youtrack":
+                  TableFormat(lineabove=None,
+                              linebelowheader=None,
+                              linebetweenrows=None,
+                              linebelow=None,
+                              headerrow=DataRow("|| ", " || ", " || "),
+                              datarow=DataRow("| ", " | ", " |"),
+                              padding=1, with_header_hide=None),
                   "html":
                   TableFormat(lineabove=_html_begin_table_without_header,
                               linebelowheader="",
