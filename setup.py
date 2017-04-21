@@ -10,10 +10,6 @@ from platform import python_version_tuple, python_implementation
 import os
 import re
 
-
-LICENSE = open("LICENSE").read()
-
-
 # strip links from the descripton on the PyPI
 if python_version_tuple()[0] >= '3':
     LONG_DESCRIPTION = open("README.rst", "r", encoding="utf-8").read().replace("`_", "`")
@@ -47,7 +43,7 @@ setup(name='tabulate',
       author='Sergey Astanin',
       author_email='s.astanin@gmail.com',
       url='https://bitbucket.org/astanin/python-tabulate',
-      license=LICENSE,
+      license='MIT',
       classifiers= [ "Development Status :: 4 - Beta",
                      "License :: OSI Approved :: MIT License",
                      "Operating System :: OS Independent",
