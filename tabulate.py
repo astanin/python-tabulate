@@ -487,6 +487,7 @@ def _afterpoint(string):
     else:
         return -1  # not a number
 
+
 def _padleft(width, s):
     """Flush right.
 
@@ -494,11 +495,9 @@ def _padleft(width, s):
     True
 
     """
-    vis = _strip_invisible(s)
-    pad = width - len(vis)
-    if pad > 0:
-        s = " " * pad + s
-    return s
+    fmt = "{0:>%ds}" % width
+    return fmt.format(s)
+
 
 def _padright(width, s):
     """Flush left.
@@ -507,11 +506,9 @@ def _padright(width, s):
     True
 
     """
-    vis = _strip_invisible(s)
-    pad = width - len(vis)
-    if pad > 0:
-        s = s + " " * pad
-    return s
+    fmt = "{0:<%ds}" % width
+    return fmt.format(s)
+
 
 def _padboth(width, s):
     """Center string.
@@ -520,12 +517,8 @@ def _padboth(width, s):
     True
 
     """
-    vis = _strip_invisible(s)
-    pad = width - len(vis)
-    if pad > 0:
-        pad_l = pad//2
-        s = " " * pad_l + s + " " * (pad - pad_l)
-    return s
+    fmt = "{0:^%ds}" % width
+    return fmt.format(s)
 
 
 def _padnone(ignore_width, s):
@@ -625,7 +618,7 @@ def _align_column(strings, alignment, minwidth=0,
                 for ms in strings]
         else:
             # enable wide-character width corrections
-            s_lens = [max((width_fn(s) for s in re.split("[\r\n]", ms))) for ms in strings]
+            s_lens = [max((len(s) for s in re.split("[\r\n]", ms))) for ms in strings]
             visible_widths = [maxwidth - (w - l) for w, l in zip(s_widths, s_lens)]
             # wcswidth and _visible_width don't count invisible characters;
             # padfn doesn't need to apply another correction
@@ -636,7 +629,7 @@ def _align_column(strings, alignment, minwidth=0,
             padded_strings = [padfn(maxwidth, s) for s in strings]
         else:
             # enable wide-character width corrections
-            s_lens = list(map(width_fn, strings))
+            s_lens = list(map(len, strings))
             visible_widths = [maxwidth - (w - l) for w, l in zip(s_widths, s_lens)]
             # wcswidth and _visible_width don't count invisible characters;
             # padfn doesn't need to apply another correction
