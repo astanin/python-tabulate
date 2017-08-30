@@ -349,6 +349,10 @@ _table_formats = {"simple":
 
 
 tabulate_formats = list(sorted(_table_formats.keys()))
+multiline_formats = {
+        "fancy_grid": "fancy_grid",
+        "grid": "grid",
+        "simple": "simple_multiline"}
 
 
 _multiline_codes = re.compile(r"\r|\n|\r\n")
@@ -1200,7 +1204,11 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
 
     has_invisible = re.search(_invisible_codes, plain_text)
     enable_widechars = wcwidth is not None and WIDE_CHARS_MODE
-    is_multiline = _is_multiline(plain_text)
+    if tablefmt in multiline_formats and _is_multiline(plain_text):
+        tablefmt = multiline_formats.get(tablefmt, tablefmt)
+        is_multiline = True
+    else:
+        is_multiline = False
     width_fn = _choose_width_fn(has_invisible, enable_widechars, is_multiline)
 
     # format rows and columns, convert numeric values to strings
