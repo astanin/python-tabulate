@@ -632,7 +632,7 @@ def _align_column(strings, alignment, minwidth=0,
             padded_strings = [padfn(maxwidth, s) for s in strings]
         else:
             # enable wide-character width corrections
-            s_lens = list(map(len, strings))
+            s_lens = list(map(width_fn, strings))
             visible_widths = [maxwidth - (w - l) for w, l in zip(s_widths, s_lens)]
             # wcswidth and _visible_width don't count invisible characters;
             # padfn doesn't need to apply another correction
