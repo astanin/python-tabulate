@@ -155,6 +155,7 @@ Supported table formats are:
 - "pipe"
 - "orgtbl"
 - "jira"
+- "presto"
 - "psql"
 - "rst"
 - "mediawiki"
@@ -214,6 +215,15 @@ extensions::
     ├────────┼───────┤
     │ bacon  │     0 │
     ╘════════╧═══════╛
+
+``presto`` is like tables formatted by Presto cli::
+
+    >>> print tabulate.tabulate()
+     item   |   qty
+    --------+-------
+     spam   |    42
+     eggs   |   451
+     bacon  |     0
 
 ``psql`` is like tables formatted by Postgres' psql cli::
 

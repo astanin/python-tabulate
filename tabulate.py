@@ -271,6 +271,14 @@ _table_formats = {"simple":
                               headerrow=DataRow("||", "||", "||"),
                               datarow=DataRow("|", "|", "|"),
                               padding=1, with_header_hide=None),
+                  "presto":
+                      TableFormat(lineabove=None,
+                                  linebelowheader=Line("", "-", "+", ""),
+                                  linebetweenrows=None,
+                                  linebelow=None,
+                                  headerrow=DataRow("", "|", ""),
+                                  datarow=DataRow("", "|", ""),
+                                  padding=1, with_header_hide=None),
                   "psql":
                   TableFormat(lineabove=Line("+", "-", "+", "+"),
                               linebelowheader=Line("|", "-", "+", "|"),
@@ -1027,6 +1035,15 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
     |:----------|----------:|
     | spam      |   41.9999 |
     | eggs      |  451      |
+
+    "presto" is like tables produce by the Presto CLI:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "presto"))
+     strings   |   numbers
+    -----------+-----------
+     spam      |   41.9999
+     eggs      |  451
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="pipe"))
     |:-----|---------:|
