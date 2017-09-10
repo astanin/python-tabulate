@@ -110,6 +110,46 @@ def test_grid_multiline():
     assert_equal(expected, result)
 
 
+def test_grid_multiline_with_empty_cells():
+    "Output: grid with multiline cells and empty cells with headers"
+    table = [
+        ['hdr', 'data', 'fold'],
+        ['1', '', ''],
+        ['2', 'very long data', 'fold\nthis']
+    ]
+    expected = "\n".join([
+        "+-------+----------------+--------+",
+        "|   hdr | data           | fold   |",
+        "+=======+================+========+",
+        "|     1 |                |        |",
+        "+-------+----------------+--------+",
+        "|     2 | very long data | fold   |",
+        "|       |                | this   |",
+        "+-------+----------------+--------+"])
+    result = tabulate(table, headers="firstrow", tablefmt="grid")
+    assert_equal(expected, result)
+
+
+def test_grid_multiline_with_empty_cells_headerless():
+    "Output: grid with multiline cells and empty cells without headers"
+    table = [
+        ['0', '', ''],
+        ['1', '', ''],
+        ['2', 'very long data', 'fold\nthis']
+    ]
+    expected = "\n".join([
+        "+---+----------------+------+",
+        "| 0 |                |      |",
+        "+---+----------------+------+",
+        "| 1 |                |      |",
+        "+---+----------------+------+",
+        "| 2 | very long data | fold |",
+        "|   |                | this |",
+        "+---+----------------+------+"])
+    result = tabulate(table, tablefmt="grid")
+    assert_equal(expected, result)
+
+
 def test_fancy_grid():
     "Output: fancy_grid with headers"
     expected = '\n'.join([

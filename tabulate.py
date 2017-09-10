@@ -1264,12 +1264,12 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
         # align headers and add headers
         t_cols = cols or [['']] * len(headers)
         t_aligns = aligns or [stralign] * len(headers)
-        minwidths = [max(minw, width_fn(c[0])) for minw, c in zip(minwidths, t_cols)]
+        minwidths = [max(minw, max(width_fn(cl) for cl in c)) for minw, c in zip(minwidths, t_cols)]
         headers = [_align_header(h, a, minw, width_fn(h), is_multiline)
                    for h, a, minw in zip(headers, t_aligns, minwidths)]
         rows = list(zip(*cols))
     else:
-        minwidths = [width_fn(c[0]) for c in cols]
+        minwidths = [max(width_fn(cl) for cl in c) for c in cols]
         rows = list(zip(*cols))
 
     if not isinstance(tablefmt, TableFormat):
