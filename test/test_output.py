@@ -44,6 +44,21 @@ def test_simple():
     assert_equal(expected, result)
 
 
+def test_simple_multiline():
+    "Output: simple with multiline cells"
+    expected = "\n".join([
+        " key     value",
+        "-----  ---------",
+        " foo      bar",
+        "spam   multiline",
+        "         world",
+    ])
+    table = [["key", "value"], ["foo", "bar"], ["spam", "multiline\nworld"]]
+    result = tabulate(table, headers='firstrow', stralign="center",
+                      tablefmt="simple")
+    assert_equal(expected, result)
+
+
 def test_simple_headerless():
     "Output: simple without headers"
     expected = "\n".join(['----  --------',
