@@ -260,6 +260,18 @@ def test_rst():
     result = tabulate(_test_table, _test_table_headers, tablefmt="rst")
     assert_equal(expected, result)
 
+def test_rst_with_empty_values_in_first_column():
+    "Output: rst with dots in first column"
+    test_headers = ['', 'what']
+    test_data = [('', 'spam'), ('', 'eggs')]
+    expected = '\n'.join(['====  ======',
+                          '..    what',
+                          '====  ======',
+                          '..    spam',
+                          '..    eggs',
+                          '====  ======'])
+    result = tabulate(test_data, test_headers, tablefmt="rst")
+    assert_equal(expected, result)
 
 def test_rst_headerless():
     "Output: rst without headers"
