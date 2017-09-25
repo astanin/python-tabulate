@@ -367,11 +367,32 @@ _table_formats = {"simple":
 
 
 tabulate_formats = list(sorted(_table_formats.keys()))
-multiline_formats = {
-        "fancy_grid": "fancy_grid",
-        "grid": "grid",
-        "simple": "simple_multiline"}
 
+# The table formats for which multiline cells will be folded into subsequent
+# table rows. The key is the original format specified at the API. The value is
+# the format that will be used to represent the original format.
+multiline_formats = {
+        "plain": "plain",
+        "simple": "simple",
+        "grid": "grid",
+        "fancy_grid": "fancy_grid",
+        "pipe": "pipe",
+        "orgtbl": "orgtbl",
+        "jira": "jira",
+        "presto": "presto",
+        "psql": "psql",
+        "rst": "rst",
+}
+
+# TODO: Add multiline support for the remaining table formats:
+#       - mediawiki: Replace \n with <br>
+#       - moinmoin: TBD
+#       - youtrack: TBD
+#       - html: Replace \n with <br>
+#       - latex*: Use "makecell" package: In header, replace X\nY with
+#         \thead{X\\Y} and in data row, replace X\nY with \makecell{X\\Y}
+#       - tsv: TBD
+#       - textile: Replace \n with <br/> (must be well-formed XML)
 
 _multiline_codes = re.compile(r"\r|\n|\r\n")
 _multiline_codes_bytes = re.compile(b"\r|\n|\r\n")
