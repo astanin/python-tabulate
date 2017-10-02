@@ -508,6 +508,27 @@ def test_floatfmt_multi():
     expected = '0.1  0.123  0.12345'
     assert_equal(expected, result)
 
+def test_float_conversions():
+    "Output: float format parsed"
+    test_headers = ["str", "bad_float", "just_float", 'with_inf', 'with_nan', 'neg_inf']
+    test_table = [
+        ["spam", 41.9999, "123.345", '12.2', 'nan', '0.123123'],
+        ["eggs", "451.0", 66.2222, 'inf', 123.1234, '-inf'],
+        ["asd", "437e6548", 1.234e2, float('inf'), float('nan'), 0.22e23]
+    ]
+    result = tabulate(test_table, test_headers, tablefmt="grid")
+    expected = "\n".join([
+        '+-------+-------------+--------------+------------+------------+-------------+',
+        '| str   | bad_float   |   just_float |   with_inf |   with_nan |     neg_inf |',
+        '+=======+=============+==============+============+============+=============+',
+        '| spam  | 41.9999     |     123.345  |       12.2 |    nan     |    0.123123 |',
+        '+-------+-------------+--------------+------------+------------+-------------+',
+        '| eggs  | 451.0       |      66.2222 |      inf   |    123.123 | -inf        |',
+        '+-------+-------------+--------------+------------+------------+-------------+',
+        '| asd   | 437e6548    |     123.4    |      inf   |    nan     |    2.2e+22  |',
+        '+-------+-------------+--------------+------------+------------+-------------+'
+    ])
+    assert_equal(expected, result)
 
 def test_missingval():
     "Output: substitution of missing values"
@@ -741,4 +762,3 @@ def test_preserve_whitespace():
                           'foo   bar   foo'])
     result = tabulate(test_table, table_headers)
     assert_equal(expected, result)
-

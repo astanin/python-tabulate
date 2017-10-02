@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 from collections import namedtuple, Iterable
 from platform import python_version_tuple
 import re
+import math
 
 
 if python_version_tuple()[0] < "3":
@@ -409,8 +410,17 @@ def _isnumber(string):
     True
     >>> _isnumber("spam")
     False
+    >>> _isnumber("123e45678")
+    False
+    >>> _isnumber("inf")
+    True
     """
-    return _isconvertible(float, string)
+    if not _isconvertible(float, string):
+        return False
+    elif isinstance(string, (_text_type, _binary_type)) and (
+            math.isinf(float(string)) or math.isnan(float(string))):
+        return string.lower() in ['inf', '-inf', 'nan']
+    return True
 
 
 def _isint(string, inttype=int):
