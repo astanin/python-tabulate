@@ -666,22 +666,23 @@ and numeric data, ``tabulate`` appears to be slower than
 Version history
 ---------------
 
-- 0.8.1: FUTURE RELEASE
-- 0.8.0: Multiline cells for most table formats. ``latex_raw`` format.
-         Column-specific floating point formatting.
-         Python 3.5 & 3.6 support. Drop support for Python 2.6, 3.2, 3.3 (should still work).
+- 0.8.1: FUTURE RELEASE. More output formats support multiline data.
+- 0.8.0: Multiline data in some output formats.
+  ``latex_raw`` format.
+  Column-specific floating point formatting.
+  Python 3.5 & 3.6 support. Drop support for Python 2.6, 3.2, 3.3 (should still work).
 - 0.7.7: Identical to 0.7.6, resolving some PyPI issues.
 - 0.7.6: Bug fixes. New table formats (``psql``, ``jira``, ``moinmoin``, ``textile``).
-         Wide character support. Printing from database cursors.
-         Option to print row indices. Boolean columns. Ragged rows.
-         Option to disable number parsing.
+  Wide character support. Printing from database cursors.
+  Option to print row indices. Boolean columns. Ragged rows.
+  Option to disable number parsing.
 - 0.7.5: Bug fixes. ``--float`` format option for the command line utility.
 - 0.7.4: Bug fixes. ``fancy_grid`` and ``html`` formats. Command line utility.
 - 0.7.3: Bug fixes. Python 3.4 support. Iterables of dicts. ``latex_booktabs`` format.
 - 0.7.2: Python 3.2 support.
 - 0.7.1: Bug fixes. ``tsv`` format. Column alignment can be disabled.
 - 0.7:   ``latex`` tables. Printing lists of named tuples and NumPy
-         record arrays. Fix printing date and time values. Python <= 2.6.4 is supported.
+  record arrays. Fix printing date and time values. Python <= 2.6.4 is supported.
 - 0.6:   ``mediawiki`` tables, bug fixes.
 - 0.5.1: Fix README.rst formatting. Optimize (performance similar to 0.4.4).
 - 0.5:   ANSI color sequences. Printing dicts of iterables and Pandas' dataframes.
@@ -691,7 +692,7 @@ Version history
 - 0.4.1: Update license and documentation.
 - 0.4:   Unicode support, Python3 support, ``rst`` tables.
 - 0.3:   Initial PyPI release. Table formats: ``simple``, ``plain``,
-         ``grid``, ``pipe``, and ``orgtbl``.
+  ``grid``, ``pipe``, and ``orgtbl``.
 
 
 How to contribute
