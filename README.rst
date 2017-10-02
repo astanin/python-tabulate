@@ -301,7 +301,7 @@ wikis::
     ||  eggs    ||  451         ||
     ||  bacon   ||              ||
 
-``youtrack`` format produces a table markup used in `Youtrack`_
+``youtrack`` format produces a table markup used in Youtrack
 tickets::
 
     >>> print tabulate(d,headers,tablefmt="youtrack")
@@ -359,6 +359,7 @@ using spacing and style from the ``booktabs`` package.
 .. _reStructuredText: http://docutils.sourceforge.net/docs/user/rst/quickref.html#tables
 .. _Textile: http://redcloth.org/hobix.com/textile/
 .. _Wikipedia: http://www.mediawiki.org/wiki/Help:Tables
+.. _MoinMoin: https://moinmo.in/
 
 
 Column alignment
