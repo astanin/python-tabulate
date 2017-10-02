@@ -732,7 +732,7 @@ See ``tox.ini`` file to learn how to use ``nosetests`` directly to
 test individual Python versions.
 
 .. _nose: https://nose.readthedocs.org/
-.. _tox: http://tox.testrun.org/
+.. _tox: https://tox.readthedocs.io/
 
 
 Contributors
