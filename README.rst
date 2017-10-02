@@ -653,22 +653,22 @@ and numeric data, ``tabulate`` appears to be slower than
     =================================  ==========  ===========
     Table formatter                      time, μs    rel. time
     =================================  ==========  ===========
-    join with tabs and newlines              13.7          1.0
-    csv to StringIO                          17.1          1.3
-    asciitable (0.8.0)                      429.9         31.5
-    tabulate (0.8.0)                        823.8         60.3
-    tabulate (0.8.0, WIDE_CHARS_MODE)      1112.4         81.5
-    PrettyTable (0.7.2)                    1667.2        122.1
-    texttable (0.8.8)                      1919.6        140.6
+    join with tabs and newlines              16.8          1.0
+    csv to StringIO                          19.7          1.2
+    asciitable (0.8.0)                      394.6         23.5
+    tabulate (0.8.1)                       1096.3         65.2
+    tabulate (0.8.1, WIDE_CHARS_MODE)      1739.0        103.5
+    PrettyTable (0.7.2)                    1838.3        109.4
+    texttable (0.8.8)                      2318.0        137.9
     =================================  ==========  ===========
 
 
 Version history
 ---------------
 
-- 0.8.1: FUTURE RELEASE. More output formats support multiline data.
-- 0.8.0: Multiline data in some output formats.
-  ``latex_raw`` format.
+- 0.8.2: FUTURE RELEASE.
+- 0.8.1: Multiline data in several output formats.
+  New ``latex_raw`` format.
   Column-specific floating point formatting.
   Python 3.5 & 3.6 support. Drop support for Python 2.6, 3.2, 3.3 (should still work).
 - 0.7.7: Identical to 0.7.6, resolving some PyPI issues.
