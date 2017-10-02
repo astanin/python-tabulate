@@ -467,6 +467,141 @@ already installed.  To disable wide characters support without uninstalling
     tabulate.WIDE_CHARS_MODE = False
 
 
+Multiline cells
+~~~~~~~~~~~~~~~
+
+Most table formats support multiline cell text (text containing newline
+characters). The newline characters are honored as line break characters.
+
+Multiline cells are supported for data rows and for header rows.
+
+Further automatic line breaks are not inserted. Of course, some output formats
+such as latex or html handle automatic formatting of the cell content on their
+own, but for those that don't, the newline characters in the input cell text
+are the only means to break a line in cell text.
+
+Note that some output formats (e.g. simple, or plain) do not represent row
+delimiters, so that the representation of multiline cells in such formats
+may be ambiguous to the reader.
+
+The following examples of formatted output use the following table with
+a multiline cell, and headers with a multiline cell::
+
+    >>> table = [["eggs",451],["more\nspam",42]]
+    >>> headers = ["item\nname", "qty"]
+
+``plain`` tables::
+
+    >>> print(tabulate(table, headers, tablefmt="plain"))
+    item      qty
+    name
+    eggs      451
+    more       42
+    spam
+
+``simple`` tables::
+
+    >>> print(tabulate(table, headers, tablefmt="simple"))
+    item      qty
+    name
+    ------  -----
+    eggs      451
+    more       42
+    spam
+
+``grid`` tables::
+
+    >>> print(tabulate(table, headers, tablefmt="grid"))
+    +--------+-------+
+    | item   |   qty |
+    | name   |       |
+    +========+=======+
+    | eggs   |   451 |
+    +--------+-------+
+    | more   |    42 |
+    | spam   |       |
+    +--------+-------+
+
+``fancy_grid`` tables::
+
+    >>> print(tabulate(table, headers, tablefmt="fancy_grid"))
+    ╒════════╤═══════╕
+    │ item   │   qty │
+    │ name   │       │
+    ╞════════╪═══════╡
+    │ eggs   │   451 │
+    ├────────┼───────┤
+    │ more   │    42 │
+    │ spam   │       │
+    ╘════════╧═══════╛
+
+``pipe`` tables::
+
+    >>> print(tabulate(table, headers, tablefmt="pipe"))
+    | item   |   qty |
+    | name   |       |
+    |:-------|------:|
+    | eggs   |   451 |
+    | more   |    42 |
+    | spam   |       |
+
+``orgtbl`` tables::
+
+    >>> print(tabulate(table, headers, tablefmt="orgtbl"))
+    | item   |   qty |
+    | name   |       |
+    |--------+-------|
+    | eggs   |   451 |
+    | more   |    42 |
+    | spam   |       |
+
+``jira`` tables::
+
+    >>> print(tabulate(table, headers, tablefmt="jira"))
+    | item   |   qty |
+    | name   |       |
+    |:-------|------:|
+    | eggs   |   451 |
+    | more   |    42 |
+    | spam   |       |
+
+``presto`` tables::
+
+    >>> print(tabulate(table, headers, tablefmt="presto"))
+     item   |   qty
+     name   |
+    --------+-------
+     eggs   |   451
+     more   |    42
+     spam   |
+
+``psql`` tables::
+
+    >>> print(tabulate(table, headers, tablefmt="psql"))
+    +--------+-------+
+    | item   |   qty |
+    | name   |       |
+    |--------+-------|
+    | eggs   |   451 |
+    | more   |    42 |
+    | spam   |       |
+    +--------+-------+
+
+``rst`` tables::
+
+    >>> print(tabulate(table, headers, tablefmt="rst"))
+    ======  =====
+    item      qty
+    name
+    ======  =====
+    eggs      451
+    more       42
+    spam
+    ======  =====
+
+Multiline cells are not well supported for the other table formats.
+
+
 Usage of the command line utility
 ---------------------------------
 
@@ -532,7 +667,8 @@ Version history
 ---------------
 
 - 0.8.1: FUTURE RELEASE
-- 0.8.0: Multiline cells. ``latex_raw`` format. Column-specific floating point formatting.
+- 0.8.0: Multiline cells for most table formats. ``latex_raw`` format.
+         Column-specific floating point formatting.
          Python 3.5 & 3.6 support. Drop support for Python 2.6, 3.2, 3.3 (should still work).
 - 0.7.7: Identical to 0.7.6, resolving some PyPI issues.
 - 0.7.6: Bug fixes. New table formats (``psql``, ``jira``, ``moinmoin``, ``textile``).

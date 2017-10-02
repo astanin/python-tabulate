@@ -34,6 +34,64 @@ def test_plain_headerless():
     assert_equal(expected, result)
 
 
+def test_plain_multiline_headerless():
+    "Output: plain with multiline cells without headers"
+    table = [["foo bar\nbaz\nbau", "hello"], ["", "multiline\nworld"]]
+    expected = "\n".join([
+        "foo bar    hello",
+        "  baz",
+        "  bau",
+        "         multiline",
+        "           world"])
+    result = tabulate(table, stralign="center", tablefmt="plain")
+    assert_equal(expected, result)
+
+
+def test_plain_multiline():
+    "Output: plain with multiline cells with headers"
+    table = [[2, "foo\nbar"]]
+    headers = ("more\nspam \x1b[31meggs\x1b[0m", "more spam\n& eggs")
+    expected = "\n".join([
+        "       more  more spam",
+        "  spam \x1b[31meggs\x1b[0m  & eggs",
+        "          2  foo",
+        "             bar"])
+    result = tabulate(table, headers, tablefmt="plain")
+    assert_equal(expected, result)
+
+
+def test_plain_multiline_with_empty_cells():
+    "Output: plain with multiline cells and empty cells with headers"
+    table = [
+        ['hdr', 'data', 'fold'],
+        ['1', '', ''],
+        ['2', 'very long data', 'fold\nthis']
+    ]
+    expected = "\n".join([
+        "  hdr  data            fold",
+        "    1",
+        "    2  very long data  fold",
+        "                       this"])
+    result = tabulate(table, headers="firstrow", tablefmt="plain")
+    assert_equal(expected, result)
+
+
+def test_plain_multiline_with_empty_cells_headerless():
+    "Output: plain with multiline cells and empty cells without headers"
+    table = [
+        ['0', '', ''],
+        ['1', '', ''],
+        ['2', 'very long data', 'fold\nthis']
+    ]
+    expected = "\n".join([
+        "0",
+        "1",
+        "2  very long data  fold",
+        "                   this"])
+    result = tabulate(table, tablefmt="plain")
+    assert_equal(expected, result)
+
+
 def test_simple():
     "Output: simple with headers"
     expected = "\n".join(['strings      numbers',
@@ -69,14 +127,78 @@ def test_simple_headerless():
     assert_equal(expected, result)
 
 
+def test_simple_multiline_headerless():
+    "Output: simple with multiline cells without headers"
+    table = [["foo bar\nbaz\nbau", "hello"], ["", "multiline\nworld"]]
+    expected = "\n".join([
+        "-------  ---------",
+        "foo bar    hello",
+        "  baz",
+        "  bau",
+        "         multiline",
+        "           world",
+        "-------  ---------",])
+    result = tabulate(table, stralign="center", tablefmt="simple")
+    assert_equal(expected, result)
+
+
+def test_simple_multiline():
+    "Output: simple with multiline cells with headers"
+    table = [[2, "foo\nbar"]]
+    headers = ("more\nspam \x1b[31meggs\x1b[0m", "more spam\n& eggs")
+    expected = "\n".join([
+        "       more  more spam",
+        "  spam \x1b[31meggs\x1b[0m  & eggs",
+        "-----------  -----------",
+        "          2  foo",
+        "             bar"])
+    result = tabulate(table, headers, tablefmt="simple")
+    assert_equal(expected, result)
+
+
+def test_simple_multiline_with_empty_cells():
+    "Output: simple with multiline cells and empty cells with headers"
+    table = [
+        ['hdr', 'data', 'fold'],
+        ['1', '', ''],
+        ['2', 'very long data', 'fold\nthis']
+    ]
+    expected = "\n".join([
+        "  hdr  data            fold",
+        "-----  --------------  ------",
+        "    1",
+        "    2  very long data  fold",
+        "                       this"])
+    result = tabulate(table, headers="firstrow", tablefmt="simple")
+    assert_equal(expected, result)
+
+
+def test_simple_multiline_with_empty_cells_headerless():
+    "Output: simple with multiline cells and empty cells without headers"
+    table = [
+        ['0', '', ''],
+        ['1', '', ''],
+        ['2', 'very long data', 'fold\nthis']
+    ]
+    expected = "\n".join([
+        "-  --------------  ----",
+        "0",
+        "1",
+        "2  very long data  fold",
+        "                   this",
+        "-  --------------  ----",])
+    result = tabulate(table, tablefmt="simple")
+    assert_equal(expected, result)
+
+
 def test_grid():
     "Output: grid with headers"
     expected = '\n'.join(['+-----------+-----------+',
                           '| strings   |   numbers |',
                           '+===========+===========+',
-                           '| spam      |   41.9999 |',
+                          '| spam      |   41.9999 |',
                           '+-----------+-----------+',
-                           '| eggs      |  451      |',
+                          '| eggs      |  451      |',
                           '+-----------+-----------+',])
     result = tabulate(_test_table, _test_table_headers, tablefmt="grid")
     assert_equal(expected, result)
@@ -191,6 +313,78 @@ def test_fancy_grid_headerless():
     assert_equal(expected, result)
 
 
+def test_fancy_grid_multiline_headerless():
+    "Output: fancy_grid with multiline cells without headers"
+    table = [["foo bar\nbaz\nbau", "hello"], ["", "multiline\nworld"]]
+    expected = "\n".join([
+        "╒═════════╤═══════════╕",
+        "│ foo bar │   hello   │",
+        "│   baz   │           │",
+        "│   bau   │           │",
+        "├─────────┼───────────┤",
+        "│         │ multiline │",
+        "│         │   world   │",
+        "╘═════════╧═══════════╛"])
+    result = tabulate(table, stralign="center", tablefmt="fancy_grid")
+    assert_equal(expected, result)
+
+
+def test_fancy_grid_multiline():
+    "Output: fancy_grid with multiline cells with headers"
+    table = [[2, "foo\nbar"]]
+    headers = ("more\nspam \x1b[31meggs\x1b[0m", "more spam\n& eggs")
+    expected = "\n".join([
+        "╒═════════════╤═════════════╕",
+        "│        more │ more spam   │",
+        "│   spam \x1b[31meggs\x1b[0m │ & eggs      │",
+        "╞═════════════╪═════════════╡",
+        "│           2 │ foo         │",
+        "│             │ bar         │",
+        "╘═════════════╧═════════════╛"])
+    result = tabulate(table, headers, tablefmt="fancy_grid")
+    assert_equal(expected, result)
+
+
+def test_fancy_grid_multiline_with_empty_cells():
+    "Output: fancy_grid with multiline cells and empty cells with headers"
+    table = [
+        ['hdr', 'data', 'fold'],
+        ['1', '', ''],
+        ['2', 'very long data', 'fold\nthis']
+    ]
+    expected = "\n".join([
+        "╒═══════╤════════════════╤════════╕",
+        "│   hdr │ data           │ fold   │",
+        "╞═══════╪════════════════╪════════╡",
+        "│     1 │                │        │",
+        "├───────┼────────────────┼────────┤",
+        "│     2 │ very long data │ fold   │",
+        "│       │                │ this   │",
+        "╘═══════╧════════════════╧════════╛"])
+    result = tabulate(table, headers="firstrow", tablefmt="fancy_grid")
+    assert_equal(expected, result)
+
+
+def test_fancy_grid_multiline_with_empty_cells_headerless():
+    "Output: fancy_grid with multiline cells and empty cells without headers"
+    table = [
+        ['0', '', ''],
+        ['1', '', ''],
+        ['2', 'very long data', 'fold\nthis']
+    ]
+    expected = "\n".join([
+        "╒═══╤════════════════╤══════╕",
+        "│ 0 │                │      │",
+        "├───┼────────────────┼──────┤",
+        "│ 1 │                │      │",
+        "├───┼────────────────┼──────┤",
+        "│ 2 │ very long data │ fold │",
+        "│   │                │ this │",
+        "╘═══╧════════════════╧══════╛"])
+    result = tabulate(table, tablefmt="fancy_grid")
+    assert_equal(expected, result)
+
+
 def test_pipe():
     "Output: pipe with headers"
     expected = '\n'.join(['| strings   |   numbers |',
@@ -207,6 +401,84 @@ def test_pipe_headerless():
                           '| spam |  41.9999 |',
                           '| eggs | 451      |',])
     result = tabulate(_test_table, tablefmt="pipe")
+    assert_equal(expected, result)
+
+
+def test_presto():
+    "Output: presto with headers"
+    expected = '\n'.join([' strings   |   numbers',
+                          '-----------+-----------',
+                          ' spam      |   41.9999',
+                          ' eggs      |  451',])
+    result = tabulate(_test_table, _test_table_headers, tablefmt="presto")
+    assert_equal(expected, result)
+
+
+def test_presto_headerless():
+    "Output: presto without headers"
+    expected = '\n'.join([' spam |  41.9999',
+                          ' eggs | 451',])
+    result = tabulate(_test_table, tablefmt="presto")
+    assert_equal(expected, result)
+
+
+def test_presto_multiline_headerless():
+    "Output: presto with multiline cells without headers"
+    table = [["foo bar\nbaz\nbau", "hello"], ["", "multiline\nworld"]]
+    expected = "\n".join([
+        " foo bar |   hello",
+        "   baz   |",
+        "   bau   |",
+        "         | multiline",
+        "         |   world"])
+    result = tabulate(table, stralign="center", tablefmt="presto")
+    assert_equal(expected, result)
+
+
+def test_presto_multiline():
+    "Output: presto with multiline cells with headers"
+    table = [[2, "foo\nbar"]]
+    headers = ("more\nspam \x1b[31meggs\x1b[0m", "more spam\n& eggs")
+    expected = "\n".join([
+        "        more | more spam",
+        "   spam \x1b[31meggs\x1b[0m | & eggs",
+        "-------------+-------------",
+        "           2 | foo",
+        "             | bar"])
+    result = tabulate(table, headers, tablefmt="presto")
+    assert_equal(expected, result)
+
+
+def test_presto_multiline_with_empty_cells():
+    "Output: presto with multiline cells and empty cells with headers"
+    table = [
+        ['hdr', 'data', 'fold'],
+        ['1', '', ''],
+        ['2', 'very long data', 'fold\nthis']
+    ]
+    expected = "\n".join([
+        "   hdr | data           | fold",
+        "-------+----------------+--------",
+        "     1 |                |",
+        "     2 | very long data | fold",
+        "       |                | this"])
+    result = tabulate(table, headers="firstrow", tablefmt="presto")
+    assert_equal(expected, result)
+
+
+def test_presto_multiline_with_empty_cells_headerless():
+    "Output: presto with multiline cells and empty cells without headers"
+    table = [
+        ['0', '', ''],
+        ['1', '', ''],
+        ['2', 'very long data', 'fold\nthis']
+    ]
+    expected = "\n".join([
+        " 0 |                |",
+        " 1 |                |",
+        " 2 | very long data | fold",
+        "   |                | this"])
+    result = tabulate(table, tablefmt="presto")
     assert_equal(expected, result)
 
 
@@ -246,6 +518,74 @@ def test_psql_headerless():
                           '+------+----------+',])
     result = tabulate(_test_table, tablefmt="psql")
     assert_equal(expected, result)
+
+def test_psql_multiline_headerless():
+    "Output: psql with multiline cells without headers"
+    table = [["foo bar\nbaz\nbau", "hello"], ["", "multiline\nworld"]]
+    expected = "\n".join([
+        "+---------+-----------+",
+        "| foo bar |   hello   |",
+        "|   baz   |           |",
+        "|   bau   |           |",
+        "|         | multiline |",
+        "|         |   world   |",
+        "+---------+-----------+"])
+    result = tabulate(table, stralign="center", tablefmt="psql")
+    assert_equal(expected, result)
+
+
+def test_psql_multiline():
+    "Output: psql with multiline cells with headers"
+    table = [[2, "foo\nbar"]]
+    headers = ("more\nspam \x1b[31meggs\x1b[0m", "more spam\n& eggs")
+    expected = "\n".join([
+        "+-------------+-------------+",
+        "|        more | more spam   |",
+        "|   spam \x1b[31meggs\x1b[0m | & eggs      |",
+        "|-------------+-------------|",
+        "|           2 | foo         |",
+        "|             | bar         |",
+        "+-------------+-------------+"])
+    result = tabulate(table, headers, tablefmt="psql")
+    assert_equal(expected, result)
+
+
+def test_psql_multiline_with_empty_cells():
+    "Output: psql with multiline cells and empty cells with headers"
+    table = [
+        ['hdr', 'data', 'fold'],
+        ['1', '', ''],
+        ['2', 'very long data', 'fold\nthis']
+    ]
+    expected = "\n".join([
+        "+-------+----------------+--------+",
+        "|   hdr | data           | fold   |",
+        "|-------+----------------+--------|",
+        "|     1 |                |        |",
+        "|     2 | very long data | fold   |",
+        "|       |                | this   |",
+        "+-------+----------------+--------+"])
+    result = tabulate(table, headers="firstrow", tablefmt="psql")
+    assert_equal(expected, result)
+
+
+def test_psql_multiline_with_empty_cells_headerless():
+    "Output: psql with multiline cells and empty cells without headers"
+    table = [
+        ['0', '', ''],
+        ['1', '', ''],
+        ['2', 'very long data', 'fold\nthis']
+    ]
+    expected = "\n".join([
+        "+---+----------------+------+",
+        "| 0 |                |      |",
+        "| 1 |                |      |",
+        "| 2 | very long data | fold |",
+        "|   |                | this |",
+        "+---+----------------+------+"])
+    result = tabulate(table, tablefmt="psql")
+    assert_equal(expected, result)
+
 
 def test_jira():
     "Output: jira with headers"
@@ -296,6 +636,59 @@ def test_rst_headerless():
                           '====  ========',])
     result = tabulate(_test_table, tablefmt="rst")
     assert_equal(expected, result)
+
+def test_rst_multiline():
+    "Output: rst with multiline cells with headers"
+    table = [[2, "foo\nbar"]]
+    headers = ("more\nspam \x1b[31meggs\x1b[0m", "more spam\n& eggs")
+    expected = "\n".join([
+        "===========  ===========",
+        "       more  more spam",
+        "  spam \x1b[31meggs\x1b[0m  & eggs",
+        "===========  ===========",
+        "          2  foo",
+        "             bar",
+        "===========  ==========="])
+    result = tabulate(table, headers, tablefmt="rst")
+    assert_equal(expected, result)
+
+
+def test_rst_multiline_with_empty_cells():
+    "Output: rst with multiline cells and empty cells with headers"
+    table = [
+        ['hdr', 'data', 'fold'],
+        ['1', '', ''],
+        ['2', 'very long data', 'fold\nthis']
+    ]
+    expected = "\n".join([
+        "=====  ==============  ======",
+        "  hdr  data            fold",
+        "=====  ==============  ======",
+        "    1",
+        "    2  very long data  fold",
+        "                       this",
+        "=====  ==============  ======"])
+    result = tabulate(table, headers="firstrow", tablefmt="rst")
+    assert_equal(expected, result)
+
+
+def test_rst_multiline_with_empty_cells_headerless():
+    "Output: rst with multiline cells and empty cells without headers"
+    table = [
+        ['0', '', ''],
+        ['1', '', ''],
+        ['2', 'very long data', 'fold\nthis']
+    ]
+    expected = "\n".join([
+        "=  ==============  ====",
+        "0",
+        "1",
+        "2  very long data  fold",
+        "                   this",
+        "=  ==============  ===="])
+    result = tabulate(table, tablefmt="rst")
+    assert_equal(expected, result)
+
 
 def test_mediawiki():
     "Output: mediawiki with headers"
