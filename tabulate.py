@@ -1343,7 +1343,7 @@ def _append_multiline_row(lines, padded_multiline_cells, padded_widths, colalign
     cells_lines = [(cl + [' '*w]*(nlines - len(cl))) for cl, w in zip(cells_lines, colwidths)]
     lines_cells = [[cl[i] for cl in cells_lines] for i in range(nlines)]
     for ln in lines_cells:
-        padded_ln = _pad_row(ln, 1)
+        padded_ln = _pad_row(ln, pad)
         _append_basic_row(lines, padded_ln, colwidths, colaligns, rowfmt)
     return lines
 
