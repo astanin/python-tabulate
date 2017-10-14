@@ -204,6 +204,22 @@ def test_grid():
     assert_equal(expected, result)
 
 
+def test_grid_wide_characters():
+    "Output: grid with wide characters in headers"
+    headers = list(_test_table_headers)
+    headers[1] = '配列'
+
+    expected = '\n'.join(['+-----------+----------+',
+                          '| strings   |     配列 |',
+                          '+===========+==========+',
+                          '| spam      |  41.9999 |',
+                          '+-----------+----------+',
+                          '| eggs      | 451      |',
+                          '+-----------+----------+',])
+    result = tabulate(_test_table, headers, tablefmt="grid")
+    assert_equal(expected, result)
+
+
 def test_grid_headerless():
     "Output: grid without headers"
     expected = '\n'.join(['+------+----------+',
