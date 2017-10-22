@@ -756,14 +756,14 @@ def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
         return "{0}".format(val)
 
 
-def _align_header(header, alignment, width, visible_width, is_multiline=False):
+def _align_header(header, alignment, width, visible_width, is_multiline=False, width_fn=None):
     "Pad string header to width chars given known visible_width of the header."
     if is_multiline:
         header_lines = re.split(_multiline_codes, header)
-        padded_lines = [_align_header(h, alignment, width, visible_width) for h in header_lines]
+        padded_lines = [_align_header(h, alignment, width, width_fn(h)) for h in header_lines]
         return "\n".join(padded_lines)
     # else: not multiline
-    ninvisible = max(0, len(header) - visible_width)
+    ninvisible = len(header) - visible_width
     width += ninvisible
     if alignment == "left":
         return _padright(width, header)
@@ -1296,7 +1296,7 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
         t_cols = cols or [['']] * len(headers)
         t_aligns = aligns or [stralign] * len(headers)
         minwidths = [max(minw, max(width_fn(cl) for cl in c)) for minw, c in zip(minwidths, t_cols)]
-        headers = [_align_header(h, a, minw, width_fn(h), is_multiline)
+        headers = [_align_header(h, a, minw, width_fn(h), is_multiline, width_fn)
                    for h, a, minw in zip(headers, t_aligns, minwidths)]
         rows = list(zip(*cols))
     else:
