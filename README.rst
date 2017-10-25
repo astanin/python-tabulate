@@ -49,9 +49,9 @@ On Windows::
 Build status
 ------------
 
-.. image:: https://drone.io/bitbucket.org/astanin/python-tabulate/status.png
-   :alt: Build status
-   :target: https://drone.io/bitbucket.org/astanin/python-tabulate/latest
+.. image:: https://circleci.com/bb/astanin/python-tabulate.svg?style=svg
+    :alt: Build status
+    :target: https://circleci.com/bb/astanin/python-tabulate/tree/master
 
 
 Library usage
