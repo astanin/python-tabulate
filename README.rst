@@ -667,7 +667,7 @@ and numeric data, ``tabulate`` appears to be slower than
 Version history
 ---------------
 
-- 0.8.2: FUTURE RELEASE.
+- 0.8.2: FUTURE RELEASE. Bug fixes.
 - 0.8.1: Multiline data in several output formats.
   New ``latex_raw`` format.
   Column-specific floating point formatting.
@@ -746,4 +746,4 @@ Jan Schulz, Simon Percivall, Javier Santacruz López-Cepero, Sam Denton,
 Alexey Ziyangirov, acaird, Cesar Sanchez, naught101, John Vandenberg,
 Zack Dever, Christian Clauss, Benjamin Maier, Andy MacKinlay, Thomas Roten,
 Jue Wang, Joe King, Samuel Phan, Nick Satterly, Daniel Robbins, Dmitry B,
-Lars Butler, Andreas Maier.
+Lars Butler, Andreas Maier, Dick Marinus.

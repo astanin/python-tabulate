@@ -37,7 +37,7 @@ else:
 
 
 setup(name='tabulate',
-      version='0.8.1',
+      version='0.8.2',
       description='Pretty-print tabular data',
       long_description=LONG_DESCRIPTION,
       author='Sergey Astanin',
