@@ -206,9 +206,13 @@ def test_grid():
 
 def test_grid_wide_characters():
     "Output: grid with wide characters in headers"
+    try:
+        import wcwidth
+    except ImportError:
+        print("test_grid_wide_characters is skipped")
+        raise SkipTest()   # this test is optional
     headers = list(_test_table_headers)
     headers[1] = '配列'
-
     expected = '\n'.join(['+-----------+----------+',
                           '| strings   |     配列 |',
                           '+===========+==========+',
