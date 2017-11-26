@@ -668,6 +668,7 @@ The following mini-benchmark was run in Python 3.5.2 on Windows
 Version history
 ---------------
 
+- 0.8.3: FUTURE RELEASE
 - 0.8.2: Bug fixes.
 - 0.8.1: Multiline data in several output formats.
   New ``latex_raw`` format.
