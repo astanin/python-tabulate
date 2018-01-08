@@ -65,7 +65,7 @@ and outputs a nicely formatted plain-text table::
 
     >>> table = [["Sun",696000,1989100000],["Earth",6371,5973.6],
     ...          ["Moon",1737,73.5],["Mars",3390,641.85]]
-    >>> print tabulate(table)
+    >>> print(tabulate(table))
     -----  ------  -------------
     Sun    696000     1.9891e+09
     Earth    6371  5973.6
@@ -91,7 +91,7 @@ Headers
 The second optional argument named ``headers`` defines a list of
 column headers to be used::
 
-    >>> print tabulate(table, headers=["Planet","R (km)", "mass (x 10^29 kg)"])
+    >>> print(tabulate(table, headers=["Planet","R (km)", "mass (x 10^29 kg)"]))
     Planet      R (km)    mass (x 10^29 kg)
     --------  --------  -------------------
     Sun         696000           1.9891e+09
@@ -101,8 +101,8 @@ column headers to be used::
 
 If ``headers="firstrow"``, then the first row of data is used::
 
-    >>> print tabulate([["Name","Age"],["Alice",24],["Bob",19]],
-    ...                headers="firstrow")
+    >>> print(tabulate([["Name","Age"],["Alice",24],["Bob",19]],
+    ...                headers="firstrow"))
     Name      Age
     ------  -----
     Alice      24
@@ -113,8 +113,8 @@ If ``headers="keys"``, then the keys of a dictionary/dataframe, or
 column indices are used. It also works for NumPy record arrays and
 lists of dictionaries or named tuples::
 
-    >>> print tabulate({"Name": ["Alice", "Bob"],
-    ...                 "Age": [24, 19]}, headers="keys")
+    >>> print(tabulate({"Name": ["Alice", "Bob"],
+    ...                 "Age": [24, 19]}, headers="keys"))
       Age  Name
     -----  ------
        24  Alice
@@ -171,7 +171,7 @@ Supported table formats are:
 
     >>> table = [["spam",42],["eggs",451],["bacon",0]]
     >>> headers = ["item", "qty"]
-    >>> print tabulate(table, headers, tablefmt="plain")
+    >>> print(tabulate(table, headers, tablefmt="plain"))
     item      qty
     spam       42
     eggs      451
@@ -181,7 +181,7 @@ Supported table formats are:
 versions).  It corresponds to ``simple_tables`` in `Pandoc Markdown
 extensions`_::
 
-    >>> print tabulate(table, headers, tablefmt="simple")
+    >>> print(tabulate(table, headers, tablefmt="simple"))
     item      qty
     ------  -----
     spam       42
@@ -192,7 +192,7 @@ extensions`_::
 package.  It corresponds to ``grid_tables`` in Pandoc Markdown
 extensions::
 
-    >>> print tabulate(table, headers, tablefmt="grid")
+    >>> print(tabulate(table, headers, tablefmt="grid"))
     +--------+-------+
     | item   |   qty |
     +========+=======+
@@ -205,7 +205,7 @@ extensions::
 
 ``fancy_grid`` draws a grid using box-drawing characters::
 
-    >>> print tabulate(table, headers, tablefmt="fancy_grid")
+    >>> print(tabulate(table, headers, tablefmt="fancy_grid"))
     ╒════════╤═══════╕
     │ item   │   qty │
     ╞════════╪═══════╡
@@ -218,7 +218,7 @@ extensions::
 
 ``presto`` is like tables formatted by Presto cli::
 
-    >>> print tabulate.tabulate()
+    >>> print(tabulate.tabulate())
      item   |   qty
     --------+-------
      spam   |    42
@@ -227,7 +227,7 @@ extensions::
 
 ``psql`` is like tables formatted by Postgres' psql cli::
 
-    >>> print tabulate.tabulate()
+    >>> print(tabulate.tabulate())
     +--------+-------+
     | item   |   qty |
     |--------+-------|
@@ -240,7 +240,7 @@ extensions::
 corresponds to ``pipe_tables`` in Pandoc. This format uses colons to
 indicate column alignment::
 
-    >>> print tabulate(table, headers, tablefmt="pipe")
+    >>> print(tabulate(table, headers, tablefmt="pipe"))
     | item   |   qty |
     |:-------|------:|
     | spam   |    42 |
@@ -250,7 +250,7 @@ indicate column alignment::
 ``orgtbl`` follows the conventions of Emacs `org-mode`_, and is editable
 also in the minor `orgtbl-mode`. Hence its name::
 
-    >>> print tabulate(table, headers, tablefmt="orgtbl")
+    >>> print(tabulate(table, headers, tablefmt="orgtbl"))
     | item   |   qty |
     |--------+-------|
     | spam   |    42 |
@@ -259,7 +259,7 @@ also in the minor `orgtbl-mode`. Hence its name::
 
 ``jira`` follows the conventions of Atlassian Jira markup language::
 
-    >>> print tabulate(table, headers, tablefmt="jira")
+    >>> print(tabulate(table, headers, tablefmt="jira"))
     || item   ||   qty ||
     | spam   |    42 |
     | eggs   |   451 |
@@ -267,7 +267,7 @@ also in the minor `orgtbl-mode`. Hence its name::
 
 ``rst`` formats data like a simple table of the `reStructuredText`_ format::
 
-    >>> print tabulate(table, headers, tablefmt="rst")
+    >>> print(tabulate(table, headers, tablefmt="rst"))
     ======  =====
     item      qty
     ======  =====
@@ -279,7 +279,7 @@ also in the minor `orgtbl-mode`. Hence its name::
 ``mediawiki`` format produces a table markup used in `Wikipedia`_ and on
 other MediaWiki-based sites::
 
-    >>> print tabulate(table, headers, tablefmt="mediawiki")
+    >>> print(tabulate(table, headers, tablefmt="mediawiki"))
     {| class="wikitable" style="text-align: left;"
     |+ <!-- caption -->
     |-
@@ -295,7 +295,7 @@ other MediaWiki-based sites::
 ``moinmoin`` format produces a table markup used in `MoinMoin`_
 wikis::
 
-    >>> print tabulate(d,headers,tablefmt="moinmoin")
+    >>> print(tabulate(d,headers,tablefmt="moinmoin"))
     || ''' item   ''' || ''' quantity   ''' ||
     ||  spam    ||  41.999      ||
     ||  eggs    ||  451         ||
@@ -304,7 +304,7 @@ wikis::
 ``youtrack`` format produces a table markup used in Youtrack
 tickets::
 
-    >>> print tabulate(d,headers,tablefmt="youtrack")
+    >>> print(tabulate(d,headers,tablefmt="youtrack"))
     ||  item    ||  quantity   ||
     |   spam    |  41.999      |
     |   eggs    |  451         |
@@ -312,7 +312,7 @@ tickets::
 
 ``textile`` format produces a table markup used in `Textile`_ format::
 
-    >>> print tabulate(table, headers, tablefmt='textile')
+    >>> print(tabulate(table, headers, tablefmt='textile'))
     |_.  item   |_.   qty |
     |<. spam    |>.    42 |
     |<. eggs    |>.   451 |
@@ -320,7 +320,7 @@ tickets::
 
 ``html`` produces standard HTML markup::
 
-    >>> print tabulate(table, headers, tablefmt="html")
+    >>> print(tabulate(table, headers, tablefmt="html"))
     <table>
     <tbody>
     <tr><th>item  </th><th style="text-align: right;">  qty</th></tr>
@@ -334,7 +334,7 @@ tickets::
 replacing special characters like ``_`` or ``\`` to their LaTeX
 correspondents::
 
-    >>> print tabulate(table, headers, tablefmt="latex")
+    >>> print(tabulate(table, headers, tablefmt="latex"))
     \begin{tabular}{lr}
     \hline
      item   &   qty \\
@@ -378,7 +378,7 @@ You can override the default alignment with ``numalign`` and
 Aligning by a decimal point works best when you need to compare
 numbers at a glance::
 
-    >>> print tabulate([[1.2345],[123.45],[12.345],[12345],[1234.5]])
+    >>> print(tabulate([[1.2345],[123.45],[12.345],[12345],[1234.5]]))
     ----------
         1.2345
       123.45
@@ -389,7 +389,7 @@ numbers at a glance::
 
 Compare this with a more common right alignment::
 
-    >>> print tabulate([[1.2345],[123.45],[12.345],[12345],[1234.5]], numalign="right")
+    >>> print(tabulate([[1.2345],[123.45],[12.345],[12345],[1234.5]], numalign="right"))
     ------
     1.2345
     123.45
@@ -409,7 +409,7 @@ from a file:
     >>> table = list(csv.reader(StringIO("spam, 42\neggs, 451\n")))
     >>> table
     [['spam', ' 42'], ['eggs', ' 451']]
-    >>> print tabulate(table)
+    >>> print(tabulate(table))
     ----  ----
     spam    42
     eggs   451
@@ -423,7 +423,7 @@ Number formatting
 ``tabulate`` allows to define custom number formatting applied to all
 columns of decimal numbers. Use ``floatfmt`` named argument::
 
-    >>> print tabulate([["pi",3.141593],["e",2.718282]], floatfmt=".4f")
+    >>> print(tabulate([["pi",3.141593],["e",2.718282]], floatfmt=".4f"))
     --  ------
     pi  3.1416
     e   2.7183
@@ -432,7 +432,7 @@ columns of decimal numbers. Use ``floatfmt`` named argument::
 ``floatfmt`` argument can be a list or a tuple of format strings,
 one per column, in which case every column may have different number formatting::
 
-    >>> print tabulate([[0.12345, 0.12345, 0.12345]], floatfmt=(".1f", ".3f"))
+    >>> print(tabulate([[0.12345, 0.12345, 0.12345]], floatfmt=(".1f", ".3f")))
     ---  -----  -------
     0.1  0.123  0.12345
     ---  -----  -------
