@@ -218,7 +218,7 @@ extensions::
 
 ``presto`` is like tables formatted by Presto cli::
 
-    >>> print(tabulate.tabulate())
+    >>> print(tabulate(table, headers, tablefmt="presto"))
      item   |   qty
     --------+-------
      spam   |    42
@@ -227,7 +227,7 @@ extensions::
 
 ``psql`` is like tables formatted by Postgres' psql cli::
 
-    >>> print(tabulate.tabulate())
+    >>> print(tabulate(table, headers, tablefmt="psql"))
     +--------+-------+
     | item   |   qty |
     |--------+-------|
@@ -295,7 +295,7 @@ other MediaWiki-based sites::
 ``moinmoin`` format produces a table markup used in `MoinMoin`_
 wikis::
 
-    >>> print(tabulate(d,headers,tablefmt="moinmoin"))
+    >>> print(tabulate(table, headers, tablefmt="moinmoin"))
     || ''' item   ''' || ''' quantity   ''' ||
     ||  spam    ||  41.999      ||
     ||  eggs    ||  451         ||
@@ -304,7 +304,7 @@ wikis::
 ``youtrack`` format produces a table markup used in Youtrack
 tickets::
 
-    >>> print(tabulate(d,headers,tablefmt="youtrack"))
+    >>> print(tabulate(table, headers, tablefmt="youtrack"))
     ||  item    ||  quantity   ||
     |   spam    |  41.999      |
     |   eggs    |  451         |
@@ -312,7 +312,7 @@ tickets::
 
 ``textile`` format produces a table markup used in `Textile`_ format::
 
-    >>> print(tabulate(table, headers, tablefmt='textile'))
+    >>> print(tabulate(table, headers, tablefmt="textile"))
     |_.  item   |_.   qty |
     |<. spam    |>.    42 |
     |<. eggs    |>.   451 |
