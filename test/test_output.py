@@ -936,6 +936,12 @@ def test_floatfmt_multi():
     expected = '0.1  0.123  0.12345'
     assert_equal(expected, result)
 
+def test_alignfmt_multi():
+    "Output: string columns with custom alignfmt"
+    result = tabulate([["one", "two"], ["three", "four"]], alignfmt=("right",), tablefmt="plain")
+    expected = '  one  two\nthree  four'
+    assert_equal(expected, result)
+
 def test_float_conversions():
     "Output: float format parsed"
     test_headers = ["str", "bad_float", "just_float", 'with_inf', 'with_nan', 'neg_inf']
