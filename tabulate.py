@@ -959,7 +959,8 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
 def tabulate(tabular_data, headers=(), tablefmt="simple",
              floatfmt=_DEFAULT_FLOATFMT, numalign="decimal", stralign="left",
-             missingval=_DEFAULT_MISSINGVAL, showindex="default", disable_numparse=False):
+             missingval=_DEFAULT_MISSINGVAL, showindex="default", disable_numparse=False,
+             alignfmt=None):
     """Format a fixed width table for pretty printing.
 
     >>> print(tabulate([[1, 2.34], [-56, "8.999"], ["2", "10001"]]))
@@ -1288,6 +1289,10 @@ def tabulate(tabular_data, headers=(), tablefmt="simple",
 
     # align columns
     aligns = [numalign if ct in [int,float] else stralign for ct in coltypes]
+    if alignfmt is not None:
+        assert isinstance(alignfmt, Iterable)
+        for idx, align in enumerate(alignfmt):
+            aligns[idx] = align
     minwidths = [width_fn(h) + MIN_PADDING for h in headers] if headers else [0]*len(cols)
     cols = [_align_column(c, a, minw, has_invisible, enable_widechars, is_multiline)
             for c, a, minw in zip(cols, aligns, minwidths)]
@@ -1462,14 +1467,16 @@ def _main():
     usage = textwrap.dedent(_main.__doc__)
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                     "h1o:s:F:f:",
-                     ["help", "header", "output", "sep=", "float=", "format="])
+                     "h1o:s:F:A:f:",
+                     ["help", "header", "output", "sep=", "float=", "align=",
+                      "format="])
     except getopt.GetoptError as e:
         print(e)
         print(usage)
         sys.exit(2)
     headers = []
     floatfmt = _DEFAULT_FLOATFMT
+    alignfmt = None
     tablefmt = "simple"
     sep = r"\s+"
     outfile = "-"
@@ -1480,6 +1487,8 @@ def _main():
             outfile = value
         elif opt in ["-F", "--float"]:
             floatfmt = value
+        elif opt in ["-A", "--align"]:
+            alignfmt = value.split()
         elif opt in ["-f", "--format"]:
             if value not in tabulate_formats:
                 print("%s is not a supported table format" % value)
@@ -1498,17 +1507,20 @@ def _main():
                 f = sys.stdin
             if _is_file(f):
                 _pprint_file(f, headers=headers, tablefmt=tablefmt,
-                             sep=sep, floatfmt=floatfmt, file=out)
+                             sep=sep, floatfmt=floatfmt, file=out,
+                             alignfmt=alignfmt)
             else:
                 with open(f) as fobj:
                     _pprint_file(fobj, headers=headers, tablefmt=tablefmt,
-                                 sep=sep, floatfmt=floatfmt, file=out)
+                                 sep=sep, floatfmt=floatfmt, file=out,
+                                 alignfmt=alignfmt)
 
 
-def _pprint_file(fobject, headers, tablefmt, sep, floatfmt, file):
+def _pprint_file(fobject, headers, tablefmt, sep, floatfmt, file, alignfmt):
     rows = fobject.readlines()
     table = [re.split(sep, r.rstrip()) for r in rows if r.strip()]
-    print(tabulate(table, headers, tablefmt, floatfmt=floatfmt), file=file)
+    print(tabulate(table, headers, tablefmt, floatfmt=floatfmt,
+          alignfmt=alignfmt), file=file)
 
 
 if __name__ == "__main__":
