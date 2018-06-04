@@ -421,12 +421,12 @@ Custom column alignment
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 ``tabulate`` allows a custom column alignment to override the above.  The
-``alignfmt`` argument can be a list or a tuple of ``stralign`` named arguments.
+``colalign`` argument can be a list or a tuple of ``stralign`` named arguments.
 Possible column alignments are: ``right``, ``center``, ``left``, ``decimal``
 (only for numbers), and ``None`` (to disable alignment).  Omitting an alignment
 uses the default.  For example::
 
-    >>> print(tabulate([["one", "two"], ["three", "four"]], alignfmt=("right",))
+    >>> print(tabulate([["one", "two"], ["three", "four"]], colalign=("right",))
     -----  ----
       one  two
     three  four

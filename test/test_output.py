@@ -936,9 +936,9 @@ def test_floatfmt_multi():
     expected = '0.1  0.123  0.12345'
     assert_equal(expected, result)
 
-def test_alignfmt_multi():
-    "Output: string columns with custom alignfmt"
-    result = tabulate([["one", "two"], ["three", "four"]], alignfmt=("right",), tablefmt="plain")
+def test_colalign_multi():
+    "Output: string columns with custom colalign"
+    result = tabulate([["one", "two"], ["three", "four"]], colalign=("right",), tablefmt="plain")
     expected = '  one  two\nthree  four'
     assert_equal(expected, result)
 
