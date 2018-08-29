@@ -4,12 +4,17 @@
 
 from __future__ import print_function
 from __future__ import unicode_literals
-from collections import namedtuple, Iterable
+from collections import namedtuple
 from platform import python_version_tuple
 from signal import signal, SIGPIPE, SIG_DFL
 import re
 import math
 
+
+if python_version_tuple() >= ("3", "3", "0"):
+    from collections.abc import Iterable
+else:
+    from collections import Iterable
 
 if python_version_tuple()[0] < "3":
     from itertools import izip_longest
