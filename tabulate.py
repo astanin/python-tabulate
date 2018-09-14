@@ -253,6 +253,15 @@ _table_formats = {"simple":
                               headerrow=DataRow("│", "│", "│"),
                               datarow=DataRow("│", "│", "│"),
                               padding=1, with_header_hide=None),
+                  "github":
+                  TableFormat(lineabove=Line("|", "-", "|", "|"),
+                              linebelowheader=Line("|", "-", "|", "|"),
+                              linebetweenrows=None,
+                              linebelow=None,
+                              headerrow=DataRow("|", "|", "|"),
+                              datarow=DataRow("|", "|", "|"),
+                              padding=1,
+                              with_header_hide=["lineabove"]),
                   "pipe":
                   TableFormat(lineabove=_pipe_line_with_colons,
                               linebelowheader=_pipe_line_with_colons,

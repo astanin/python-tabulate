@@ -191,6 +191,16 @@ def test_simple_multiline_with_empty_cells_headerless():
     assert_equal(expected, result)
 
 
+def test_github():
+    "Output: github with headers"
+    expected = '\n'.join(['| strings   |   numbers |',
+                          '|-----------|-----------|',
+                          '| spam      |   41.9999 |',
+                          '| eggs      |  451      |',])
+    result = tabulate(_test_table, _test_table_headers, tablefmt="github")
+    assert_equal(expected, result)
+
+
 def test_grid():
     "Output: grid with headers"
     expected = '\n'.join(['+-----------+-----------+',

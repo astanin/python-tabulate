@@ -150,6 +150,7 @@ Supported table formats are:
 
 - "plain"
 - "simple"
+- "github"
 - "grid"
 - "fancy_grid"
 - "pipe"
@@ -187,6 +188,17 @@ extensions`_::
     spam       42
     eggs      451
     bacon       0
+
+``github`` follows the conventions of `Github flavored Markdown`.  It
+corresponds to the ``pipe`` format without alignment colons::
+
+    >>> print(tabulate(table, headers, tablefmt="github"))
+    | item   | qty   |
+    |--------|-------|
+    | spam   | 42    |
+    | eggs   | 451   |
+    | bacon  | 0     |
+
 
 ``grid`` is like tables formatted by Emacs' `table.el`_
 package.  It corresponds to ``grid_tables`` in Pandoc Markdown
@@ -527,6 +539,16 @@ a multiline cell, and headers with a multiline cell::
     more       42
     spam
 
+``github`` tables::
+
+    >>> print(tabulate(table, headers, tablefmt="github"))
+    | item   | qty   |
+    | name   |       |
+    |--------|-------|
+    | eggs   | 451   |
+    | more   | 42    |
+    | spam   |       |
+
 ``grid`` tables::
 
     >>> print(tabulate(table, headers, tablefmt="grid"))
@@ -638,8 +660,8 @@ Usage of the command line utility
     -s REGEXP, --sep REGEXP   use a custom column separator (default: whitespace)
     -F FPFMT, --float FPFMT   floating point number format (default: g)
     -f FMT, --format FMT      set output table format; supported formats:
-                              plain, simple, grid, fancy_grid, pipe, orgtbl,
-                              rst, mediawiki, html, latex, latex_raw,
+                              plain, simple, github, grid, fancy_grid, pipe,
+                              orgtbl, rst, mediawiki, html, latex, latex_raw,
                               latex_booktabs, tsv
                               (default: simple)
 
