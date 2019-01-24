@@ -687,22 +687,20 @@ In the same time ``tabulate`` is comparable to other table
 pretty-printers. Given a 10x10 table (a list of lists) of mixed text
 and numeric data, ``tabulate`` appears to be slower than
 ``asciitable``, and faster than ``PrettyTable`` and ``texttable``
-The following mini-benchmark was run in Python 3.5.2 on Windows
+The following mini-benchmark was run in Python 3.7.1 on Windows
 
 ::
 
-    =================================  ==========  ===========
-    Table formatter                      time, μs    rel. time
-    =================================  ==========  ===========
-    csv to StringIO                          14.5          1.0
-    join with tabs and newlines              20.3          1.4
-    asciitable (0.8.0)                      355.1         24.5
-    tabulate (0.8.2)                        830.3         57.3
-    tabulate (0.8.2, WIDE_CHARS_MODE)      1483.4        102.4
-    PrettyTable (0.7.2)                    1611.9        111.2
-    texttable (0.8.8)                      1916.5        132.3
-    =================================  ==========  ===========
-
+    ===========================  ==========  ===========
+    Table formatter                time, μs    rel. time
+    ===========================  ==========  ===========
+    csv to StringIO                    15.6          1.0
+    join with tabs and newlines        20.4          1.3
+    asciitable (0.8.0)                285.5         18.3
+    tabulate (0.8.3)                  685.8         44.0
+    PrettyTable (0.7.2)              1277.4         81.9
+    texttable (1.6.0)                1744.7        111.8
+    ===========================  ==========  ===========
 
 Version history
 ---------------
