@@ -1,4 +1,5 @@
 # bump version number in setup.py and tabulate.py
+# update contributors and CHANGELOG
 python2 benchmark.py  # then update README
 tox -e py26,py27-extra,py32,py33-extra,py34
 python2 setup.py register -n
