@@ -6,7 +6,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from collections import namedtuple
 from platform import python_version_tuple
-from signal import signal, SIGPIPE, SIG_DFL
 import re
 import math
 
@@ -1538,5 +1537,4 @@ def _pprint_file(fobject, headers, tablefmt, sep, floatfmt, file, colalign):
 
 
 if __name__ == "__main__":
-    signal(SIGPIPE, SIG_DFL)
     _main()
