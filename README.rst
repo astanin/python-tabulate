@@ -757,4 +757,6 @@ Jan Schulz, Simon Percivall, Javier Santacruz López-Cepero, Sam Denton,
 Alexey Ziyangirov, acaird, Cesar Sanchez, naught101, John Vandenberg,
 Zack Dever, Christian Clauss, Benjamin Maier, Andy MacKinlay, Thomas Roten,
 Jue Wang, Joe King, Samuel Phan, Nick Satterly, Daniel Robbins, Dmitry B,
-Lars Butler, Andreas Maier, Dick Marinus.
+Lars Butler, Andreas Maier, Dick Marinus, Sébastien Celles, Yago González,
+Andrew Gaul, Wim Glenn, Jean Michel Rouly.
+
