@@ -189,7 +189,7 @@ def _latex_line_begin_tabular(colwidths, colaligns, booktabs=False):
     alignment = { "left": "l", "right": "r", "center": "c", "decimal": "r" }
     tabular_columns_fmt = "".join([alignment.get(a, "l") for a in colaligns])
     return "\n".join(["\\begin{tabular}{" + tabular_columns_fmt + "}",
-                      "\\toprule" if booktabs else "\hline"])
+                      "\\toprule" if booktabs else "\\hline"])
 
 LATEX_ESCAPE_RULES = {r"&": r"\&", r"%": r"\%", r"$": r"\$", r"#": r"\#",
                       r"_": r"\_", r"^": r"\^{}", r"{": r"\{", r"}": r"\}",
