@@ -37,7 +37,7 @@ else:
 
 
 setup(name='tabulate',
-      version='0.8.4',
+      version='0.8.5',
       description='Pretty-print tabular data',
       long_description=LONG_DESCRIPTION,
       long_description_content_type="text/markdown",

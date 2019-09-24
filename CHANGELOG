@@ -1,4 +1,5 @@
-- 0.8.4: Future version.
+- 0.8.5: Future version
+- 0.8.4: Bug fixes.
 - 0.8.3: New formats: `github`. Custom colum alignment. Bug fixes.
 - 0.8.2: Bug fixes.
 - 0.8.1: Multiline data in several output formats.
