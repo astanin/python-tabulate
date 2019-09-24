@@ -12,9 +12,9 @@ import re
 
 # strip links from the descripton on the PyPI
 if python_version_tuple()[0] >= '3':
-    LONG_DESCRIPTION = open("README.rst", "r", encoding="utf-8").read().replace("`_", "`")
+    LONG_DESCRIPTION = open("README.md", "r", encoding="utf-8").read()
 else:
-    LONG_DESCRIPTION = open("README.rst", "r").read().replace("`_", "`")
+    LONG_DESCRIPTION = open("README.md", "r").read()
 
 # strip Build Status from the PyPI package
 try:
@@ -40,6 +40,7 @@ setup(name='tabulate',
       version='0.8.4',
       description='Pretty-print tabular data',
       long_description=LONG_DESCRIPTION,
+      long_description_content_type="text/markdown",
       author='Sergey Astanin',
       author_email='s.astanin@gmail.com',
       url='https://bitbucket.org/astanin/python-tabulate',
