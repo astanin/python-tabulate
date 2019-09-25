@@ -10,7 +10,7 @@ from common import SkipTest
 
 
 try:
-    if python_version_tuple() >= ('3','3','0'):
+    if python_version_tuple() >= ("3", "3", "0"):
         from inspect import signature, _empty
     else:
         signature = None
@@ -21,12 +21,12 @@ except ImportError:
 
 
 def test_tabulate_formats():
-    "API: tabulate_formats is a list of strings"""
+    "API: tabulate_formats is a list of strings" ""
     supported = tabulate_formats
     print("tabulate_formats = %r" % supported)
     assert type(supported) is list
     for fmt in supported:
-        assert type(fmt) is type("")
+        assert type(fmt) is type("")  # noqa
 
 
 def _check_signature(function, expected_sig):
@@ -39,20 +39,22 @@ def _check_signature(function, expected_sig):
 
 
 def test_tabulate_signature():
-    "API: tabulate() type signature is unchanged"""
-    assert type(tabulate) is type(lambda: None)
-    expected_sig = [("tabular_data", _empty),
-                    ("headers", ()),
-                    ("tablefmt", "simple"),
-                    ("floatfmt", "g"),
-                    ("numalign", "decimal"),
-                    ("stralign", "left"),
-                    ("missingval", "")]
+    "API: tabulate() type signature is unchanged" ""
+    assert type(tabulate) is type(lambda: None)  # noqa
+    expected_sig = [
+        ("tabular_data", _empty),
+        ("headers", ()),
+        ("tablefmt", "simple"),
+        ("floatfmt", "g"),
+        ("numalign", "decimal"),
+        ("stralign", "left"),
+        ("missingval", ""),
+    ]
     _check_signature(tabulate, expected_sig)
 
 
 def test_simple_separated_format_signature():
-    "API: simple_separated_format() type signature is unchanged"""
-    assert type(simple_separated_format) is type(lambda: None)
+    "API: simple_separated_format() type signature is unchanged" ""
+    assert type(simple_separated_format) is type(lambda: None)  # noqa
     expected_sig = [("separator", _empty)]
     _check_signature(simple_separated_format, expected_sig)

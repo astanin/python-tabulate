@@ -39,6 +39,12 @@ jobs:
             - ./venv
           key: v1-dependencies-{{ checksum ".circleci/requirements.txt" }}
 
+      - run:
+          name: run linting
+          command: |
+            . venv/bin/activate
+            tox -e lint
+
       # run tests!
       - run:
           name: run tests
@@ -49,4 +55,3 @@ jobs:
       - store_artifacts:
           path: test-reports
           destination: test-reports
-

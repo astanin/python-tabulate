@@ -715,4 +715,3 @@ Maier, Andy MacKinlay, Thomas Roten, Jue Wang, Joe King, Samuel Phan,
 Nick Satterly, Daniel Robbins, Dmitry B, Lars Butler, Andreas Maier,
 Dick Marinus, Sébastien Celles, Yago González, Andrew Gaul, Wim Glenn,
 Jean Michel Rouly, Tim Gates, John Vandenberg.
-
