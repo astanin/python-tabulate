@@ -1,4 +1,5 @@
-- 0.8.5: Future version
+- 0.8.6: Future release.
+- 0.8.5: Fix broken Windows package. Minor documentation updates.
 - 0.8.4: Bug fixes.
 - 0.8.3: New formats: `github`. Custom colum alignment. Bug fixes.
 - 0.8.2: Bug fixes.
