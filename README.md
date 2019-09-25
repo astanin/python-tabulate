@@ -714,4 +714,5 @@ naught101, John Vandenberg, Zack Dever, Christian Clauss, Benjamin
 Maier, Andy MacKinlay, Thomas Roten, Jue Wang, Joe King, Samuel Phan,
 Nick Satterly, Daniel Robbins, Dmitry B, Lars Butler, Andreas Maier,
 Dick Marinus, Sébastien Celles, Yago González, Andrew Gaul, Wim Glenn,
-Jean Michel Rouly, Tim Gates, John Vandenberg.
+Jean Michel Rouly, Tim Gates, John Vandenberg, Sorin Sbarnea.
+
