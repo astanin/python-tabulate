@@ -650,13 +650,14 @@ was run in Python 3.6.8 on Ubuntu 18.04 in WSL:
     ===========================  ==========  ===========
     Table formatter                time, μs    rel. time
     ===========================  ==========  ===========
-    csv to StringIO                    11.3          1.0
-    join with tabs and newlines        14.5          1.3
-    asciitable (0.8.0)                233.4         20.7
-    tabulate (0.8.4)                  523.4         46.4
-    PrettyTable (0.7.2)               967.7         85.8
-    texttable (1.6.2)                1377.0        122.1
+    csv to StringIO                     8.2          1.0
+    join with tabs and newlines        10.8          1.3
+    asciitable (0.8.0)                205.2         24.9
+    tabulate (0.8.5)                  421.7         51.2
+    PrettyTable (0.7.2)               787.2         95.6
+    texttable (1.6.2)                1123.4        136.4
     ===========================  ==========  ===========
+
 
 Version history
 ---------------
@@ -685,15 +686,15 @@ On Linux `tox` expects to find executables like `python2.6`,
 `C:\Python34\python.exe` respectively.
 
 To test only some Python environements, use `-e` option. For example, to
-test only against Python 2.7 and Python 3.4, run:
+test only against Python 2.7 and Python 3.6, run:
 
-    tox -e py27,py34
+    tox -e py27,py36
 
 in the root of the project source tree.
 
 To enable NumPy and Pandas tests, run:
 
-    tox -e py27-extra,py34-extra
+    tox -e py27-extra,py36-extra
 
 (this may take a long time the first time, because NumPy and Pandas will
 have to be installed in the new virtual environments)
@@ -713,5 +714,5 @@ naught101, John Vandenberg, Zack Dever, Christian Clauss, Benjamin
 Maier, Andy MacKinlay, Thomas Roten, Jue Wang, Joe King, Samuel Phan,
 Nick Satterly, Daniel Robbins, Dmitry B, Lars Butler, Andreas Maier,
 Dick Marinus, Sébastien Celles, Yago González, Andrew Gaul, Wim Glenn,
-Jean Michel Rouly, Tim Gates.
+Jean Michel Rouly, Tim Gates, John Vandenberg.
 

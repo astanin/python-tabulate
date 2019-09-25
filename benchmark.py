@@ -8,6 +8,7 @@ import prettytable
 import texttable
 import sys
 import codecs
+from platform import python_version_tuple
 
 setup_code = r"""
 from csv import writer
@@ -106,8 +107,10 @@ def benchmark(n):
     import platform
     if platform.platform().startswith("Windows"):
         print(table)
-    else:
+    elif python_version_tuple()[0] < "3":
         print(codecs.encode(table, "utf-8"))
+    else:
+        print(table)
 
 
 if __name__ == "__main__":
