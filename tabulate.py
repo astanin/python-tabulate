@@ -1456,7 +1456,7 @@ def _main():
     Usage: tabulate [options] [FILE ...]
 
     Pretty-print tabular data.
-    See also https://bitbucket.org/astanin/python-tabulate
+    See also https://github.com/astanin/python-tabulate
 
     FILE                      a filename of the file with tabular data;
                               if "-" or missing, read data from stdin.
