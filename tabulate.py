@@ -1109,7 +1109,6 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
 def tabulate(
     tabular_data,
-    title="",
     headers=(),
     tablefmt="simple",
     floatfmt=_DEFAULT_FLOATFMT,
@@ -1119,6 +1118,7 @@ def tabulate(
     showindex="default",
     disable_numparse=False,
     colalign=None,
+    title="",
 ):
     """Format a fixed width table for pretty printing.
 
@@ -1486,7 +1486,9 @@ def tabulate(
     if not isinstance(tablefmt, TableFormat):
         tablefmt = _table_formats.get(tablefmt, _table_formats["simple"])
 
-    return _format_table(tablefmt, title, headers, rows, minwidths, aligns, is_multiline)
+    return _format_table(
+        tablefmt, title, headers, rows, minwidths, aligns, is_multiline
+    )
 
 
 def _expand_numparse(disable_numparse, column_count):
@@ -1652,7 +1654,16 @@ def _main():
         opts, args = getopt.getopt(
             sys.argv[1:],
             "h1o:s:F:A:f:t:",
-            ["help", "header", "output", "sep=", "float=", "align=", "format=", "title"],
+            [
+                "help",
+                "header",
+                "output",
+                "sep=",
+                "float=",
+                "align=",
+                "format=",
+                "title",
+            ],
         )
     except getopt.GetoptError as e:
         print(e)
@@ -1721,7 +1732,9 @@ def _pprint_file(fobject, title, headers, tablefmt, sep, floatfmt, file, colalig
     rows = fobject.readlines()
     table = [re.split(sep, r.rstrip()) for r in rows if r.strip()]
     print(
-        tabulate(table, title, headers, tablefmt, floatfmt=floatfmt, colalign=colalign),
+        tabulate(
+            table, headers, tablefmt, floatfmt=floatfmt, colalign=colalign, title=title
+        ),
         file=file,
     )
 
