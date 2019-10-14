@@ -1109,6 +1109,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
 def tabulate(
     tabular_data,
+    title="",
     headers=(),
     tablefmt="simple",
     floatfmt=_DEFAULT_FLOATFMT,
@@ -1485,7 +1486,7 @@ def tabulate(
     if not isinstance(tablefmt, TableFormat):
         tablefmt = _table_formats.get(tablefmt, _table_formats["simple"])
 
-    return _format_table(tablefmt, headers, rows, minwidths, aligns, is_multiline)
+    return _format_table(tablefmt, title, headers, rows, minwidths, aligns, is_multiline)
 
 
 def _expand_numparse(disable_numparse, column_count):
@@ -1569,7 +1570,7 @@ def _append_line(lines, colwidths, colaligns, linefmt):
     return lines
 
 
-def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline):
+def _format_table(fmt, title, headers, rows, colwidths, colaligns, is_multiline):
     """Produce a plain-text representation of the table."""
     lines = []
     hidden = fmt.with_header_hide if (headers and fmt.with_header_hide) else []
@@ -1609,6 +1610,9 @@ def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline):
     if fmt.linebelow and "linebelow" not in hidden:
         _append_line(lines, padded_widths, colaligns, fmt.linebelow)
 
+    if title:
+        lines.insert(0, title.center(len(lines[0])))
+
     if headers or rows:
         return "\n".join(lines)
     else:  # a completely empty table
@@ -1629,6 +1633,7 @@ def _main():
 
     -h, --help                show this message
     -1, --header              use the first row of data as a table header
+    -t, --title               add a title above the table
     -o FILE, --output FILE    print table to FILE (default: stdout)
     -s REGEXP, --sep REGEXP   use a custom column separator (default: whitespace)
     -F FPFMT, --float FPFMT   floating point number format (default: g)
@@ -1646,14 +1651,15 @@ def _main():
     try:
         opts, args = getopt.getopt(
             sys.argv[1:],
-            "h1o:s:F:A:f:",
-            ["help", "header", "output", "sep=", "float=", "align=", "format="],
+            "h1o:s:F:A:f:t:",
+            ["help", "header", "output", "sep=", "float=", "align=", "format=", "title"],
         )
     except getopt.GetoptError as e:
         print(e)
         print(usage)
         sys.exit(2)
     headers = []
+    title = ""
     floatfmt = _DEFAULT_FLOATFMT
     colalign = None
     tablefmt = "simple"
@@ -1679,6 +1685,8 @@ def _main():
         elif opt in ["-h", "--help"]:
             print(usage)
             sys.exit(0)
+        elif opt in ["-t", "--title"]:
+            title = value
     files = [sys.stdin] if not args else args
     with (sys.stdout if outfile == "-" else open(outfile, "w")) as out:
         for f in files:
@@ -1687,6 +1695,7 @@ def _main():
             if _is_file(f):
                 _pprint_file(
                     f,
+                    title=title,
                     headers=headers,
                     tablefmt=tablefmt,
                     sep=sep,
@@ -1698,6 +1707,7 @@ def _main():
                 with open(f) as fobj:
                     _pprint_file(
                         fobj,
+                        title=title,
                         headers=headers,
                         tablefmt=tablefmt,
                         sep=sep,
@@ -1707,11 +1717,11 @@ def _main():
                     )
 
 
-def _pprint_file(fobject, headers, tablefmt, sep, floatfmt, file, colalign):
+def _pprint_file(fobject, title, headers, tablefmt, sep, floatfmt, file, colalign):
     rows = fobject.readlines()
     table = [re.split(sep, r.rstrip()) for r in rows if r.strip()]
     print(
-        tabulate(table, headers, tablefmt, floatfmt=floatfmt, colalign=colalign),
+        tabulate(table, title, headers, tablefmt, floatfmt=floatfmt, colalign=colalign),
         file=file,
     )
 
