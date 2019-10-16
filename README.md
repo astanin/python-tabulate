@@ -604,6 +604,19 @@ a multiline cell, and headers with a multiline cell:
 
 Multiline cells are not well supported for the other table formats.
 
+### Title
+
+This optional argument for title allows users to print out a title at
+the center above the table so that it is easy for users to verify the table.
+
+    >>> print(tabulate(table, headers, tablefmt="simple", title="Receipts"))
+       Receipts  
+    item      qty
+    ------  -----
+    eggs      451
+    more       42
+    spam
+
 Usage of the command line utility
 ---------------------------------
 

@@ -1387,3 +1387,19 @@ def test_preserve_whitespace():
     expected = "\n".join(["h1    h2    h3", "----  ----  ----", "foo   bar   foo"])
     result = tabulate(test_table, table_headers)
     assert_equal(expected, result)
+
+
+def test_display_title():
+    "Output: A table with a title at the center, above of the table"
+    expected = "\n".join(
+        [
+            "      Receipts      ",
+            "strings      numbers",
+            "spam         41.9999",
+            "eggs        451",
+        ]
+    )
+    result = tabulate(
+        _test_table, _test_table_headers, tablefmt="plain", title="Receipts"
+    )
+    assert_equal(expected, result)
