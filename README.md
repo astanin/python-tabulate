@@ -610,7 +610,7 @@ This optional argument for title allows users to print out a title at
 the center above the table so that it is easy for users to verify the table.
 
     >>> print(tabulate(table, headers, tablefmt="simple", title="Receipts"))
-       Receipts  
+       Receipts
     item      qty
     ------  -----
     eggs      451
