@@ -46,7 +46,7 @@ On Windows:
 Build status
 ------------
 
-[![Build status](https://circleci.com/gh/astanin/python-tabulate.svg?style=svg)](https://circleci.com/gh/astanin/python-tabulate/tree/master)
+[![Build status](https://circleci.com/gh/astanin/python-tabulate.svg?style=svg)](https://circleci.com/gh/astanin/python-tabulate/tree/master) [![Build status](https://ci.appveyor.com/api/projects/status/8745yksvvol7h3d7/branch/master?svg=true)](https://ci.appveyor.com/project/astanin/python-tabulate/branch/master)
 
 Library usage
 -------------
