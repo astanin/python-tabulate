@@ -502,16 +502,6 @@ a multiline cell, and headers with a multiline cell:
     more       42
     spam
 
-`github` tables:
-
-    >>> print(tabulate(table, headers, tablefmt="github"))
-    | item   | qty   |
-    | name   |       |
-    |--------|-------|
-    | eggs   | 451   |
-    | more   | 42    |
-    | spam   |       |
-
 `grid` tables:
 
     >>> print(tabulate(table, headers, tablefmt="grid"))
