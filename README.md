@@ -637,15 +637,15 @@ numeric data, `tabulate` appears to be slower than `asciitable`, and
 faster than `PrettyTable` and `texttable` The following mini-benchmark
 was run in Python 3.6.8 on Ubuntu 18.04 in WSL:
 
-    ===========================  ==========  ===========
+    ==========================  ==========  ===========
     Table formatter                time, μs    rel. time
     ===========================  ==========  ===========
-    csv to StringIO                     8.2          1.0
-    join with tabs and newlines        10.8          1.3
-    asciitable (0.8.0)                205.2         24.9
-    tabulate (0.8.5)                  421.7         51.2
-    PrettyTable (0.7.2)               787.2         95.6
-    texttable (1.6.2)                1123.4        136.4
+    csv to StringIO                    21.4          1.0
+    join with tabs and newlines        29.6          1.4
+    asciitable (0.8.0)                506.8         23.7
+    tabulate (0.8.6)                 1079.9         50.5
+    PrettyTable (0.7.2)              2032.0         95.0
+    texttable (1.6.2)                3025.7        141.4
     ===========================  ==========  ===========
 
 
