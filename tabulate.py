@@ -143,6 +143,8 @@ def _pipe_segment_with_colons(align, colwidth):
 def _pipe_line_with_colons(colwidths, colaligns):
     """Return a horizontal line with optional colons to indicate column's
     alignment (as in `pipe` output format)."""
+    if not colaligns: # e.g. printing an empty data frame (github issue #15)
+        colaligns = [""]*len(colwidths)
     segments = [_pipe_segment_with_colons(a, w) for a, w in zip(colaligns, colwidths)]
     return "|" + "|".join(segments) + "|"
 
