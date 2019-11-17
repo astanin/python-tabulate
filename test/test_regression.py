@@ -362,11 +362,6 @@ def test_empty_pipe_table_with_columns():
     "Regression: allow empty pipe tables with columns, like empty dataframes (github issue #15)"
     table = []
     headers = ["Col1", "Col2"]
-    expected = "\n".join(
-        [
-            "| Col1   | Col2   |",
-            "|--------|--------|",
-        ]
-    )
+    expected = "\n".join(["| Col1   | Col2   |", "|--------|--------|"])
     result = tabulate(table, headers, tablefmt="pipe")
     assert_equal(result, expected)
