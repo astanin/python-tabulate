@@ -4,7 +4,7 @@
 
 from __future__ import print_function
 from __future__ import unicode_literals
-from tabulate import tabulate, _text_type, _long_type
+from tabulate import tabulate, _text_type, _long_type, TableFormat, Line, DataRow
 from common import assert_equal, assert_in, SkipTest
 
 
@@ -364,4 +364,22 @@ def test_empty_pipe_table_with_columns():
     headers = ["Col1", "Col2"]
     expected = "\n".join(["| Col1   | Col2   |", "|--------|--------|"])
     result = tabulate(table, headers, tablefmt="pipe")
+    assert_equal(result, expected)
+
+
+def test_custom_tablefmt():
+    "Regression: allow custom TableFormat that specifies with_header_hide (github issue #20)"
+    tablefmt = TableFormat(
+        lineabove=Line("", "-", "  ", ""),
+        linebelowheader=Line("", "-", "  ", ""),
+        linebetweenrows=None,
+        linebelow=Line("", "-", "  ", ""),
+        headerrow=DataRow("", "  ", ""),
+        datarow=DataRow("", "  ", ""),
+        padding=0,
+        with_header_hide=["lineabove", "linebelow"],
+    )
+    rows = [["foo", "bar"], ["baz", "qux"]]
+    expected = "\n".join(["A    B", "---  ---", "foo  bar", "baz  qux"])
+    result = tabulate(rows, headers=["A", "B"], tablefmt=tablefmt)
     assert_equal(result, expected)
