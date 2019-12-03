@@ -142,6 +142,7 @@ Supported table formats are:
 -   "orgtbl"
 -   "jira"
 -   "presto"
+-   "pretty"
 -   "psql"
 -   "rst"
 -   "mediawiki"
@@ -220,6 +221,18 @@ corresponds to the `pipe` format without alignment colons:
      spam   |    42
      eggs   |   451
      bacon  |     0
+
+`pretty` attempts to be close to the format emitted by the PrettyTables
+library:
+
+    >>> print(tabulate(table, headers, tablefmt="pretty"))
+    +-------+-----+
+    | item  | qty |
+    +-------+-----+
+    | spam  | 42  |
+    | eggs  | 451 |
+    | bacon |  0  |
+    +-------+-----+
 
 `psql` is like tables formatted by Postgres' psql cli:
 
@@ -577,6 +590,18 @@ a multiline cell, and headers with a multiline cell:
      eggs   |   451
      more   |    42
      spam   |
+
+`pretty` tables:
+
+    >>> print(tabulate(table, headers, tablefmt="pretty"))
+    +------+-----+
+    | item | qty |
+    | name |     |
+    +------+-----+
+    | eggs | 451 |
+    | more | 42  |
+    | spam |     |
+    +------+-----+
 
 `psql` tables:
 

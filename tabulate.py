@@ -354,6 +354,16 @@ _table_formats = {
         padding=1,
         with_header_hide=None,
     ),
+    "pretty": TableFormat(
+        lineabove=Line("+", "-", "+", "+"),
+        linebelowheader=Line("+", "-", "+", "+"),
+        linebetweenrows=None,
+        linebelow=Line("+", "-", "+", "+"),
+        headerrow=DataRow("|", "|", "|"),
+        datarow=DataRow("|", "|", "|"),
+        padding=1,
+        with_header_hide=None,
+    ),
     "psql": TableFormat(
         lineabove=Line("+", "-", "+", "+"),
         linebelowheader=Line("|", "-", "+", "|"),
@@ -486,6 +496,7 @@ multiline_formats = {
     "orgtbl": "orgtbl",
     "jira": "jira",
     "presto": "presto",
+    "pretty": "pretty",
     "psql": "psql",
     "rst": "rst",
 }
@@ -1414,6 +1425,17 @@ def tabulate(
     if tablefmt == "rst":
         list_of_lists, headers = _rst_escape_first_column(list_of_lists, headers)
 
+    # PrettyTable formatting does not use any extra padding.
+    # Numbers are not parsed and are treated the same as strings for alignment.
+    # Check if pretty is the format being used and override the defaults so it
+    # does not impact other formats.
+    min_padding = MIN_PADDING
+    if tablefmt == "pretty":
+        min_padding = 0
+        disable_numparse = True
+        numalign = "center"
+        stralign = "center"
+
     # optimization: look for ANSI control codes once,
     # enable smart width functions only if a control code is found
     plain_text = "\t".join(
@@ -1464,7 +1486,7 @@ def tabulate(
         for idx, align in enumerate(colalign):
             aligns[idx] = align
     minwidths = (
-        [width_fn(h) + MIN_PADDING for h in headers] if headers else [0] * len(cols)
+        [width_fn(h) + min_padding for h in headers] if headers else [0] * len(cols)
     )
     cols = [
         _align_column(c, a, minw, has_invisible, enable_widechars, is_multiline)
