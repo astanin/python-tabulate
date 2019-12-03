@@ -401,6 +401,16 @@ file:
     eggs   451
     ----  ----
 
+
+To disable this feature use `disable_numparse=True`.
+
+    >>> print(tabulate.tabulate([["Ver1", "18.0"], ["Ver2","19.2"]], tablefmt="simple", disable_numparse=True))
+    ----  ----
+    Ver1  18.0
+    Ver2  19.2
+    ----  ----
+
+
 ### Custom column alignment
 
 `tabulate` allows a custom column alignment to override the above. The
