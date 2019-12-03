@@ -1423,7 +1423,11 @@ def tabulate(
 
     has_invisible = re.search(_invisible_codes, plain_text)
     enable_widechars = wcwidth is not None and WIDE_CHARS_MODE
-    if tablefmt in multiline_formats and _is_multiline(plain_text):
+    if (
+        not isinstance(tablefmt, TableFormat)
+        and tablefmt in multiline_formats
+        and _is_multiline(plain_text)
+    ):
         tablefmt = multiline_formats.get(tablefmt, tablefmt)
         is_multiline = True
     else:
