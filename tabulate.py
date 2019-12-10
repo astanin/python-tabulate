@@ -55,6 +55,11 @@ try:
 except ImportError:
     wcwidth = None
 
+try:
+    from html import escape as htmlescape
+except ImportError:
+    from cgi import escape as htmlescape
+
 
 __all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
 __version__ = "0.8.7"
@@ -185,7 +190,8 @@ def _html_row_with_attrs(celltag, cell_values, colwidths, colaligns):
         "decimal": ' style="text-align: right;"',
     }
     values_with_attrs = [
-        "<{0}{1}>{2}</{0}>".format(celltag, alignment.get(a, ""), c)
+        "<{0}{1}>{2}</{0}>".format(celltag, alignment.get(a, ""),
+            htmlescape(c))
         for c, a in zip(cell_values, colaligns)
     ]
     rowhtml = "<tr>" + "".join(values_with_attrs).rstrip() + "</tr>"
