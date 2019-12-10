@@ -914,6 +914,8 @@ def test_html():
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="html")
     assert_equal(expected, result)
+    assert hasattr(result, '_repr_html_')
+    assert result._repr_html_() == result.str
 
 
 def test_html_headerless():
@@ -930,6 +932,8 @@ def test_html_headerless():
     )
     result = tabulate(_test_table, tablefmt="html")
     assert_equal(expected, result)
+    assert hasattr(result, '_repr_html_')
+    assert result._repr_html_() == result.str
 
 
 def test_latex():

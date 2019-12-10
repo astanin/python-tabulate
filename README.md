@@ -321,7 +321,7 @@ MediaWiki-based sites:
 
 `html` produces standard HTML markup as an html.escape'd str
 with a ._repr_html_ method so that Jupyter Lab and Notebook display the HTML
-and a .str method so that the raw HTML remains accessible:
+and a .str property so that the raw HTML remains accessible:
 
     >>> print(tabulate(table, headers, tablefmt="html"))
     <table>

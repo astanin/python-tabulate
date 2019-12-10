@@ -1344,7 +1344,7 @@ def tabulate(
 
     "html" produces HTML markup as an html.escape'd str
     with a ._repr_html_ method so that Jupyter Lab and Notebook display the HTML
-    and a .str method so that the raw HTML remains accessible:
+    and a .str property so that the raw HTML remains accessible:
 
     >>> print(tabulate([["strings", "numbers"], ["spam", 41.9999], ["eggs", "451.0"]],
     ...                headers="firstrow", tablefmt="html"))
@@ -1584,8 +1584,9 @@ class JupyterHTMLStr(str):
     def _repr_html_(self):
         return self
 
+    @property
     def str(self):
-        """add a .str method so that the raw string is still accessible"""
+        """add a .str property so that the raw string is still accessible"""
         return self
 
 
