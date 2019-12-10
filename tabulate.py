@@ -1342,7 +1342,9 @@ def tabulate(
     | eggs      || align="right"|  451
     |}
 
-    "html" produces HTML markup:
+    "html" produces HTML markup as an html.escape'd str
+    with a ._repr_html_ method so that Jupyter Lab and Notebook display the HTML
+    and a .str method so that the raw HTML remains accessible:
 
     >>> print(tabulate([["strings", "numbers"], ["spam", 41.9999], ["eggs", "451.0"]],
     ...                headers="firstrow", tablefmt="html"))
@@ -1575,6 +1577,18 @@ def _append_line(lines, colwidths, colaligns, linefmt):
     return lines
 
 
+class JupyterHTMLStr(str):
+    """Wrap the string with a _repr_html_ method so that Jupyter
+    displays the HTML table"""
+
+    def _repr_html_(self):
+        return self
+
+    def str(self):
+        """add a .str method so that the raw string is still accessible"""
+        return self
+
+
 def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline):
     """Produce a plain-text representation of the table."""
     lines = []
@@ -1616,7 +1630,11 @@ def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline):
         _append_line(lines, padded_widths, colaligns, fmt.linebelow)
 
     if headers or rows:
-        return "\n".join(lines)
+        output = "\n".join(lines)
+        if fmt.lineabove == _html_begin_table_without_header:
+            return JupyterHTMLStr(output)
+        else:
+            return output
     else:  # a completely empty table
         return ""
 
