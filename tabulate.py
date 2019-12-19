@@ -55,6 +55,11 @@ try:
 except ImportError:
     wcwidth = None
 
+try:
+    from html import escape as htmlescape
+except ImportError:
+    from cgi import escape as htmlescape
+
 
 __all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
 __version__ = "0.8.7"
@@ -174,7 +179,7 @@ def _textile_row_with_attrs(cell_values, colwidths, colaligns):
 
 def _html_begin_table_without_header(colwidths_ignore, colaligns_ignore):
     # this table header will be suppressed if there is a header row
-    return "\n".join(["<table>", "<tbody>"])
+    return "<table>\n<tbody>"
 
 
 def _html_row_with_attrs(celltag, cell_values, colwidths, colaligns):
@@ -185,12 +190,13 @@ def _html_row_with_attrs(celltag, cell_values, colwidths, colaligns):
         "decimal": ' style="text-align: right;"',
     }
     values_with_attrs = [
-        "<{0}{1}>{2}</{0}>".format(celltag, alignment.get(a, ""), c)
+        "<{0}{1}>{2}</{0}>".format(celltag, alignment.get(a, ""),
+            htmlescape(c))
         for c, a in zip(cell_values, colaligns)
     ]
-    rowhtml = "<tr>" + "".join(values_with_attrs).rstrip() + "</tr>"
+    rowhtml = "<tr>{}</tr>".format("".join(values_with_attrs).rstrip())
     if celltag == "th":  # it's a header row, create a new table header
-        rowhtml = "\n".join(["<table>", "<thead>", rowhtml, "</thead>", "<tbody>"])
+        rowhtml = "<table>\n<thead>\n{}\n</thead>\n<tbody>".format(rowhtml)
     return rowhtml
 
 
