@@ -901,13 +901,14 @@ _test_table_html_headers = ["<strings>", "<&numbers&>"]
 _test_table_html = [["spam >", 41.9999], ["eggs &", 451.0]]
 assert_equal.__self__.maxDiff = None
 
+
 def test_html():
     "Output: html with headers"
     expected = "\n".join(
         [
             "<table>",
             "<thead>",
-            '<tr><th>&lt;strings&gt;  </th><th style="text-align: right;">  &lt;&amp;numbers&amp;&gt;</th></tr>',
+            '<tr><th>&lt;strings&gt;  </th><th style="text-align: right;">  &lt;&amp;numbers&amp;&gt;</th></tr>',  # noqa
             "</thead>",
             "<tbody>",
             '<tr><td>spam &gt;     </td><td style="text-align: right;">      41.9999</td></tr>',
@@ -916,10 +917,9 @@ def test_html():
             "</table>",
         ]
     )
-    result = tabulate(_test_table_html, _test_table_html_headers,
-            tablefmt="html")
+    result = tabulate(_test_table_html, _test_table_html_headers, tablefmt="html")
     assert_equal(expected, result)
-    assert hasattr(result, '_repr_html_')
+    assert hasattr(result, "_repr_html_")
     assert result._repr_html_() == result.str
 
 
@@ -937,7 +937,7 @@ def test_html_headerless():
     )
     result = tabulate(_test_table_html, tablefmt="html")
     assert_equal(expected, result)
-    assert hasattr(result, '_repr_html_')
+    assert hasattr(result, "_repr_html_")
     assert result._repr_html_() == result.str
 
 
