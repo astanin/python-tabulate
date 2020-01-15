@@ -664,7 +664,7 @@ was run in Python 3.6.8 on Ubuntu 18.04 in WSL:
 Version history
 ---------------
 
-The full version history can be found at the [changelog](./CHANGELOG).
+The full version history can be found at the [changelog](https://github.com/astanin/python-tabulate/blob/master/CHANGELOG).
 
 How to contribute
 -----------------
