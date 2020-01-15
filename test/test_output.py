@@ -700,6 +700,112 @@ def test_psql_multiline_with_empty_cells_headerless():
     assert_equal(expected, result)
 
 
+def test_pretty():
+    "Output: pretty with headers"
+    expected = "\n".join(
+        [
+            "+---------+---------+",
+            "| strings | numbers |",
+            "+---------+---------+",
+            "|  spam   | 41.9999 |",
+            "|  eggs   |  451.0  |",
+            "+---------+---------+",
+        ]
+    )
+    result = tabulate(_test_table, _test_table_headers, tablefmt="pretty")
+    assert_equal(expected, result)
+
+
+def test_pretty_headerless():
+    "Output: pretty without headers"
+    expected = "\n".join(
+        [
+            "+------+---------+",
+            "| spam | 41.9999 |",
+            "| eggs |  451.0  |",
+            "+------+---------+",
+        ]
+    )
+    result = tabulate(_test_table, tablefmt="pretty")
+    assert_equal(expected, result)
+
+
+def test_pretty_multiline_headerless():
+    "Output: pretty with multiline cells without headers"
+    table = [["foo bar\nbaz\nbau", "hello"], ["", "multiline\nworld"]]
+    expected = "\n".join(
+        [
+            "+---------+-----------+",
+            "| foo bar |   hello   |",
+            "|   baz   |           |",
+            "|   bau   |           |",
+            "|         | multiline |",
+            "|         |   world   |",
+            "+---------+-----------+",
+        ]
+    )
+    result = tabulate(table, tablefmt="pretty")
+    assert_equal(expected, result)
+
+
+def test_pretty_multiline():
+    "Output: pretty with multiline cells with headers"
+    table = [[2, "foo\nbar"]]
+    headers = ("more\nspam \x1b[31meggs\x1b[0m", "more spam\n& eggs")
+    expected = "\n".join(
+        [
+            "+-----------+-----------+",
+            "|   more    | more spam |",
+            "| spam \x1b[31meggs\x1b[0m |  & eggs   |",
+            "+-----------+-----------+",
+            "|     2     |    foo    |",
+            "|           |    bar    |",
+            "+-----------+-----------+",
+        ]
+    )
+    result = tabulate(table, headers, tablefmt="pretty")
+    assert_equal(expected, result)
+
+
+def test_pretty_multiline_with_empty_cells():
+    "Output: pretty with multiline cells and empty cells with headers"
+    table = [
+        ["hdr", "data", "fold"],
+        ["1", "", ""],
+        ["2", "very long data", "fold\nthis"],
+    ]
+    expected = "\n".join(
+        [
+            "+-----+----------------+------+",
+            "| hdr |      data      | fold |",
+            "+-----+----------------+------+",
+            "|  1  |                |      |",
+            "|  2  | very long data | fold |",
+            "|     |                | this |",
+            "+-----+----------------+------+",
+        ]
+    )
+    result = tabulate(table, headers="firstrow", tablefmt="pretty")
+    assert_equal(expected, result)
+
+
+def test_pretty_multiline_with_empty_cells_headerless():
+    "Output: pretty with multiline cells and empty cells without headers"
+    table = [["0", "", ""], ["1", "", ""], ["2", "very long data", "fold\nthis"]]
+    expected = "\n".join(
+        [
+            "+---+----------------+------+",
+            "| 0 |                |      |",
+            "| 1 |                |      |",
+            "| 2 | very long data | fold |",
+            "|   |                | this |",
+            "+---+----------------+------+",
+        ]
+    )
+    result = tabulate(table, tablefmt="pretty")
+    assert_equal(expected, result)
+
+
 def test_jira():
     "Output: jira with headers"
     expected = "\n".join(
