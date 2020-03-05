@@ -1052,10 +1052,14 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
                 uniq_keys.update(keys)
                 rows = rows[1:]
             for row in rows:
+                list_pos = 0
                 for k in row.keys():
-                    # Save unique items in input order
-                    if k not in uniq_keys:
-                        keys.append(k)
+                    # Save unique items in dictionary order
+                    if k in uniq_keys:
+                        list_pos = keys.index(k)
+                    else:
+                        list_pos += 1
+                        keys.insert(list_pos, k)
                         uniq_keys.add(k)
             if headers == "keys":
                 headers = keys
