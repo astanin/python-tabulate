@@ -407,11 +407,11 @@ def test_list_of_dicts_with_missing_keys():
     lod = [{"foo": 1}, {"bar": 2}, {"foo": 4, "baz": 3}]
     expected = "\n".join(
         [
-            "  foo    bar    baz",
+            "  foo    baz    bar",
             "-----  -----  -----",
             "    1",
-            "           2",
-            "    4             3",
+            "                  2",
+            "    4      3",
         ]
     )
     result = tabulate(lod, headers="keys")
