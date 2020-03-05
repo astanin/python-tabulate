@@ -149,6 +149,7 @@ Supported table formats are:
 -   "moinmoin"
 -   "youtrack"
 -   "html"
+-   "unsafehtml"
 -   "latex"
 -   "latex\_raw"
 -   "latex\_booktabs"
@@ -334,7 +335,8 @@ MediaWiki-based sites:
 
 `html` produces standard HTML markup as an html.escape'd str
 with a ._repr_html_ method so that Jupyter Lab and Notebook display the HTML
-and a .str property so that the raw HTML remains accessible:
+and a .str property so that the raw HTML remains accessible
+the unsafehtml table format can be used if an unescaped HTML format is required:
 
     >>> print(tabulate(table, headers, tablefmt="html"))
     <table>
