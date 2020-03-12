@@ -182,12 +182,24 @@ def _html_begin_table_without_header(colwidths_ignore, colaligns_ignore):
     return "<table>\n<tbody>"
 
 
-def _html_row_with_attrs(celltag, cell_values, colwidths, colaligns):
+def _grid_html_begin_table_without_header(colwidths_ignore, colaligns_ignore):
+    # this table header will be suppressed if there is a header row
+    return '<table style="border-collapse: collapse;">\n<tbody>'
+
+
+def _html_row_with_attrs(
+    celltag, cell_values, colwidths, colaligns, add_grid_css_style=False
+):
+    if add_grid_css_style:
+        grid_border_css_style = " padding: 3px; border: 1px solid black; border-collapse: collapse;"
+    else:
+        grid_border_css_style = ""
+
     alignment = {
-        "left": ' style="text-align: left;"',
-        "right": ' style="text-align: right;"',
-        "center": ' style="text-align: center;"',
-        "decimal": ' style="text-align: right;"',
+        "left": ' style="text-align: left;{}"'.format(grid_border_css_style),
+        "right": ' style="text-align: right;{}"'.format(grid_border_css_style),
+        "center": ' style="text-align: center;{}"'.format(grid_border_css_style),
+        "decimal": ' style="text-align: right;{}"'.format(grid_border_css_style),
     }
     values_with_attrs = [
         "<{0}{1}>{2}</{0}>".format(celltag, alignment.get(a, ""), htmlescape(c))
@@ -195,7 +207,10 @@ def _html_row_with_attrs(celltag, cell_values, colwidths, colaligns):
     ]
     rowhtml = "<tr>{}</tr>".format("".join(values_with_attrs).rstrip())
     if celltag == "th":  # it's a header row, create a new table header
-        rowhtml = "<table>\n<thead>\n{}\n</thead>\n<tbody>".format(rowhtml)
+        if add_grid_css_style:
+            rowhtml = '<table style="border-collapse: collapse;">\n<thead>\n{}\n</thead>\n<tbody>'.format(rowhtml)
+        else:
+            rowhtml = "<table>\n<thead>\n{}\n</thead>\n<tbody>".format(rowhtml)
     return rowhtml
 
 
@@ -431,6 +446,16 @@ _table_formats = {
         linebelow=Line("</tbody>\n</table>", "", "", ""),
         headerrow=partial(_html_row_with_attrs, "th"),
         datarow=partial(_html_row_with_attrs, "td"),
+        padding=0,
+        with_header_hide=["lineabove"],
+    ),
+    "grid_html": TableFormat(
+        lineabove=_grid_html_begin_table_without_header,
+        linebelowheader="",
+        linebetweenrows=None,
+        linebelow=Line("</tbody>\n</table>", "", "", ""),
+        headerrow=partial(_html_row_with_attrs, "th", add_grid_css_style=True),  # TODO
+        datarow=partial(_html_row_with_attrs, "td", add_grid_css_style=True),  # TODO
         padding=0,
         with_header_hide=["lineabove"],
     ),
@@ -1374,6 +1399,23 @@ def tabulate(
     </tbody>
     </table>
 
+    "grid_html" produces HTML markup as an html.escape'd str
+    with a ._repr_html_ method so that Jupyter Lab and Notebook display the HTML
+    and a .str property so that the raw HTML remains accessible.
+    "grid_html" as opposed to "html" adds a border grid styling to the table:
+
+    >>> print(tabulate([["strings", "numbers"], ["spam", 41.9999], ["eggs", "451.0"]],
+    ...                headers="firstrow", tablefmt="grid_html"))
+    <table style="border-collapse: collapse;">
+    <thead>
+    <tr><th style="text-align: left; padding: 3px; border: 1px solid black; border-collapse: collapse;">strings  </th><th style="text-align: right; padding: 3px; border: 1px solid black; border-collapse: collapse;">  numbers</th></tr>
+    </thead>
+    <tbody>
+    <tr><td style="text-align: left; padding: 3px; border: 1px solid black; border-collapse: collapse;">spam     </td><td style="text-align: right; padding: 3px; border: 1px solid black; border-collapse: collapse;">  41.9999</td></tr>
+    <tr><td style="text-align: left; padding: 3px; border: 1px solid black; border-collapse: collapse;">eggs     </td><td style="text-align: right; padding: 3px; border: 1px solid black; border-collapse: collapse;"> 451     </td></tr>
+    </tbody>
+    </table>
+
     "latex" produces a tabular environment of LaTeX document markup:
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="latex"))
@@ -1659,7 +1701,7 @@ def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline):
 
     if headers or rows:
         output = "\n".join(lines)
-        if fmt.lineabove == _html_begin_table_without_header:
+        if fmt.lineabove in [_html_begin_table_without_header, _grid_html_begin_table_without_header]:
             return JupyterHTMLStr(output)
         else:
             return output

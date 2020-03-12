@@ -1029,6 +1029,28 @@ def test_html():
     assert result._repr_html_() == result.str
 
 
+def test_grid_html():
+    "Output: grid_html with headers"
+    expected = "\n".join(
+        [
+            '<table style="border-collapse: collapse;">',
+            "<thead>",
+            '<tr><th style="text-align: left; padding: 3px; border: 1px solid black; border-collapse: collapse;">&lt;strings&gt;  </th><th style="text-align: right; padding: 3px; border: 1px solid black; border-collapse: collapse;">  &lt;&amp;numbers&amp;&gt;</th></tr>',
+            # noqa
+            "</thead>",
+            "<tbody>",
+            '<tr><td style="text-align: left; padding: 3px; border: 1px solid black; border-collapse: collapse;">spam &gt;     </td><td style="text-align: right; padding: 3px; border: 1px solid black; border-collapse: collapse;">      41.9999</td></tr>',
+            '<tr><td style="text-align: left; padding: 3px; border: 1px solid black; border-collapse: collapse;">eggs &amp;     </td><td style="text-align: right; padding: 3px; border: 1px solid black; border-collapse: collapse;">     451     </td></tr>',
+            "</tbody>",
+            "</table>",
+        ]
+    )
+    result = tabulate(_test_table_html, _test_table_html_headers, tablefmt="grid_html")
+    assert_equal(expected, result)
+    assert hasattr(result, "_repr_html_")
+    assert result._repr_html_() == result.str
+
+
 def test_html_headerless():
     "Output: html without headers"
     expected = "\n".join(
@@ -1043,6 +1065,26 @@ def test_html_headerless():
     )
     result = tabulate(_test_table_html, tablefmt="html")
     assert_equal(expected, result)
+    assert hasattr(result, "_repr_html_")
+    assert result._repr_html_() == result.str
+
+
+def test_grid_html_headerless():
+    "Output: grid_html without headers"
+    expected = "\n".join(
+        [
+            '<table style="border-collapse: collapse;">',
+            "<tbody>",
+            '<tr><td style="text-align: left; padding: 3px; border: 1px solid black; border-collapse: collapse;">spam &gt;</td><td style="text-align: right; padding: 3px; border: 1px solid black; border-collapse: collapse;"> 41.9999</td></tr>',
+            '<tr><td style="text-align: left; padding: 3px; border: 1px solid black; border-collapse: collapse;">eggs &amp;</td><td style="text-align: right; padding: 3px; border: 1px solid black; border-collapse: collapse;">451     </td></tr>',
+            "</tbody>",
+            "</table>",
+        ]
+    )
+    result = tabulate(_test_table_html, tablefmt="grid_html")
+    assert_equal(expected, result)
+    print(result)
+    print(type(result))
     assert hasattr(result, "_repr_html_")
     assert result._repr_html_() == result.str
 
