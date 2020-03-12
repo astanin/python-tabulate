@@ -1014,11 +1014,11 @@ def test_html():
         [
             "<table>",
             "<thead>",
-            '<tr><th>&lt;strings&gt;  </th><th style="text-align: right;">  &lt;&amp;numbers&amp;&gt;</th></tr>',  # noqa
+            '<tr><th style="text-align: left;">&lt;strings&gt;  </th><th style="text-align: right;">  &lt;&amp;numbers&amp;&gt;</th></tr>',  # noqa
             "</thead>",
             "<tbody>",
-            '<tr><td>spam &gt;     </td><td style="text-align: right;">      41.9999</td></tr>',
-            '<tr><td>eggs &amp;     </td><td style="text-align: right;">     451     </td></tr>',
+            '<tr><td style="text-align: left;">spam &gt;     </td><td style="text-align: right;">      41.9999</td></tr>',
+            '<tr><td style="text-align: left;">eggs &amp;     </td><td style="text-align: right;">     451     </td></tr>',
             "</tbody>",
             "</table>",
         ]
@@ -1035,8 +1035,8 @@ def test_html_headerless():
         [
             "<table>",
             "<tbody>",
-            '<tr><td>spam &gt;</td><td style="text-align: right;"> 41.9999</td></tr>',
-            '<tr><td>eggs &amp;</td><td style="text-align: right;">451     </td></tr>',
+            '<tr><td style="text-align: left;">spam &gt;</td><td style="text-align: right;"> 41.9999</td></tr>',
+            '<tr><td style="text-align: left;">eggs &amp;</td><td style="text-align: right;">451     </td></tr>',
             "</tbody>",
             "</table>",
         ]
