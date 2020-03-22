@@ -1,4 +1,4 @@
-- 0.8.7: Future release.
+- 0.8.7: Bug fixes. New format: `pretty`. HTML escaping.
 - 0.8.6: Bug fixes. Stop supporting Python 3.3, 3.4.
 - 0.8.5: Fix broken Windows package. Minor documentation updates.
 - 0.8.4: Bug fixes.
