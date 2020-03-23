@@ -13,4 +13,4 @@ def assert_in(result, expected_set):
     for i, expected in zip(nums, expected_set):
         print("Expected %d:\n%s\n" % (i, expected))
     print("Got:\n%s\n" % result)
-    assert (result in expected_set)
+    assert result in expected_set
