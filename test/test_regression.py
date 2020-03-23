@@ -5,7 +5,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 from tabulate import tabulate, _text_type, _long_type, TableFormat, Line, DataRow
-from common import assert_equal, assert_in, SkipTest
+from common import assert_equal, assert_in, skip
 
 
 def test_ansi_color_in_table_cells():
@@ -273,8 +273,7 @@ def test_mix_normal_and_wide_characters():
         )
         assert_equal(result, expected)
     except ImportError:
-        print("test_mix_normal_and_wide_characters is skipped (requires wcwidth lib)")
-        raise SkipTest()
+        skip("test_mix_normal_and_wide_characters is skipped (requires wcwidth lib)")
 
 
 def test_align_long_integers():
@@ -295,7 +294,7 @@ def test_numpy_array_as_headers():
         expected = "foo    bar"
         assert_equal(result, expected)
     except ImportError:
-        raise SkipTest()
+        raise skip("")
 
 
 def test_boolean_columns():

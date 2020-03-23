@@ -6,7 +6,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 import tabulate as tabulate_module
 from tabulate import tabulate, simple_separated_format
-from common import assert_equal, assert_raises, SkipTest
+from common import assert_equal, raises, skip
 
 
 # _test_table shows
@@ -235,8 +235,7 @@ def test_grid_wide_characters():
     try:
         import wcwidth  # noqa
     except ImportError:
-        print("test_grid_wide_characters is skipped")
-        raise SkipTest()  # this test is optional
+        skip("test_grid_wide_characters is skipped")
     headers = list(_test_table_headers)
     headers[1] = "配列"
     expected = "\n".join(
@@ -1005,7 +1004,6 @@ def test_moinmoin_headerless():
 
 _test_table_html_headers = ["<strings>", "<&numbers&>"]
 _test_table_html = [["spam >", 41.9999], ["eggs &", 451.0]]
-assert_equal.__self__.maxDiff = None
 
 
 def test_html():
@@ -1310,8 +1308,7 @@ def test_pandas_with_index():
         result = tabulate(df, headers="keys")
         assert_equal(expected, result)
     except ImportError:
-        print("test_pandas_with_index is skipped")
-        raise SkipTest()  # this test is optional
+        skip("test_pandas_with_index is skipped")
 
 
 def test_pandas_without_index():
@@ -1333,8 +1330,7 @@ def test_pandas_without_index():
         result = tabulate(df, headers="keys", showindex=False)
         assert_equal(expected, result)
     except ImportError:
-        print("test_pandas_without_index is skipped")
-        raise SkipTest()  # this test is optional
+        skip("test_pandas_without_index is skipped")
 
 
 def test_pandas_rst_with_index():
@@ -1358,8 +1354,7 @@ def test_pandas_rst_with_index():
         result = tabulate(df, tablefmt="rst", headers="keys")
         assert_equal(expected, result)
     except ImportError:
-        print("test_pandas_rst_with_index is skipped")
-        raise SkipTest()  # this test is optional
+        skip("test_pandas_rst_with_index is skipped")
 
 
 def test_pandas_rst_with_named_index():
@@ -1384,8 +1379,7 @@ def test_pandas_rst_with_named_index():
         result = tabulate(df, tablefmt="rst", headers="keys")
         assert_equal(expected, result)
     except ImportError:
-        print("test_pandas_rst_with_index is skipped")
-        raise SkipTest()  # this test is optional
+        skip("test_pandas_rst_with_index is skipped")
 
 
 def test_dict_like_with_index():
@@ -1418,9 +1412,8 @@ def test_list_of_lists_with_supplied_index():
     assert_equal(result, expected)
     # TODO: make it a separate test case
     # the index must be as long as the number of rows
-    assert_raises(
-        ValueError, lambda: tabulate(dd, headers=["a", "b"], showindex=[1, 2])
-    )
+    with raises(ValueError):
+        tabulate(dd, headers=["a", "b"], showindex=[1, 2])
 
 
 def test_list_of_lists_with_index_firstrow():
@@ -1433,9 +1426,8 @@ def test_list_of_lists_with_index_firstrow():
     assert_equal(result, expected)
     # TODO: make it a separate test case
     # the index must be as long as the number of rows
-    assert_raises(
-        ValueError, lambda: tabulate(dd, headers="firstrow", showindex=[1, 2])
-    )
+    with raises(ValueError):
+        tabulate(dd, headers="firstrow", showindex=[1, 2])
 
 
 def test_disable_numparse_default():
