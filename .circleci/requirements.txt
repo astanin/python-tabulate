@@ -1,4 +1,4 @@
-nose
+pytest
 tox
 numpy
 pandas
