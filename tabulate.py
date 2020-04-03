@@ -5,6 +5,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 from collections import namedtuple
+from recordclass import recordclass
 from platform import python_version_tuple
 import re
 import math
@@ -116,7 +117,7 @@ DataRow = namedtuple("DataRow", ["begin", "sep", "end"])
 #   - either None, to display all table elements unconditionally,
 #   - or a list of elements not to be displayed if the table has column headers.
 #
-TableFormat = namedtuple(
+TableFormat = recordclass(
     "TableFormat",
     [
         "lineabove",
@@ -1136,6 +1137,14 @@ def tabulate(
     showindex="default",
     disable_numparse=False,
     colalign=None,
+    lineabove=None,
+    linebelowheader=None,
+    linebetweenrows=None,
+    linebelow=None,
+    headerrow=None,
+    datarow=None,
+    padding=None,
+    with_header_hide=None
 ):
     """Format a fixed width table for pretty printing.
 
@@ -1520,6 +1529,17 @@ def tabulate(
     if not isinstance(tablefmt, TableFormat):
         tablefmt = _table_formats.get(tablefmt, _table_formats["simple"])
 
+    optional_set = lambda value, alternative: value if value else alternative
+
+    tablefmt.lineabove = optional_set(lineabove, tablefmt.lineabove)
+    tablefmt.linebelowheader = optional_set(linebelowheader, tablefmt.linebelowheader)
+    tablefmt.linebetweenrows = optional_set(linebetweenrows, tablefmt.linebetweenrows)
+    tablefmt.linebelow = optional_set(linebelow, tablefmt.linebelow)
+    tablefmt.headerrow = optional_set(headerrow, tablefmt.headerrow)
+    tablefmt.datarow = optional_set(datarow, tablefmt.datarow)
+    tablefmt.padding = optional_set(padding, tablefmt.padding)
+    tablefmt.with_header_hide = optional_set(with_header_hide, tablefmt.with_header_hide)
+
     return _format_table(tablefmt, headers, rows, minwidths, aligns, is_multiline)
 
 
@@ -1699,7 +1719,7 @@ def _main():
         opts, args = getopt.getopt(
             sys.argv[1:],
             "h1o:s:F:A:f:",
-            ["help", "header", "output", "sep=", "float=", "align=", "format="],
+            ["help", "header", "output", "sep=", "float=", "align=", "format=", "lineabove="],
         )
     except getopt.GetoptError as e:
         print(e)
