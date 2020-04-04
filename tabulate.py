@@ -1069,6 +1069,8 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
                     headers = list(map(_text_type, headers))
                 else:
                     headers = []
+            elif isinstance(headers, list):
+                keys = headers
             elif headers:
                 raise ValueError(
                     "headers for a list of dicts is not a dict or a keyword"
