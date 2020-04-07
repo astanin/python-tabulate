@@ -62,7 +62,7 @@ except ImportError:
 
 
 __all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
-__version__ = "0.8.7"
+__version__ = "0.8.8"
 
 
 # minimum extra space in headers

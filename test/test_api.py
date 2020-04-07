@@ -6,7 +6,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from tabulate import tabulate, tabulate_formats, simple_separated_format
 from platform import python_version_tuple
-from common import SkipTest
+from common import skip
 
 
 try:
@@ -31,7 +31,7 @@ def test_tabulate_formats():
 
 def _check_signature(function, expected_sig):
     if not signature:
-        raise SkipTest()
+        skip("")
     actual_sig = signature(function)
     print("expected: %s\nactual: %s\n" % (expected_sig, str(actual_sig)))
     for (e, ev), (a, av) in zip(expected_sig, actual_sig.parameters.items()):

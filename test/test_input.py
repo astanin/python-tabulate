@@ -5,7 +5,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 from tabulate import tabulate
-from common import assert_equal, assert_in, assert_raises, SkipTest
+from common import assert_equal, assert_in, raises, skip
 
 
 def test_iterable_of_iterables():
@@ -123,8 +123,7 @@ def test_numpy_2d():
         result = tabulate(na, ["a", "b", "c"])
         assert_equal(expected, result)
     except ImportError:
-        print("test_numpy_2d is skipped")
-        raise SkipTest()  # this test is optional
+        skip("test_numpy_2d is skipped")
 
 
 def test_numpy_2d_firstrow():
@@ -139,8 +138,7 @@ def test_numpy_2d_firstrow():
         result = tabulate(na, headers="firstrow")
         assert_equal(expected, result)
     except ImportError:
-        print("test_numpy_2d_firstrow is skipped")
-        raise SkipTest()  # this test is optional
+        skip("test_numpy_2d_firstrow is skipped")
 
 
 def test_numpy_2d_keys():
@@ -161,8 +159,7 @@ def test_numpy_2d_keys():
         result = tabulate(na, headers="keys")
         assert_equal(expected, result)
     except ImportError:
-        print("test_numpy_2d_keys is skipped")
-        raise SkipTest()  # this test is optional
+        skip("test_numpy_2d_keys is skipped")
 
 
 def test_numpy_record_array():
@@ -188,8 +185,7 @@ def test_numpy_record_array():
         result = tabulate(na)
         assert_equal(expected, result)
     except ImportError:
-        print("test_numpy_2d_keys is skipped")
-        raise SkipTest()  # this test is optional
+        skip("test_numpy_2d_keys is skipped")
 
 
 def test_numpy_record_array_keys():
@@ -215,8 +211,7 @@ def test_numpy_record_array_keys():
         result = tabulate(na, headers="keys")
         assert_equal(expected, result)
     except ImportError:
-        print("test_numpy_2d_keys is skipped")
-        raise SkipTest()  # this test is optional
+        skip("test_numpy_2d_keys is skipped")
 
 
 def test_numpy_record_array_headers():
@@ -242,8 +237,7 @@ def test_numpy_record_array_headers():
         result = tabulate(na, headers=["person", "years", "cm"])
         assert_equal(expected, result)
     except ImportError:
-        print("test_numpy_2d_keys is skipped")
-        raise SkipTest()  # this test is optional
+        skip("test_numpy_2d_keys is skipped")
 
 
 def test_pandas():
@@ -263,8 +257,7 @@ def test_pandas():
         result = tabulate(df, headers=["string", "number"])
         assert_equal(expected, result)
     except ImportError:
-        print("test_pandas is skipped")
-        raise SkipTest()  # this test is optional
+        skip("test_pandas is skipped")
 
 
 def test_pandas_firstrow():
@@ -281,8 +274,7 @@ def test_pandas_firstrow():
         result = tabulate(df, headers="firstrow")
         assert_equal(expected, result)
     except ImportError:
-        print("test_pandas_firstrow is skipped")
-        raise SkipTest()  # this test is optional
+        skip("test_pandas_firstrow is skipped")
 
 
 def test_pandas_keys():
@@ -304,8 +296,7 @@ def test_pandas_keys():
         result = tabulate(df, headers="keys")
         assert_equal(expected, result)
     except ImportError:
-        print("test_pandas_keys is skipped")
-        raise SkipTest()  # this test is optional
+        skip("test_pandas_keys is skipped")
 
 
 def test_sqlite3():
@@ -327,8 +318,7 @@ Alice          23       169.5
 Bob            27       175"""
         assert_equal(expected, result)
     except ImportError:
-        print("test_sqlite3 is skipped")
-        raise SkipTest()  # this test is optional
+        skip("test_sqlite3 is skipped")
 
 
 def test_sqlite3_keys():
@@ -352,8 +342,7 @@ Alice          23       169.5
 Bob            27       175"""
         assert_equal(expected, result)
     except ImportError:
-        print("test_sqlite3_keys is skipped")
-        raise SkipTest()  # this test is optional
+        skip("test_sqlite3_keys is skipped")
 
 
 def test_list_of_namedtuples():
@@ -450,7 +439,7 @@ def test_list_of_dicts_with_list_of_headers():
     "Input: ValueError on a list of headers with a list of dicts (issue #23)"
     table = [{"letters": "ABCDE", "digits": 12345}]
     headers = ["DIGITS", "LETTERS"]
-    with assert_raises(ValueError):
+    with raises(ValueError):
         tabulate(table, headers=headers)
 
 
