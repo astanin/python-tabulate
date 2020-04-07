@@ -1047,7 +1047,9 @@ def test_unsafehtml():
             "</table>",
         ]
     )
-    result = tabulate(_test_table_unsafehtml, _test_table_unsafehtml_headers, tablefmt="unsafehtml")
+    result = tabulate(
+        _test_table_unsafehtml, _test_table_unsafehtml_headers, tablefmt="unsafehtml"
+    )
     assert_equal(expected, result)
     assert hasattr(result, "_repr_html_")
     assert result._repr_html_() == result.str
