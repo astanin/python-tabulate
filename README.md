@@ -335,8 +335,8 @@ MediaWiki-based sites:
 
 `html` produces standard HTML markup as an html.escape'd str
 with a ._repr_html_ method so that Jupyter Lab and Notebook display the HTML
-and a .str property so that the raw HTML remains accessible
-the unsafehtml table format can be used if an unescaped HTML format is required:
+and a .str property so that the raw HTML remains accessible.
+`unsafehtml` table format can be used if an unescaped HTML is required:
 
     >>> print(tabulate(table, headers, tablefmt="html"))
     <table>
@@ -744,4 +744,4 @@ Maier, Andy MacKinlay, Thomas Roten, Jue Wang, Joe King, Samuel Phan,
 Nick Satterly, Daniel Robbins, Dmitry B, Lars Butler, Andreas Maier,
 Dick Marinus, Sébastien Celles, Yago González, Andrew Gaul, Wim Glenn,
 Jean Michel Rouly, Tim Gates, John Vandenberg, Sorin Sbarnea,
-Wes Turner, Andrew Tija, Marco Gorelli, Sean McGinnis.
+Wes Turner, Andrew Tija, Marco Gorelli, Sean McGinnis, danja100.
