@@ -1004,6 +1004,11 @@ def test_moinmoin_headerless():
 
 _test_table_html_headers = ["<strings>", "<&numbers&>"]
 _test_table_html = [["spam >", 41.9999], ["eggs &", 451.0]]
+_test_table_unsafehtml_headers = ["strings", "numbers"]
+_test_table_unsafehtml = [
+    ["spam", '<font color="red">41.9999</font>'],
+    ["eggs", '<font color="red">451.0</font>'],
+]
 
 
 def test_html():
@@ -1027,6 +1032,29 @@ def test_html():
     assert result._repr_html_() == result.str
 
 
+def test_unsafehtml():
+    "Output: unsafe html with headers"
+    expected = "\n".join(
+        [
+            "<table>",
+            "<thead>",
+            "<tr><th>strings  </th><th>numbers                         </th></tr>",  # noqa
+            "</thead>",
+            "<tbody>",
+            '<tr><td>spam     </td><td><font color="red">41.9999</font></td></tr>',
+            '<tr><td>eggs     </td><td><font color="red">451.0</font>  </td></tr>',
+            "</tbody>",
+            "</table>",
+        ]
+    )
+    result = tabulate(
+        _test_table_unsafehtml, _test_table_unsafehtml_headers, tablefmt="unsafehtml"
+    )
+    assert_equal(expected, result)
+    assert hasattr(result, "_repr_html_")
+    assert result._repr_html_() == result.str
+
+
 def test_html_headerless():
     "Output: html without headers"
     expected = "\n".join(
@@ -1040,6 +1068,24 @@ def test_html_headerless():
         ]
     )
     result = tabulate(_test_table_html, tablefmt="html")
+    assert_equal(expected, result)
+    assert hasattr(result, "_repr_html_")
+    assert result._repr_html_() == result.str
+
+
+def test_unsafehtml_headerless():
+    "Output: unsafe html without headers"
+    expected = "\n".join(
+        [
+            "<table>",
+            "<tbody>",
+            '<tr><td>spam</td><td><font color="red">41.9999</font></td></tr>',
+            '<tr><td>eggs</td><td><font color="red">451.0</font>  </td></tr>',
+            "</tbody>",
+            "</table>",
+        ]
+    )
+    result = tabulate(_test_table_unsafehtml, tablefmt="unsafehtml")
     assert_equal(expected, result)
     assert hasattr(result, "_repr_html_")
     assert result._repr_html_() == result.str

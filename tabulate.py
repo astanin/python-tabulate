@@ -182,17 +182,23 @@ def _html_begin_table_without_header(colwidths_ignore, colaligns_ignore):
     return "<table>\n<tbody>"
 
 
-def _html_row_with_attrs(celltag, cell_values, colwidths, colaligns):
+def _html_row_with_attrs(celltag, unsafe, cell_values, colwidths, colaligns):
     alignment = {
         "left": "",
         "right": ' style="text-align: right;"',
         "center": ' style="text-align: center;"',
         "decimal": ' style="text-align: right;"',
     }
-    values_with_attrs = [
-        "<{0}{1}>{2}</{0}>".format(celltag, alignment.get(a, ""), htmlescape(c))
-        for c, a in zip(cell_values, colaligns)
-    ]
+    if unsafe:
+        values_with_attrs = [
+            "<{0}{1}>{2}</{0}>".format(celltag, alignment.get(a, ""), c)
+            for c, a in zip(cell_values, colaligns)
+        ]
+    else:
+        values_with_attrs = [
+            "<{0}{1}>{2}</{0}>".format(celltag, alignment.get(a, ""), htmlescape(c))
+            for c, a in zip(cell_values, colaligns)
+        ]
     rowhtml = "<tr>{}</tr>".format("".join(values_with_attrs).rstrip())
     if celltag == "th":  # it's a header row, create a new table header
         rowhtml = "<table>\n<thead>\n{}\n</thead>\n<tbody>".format(rowhtml)
@@ -429,8 +435,18 @@ _table_formats = {
         linebelowheader="",
         linebetweenrows=None,
         linebelow=Line("</tbody>\n</table>", "", "", ""),
-        headerrow=partial(_html_row_with_attrs, "th"),
-        datarow=partial(_html_row_with_attrs, "td"),
+        headerrow=partial(_html_row_with_attrs, "th", False),
+        datarow=partial(_html_row_with_attrs, "td", False),
+        padding=0,
+        with_header_hide=["lineabove"],
+    ),
+    "unsafehtml": TableFormat(
+        lineabove=_html_begin_table_without_header,
+        linebelowheader="",
+        linebetweenrows=None,
+        linebelow=Line("</tbody>\n</table>", "", "", ""),
+        headerrow=partial(_html_row_with_attrs, "th", True),
+        datarow=partial(_html_row_with_attrs, "td", True),
         padding=0,
         with_header_hide=["lineabove"],
     ),
@@ -1360,7 +1376,8 @@ def tabulate(
 
     "html" produces HTML markup as an html.escape'd str
     with a ._repr_html_ method so that Jupyter Lab and Notebook display the HTML
-    and a .str property so that the raw HTML remains accessible:
+    and a .str property so that the raw HTML remains accessible
+    the unsafehtml table format can be used if an unescaped HTML format is required:
 
     >>> print(tabulate([["strings", "numbers"], ["spam", 41.9999], ["eggs", "451.0"]],
     ...                headers="firstrow", tablefmt="html"))
@@ -1421,6 +1438,7 @@ def tabulate(
     e.g. `disable_numparse=[0, 2]` would disable number parsing only on the
     first and third columns.
     """
+
     if tabular_data is None:
         tabular_data = []
     list_of_lists, headers = _normalize_tabular_data(
