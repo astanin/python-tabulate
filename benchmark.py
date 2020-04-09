@@ -8,7 +8,7 @@ import prettytable
 import texttable
 import sys
 import codecs
-from platform import python_version_tuple, platform
+from platform import python_version_tuple
 
 setup_code = r"""
 from csv import writer
@@ -107,6 +107,8 @@ def benchmark(n):
     table = tabulate.tabulate(
         results, ["Table formatter", "time, μs", "rel. time"], "rst", floatfmt=".1f"
     )
+
+    from platform import platform
 
     if platform().startswith("Windows"):
         print(table)
