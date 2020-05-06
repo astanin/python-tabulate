@@ -224,8 +224,9 @@ def _latex_line_begin_tabular(colwidths, colaligns, booktabs=False, longtable=Fa
     tabular_columns_fmt = "".join([alignment.get(a, "l") for a in colaligns])
     return "\n".join(
         [
-            ("\\begin{tabular}{" if not longtable 
-             else "\\begin{longtable}{") + tabular_columns_fmt + "}",
+            ("\\begin{tabular}{" if not longtable else "\\begin{longtable}{")
+            + tabular_columns_fmt
+            + "}",
             "\\toprule" if booktabs else "\\hline",
         ]
     )
