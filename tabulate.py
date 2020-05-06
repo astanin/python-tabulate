@@ -219,12 +219,13 @@ def _moin_row_with_attrs(celltag, cell_values, colwidths, colaligns, header=""):
     return "".join(values_with_attrs) + "||"
 
 
-def _latex_line_begin_tabular(colwidths, colaligns, booktabs=False):
+def _latex_line_begin_tabular(colwidths, colaligns, booktabs=False, longtable=False):
     alignment = {"left": "l", "right": "r", "center": "c", "decimal": "r"}
     tabular_columns_fmt = "".join([alignment.get(a, "l") for a in colaligns])
     return "\n".join(
         [
-            "\\begin{tabular}{" + tabular_columns_fmt + "}",
+            ("\\begin{tabular}{" if not longtable 
+             else "\\begin{longtable}{") + tabular_columns_fmt + "}",
             "\\toprule" if booktabs else "\\hline",
         ]
     )
@@ -475,6 +476,16 @@ _table_formats = {
         linebelowheader=Line("\\midrule", "", "", ""),
         linebetweenrows=None,
         linebelow=Line("\\bottomrule\n\\end{tabular}", "", "", ""),
+        headerrow=_latex_row,
+        datarow=_latex_row,
+        padding=1,
+        with_header_hide=None,
+    ),
+    "latex_longtable": TableFormat(
+        lineabove=partial(_latex_line_begin_tabular, longtable=True),
+        linebelowheader=Line("\\hline\n\\endhead", "", "", ""),
+        linebetweenrows=None,
+        linebelow=Line("\\hline\n\\end{longtable}", "", "", ""),
         headerrow=_latex_row,
         datarow=_latex_row,
         padding=1,
