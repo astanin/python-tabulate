@@ -153,7 +153,9 @@ Supported table formats are:
 -   "latex"
 -   "latex\_raw"
 -   "latex\_booktabs"
+-   "latex\_longtable"
 -   "textile"
+-   "tsv"
 
 `plain` tables do not use any pseudo-graphics to draw lines:
 
