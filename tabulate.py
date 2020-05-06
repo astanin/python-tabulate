@@ -1248,8 +1248,8 @@ def tabulate(
 
     Various plain-text table formats (`tablefmt`) are supported:
     'plain', 'simple', 'grid', 'pipe', 'orgtbl', 'rst', 'mediawiki',
-    'latex', 'latex_raw' and 'latex_booktabs'. Variable `tabulate_formats`
-    contains the list of currently supported formats.
+    'latex', 'latex_raw', 'latex_booktabs', 'latex_longtable' and tsv.
+    Variable `tabulate_formats`contains the list of currently supported formats.
 
     "plain" format doesn't use any pseudographics to draw tables,
     it separates columns with a double space:
@@ -1434,6 +1434,18 @@ def tabulate(
      eggs & 451      \\\\
     \\bottomrule
     \\end{tabular}
+
+    "latex_longtable" produces a tabular environment that can stretch along
+    multiple pages, using the longtable package for LaTeX.
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="latex_longtable"))
+    \\begin{longtable}{lr}
+    \\hline
+     spam &  41.9999 \\\\
+     eggs & 451      \\\\
+    \\hline
+    \\end{longtable}
+
 
     Number parsing
     --------------
@@ -1716,7 +1728,7 @@ def _main():
     -f FMT, --format FMT      set output table format; supported formats:
                               plain, simple, grid, fancy_grid, pipe, orgtbl,
                               rst, mediawiki, html, latex, latex_raw,
-                              latex_booktabs, tsv
+                              latex_booktabs, latex_longtable, tsv
                               (default: simple)
     """
     import getopt

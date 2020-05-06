@@ -369,6 +369,9 @@ special characters.
 `latex_booktabs` creates a `tabular` environment for LaTeX markup using
 spacing and style from the `booktabs` package.
 
+`latex_longtable` creates a table that can stretch along multiple pages,
+using the `longtable` package.
+
 ### Column alignment
 
 `tabulate` is smart about column alignment. It detects columns which
@@ -651,7 +654,7 @@ Usage of the command line utility
     -f FMT, --format FMT      set output table format; supported formats:
                               plain, simple, github, grid, fancy_grid, pipe,
                               orgtbl, rst, mediawiki, html, latex, latex_raw,
-                              latex_booktabs, tsv
+                              latex_booktabs, latex_longtable, tsv
                               (default: simple)
 
 Performance considerations
