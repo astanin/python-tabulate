@@ -73,6 +73,9 @@ PRESERVE_WHITESPACE = False
 
 _DEFAULT_FLOATFMT = "g"
 _DEFAULT_MISSINGVAL = ""
+# default align will be overwritten by "left", "center" or "decimal"
+# depending on the formatter
+_DEFAULT_ALIGN = "default"
 
 
 # if True, enable wide-character (CJK) support
@@ -1146,8 +1149,8 @@ def tabulate(
     headers=(),
     tablefmt="simple",
     floatfmt=_DEFAULT_FLOATFMT,
-    numalign="decimal",
-    stralign="left",
+    numalign=_DEFAULT_ALIGN,
+    stralign=_DEFAULT_ALIGN,
     missingval=_DEFAULT_MISSINGVAL,
     showindex="default",
     disable_numparse=False,
@@ -1458,8 +1461,11 @@ def tabulate(
     if tablefmt == "pretty":
         min_padding = 0
         disable_numparse = True
-        numalign = "center"
-        stralign = "center"
+        numalign = "center" if numalign == _DEFAULT_ALIGN else numalign
+        stralign = "center" if stralign == _DEFAULT_ALIGN else stralign
+    else:
+        numalign = "decimal" if numalign == _DEFAULT_ALIGN else numalign
+        stralign = "left" if stralign == _DEFAULT_ALIGN else stralign
 
     # optimization: look for ANSI control codes once,
     # enable smart width functions only if a control code is found
