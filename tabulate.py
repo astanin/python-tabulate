@@ -610,13 +610,21 @@ def _isbool(string):
     """
     >>> _isbool(True)
     True
-    >>> _isbool("False")
+    >>> _isbool(b"false")
     True
     >>> _isbool(1)
     False
     """
-    return type(string) is _bool_type or (
-        isinstance(string, (_binary_type, _text_type)) and string in ("True", "False")
+    return (
+            type(string) is _bool_type
+            or (
+                    isinstance(string, _text_type)
+                    and string in {"True", "False", "true", "false"}
+            )
+            or (
+                    isinstance(string, _binary_type)
+                    and string in {b"True", b"False", b"true", b"false"}
+            )
     )
 
 
