@@ -1058,8 +1058,8 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         ):
             # namedtuple
             headers = list(map(_text_type, rows[0]._fields))
-        elif len(rows) > 0 and isinstance(rows[0], dict):
-            # dict or OrderedDict
+        elif len(rows) > 0 and hasattr(rows[0], "keys") and hasattr(rows[0], "values"):
+            # dict-like object
             uniq_keys = set()  # implements hashed lookup
             keys = []  # storage for set
             if headers == "firstrow":
