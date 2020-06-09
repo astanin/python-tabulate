@@ -6,7 +6,11 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from tabulate import tabulate
 from common import assert_equal, assert_in, raises, skip
-from collections import UserDict
+try:
+    from collections import UserDict
+except ImportError:
+    # Python2
+    from UserDict import UserDict
 
 
 def test_iterable_of_iterables():
