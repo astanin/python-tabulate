@@ -1030,7 +1030,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             vals = tabular_data.values  # values matrix doesn't need to be transposed
             # for DataFrames add an index per default
             index = list(tabular_data.index)
-            rows = [list(row) for row in vals]
+            rows = [list(row) if isinstance(row, (list,tuple,set)) else [row] for row in vals]
         else:
             raise ValueError("tabular data doesn't appear to be a dict or a DataFrame")
 
