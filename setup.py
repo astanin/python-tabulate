@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+# Exception handle if setup not imported from setuptools then import it from distutils
 try:
     from setuptools import setup
 except ImportError:
