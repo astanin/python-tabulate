@@ -91,9 +91,9 @@ DataRow = namedtuple("DataRow", ["begin", "sep", "end"])
 #         headerrow
 #     --- linebelowheader ---
 #         datarow
-#     --- linebewteenrows ---
+#     --- linebetweenrows ---
 #     ... (more datarows) ...
-#     --- linebewteenrows ---
+#     --- linebetweenrows ---
 #         last datarow
 #     --- linebelow ---------
 #
