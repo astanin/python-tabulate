@@ -894,7 +894,7 @@ def _column_type(strings, has_invisible=True, numparse=True):
 
 
 def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
-    """Format a value accoding to its type.
+    """Format a value according to its type.
 
     Unicode is supported:
 
