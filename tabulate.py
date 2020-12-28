@@ -540,6 +540,9 @@ _invisible_codes = re.compile(
 _invisible_codes_bytes = re.compile(
     b"\x1b\\[\\d+\\[;\\d]*m|\x1b\\[\\d*;\\d*;\\d*m"
 )  # ANSI color codes
+_invisible_codes_link = re.compile(
+    r"\x1B]8;[a-zA-Z0-9:]*;[^\x1B]+\x1B\\([^\x1b]+)\x1B]8;;\x1B\\"
+)  # Terminal hyperlinks
 
 
 def simple_separated_format(separator):
@@ -724,9 +727,15 @@ def _padnone(ignore_width, s):
 
 
 def _strip_invisible(s):
-    "Remove invisible ANSI color codes."
+    r"""Remove invisible ANSI color codes.
+
+    >>> _strip_invisible('\x1B]8;;https://example.com\x1B\\This is a link\x1B]8;;\x1B\\')
+    'This is a link'
+
+    """
     if isinstance(s, _text_type):
-        return re.sub(_invisible_codes, "", s)
+        links_removed = re.sub(_invisible_codes_link, "\\1", s)
+        return re.sub(_invisible_codes, "", links_removed)
     else:  # a bytestring
         return re.sub(_invisible_codes_bytes, "", s)
 
@@ -1469,6 +1478,8 @@ def tabulate(
     )
 
     has_invisible = re.search(_invisible_codes, plain_text)
+    if not has_invisible:
+        has_invisible = re.search(_invisible_codes_link, plain_text)
     enable_widechars = wcwidth is not None and WIDE_CHARS_MODE
     if (
         not isinstance(tablefmt, TableFormat)
