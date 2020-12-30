@@ -729,7 +729,7 @@ def _padnone(ignore_width, s):
 def _strip_invisible(s):
     r"""Remove invisible ANSI color codes.
 
-    >>> _strip_invisible('\x1B]8;;https://example.com\x1B\\This is a link\x1B]8;;\x1B\\')
+    >>> str(_strip_invisible('\x1B]8;;https://example.com\x1B\\This is a link\x1B]8;;\x1B\\'))
     'This is a link'
 
     """
