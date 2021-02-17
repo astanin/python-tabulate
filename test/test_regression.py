@@ -330,10 +330,12 @@ def test_multiline_with_wide_characters():
         table = [["가나\n가ab", "가나", "가나"]]
         result = tabulate(table, tablefmt="fancy_grid")
         expected = "\n".join(
-            "╒══════╤══════╤══════╕",
-            "│ 가나 │ 가나 │ 가나 │",
-            "│ 가ab │      │      │",
-            "╘══════╧══════╧══════╛",
+            [
+                "╒══════╤══════╤══════╕",
+                "│ 가나 │ 가나 │ 가나 │",
+                "│ 가ab │      │      │",
+                "╘══════╧══════╧══════╛",
+            ]
         )
         assert_equal(result, expected)
     except ImportError:
