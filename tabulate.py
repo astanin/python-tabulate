@@ -222,12 +222,14 @@ def _moin_row_with_attrs(celltag, cell_values, colwidths, colaligns, header=""):
     return "".join(values_with_attrs) + "||"
 
 
-def _latex_line_begin_tabular(colwidths, colaligns, booktabs=False):
+def _latex_line_begin_tabular(colwidths, colaligns, booktabs=False, longtable=False):
     alignment = {"left": "l", "right": "r", "center": "c", "decimal": "r"}
     tabular_columns_fmt = "".join([alignment.get(a, "l") for a in colaligns])
     return "\n".join(
         [
-            "\\begin{tabular}{" + tabular_columns_fmt + "}",
+            ("\\begin{tabular}{" if not longtable else "\\begin{longtable}{")
+            + tabular_columns_fmt
+            + "}",
             "\\toprule" if booktabs else "\\hline",
         ]
     )
@@ -488,6 +490,16 @@ _table_formats = {
         linebelowheader=Line("\\midrule", "", "", ""),
         linebetweenrows=None,
         linebelow=Line("\\bottomrule\n\\end{tabular}", "", "", ""),
+        headerrow=_latex_row,
+        datarow=_latex_row,
+        padding=1,
+        with_header_hide=None,
+    ),
+    "latex_longtable": TableFormat(
+        lineabove=partial(_latex_line_begin_tabular, longtable=True),
+        linebelowheader=Line("\\hline\n\\endhead", "", "", ""),
+        linebetweenrows=None,
+        linebelow=Line("\\hline\n\\end{longtable}", "", "", ""),
         headerrow=_latex_row,
         datarow=_latex_row,
         padding=1,
@@ -1305,8 +1317,8 @@ def tabulate(
 
     Various plain-text table formats (`tablefmt`) are supported:
     'plain', 'simple', 'grid', 'pipe', 'orgtbl', 'rst', 'mediawiki',
-    'latex', 'latex_raw' and 'latex_booktabs'. Variable `tabulate_formats`
-    contains the list of currently supported formats.
+    'latex', 'latex_raw', 'latex_booktabs', 'latex_longtable' and tsv.
+    Variable `tabulate_formats`contains the list of currently supported formats.
 
     "plain" format doesn't use any pseudographics to draw tables,
     it separates columns with a double space:
@@ -1491,6 +1503,18 @@ def tabulate(
      eggs & 451      \\\\
     \\bottomrule
     \\end{tabular}
+
+    "latex_longtable" produces a tabular environment that can stretch along
+    multiple pages, using the longtable package for LaTeX.
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="latex_longtable"))
+    \\begin{longtable}{lr}
+    \\hline
+     spam &  41.9999 \\\\
+     eggs & 451      \\\\
+    \\hline
+    \\end{longtable}
+
 
     Number parsing
     --------------
@@ -1778,7 +1802,7 @@ def _main():
     -f FMT, --format FMT      set output table format; supported formats:
                               plain, simple, grid, fancy_grid, pipe, orgtbl,
                               rst, mediawiki, html, latex, latex_raw,
-                              latex_booktabs, tsv
+                              latex_booktabs, latex_longtable, tsv
                               (default: simple)
     """
     import getopt

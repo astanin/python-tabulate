@@ -153,7 +153,9 @@ Supported table formats are:
 -   "latex"
 -   "latex\_raw"
 -   "latex\_booktabs"
+-   "latex\_longtable"
 -   "textile"
+-   "tsv"
 
 `plain` tables do not use any pseudo-graphics to draw lines:
 
@@ -368,6 +370,9 @@ special characters.
 
 `latex_booktabs` creates a `tabular` environment for LaTeX markup using
 spacing and style from the `booktabs` package.
+
+`latex_longtable` creates a table that can stretch along multiple pages,
+using the `longtable` package.
 
 ### Column alignment
 
@@ -651,7 +656,7 @@ Usage of the command line utility
     -f FMT, --format FMT      set output table format; supported formats:
                               plain, simple, github, grid, fancy_grid, pipe,
                               orgtbl, rst, mediawiki, html, latex, latex_raw,
-                              latex_booktabs, tsv
+                              latex_booktabs, latex_longtable, tsv
                               (default: simple)
 
 Performance considerations
@@ -745,4 +750,4 @@ Nick Satterly, Daniel Robbins, Dmitry B, Lars Butler, Andreas Maier,
 Dick Marinus, Sébastien Celles, Yago González, Andrew Gaul, Wim Glenn,
 Jean Michel Rouly, Tim Gates, John Vandenberg, Sorin Sbarnea,
 Wes Turner, Andrew Tija, Marco Gorelli, Sean McGinnis, danja100,
-Vladimir Vrzić.
+Vladimir Vrzić, Bart Broere.
