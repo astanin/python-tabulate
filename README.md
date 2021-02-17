@@ -178,7 +178,7 @@ extensions](http://johnmacfarlane.net/pandoc/README.html#tables):
     eggs      451
     bacon       0
 
-`github` follows the conventions of Github flavored Markdown. It
+`github` follows the conventions of GitHub flavored Markdown. It
 corresponds to the `pipe` format without alignment colons:
 
     >>> print(tabulate(table, headers, tablefmt="github"))
@@ -673,9 +673,9 @@ as a number imply that `tabulate`:
 It may not be suitable for serializing really big tables (but who's
 going to do that, anyway?) or printing tables in performance sensitive
 applications. `tabulate` is about two orders of magnitude slower than
-simply joining lists of values with a tab, coma or other separator.
+simply joining lists of values with a tab, comma, or other separator.
 
-In the same time `tabulate` is comparable to other table
+At the same time, `tabulate` is comparable to other table
 pretty-printers. Given a 10x10 table (a list of lists) of mixed text and
 numeric data, `tabulate` appears to be slower than `asciitable`, and
 faster than `PrettyTable` and `texttable` The following mini-benchmark
@@ -719,7 +719,7 @@ On Linux `tox` expects to find executables like `python2.6`,
 `C:\Python26\python.exe`, `C:\Python27\python.exe` and
 `C:\Python34\python.exe` respectively.
 
-To test only some Python environements, use `-e` option. For example, to
+To test only some Python environments, use `-e` option. For example, to
 test only against Python 2.7 and Python 3.6, run:
 
     tox -e py27,py36
@@ -749,4 +749,5 @@ Maier, Andy MacKinlay, Thomas Roten, Jue Wang, Joe King, Samuel Phan,
 Nick Satterly, Daniel Robbins, Dmitry B, Lars Butler, Andreas Maier,
 Dick Marinus, Sébastien Celles, Yago González, Andrew Gaul, Wim Glenn,
 Jean Michel Rouly, Tim Gates, John Vandenberg, Sorin Sbarnea,
-Wes Turner, Andrew Tija, Marco Gorelli, Sean McGinnis, danja100, Bart Broere.
+Wes Turner, Andrew Tija, Marco Gorelli, Sean McGinnis, danja100,
+Vladimir Vrzić, Bart Broere.

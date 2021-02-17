@@ -47,6 +47,52 @@ def test_alignment_of_colored_cells():
     assert_equal(expected, formatted)
 
 
+def test_alignment_of_link_cells():
+    "Regression: Align links as if they were colorless."
+    linktable = [
+        ("test", 42, "\x1b]8;;target\x1b\\test\x1b]8;;\x1b\\"),
+        ("test", 101, "\x1b]8;;target\x1b\\test\x1b]8;;\x1b\\"),
+    ]
+    linkheaders = ("test", "\x1b]8;;target\x1b\\test\x1b]8;;\x1b\\", "test")
+    formatted = tabulate(linktable, linkheaders, "grid")
+    expected = "\n".join(
+        [
+            "+--------+--------+--------+",
+            "| test   |   \x1b]8;;target\x1b\\test\x1b]8;;\x1b\\ | test   |",
+            "+========+========+========+",
+            "| test   |     42 | \x1b]8;;target\x1b\\test\x1b]8;;\x1b\\   |",
+            "+--------+--------+--------+",
+            "| test   |    101 | \x1b]8;;target\x1b\\test\x1b]8;;\x1b\\   |",
+            "+--------+--------+--------+",
+        ]
+    )
+    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    assert_equal(expected, formatted)
+
+
+def test_alignment_of_link_text_cells():
+    "Regression: Align links as if they were colorless."
+    linktable = [
+        ("test", 42, "1\x1b]8;;target\x1b\\test\x1b]8;;\x1b\\2"),
+        ("test", 101, "3\x1b]8;;target\x1b\\test\x1b]8;;\x1b\\4"),
+    ]
+    linkheaders = ("test", "5\x1b]8;;target\x1b\\test\x1b]8;;\x1b\\6", "test")
+    formatted = tabulate(linktable, linkheaders, "grid")
+    expected = "\n".join(
+        [
+            "+--------+----------+--------+",
+            "| test   |   5\x1b]8;;target\x1b\\test\x1b]8;;\x1b\\6 | test   |",
+            "+========+==========+========+",
+            "| test   |       42 | 1\x1b]8;;target\x1b\\test\x1b]8;;\x1b\\2 |",
+            "+--------+----------+--------+",
+            "| test   |      101 | 3\x1b]8;;target\x1b\\test\x1b]8;;\x1b\\4 |",
+            "+--------+----------+--------+",
+        ]
+    )
+    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    assert_equal(expected, formatted)
+
+
 def test_iter_of_iters_with_headers():
     "Regression: Generator of generators with a gen. of headers (issue #9)."
 
@@ -226,6 +272,18 @@ def test_alignment_of_decimal_numbers_with_ansi_color():
     assert_equal(result, expected)
 
 
+def test_alignment_of_decimal_numbers_with_commas():
+    "Regression: alignment for decimal numbers with comma separators"
+    stuff={"first": ["c1r1", "c1r2"], "second": [14502.05, 105]}
+    result = tabulate(stuff, tablefmt="grid", floatfmt=',.2f')
+    expected = "\n".join(
+        ['+------+-----------+', '| c1r1 | 14,502.05 |',
+        '+------+-----------+', '| c1r2 |    105.00 |',
+        '+------+-----------+']
+    )
+    assert_equal(result, expected)
+
+
 def test_long_integers():
     "Regression: long integers should be printed as integers (issue #48)"
     table = [[18446744073709551614]]
@@ -274,6 +332,26 @@ def test_mix_normal_and_wide_characters():
         assert_equal(result, expected)
     except ImportError:
         skip("test_mix_normal_and_wide_characters is skipped (requires wcwidth lib)")
+
+
+def test_multiline_with_wide_characters():
+    "Regression: multiline tables with varying number of wide characters (github issue #28)"
+    try:
+        import wcwidth  # noqa
+
+        table = [["가나\n가ab", "가나", "가나"]]
+        result = tabulate(table, tablefmt="fancy_grid")
+        expected = "\n".join(
+            [
+                "╒══════╤══════╤══════╕",
+                "│ 가나 │ 가나 │ 가나 │",
+                "│ 가ab │      │      │",
+                "╘══════╧══════╧══════╛",
+            ]
+        )
+        assert_equal(result, expected)
+    except ImportError:
+        skip("test_multiline_with_wide_characters is skipped (requires wcwidth lib)")
 
 
 def test_align_long_integers():

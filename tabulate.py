@@ -5,17 +5,17 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 from collections import namedtuple
-from platform import python_version_tuple
+import sys
 import re
 import math
 
 
-if python_version_tuple() >= ("3", "3", "0"):
+if sys.version_info >= (3, 3):
     from collections.abc import Iterable
 else:
     from collections import Iterable
 
-if python_version_tuple()[0] < "3":
+if sys.version_info[0] < 3:
     from itertools import izip_longest
     from functools import partial
 
@@ -73,6 +73,9 @@ PRESERVE_WHITESPACE = False
 
 _DEFAULT_FLOATFMT = "g"
 _DEFAULT_MISSINGVAL = ""
+# default align will be overwritten by "left", "center" or "decimal"
+# depending on the formatter
+_DEFAULT_ALIGN = "default"
 
 
 # if True, enable wide-character (CJK) support
@@ -91,9 +94,9 @@ DataRow = namedtuple("DataRow", ["begin", "sep", "end"])
 #         headerrow
 #     --- linebelowheader ---
 #         datarow
-#     --- linebewteenrows ---
+#     --- linebetweenrows ---
 #     ... (more datarows) ...
-#     --- linebewteenrows ---
+#     --- linebetweenrows ---
 #         last datarow
 #     --- linebelow ---------
 #
@@ -311,6 +314,16 @@ _table_formats = {
         lineabove=Line("╒", "═", "╤", "╕"),
         linebelowheader=Line("╞", "═", "╪", "╡"),
         linebetweenrows=Line("├", "─", "┼", "┤"),
+        linebelow=Line("╘", "═", "╧", "╛"),
+        headerrow=DataRow("│", "│", "│"),
+        datarow=DataRow("│", "│", "│"),
+        padding=1,
+        with_header_hide=None,
+    ),
+    "fancy_outline": TableFormat(
+        lineabove=Line("╒", "═", "╤", "╕"),
+        linebelowheader=Line("╞", "═", "╪", "╡"),
+        linebetweenrows=None,
         linebelow=Line("╘", "═", "╧", "╛"),
         headerrow=DataRow("│", "│", "│"),
         datarow=DataRow("│", "│", "│"),
@@ -547,11 +560,14 @@ multiline_formats = {
 _multiline_codes = re.compile(r"\r|\n|\r\n")
 _multiline_codes_bytes = re.compile(b"\r|\n|\r\n")
 _invisible_codes = re.compile(
-    r"\x1b\[\d+[;\d]*m|\x1b\[\d*\;\d*\;\d*m"
+    r"\x1b\[\d+[;\d]*m|\x1b\[\d*\;\d*\;\d*m|\x1b\]8;;(.*?)\x1b\\"
 )  # ANSI color codes
 _invisible_codes_bytes = re.compile(
-    b"\x1b\\[\\d+\\[;\\d]*m|\x1b\\[\\d*;\\d*;\\d*m"
+    b"\x1b\\[\\d+\\[;\\d]*m|\x1b\\[\\d*;\\d*;\\d*m|\\x1b\\]8;;(.*?)\\x1b\\\\"
 )  # ANSI color codes
+_invisible_codes_link = re.compile(
+    r"\x1B]8;[a-zA-Z0-9:]*;[^\x1B]+\x1B\\([^\x1b]+)\x1B]8;;\x1B\\"
+)  # Terminal hyperlinks
 
 
 def simple_separated_format(separator):
@@ -594,8 +610,16 @@ def _isnumber(string):
     False
     >>> _isnumber("inf")
     True
+    >>> _isnumber("1,234.56")
+    True
+    >>> _isnumber("1,234,578.0")
+    True
     """
-    if not _isconvertible(float, string):
+    if isinstance(string, (_text_type)) and "," in string and (
+        _isconvertible(float, string.replace(",",""))
+    ):
+        return True
+    elif not _isconvertible(float, string):
         return False
     elif isinstance(string, (_text_type, _binary_type)) and (
         math.isinf(float(string)) or math.isnan(float(string))
@@ -736,9 +760,15 @@ def _padnone(ignore_width, s):
 
 
 def _strip_invisible(s):
-    "Remove invisible ANSI color codes."
+    r"""Remove invisible ANSI color codes.
+
+    >>> str(_strip_invisible('\x1B]8;;https://example.com\x1B\\This is a link\x1B]8;;\x1B\\'))
+    'This is a link'
+
+    """
     if isinstance(s, _text_type):
-        return re.sub(_invisible_codes, "", s)
+        links_removed = re.sub(_invisible_codes_link, "\\1", s)
+        return re.sub(_invisible_codes, "", links_removed)
     else:  # a bytestring
         return re.sub(_invisible_codes_bytes, "", s)
 
@@ -814,6 +844,36 @@ def _align_column_choose_padfn(strings, alignment, has_invisible):
     return strings, padfn
 
 
+def _align_column_choose_width_fn(has_invisible, enable_widechars, is_multiline):
+    if has_invisible:
+        line_width_fn = _visible_width
+    elif enable_widechars:  # optional wide-character support if available
+        line_width_fn = wcwidth.wcswidth
+    else:
+        line_width_fn = len
+    if is_multiline:
+        width_fn = lambda s: _align_column_multiline_width(s, line_width_fn)  # noqa
+    else:
+        width_fn = line_width_fn
+    return width_fn
+
+
+def _align_column_multiline_width(multiline_s, line_width_fn=len):
+    """Visible width of a potentially multiline content."""
+    return list(map(line_width_fn, re.split("[\r\n]", multiline_s)))
+
+
+def _flat_list(nested_list):
+    ret = []
+    for item in nested_list:
+        if isinstance(item, list):
+            for subitem in item:
+                ret.append(subitem)
+        else:
+            ret.append(item)
+    return ret
+
+
 def _align_column(
     strings,
     alignment,
@@ -824,10 +884,12 @@ def _align_column(
 ):
     """[string] -> [padded_string]"""
     strings, padfn = _align_column_choose_padfn(strings, alignment, has_invisible)
-    width_fn = _choose_width_fn(has_invisible, enable_widechars, is_multiline)
+    width_fn = _align_column_choose_width_fn(
+        has_invisible, enable_widechars, is_multiline
+    )
 
     s_widths = list(map(width_fn, strings))
-    maxwidth = max(max(s_widths), minwidth)
+    maxwidth = max(max(_flat_list(s_widths)), minwidth)
     # TODO: refactor column alignment in single-line and multiline modes
     if is_multiline:
         if not enable_widechars and not has_invisible:
@@ -837,13 +899,16 @@ def _align_column(
             ]
         else:
             # enable wide-character width corrections
-            s_lens = [max((len(s) for s in re.split("[\r\n]", ms))) for ms in strings]
-            visible_widths = [maxwidth - (w - l) for w, l in zip(s_widths, s_lens)]
+            s_lens = [[len(s) for s in re.split("[\r\n]", ms)] for ms in strings]
+            visible_widths = [
+                [maxwidth - (w - l) for w, l in zip(mw, ml)]
+                for mw, ml in zip(s_widths, s_lens)
+            ]
             # wcswidth and _visible_width don't count invisible characters;
             # padfn doesn't need to apply another correction
             padded_strings = [
-                "\n".join([padfn(w, s) for s in (ms.splitlines() or ms)])
-                for ms, w in zip(strings, visible_widths)
+                "\n".join([padfn(w, s) for s, w in zip((ms.splitlines() or ms), mw)])
+                for ms, mw in zip(strings, visible_widths)
             ]
     else:  # single-line cell values
         if not enable_widechars and not has_invisible:
@@ -906,7 +971,7 @@ def _column_type(strings, has_invisible=True, numparse=True):
 
 
 def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
-    """Format a value accoding to its type.
+    """Format a value according to its type.
 
     Unicode is supported:
 
@@ -1034,7 +1099,10 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         elif hasattr(tabular_data, "index"):
             # values is a property, has .index => it's likely a pandas.DataFrame (pandas 0.11.0)
             keys = list(tabular_data)
-            if tabular_data.index.name is not None:
+            if (
+                showindex in ["default", "always", True]
+                and tabular_data.index.name is not None
+            ):
                 if isinstance(tabular_data.index.name, list):
                     keys[:0] = tabular_data.index.name
                 else:
@@ -1070,8 +1138,8 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         ):
             # namedtuple
             headers = list(map(_text_type, rows[0]._fields))
-        elif len(rows) > 0 and isinstance(rows[0], dict):
-            # dict or OrderedDict
+        elif len(rows) > 0 and hasattr(rows[0], "keys") and hasattr(rows[0], "values"):
+            # dict-like object
             uniq_keys = set()  # implements hashed lookup
             keys = []  # storage for set
             if headers == "firstrow":
@@ -1158,8 +1226,8 @@ def tabulate(
     headers=(),
     tablefmt="simple",
     floatfmt=_DEFAULT_FLOATFMT,
-    numalign="decimal",
-    stralign="left",
+    numalign=_DEFAULT_ALIGN,
+    stralign=_DEFAULT_ALIGN,
     missingval=_DEFAULT_MISSINGVAL,
     showindex="default",
     disable_numparse=False,
@@ -1482,8 +1550,11 @@ def tabulate(
     if tablefmt == "pretty":
         min_padding = 0
         disable_numparse = True
-        numalign = "center"
-        stralign = "center"
+        numalign = "center" if numalign == _DEFAULT_ALIGN else numalign
+        stralign = "center" if stralign == _DEFAULT_ALIGN else stralign
+    else:
+        numalign = "decimal" if numalign == _DEFAULT_ALIGN else numalign
+        stralign = "left" if stralign == _DEFAULT_ALIGN else stralign
 
     # optimization: look for ANSI control codes once,
     # enable smart width functions only if a control code is found
@@ -1493,6 +1564,8 @@ def tabulate(
     )
 
     has_invisible = re.search(_invisible_codes, plain_text)
+    if not has_invisible:
+        has_invisible = re.search(_invisible_codes_link, plain_text)
     enable_widechars = wcwidth is not None and WIDE_CHARS_MODE
     if (
         not isinstance(tablefmt, TableFormat)
