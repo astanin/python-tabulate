@@ -5,17 +5,17 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 from collections import namedtuple
-from platform import python_version_tuple
+import sys
 import re
 import math
 
 
-if python_version_tuple() >= ("3", "3", "0"):
+if sys.version_info >= (3, 3):
     from collections.abc import Iterable
 else:
     from collections import Iterable
 
-if python_version_tuple()[0] < "3":
+if sys.version_info[0] < 3:
     from itertools import izip_longest
     from functools import partial
 
