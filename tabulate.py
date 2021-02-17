@@ -535,10 +535,10 @@ multiline_formats = {
 _multiline_codes = re.compile(r"\r|\n|\r\n")
 _multiline_codes_bytes = re.compile(b"\r|\n|\r\n")
 _invisible_codes = re.compile(
-    r"\x1b\[\d+[;\d]*m|\x1b\[\d*\;\d*\;\d*m"
+    r"\x1b\[\d+[;\d]*m|\x1b\[\d*\;\d*\;\d*m|\x1b\]8;;(.*?)\x1b\\"
 )  # ANSI color codes
 _invisible_codes_bytes = re.compile(
-    b"\x1b\\[\\d+\\[;\\d]*m|\x1b\\[\\d*;\\d*;\\d*m"
+    b"\x1b\\[\\d+\\[;\\d]*m|\x1b\\[\\d*;\\d*;\\d*m|\\x1b\\]8;;(.*?)\\x1b\\\\"
 )  # ANSI color codes
 _invisible_codes_link = re.compile(
     r"\x1B]8;[a-zA-Z0-9:]*;[^\x1B]+\x1B\\([^\x1b]+)\x1B]8;;\x1B\\"

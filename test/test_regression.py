@@ -47,6 +47,52 @@ def test_alignment_of_colored_cells():
     assert_equal(expected, formatted)
 
 
+def test_alignment_of_link_cells():
+    "Regression: Align links as if they were colorless."
+    linktable = [
+        ("test", 42, "\x1b]8;;target\x1b\\test\x1b]8;;\x1b\\"),
+        ("test", 101, "\x1b]8;;target\x1b\\test\x1b]8;;\x1b\\"),
+    ]
+    linkheaders = ("test", "\x1b]8;;target\x1b\\test\x1b]8;;\x1b\\", "test")
+    formatted = tabulate(linktable, linkheaders, "grid")
+    expected = "\n".join(
+        [
+            "+--------+--------+--------+",
+            "| test   |   \x1b]8;;target\x1b\\test\x1b]8;;\x1b\\ | test   |",
+            "+========+========+========+",
+            "| test   |     42 | \x1b]8;;target\x1b\\test\x1b]8;;\x1b\\   |",
+            "+--------+--------+--------+",
+            "| test   |    101 | \x1b]8;;target\x1b\\test\x1b]8;;\x1b\\   |",
+            "+--------+--------+--------+",
+        ]
+    )
+    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    assert_equal(expected, formatted)
+
+
+def test_alignment_of_link_text_cells():
+    "Regression: Align links as if they were colorless."
+    linktable = [
+        ("test", 42, "1\x1b]8;;target\x1b\\test\x1b]8;;\x1b\\2"),
+        ("test", 101, "3\x1b]8;;target\x1b\\test\x1b]8;;\x1b\\4"),
+    ]
+    linkheaders = ("test", "5\x1b]8;;target\x1b\\test\x1b]8;;\x1b\\6", "test")
+    formatted = tabulate(linktable, linkheaders, "grid")
+    expected = "\n".join(
+        [
+            "+--------+----------+--------+",
+            "| test   |   5\x1b]8;;target\x1b\\test\x1b]8;;\x1b\\6 | test   |",
+            "+========+==========+========+",
+            "| test   |       42 | 1\x1b]8;;target\x1b\\test\x1b]8;;\x1b\\2 |",
+            "+--------+----------+--------+",
+            "| test   |      101 | 3\x1b]8;;target\x1b\\test\x1b]8;;\x1b\\4 |",
+            "+--------+----------+--------+",
+        ]
+    )
+    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    assert_equal(expected, formatted)
+
+
 def test_iter_of_iters_with_headers():
     "Regression: Generator of generators with a gen. of headers (issue #9)."
 

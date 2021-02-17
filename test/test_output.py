@@ -59,6 +59,22 @@ def test_plain_multiline():
     assert_equal(expected, result)
 
 
+def test_plain_multiline_with_links():
+    "Output: plain with multiline cells with links and headers"
+    table = [[2, "foo\nbar"]]
+    headers = ("more\nspam \x1b]8;;target\x1b\\eggs\x1b]8;;\x1b\\", "more spam\n& eggs")
+    expected = "\n".join(
+        [
+            "       more  more spam",
+            "  spam \x1b]8;;target\x1b\\eggs\x1b]8;;\x1b\\  & eggs",
+            "          2  foo",
+            "             bar",
+        ]
+    )
+    result = tabulate(table, headers, tablefmt="plain")
+    assert_equal(expected, result)
+
+
 def test_plain_multiline_with_empty_cells():
     "Output: plain with multiline cells and empty cells with headers"
     table = [
@@ -153,6 +169,23 @@ def test_simple_multiline():
         [
             "       more  more spam",
             "  spam \x1b[31meggs\x1b[0m  & eggs",
+            "-----------  -----------",
+            "          2  foo",
+            "             bar",
+        ]
+    )
+    result = tabulate(table, headers, tablefmt="simple")
+    assert_equal(expected, result)
+
+
+def test_simple_multiline_with_links():
+    "Output: simple with multiline cells with links and headers"
+    table = [[2, "foo\nbar"]]
+    headers = ("more\nspam \x1b]8;;target\x1b\\eggs\x1b]8;;\x1b\\", "more spam\n& eggs")
+    expected = "\n".join(
+        [
+            "       more  more spam",
+            "  spam \x1b]8;;target\x1b\\eggs\x1b]8;;\x1b\\  & eggs",
             "-----------  -----------",
             "          2  foo",
             "             bar",
@@ -766,6 +799,25 @@ def test_pretty_multiline():
     assert_equal(expected, result)
 
 
+def test_pretty_multiline_with_links():
+    "Output: pretty with multiline cells with headers"
+    table = [[2, "foo\nbar"]]
+    headers = ("more\nspam \x1b]8;;target\x1b\\eggs\x1b]8;;\x1b\\", "more spam\n& eggs")
+    expected = "\n".join(
+        [
+            "+-----------+-----------+",
+            "|   more    | more spam |",
+            "| spam \x1b]8;;target\x1b\\eggs\x1b]8;;\x1b\\ |  & eggs   |",
+            "+-----------+-----------+",
+            "|     2     |    foo    |",
+            "|           |    bar    |",
+            "+-----------+-----------+",
+        ]
+    )
+    result = tabulate(table, headers, tablefmt="pretty")
+    assert_equal(expected, result)
+
+
 def test_pretty_multiline_with_empty_cells():
     "Output: pretty with multiline cells and empty cells with headers"
     table = [
@@ -879,6 +931,25 @@ def test_rst_multiline():
             "===========  ===========",
             "       more  more spam",
             "  spam \x1b[31meggs\x1b[0m  & eggs",
+            "===========  ===========",
+            "          2  foo",
+            "             bar",
+            "===========  ===========",
+        ]
+    )
+    result = tabulate(table, headers, tablefmt="rst")
+    assert_equal(expected, result)
+
+
+def test_rst_multiline_with_links():
+    "Output: rst with multiline cells with headers"
+    table = [[2, "foo\nbar"]]
+    headers = ("more\nspam \x1b]8;;target\x1b\\eggs\x1b]8;;\x1b\\", "more spam\n& eggs")
+    expected = "\n".join(
+        [
+            "===========  ===========",
+            "       more  more spam",
+            "  spam \x1b]8;;target\x1b\\eggs\x1b]8;;\x1b\\  & eggs",
             "===========  ===========",
             "          2  foo",
             "             bar",
