@@ -610,7 +610,11 @@ def _isbool(string):
     """
     >>> _isbool(True)
     True
-    >>> _isbool(b"false")
+    >>> _isbool("False")
+    True
+    >>> _isbool(b"False")
+    True
+    >>> _isbool(b"true")
     True
     >>> _isbool(1)
     False
