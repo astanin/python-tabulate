@@ -1022,7 +1022,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         elif hasattr(tabular_data, "index"):
             # values is a property, has .index => it's likely a pandas.DataFrame (pandas 0.11.0)
             keys = list(tabular_data)
-            if tabular_data.index.name is not None:
+            if showindex in ["default", "always", True] and tabular_data.index.name is not None:
                 if isinstance(tabular_data.index.name, list):
                     keys[:0] = tabular_data.index.name
                 else:
