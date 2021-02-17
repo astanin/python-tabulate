@@ -274,8 +274,8 @@ def test_alignment_of_decimal_numbers_with_ansi_color():
 
 def test_alignment_of_decimal_numbers_with_commas():
     "Regression: alignment for decimal numbers with comma separators"
-    stuff={"first": ["c1r1", "c1r2"], "second": [14502.05, 105]}
-    result = tabulate(stuff, tablefmt="grid", floatfmt=',.2f')
+    table = [["c1r1", "14502.05"], ["c1r2", 105]]
+    result = tabulate(table, tablefmt="grid", floatfmt=',.2f')
     expected = "\n".join(
         ['+------+-----------+', '| c1r1 | 14,502.05 |',
         '+------+-----------+', '| c1r2 |    105.00 |',
