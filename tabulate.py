@@ -861,7 +861,9 @@ def _align_column(
 ):
     """[string] -> [padded_string]"""
     strings, padfn = _align_column_choose_padfn(strings, alignment, has_invisible)
-    width_fn = _align_column_choose_width_fn(has_invisible, enable_widechars, is_multiline)
+    width_fn = _align_column_choose_width_fn(
+        has_invisible, enable_widechars, is_multiline
+    )
 
     s_widths = list(map(width_fn, strings))
     maxwidth = max(max(_flat_list(s_widths)), minwidth)

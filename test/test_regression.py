@@ -322,6 +322,24 @@ def test_mix_normal_and_wide_characters():
         skip("test_mix_normal_and_wide_characters is skipped (requires wcwidth lib)")
 
 
+def test_multiline_with_wide_characters():
+    "Regression: multiline tables with varying number of wide characters (github issue #28)"
+    try:
+        import wcwidth  # noqa
+
+        table = [["가나\n가ab", "가나", "가나"]]
+        result = tabulate(table, tablefmt="fancy_grid")
+        expected = "\n".join(
+            "╒══════╤══════╤══════╕",
+            "│ 가나 │ 가나 │ 가나 │",
+            "│ 가ab │      │      │",
+            "╘══════╧══════╧══════╛",
+        )
+        assert_equal(result, expected)
+    except ImportError:
+        skip("test_multiline_with_wide_characters is skipped (requires wcwidth lib)")
+
+
 def test_align_long_integers():
     "Regression: long integers should be aligned as integers (issue #61)"
     table = [[_long_type(1)], [_long_type(234)]]
