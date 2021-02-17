@@ -1363,8 +1363,9 @@ def test_pandas_without_index():
         import pandas
 
         df = pandas.DataFrame(
-            [["one", 1], ["two", None]], columns=["string", "number"],
-            index=pandas.Index(["a", "b"], name="index")
+            [["one", 1], ["two", None]],
+            columns=["string", "number"],
+            index=pandas.Index(["a", "b"], name="index"),
         )
         expected = "\n".join(
             [
