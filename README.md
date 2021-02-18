@@ -758,4 +758,4 @@ Wes Turner, Andrew Tija, Marco Gorelli, Sean McGinnis, danja100,
 endolith, Dominic Davis-Foster, pavlocat, Daniel Aslau, paulc,
 Felix Yan, Shane Loretz, Frank Busse, Harsh Singh, Derek Weitzel,
 Vladimir Vrzić, 서승우 (chrd5273), Georgy Frolov, Christian Cwienk,
-Bart Broere.
+Bart Broere, Vilhelm Prytz.
