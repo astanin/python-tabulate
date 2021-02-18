@@ -96,8 +96,6 @@ def benchmark(n):
     global methods
     if "--onlyself" in sys.argv[1:]:
         methods = [m for m in methods if m[0].startswith("tabulate")]
-    else:
-        methods = methods
 
     results = [
         (desc, timeit(code, setup_code, number=n) / n * 1e6) for desc, code in methods
@@ -110,9 +108,9 @@ def benchmark(n):
         results, ["Table formatter", "time, μs", "rel. time"], "rst", floatfmt=".1f"
     )
 
-    import platform
+    from platform import platform
 
-    if platform.platform().startswith("Windows"):
+    if platform().startswith("Windows"):
         print(table)
     elif python_version_tuple()[0] < "3":
         print(codecs.encode(table, "utf-8"))
