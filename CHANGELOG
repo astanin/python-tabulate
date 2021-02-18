@@ -1,5 +1,10 @@
-- 0.8.8: Future version.
-  Add ``latex_longtable`` format.
+- 0.8.8: Python 3.9 support, 3.10 ready.
+  New formats: ``unsafehtml``, ``latex_longtable``, ``fancy_outline``.
+  Support lists of UserDicts as input.
+  Support hyperlinks in terminal output.
+  Improve testing on systems with proxies.
+  Migrate to pytest.
+  Various bug fixes and improvements.
 - 0.8.7: Bug fixes. New format: `pretty`. HTML escaping.
 - 0.8.6: Bug fixes. Stop supporting Python 3.3, 3.4.
 - 0.8.5: Fix broken Windows package. Minor documentation updates.

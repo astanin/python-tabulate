@@ -750,4 +750,7 @@ Nick Satterly, Daniel Robbins, Dmitry B, Lars Butler, Andreas Maier,
 Dick Marinus, Sébastien Celles, Yago González, Andrew Gaul, Wim Glenn,
 Jean Michel Rouly, Tim Gates, John Vandenberg, Sorin Sbarnea,
 Wes Turner, Andrew Tija, Marco Gorelli, Sean McGinnis, danja100,
-Vladimir Vrzić, Bart Broere.
+endolith, Dominic Davis-Foster, pavlocat, Daniel Aslau, paulc,
+Felix Yan, Shane Loretz, Frank Busse, Harsh Singh, Derek Weitzel,
+Vladimir Vrzić, 서승우 (chrd5273), Georgy Frolov, Christian Cwienk,
+Bart Broere.
