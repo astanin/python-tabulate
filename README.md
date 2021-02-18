@@ -681,16 +681,17 @@ numeric data, `tabulate` appears to be slower than `asciitable`, and
 faster than `PrettyTable` and `texttable` The following mini-benchmark
 was run in Python 3.8.1 in Windows 10 x64:
 
-    ===========================  ==========  ===========
-    Table formatter                time, μs    rel. time
-    ===========================  ==========  ===========
-    csv to StringIO                    12.4          1.0
-    join with tabs and newlines        15.7          1.3
-    asciitable (0.8.0)                208.3         16.7
-    tabulate (0.8.7)                  492.1         39.5
-    PrettyTable (0.7.2)               945.5         76.0
-    texttable (1.6.2)                1239.5         99.6
-    ===========================  ==========  ===========
+    =================================  ==========  ===========
+    Table formatter                      time, μs    rel. time
+    =================================  ==========  ===========
+    csv to StringIO                          12.0          1.0
+    join with tabs and newlines              14.7          1.2
+    asciitable (0.8.0)                      189.6         15.8
+    tabulate (0.8.8)                        480.9         40.1
+    tabulate (0.8.8, WIDE_CHARS_MODE)       610.2         50.8
+    PrettyTable (2.0.0)                     899.8         75.0
+    texttable (1.6.3)                      1117.3         93.1
+    =================================  ==========  ===========
 
 
 Version history
@@ -705,13 +706,13 @@ Contributions should include tests and an explanation for the changes
 they propose. Documentation (examples, docstrings, README.md) should be
 updated accordingly.
 
-This project uses [nose](https://nose.readthedocs.org/) testing
+This project uses [pytest](https://docs.pytest.org/) testing
 framework and [tox](https://tox.readthedocs.io/) to automate testing in
 different environments. Add tests to one of the files in the `test/`
 folder.
 
 To run tests on all supported Python versions, make sure all Python
-interpreters, `nose` and `tox` are installed, then run `tox` in the root
+interpreters, `pytest` and `tox` are installed, then run `tox` in the root
 of the project source tree.
 
 On Linux `tox` expects to find executables like `python2.6`,
@@ -720,20 +721,24 @@ On Linux `tox` expects to find executables like `python2.6`,
 `C:\Python34\python.exe` respectively.
 
 To test only some Python environments, use `-e` option. For example, to
-test only against Python 2.7 and Python 3.6, run:
+test only against Python 2.7 and Python 3.8, run:
 
-    tox -e py27,py36
+    tox -e py27,py38
 
 in the root of the project source tree.
 
 To enable NumPy and Pandas tests, run:
 
-    tox -e py27-extra,py36-extra
+    tox -e py27-extra,py38-extra
 
 (this may take a long time the first time, because NumPy and Pandas will
 have to be installed in the new virtual environments)
 
-See `tox.ini` file to learn how to use `nosetests` directly to test
+To fix code formatting:
+
+    tox -e lint
+
+See `tox.ini` file to learn how to use to test
 individual Python versions.
 
 Contributors
