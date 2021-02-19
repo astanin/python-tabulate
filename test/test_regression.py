@@ -275,14 +275,14 @@ def test_alignment_of_decimal_numbers_with_ansi_color():
 def test_alignment_of_decimal_numbers_with_commas():
     "Regression: alignment for decimal numbers with comma separators"
     skip("test is temporarily disable until the feature is reimplemented")
-    #table = [["c1r1", "14502.05"], ["c1r2", 105]]
-    #result = tabulate(table, tablefmt="grid", floatfmt=',.2f')
-    #expected = "\n".join(
+    # table = [["c1r1", "14502.05"], ["c1r2", 105]]
+    # result = tabulate(table, tablefmt="grid", floatfmt=',.2f')
+    # expected = "\n".join(
     #    ['+------+-----------+', '| c1r1 | 14,502.05 |',
     #    '+------+-----------+', '| c1r2 |    105.00 |',
     #    '+------+-----------+']
-    #)
-    #assert_equal(result, expected)
+    # )
+    # assert_equal(result, expected)
 
 
 def test_long_integers():

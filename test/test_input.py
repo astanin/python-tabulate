@@ -6,6 +6,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from tabulate import tabulate
 from common import assert_equal, assert_in, raises, skip
+
 try:
     from collections import UserDict
 except ImportError:
@@ -382,6 +383,7 @@ def test_list_of_dicts():
     result = tabulate(lod)
     assert_in(result, [expected1, expected2])
 
+
 def test_list_of_userdicts():
     "Input: a list of UserDicts."
     lod = [UserDict(foo=1, bar=2), UserDict(foo=3, bar=4)]
@@ -389,6 +391,7 @@ def test_list_of_userdicts():
     expected2 = "\n".join(["-  -", "2  1", "4  3", "-  -"])
     result = tabulate(lod)
     assert_in(result, [expected1, expected2])
+
 
 def test_list_of_dicts_keys():
     "Input: a list of dictionaries, with keys as headers."
@@ -402,6 +405,7 @@ def test_list_of_dicts_keys():
     result = tabulate(lod, headers="keys")
     assert_in(result, [expected1, expected2])
 
+
 def test_list_of_userdicts_keys():
     "Input: a list of UserDicts."
     lod = [UserDict(foo=1, bar=2), UserDict(foo=3, bar=4)]
@@ -413,6 +417,7 @@ def test_list_of_userdicts_keys():
     )
     result = tabulate(lod, headers="keys")
     assert_in(result, [expected1, expected2])
+
 
 def test_list_of_dicts_with_missing_keys():
     "Input: a list of dictionaries, with missing keys."
