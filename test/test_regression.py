@@ -460,3 +460,11 @@ def test_custom_tablefmt():
     expected = "\n".join(["A    B", "---  ---", "foo  bar", "baz  qux"])
     result = tabulate(rows, headers=["A", "B"], tablefmt=tablefmt)
     assert_equal(result, expected)
+
+
+def test_string_with_comma_between_digits_without_floatfmt_grouping_option():
+    "Regression: accept commas in numbers-as-text when grouping is not defined (github issue #110)"
+    table = [["126,000"]]
+    expected = "126,000"
+    result = tabulate(table, tablefmt="plain")
+    assert_equal(result, expected)  # no exception
