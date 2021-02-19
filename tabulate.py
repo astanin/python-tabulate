@@ -610,16 +610,8 @@ def _isnumber(string):
     False
     >>> _isnumber("inf")
     True
-    >>> _isnumber("1,234.56")
-    True
-    >>> _isnumber("1,234,578.0")
-    True
     """
-    if isinstance(string, (_text_type)) and "," in string and (
-        _isconvertible(float, string.replace(",",""))
-    ):
-        return True
-    elif not _isconvertible(float, string):
+    if not _isconvertible(float, string):
         return False
     elif isinstance(string, (_text_type, _binary_type)) and (
         math.isinf(float(string)) or math.isnan(float(string))
