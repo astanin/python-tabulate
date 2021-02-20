@@ -480,3 +480,11 @@ def test_py27orlater_list_of_ordereddicts():
     expected = "\n".join(["  b    a", "---  ---", "  1    2", "  1    2"])
     result = tabulate(lod, headers="keys")
     assert_equal(expected, result)
+
+
+def test_colalign_with_bad_type_is_error():
+    "Input: colalign which is not a list or tuple"
+    table = []
+
+    with raises(ValueError, match="colalign should be a list or tuple"):
+        tabulate(table, colalign="right")

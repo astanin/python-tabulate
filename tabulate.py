@@ -1597,6 +1597,10 @@ def tabulate(
     aligns = [numalign if ct in [int, float] else stralign for ct in coltypes]
     if colalign is not None:
         assert isinstance(colalign, Iterable)
+
+        if not isinstance(colalign, (list, tuple)):
+            raise ValueError("colalign should be a list or tuple")
+
         for idx, align in enumerate(colalign):
             aligns[idx] = align
     minwidths = (
