@@ -1613,3 +1613,24 @@ def test_preserve_whitespace():
     expected = "\n".join(["h1    h2    h3", "----  ----  ----", "foo   bar   foo"])
     result = tabulate(test_table, table_headers)
     assert_equal(expected, result)
+
+
+def test_colalign_with_no_data():
+    "Output: a table with empty data, but with colalign specified (issue #89)"
+    table_headers = ["h1", "h2"]
+    colalign = ["left", "right"]
+    test_table = []
+    expected = "\n".join(["h1    h2", "----  ----"])
+    result = tabulate(test_table, headers=table_headers, colalign=colalign)
+    assert_equal(expected, result)
+
+
+def test_colalign_with_mixed_data():
+    "Output: a table with mixed data and a specified colalign (issue #89)"
+    table_headers = ["h1", "h2"]
+    test_table = [["", "abcdef"], [1, "abc"]]
+    expected = "\n".join(
+        ["h1        h2", "----  ------", "      abcdef", "1        abc"]
+    )
+    result = tabulate(test_table, headers=table_headers, colalign=("left", "right"))
+    assert_equal(expected, result)

@@ -488,3 +488,21 @@ def test_colalign_with_bad_type_is_error():
 
     with raises(ValueError, match="colalign should be a list or tuple"):
         tabulate(table, colalign="right")
+
+
+def test_more_colalign_than_headers():
+    "Input: a list of headers and colalign with more colalign than headers (issue #84)"
+    table = [("square", 4), ("triangle", 3), ("circle", 1)]
+    headers = ["name", "sides"]
+    colalign = ["left", "right", "right"]
+
+    tabulate(table, headers=headers, colalign=colalign)
+
+
+def test_colalign_with_empty_input():
+    "Input: a list of headers and colalign with more colalign than headers (issue #84)"
+    table = []
+    headers = ["h1", "h2"]
+    colalign = ["left", "right"]
+
+    tabulate(table, headers=headers, colalign=colalign)
