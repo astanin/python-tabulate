@@ -1,3 +1,4 @@
+- 0.8.10: Future version
 - 0.8.9: Bug fix. Revert support of decimal separators.
 - 0.8.8: Python 3.9 support, 3.10 ready.
   New formats: ``unsafehtml``, ``latex_longtable``, ``fancy_outline``.
