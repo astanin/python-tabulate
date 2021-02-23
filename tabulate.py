@@ -72,6 +72,7 @@ MIN_PADDING = 2
 PRESERVE_WHITESPACE = False
 
 _DEFAULT_FLOATFMT = "g"
+_DEFAULT_INTFMT = ""
 _DEFAULT_MISSINGVAL = ""
 # default align will be overwritten by "left", "center" or "decimal"
 # depending on the formatter
@@ -962,7 +963,7 @@ def _column_type(strings, has_invisible=True, numparse=True):
     return reduce(_more_generic, types, _bool_type)
 
 
-def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
+def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
     """Format a value according to its type.
 
     Unicode is supported:
@@ -977,8 +978,10 @@ def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
     if val is None:
         return missingval
 
-    if valtype in [int, _text_type]:
+    if valtype is _text_type:
         return "{0}".format(val)
+    elif valtype is int:
+        return format(val, intfmt)
     elif valtype is _binary_type:
         try:
             return _text_type(val, "ascii")
@@ -1218,6 +1221,7 @@ def tabulate(
     headers=(),
     tablefmt="simple",
     floatfmt=_DEFAULT_FLOATFMT,
+    intfmt=_DEFAULT_INTFMT,
     numalign=_DEFAULT_ALIGN,
     stralign=_DEFAULT_ALIGN,
     missingval=_DEFAULT_MISSINGVAL,
@@ -1289,6 +1293,10 @@ def tabulate(
 
     Table formats
     -------------
+
+    `intfmt` is a format specification used for columns which
+    contain numeric data without a decimal point. This can also be
+    a list or tuple of format strings, one per column.
 
     `floatfmt` is a format specification used for columns which
     contain numeric data with a decimal point. This can also be
@@ -1582,6 +1590,14 @@ def tabulate(
         float_formats = list(floatfmt)
         if len(float_formats) < len(cols):
             float_formats.extend((len(cols) - len(float_formats)) * [_DEFAULT_FLOATFMT])
+    if isinstance(intfmt, basestring):  # old version
+        int_formats = len(cols) * [
+            intfmt
+        ]  # just duplicate the string to use in each column
+    else:  # if intfmt is list, tuple etc we have one per column
+        int_formats = list(intfmt)
+        if len(int_formats) < len(cols):
+            int_formats.extend((len(cols) - len(int_formats)) * [_DEFAULT_INTFMT])
     if isinstance(missingval, basestring):
         missing_vals = len(cols) * [missingval]
     else:
@@ -1589,8 +1605,10 @@ def tabulate(
         if len(missing_vals) < len(cols):
             missing_vals.extend((len(cols) - len(missing_vals)) * [_DEFAULT_MISSINGVAL])
     cols = [
-        [_format(v, ct, fl_fmt, miss_v, has_invisible) for v in c]
-        for c, ct, fl_fmt, miss_v in zip(cols, coltypes, float_formats, missing_vals)
+        [_format(v, ct, fl_fmt, int_fmt, miss_v, has_invisible) for v in c]
+        for c, ct, fl_fmt, int_fmt, miss_v in zip(
+            cols, coltypes, float_formats, int_formats, missing_vals
+        )
     ]
 
     # align columns
@@ -1791,6 +1809,7 @@ def _main():
     -o FILE, --output FILE    print table to FILE (default: stdout)
     -s REGEXP, --sep REGEXP   use a custom column separator (default: whitespace)
     -F FPFMT, --float FPFMT   floating point number format (default: g)
+    -I INTFMT, --int INTFMT   integer point number format (default: "")
     -f FMT, --format FMT      set output table format; supported formats:
                               plain, simple, grid, fancy_grid, pipe, orgtbl,
                               rst, mediawiki, html, latex, latex_raw,
@@ -1806,7 +1825,7 @@ def _main():
         opts, args = getopt.getopt(
             sys.argv[1:],
             "h1o:s:F:A:f:",
-            ["help", "header", "output", "sep=", "float=", "align=", "format="],
+            ["help", "header", "output", "sep=", "float=", "int=", "align=", "format="],
         )
     except getopt.GetoptError as e:
         print(e)
@@ -1814,6 +1833,7 @@ def _main():
         sys.exit(2)
     headers = []
     floatfmt = _DEFAULT_FLOATFMT
+    intfmt = _DEFAULT_INTFMT
     colalign = None
     tablefmt = "simple"
     sep = r"\s+"
@@ -1825,6 +1845,8 @@ def _main():
             outfile = value
         elif opt in ["-F", "--float"]:
             floatfmt = value
+        elif opt in ["-I", "--int"]:
+            intfmt = value
         elif opt in ["-C", "--colalign"]:
             colalign = value.split()
         elif opt in ["-f", "--format"]:
@@ -1850,6 +1872,7 @@ def _main():
                     tablefmt=tablefmt,
                     sep=sep,
                     floatfmt=floatfmt,
+                    intfmt=intfmt,
                     file=out,
                     colalign=colalign,
                 )
@@ -1861,16 +1884,17 @@ def _main():
                         tablefmt=tablefmt,
                         sep=sep,
                         floatfmt=floatfmt,
+                        intfmt=intfmt,
                         file=out,
                         colalign=colalign,
                     )
 
 
-def _pprint_file(fobject, headers, tablefmt, sep, floatfmt, file, colalign):
+def _pprint_file(fobject, headers, tablefmt, sep, floatfmt, intfmt, file, colalign):
     rows = fobject.readlines()
     table = [re.split(sep, r.rstrip()) for r in rows if r.strip()]
     print(
-        tabulate(table, headers, tablefmt, floatfmt=floatfmt, colalign=colalign),
+        tabulate(table, headers, tablefmt, floatfmt=floatfmt, intfmt=intfmt, colalign=colalign),
         file=file,
     )
 

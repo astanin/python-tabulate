@@ -1315,6 +1315,13 @@ def test_empty_data_without_headers():
     assert_equal(expected, result)
 
 
+def test_intfmt():
+    "Output: integer format"
+    result = tabulate([[10000], [10]], intfmt=",", tablefmt="plain")
+    expected = "10,000\n    10"
+    assert_equal(expected, result)
+
+
 def test_floatfmt():
     "Output: floating point format"
     result = tabulate([["1.23456789"], [1.0]], floatfmt=".3f", tablefmt="plain")

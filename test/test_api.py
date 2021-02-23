@@ -46,6 +46,7 @@ def test_tabulate_signature():
         ("headers", ()),
         ("tablefmt", "simple"),
         ("floatfmt", "g"),
+        ("intfmt", ""),
         ("numalign", "default"),
         ("stralign", "default"),
         ("missingval", ""),
