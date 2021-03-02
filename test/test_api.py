@@ -34,6 +34,9 @@ def _check_signature(function, expected_sig):
         skip("")
     actual_sig = signature(function)
     print("expected: %s\nactual: %s\n" % (expected_sig, str(actual_sig)))
+
+    assert len(actual_sig.parameters) == len(expected_sig)
+
     for (e, ev), (a, av) in zip(expected_sig, actual_sig.parameters.items()):
         assert e == a and ev == av.default
 
@@ -49,6 +52,10 @@ def test_tabulate_signature():
         ("numalign", "default"),
         ("stralign", "default"),
         ("missingval", ""),
+        ("showindex", "default"),
+        ("disable_numparse", False),
+        ("colalign", None),
+        ("maxcolwidths", None),
     ]
     _check_signature(tabulate, expected_sig)
 

@@ -638,6 +638,33 @@ a multiline cell, and headers with a multiline cell:
 
 Multiline cells are not well supported for the other table formats.
 
+### Automating Multilines
+While tabulate supports data passed in with multiines entries explicitly provided,
+it also provides some support to help manage this work internally.
+
+The `maxcolwidths` argument is a list where each entry specifies the max width for
+it's respective column. Any cell that will exceed this will automatically wrap the content.
+To assign the same max width for all columns, a singular int scaler can be used.
+
+Use `None` for any columns where an explicit maximum does not need to be provided,
+and thus no automate multiline wrapping will take place.
+
+The wraping uses the python standard [textwrap.wrap](https://docs.python.org/3/library/textwrap.html#textwrap.wrap)
+function with default parameters - aside from width.
+
+This example demonstrates usagage of automatic multiline wrapping, though typically
+the lines being wrapped would probably be significantly longer than this.
+
+    >>> print(tabulate([["John Smith", "Middle Manager"]], headers=["Name", "Title"], tablefmt="grid", maxcolwidths=[None, 8]))
+    +------------+---------+
+    | Name       | Title   |
+    +============+=========+
+    | John Smith | Middle  |
+    |            | Manager |
+    +------------+---------+
+
+
+
 Usage of the command line utility
 ---------------------------------
 

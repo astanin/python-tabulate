@@ -104,6 +104,103 @@ def test_plain_multiline_with_empty_cells_headerless():
     assert_equal(expected, result)
 
 
+def test_plain_maxcolwidth_autowraps():
+    "Output: maxcolwidth will result in autowrapping longer cells"
+    table = [["hdr", "fold"], ["1", "very long data"]]
+    expected = "\n".join(["  hdr  fold", "    1  very long", "       data"])
+    result = tabulate(
+        table, headers="firstrow", tablefmt="plain", maxcolwidths=[10, 10]
+    )
+    assert_equal(expected, result)
+
+
+def test_plain_maxcolwidth_autowraps_wide_chars():
+    "Output: maxcolwidth and autowrapping functions with wide characters"
+    try:
+        import wcwidth  # noqa
+    except ImportError:
+        skip("test_wrap_text_wide_chars is skipped")
+
+    table = [
+        ["hdr", "fold"],
+        ["1", "약간 감싸면 더 잘 보일 수있는 다소 긴 설명입니다 설명입니다 설명입니다 설명입니다 설명"],
+    ]
+    expected = "\n".join(
+        [
+            "  hdr  fold",
+            "    1  약간 감싸면 더 잘 보일 수있는",
+            "       다소 긴 설명입니다 설명입니다",
+            "       설명입니다 설명입니다 설명",
+        ]
+    )
+    result = tabulate(
+        table, headers="firstrow", tablefmt="plain", maxcolwidths=[10, 30]
+    )
+    assert_equal(expected, result)
+
+
+def test_maxcolwidth_single_value():
+    "Output: maxcolwidth can be specified as a single number that works for each column"
+    table = [
+        ["hdr", "fold1", "fold2"],
+        ["mini", "this is short", "this is a bit longer"],
+    ]
+    expected = "\n".join(
+        [
+            "hdr    fold1    fold2",
+            "mini   this     this",
+            "       is       is a",
+            "       short    bit",
+            "                longer",
+        ]
+    )
+    result = tabulate(table, headers="firstrow", tablefmt="plain", maxcolwidths=6)
+    assert_equal(expected, result)
+
+
+def test_maxcolwidth_pad_tailing_widths():
+    "Output: maxcolwidth, if only partly specified, pads tailing cols with None"
+    table = [
+        ["hdr", "fold1", "fold2"],
+        ["mini", "this is short", "this is a bit longer"],
+    ]
+    expected = "\n".join(
+        [
+            "hdr    fold1    fold2",
+            "mini   this     this is a bit longer",
+            "       is",
+            "       short",
+        ]
+    )
+    result = tabulate(
+        table, headers="firstrow", tablefmt="plain", maxcolwidths=[None, 6]
+    )
+    assert_equal(expected, result)
+
+
+def test_maxcolwidth_honor_disable_parsenum():
+    "Output: Using maxcolwidth in conjunction with disable_parsenum is honored"
+    table = [
+        ["first number", 123.456789, "123.456789"],
+        ["second number", "987654321.123", "987654321.123"],
+    ]
+    expected = "\n".join(
+        [
+            "+--------+---------------+--------+",
+            "| first  | 123.457       | 123.45 |",
+            "| number |               | 6789   |",
+            "+--------+---------------+--------+",
+            "| second |   9.87654e+08 | 987654 |",
+            "| number |               | 321.12 |",
+            "|        |               | 3      |",
+            "+--------+---------------+--------+",
+        ]
+    )
+    # Grid makes showing the alignment difference a little easier
+    result = tabulate(table, tablefmt="grid", maxcolwidths=6, disable_numparse=[2])
+    assert_equal(expected, result)
+
+
 def test_simple():
     "Output: simple with headers"
     expected = "\n".join(
