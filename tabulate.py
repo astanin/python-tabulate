@@ -1862,7 +1862,7 @@ class _CustomTextWrap(textwrap.TextWrapper):
 
     def __init__(self, *args, **kwargs):
         self._active_codes = []
-        super(_CustomTextWrap, self).__init__(*args, **kwargs)
+        textwrap.TextWrapper.__init__(self, *args, **kwargs)
 
     @staticmethod
     def _len(item):
