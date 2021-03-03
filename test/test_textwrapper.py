@@ -79,6 +79,11 @@ def test_wrap_wide_char_longword():
 
 def test_wrap_mixed_string():
     """TextWrapper: wrapping string with mix of wide and non-wide chars"""
+    try:
+        import wcwidth  # noqa
+    except ImportError:
+        skip("test_wrap_wide_char is skipped")
+
     data = (
         "This content of this string (この文字列のこの内容) contains "
         "mulitple character types (複数の文字タイプが含まれています)"
