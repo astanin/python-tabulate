@@ -5,7 +5,7 @@
 from tabulate import _CustomTextWrap as CTW
 from textwrap import TextWrapper as OTW
 
-from .common import skip, assert_equal
+from common import skip, assert_equal
 
 
 def test_wrap_multiword_non_wide():
