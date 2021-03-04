@@ -8,6 +8,7 @@ from collections import namedtuple
 import sys
 import re
 import math
+import textwrap
 
 
 if sys.version_info >= (3, 3):
@@ -568,6 +569,8 @@ _invisible_codes_bytes = re.compile(
 _invisible_codes_link = re.compile(
     r"\x1B]8;[a-zA-Z0-9:]*;[^\x1B]+\x1B\\([^\x1b]+)\x1B]8;;\x1B\\"
 )  # Terminal hyperlinks
+
+_ansi_color_reset_code = "\033[0m"
 
 
 def simple_separated_format(separator):
@@ -1213,6 +1216,29 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     return rows, headers
 
 
+def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True):
+    numparses = _expand_iterable(numparses, len(list_of_lists[0]), True)
+
+    result = []
+
+    for row in list_of_lists:
+        new_row = []
+        for cell, width, numparse in zip(row, colwidths, numparses):
+            if _isnumber(cell) and numparse:
+                new_row.append(cell)
+                continue
+
+            if width is not None:
+                wrapper = _CustomTextWrap(width=width)
+                wrapped = wrapper.wrap(cell)
+                new_row.append("\n".join(wrapped))
+            else:
+                new_row.append(cell)
+        result.append(new_row)
+
+    return result
+
+
 def tabulate(
     tabular_data,
     headers=(),
@@ -1224,6 +1250,7 @@ def tabulate(
     showindex="default",
     disable_numparse=False,
     colalign=None,
+    maxcolwidths=None,
 ):
     """Format a fixed width table for pretty printing.
 
@@ -1521,6 +1548,31 @@ def tabulate(
     indices is used to disable number parsing only on those columns
     e.g. `disable_numparse=[0, 2]` would disable number parsing only on the
     first and third columns.
+
+    Column Widths and Auto Line Wrapping
+    ------------------------------------
+    Tabulate will, by default, set the width of each column to the length of the
+    longest element in that column. However, in situations where fields are expected
+    to reasonably be too long to look good as a single line, tabulate can help automate
+    word wrapping long fields for you. Use the parameter `maxcolwidth` to provide a
+    list of maximal column widths
+
+    >>> print(tabulate( \
+          [('1', 'John Smith', \
+            'This is a rather long description that might look better if it is wrapped a bit')], \
+          headers=("Issue Id", "Author", "Description"), \
+          maxcolwidths=[None, None, 30], \
+          tablefmt="grid"  \
+        ))
+    +------------+------------+-------------------------------+
+    |   Issue Id | Author     | Description                   |
+    +============+============+===============================+
+    |          1 | John Smith | This is a rather long         |
+    |            |            | description that might look   |
+    |            |            | better if it is wrapped a bit |
+    +------------+------------+-------------------------------+
+
+
     """
 
     if tabular_data is None:
@@ -1528,6 +1580,18 @@ def tabulate(
     list_of_lists, headers = _normalize_tabular_data(
         tabular_data, headers, showindex=showindex
     )
+
+    if maxcolwidths is not None:
+        num_cols = len(list_of_lists[0])
+        if isinstance(maxcolwidths, int):  # Expand scalar for all columns
+            maxcolwidths = _expand_iterable(maxcolwidths, num_cols, maxcolwidths)
+        else:  # Ignore col width for any 'trailing' columns
+            maxcolwidths = _expand_iterable(maxcolwidths, num_cols, None)
+
+        numparses = _expand_numparse(disable_numparse, num_cols)
+        list_of_lists = _wrap_text_to_colwidths(
+            list_of_lists, maxcolwidths, numparses=numparses
+        )
 
     # empty values in the first column of RST tables should be escaped (issue #82)
     # "" should be escaped as "\\ " or ".."
@@ -1645,6 +1709,20 @@ def _expand_numparse(disable_numparse, column_count):
         return numparses
     else:
         return [not disable_numparse] * column_count
+
+
+def _expand_iterable(original, num_desired, default):
+    """
+    Expands the `original` argument to return a return a list of
+    length `num_desired`. If `original` is shorter than `num_desired`, it will
+    be padded with the value in `default`.
+    If `original` is not a list to begin with (i.e. scalar value) a list of
+    length `num_desired` completely populated with `default will be returned
+    """
+    if isinstance(original, Iterable):
+        return original + [default] * (num_desired - len(original))
+    else:
+        return [default] * num_desired
 
 
 def _pad_row(cells, padding):
@@ -1772,6 +1850,206 @@ def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline):
             return output
     else:  # a completely empty table
         return ""
+
+
+class _CustomTextWrap(textwrap.TextWrapper):
+    """A custom implementation of CPython's textwrap.TextWrapper. This supports
+    both wide characters (Korea, Japanese, Chinese)  - including mixed string.
+    For the most part, the `_handle_long_word` and `_wrap_chunks` functions were
+    copy pasted out of the CPython baseline, and updated with our custom length
+    and line appending logic.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self._active_codes = []
+        self.max_lines = None  # For python2 compatibility
+        textwrap.TextWrapper.__init__(self, *args, **kwargs)
+
+    @staticmethod
+    def _len(item):
+        """Custom len that gets console column width for wide
+        and non-wide characters as well as ignores color codes"""
+        stripped = _strip_invisible(item)
+        if wcwidth:
+            return wcwidth.wcswidth(stripped)
+        else:
+            return len(stripped)
+
+    def _update_lines(self, lines, new_line):
+        """Adds a new line to the list of lines the text is being wrapped into
+        This function will also track any ANSI color codes in this string as well
+        as add any colors from previous lines order to preserve the same formatting
+        as a single unwrapped string.
+        """
+        code_matches = [x for x in re.finditer(_invisible_codes, new_line)]
+        color_codes = [
+            code.string[code.span()[0] : code.span()[1]] for code in code_matches
+        ]
+
+        # Add color codes from earlier in the unwrapped line, and then track any new ones we add.
+        new_line = "".join(self._active_codes) + new_line
+
+        for code in color_codes:
+            if code != _ansi_color_reset_code:
+                self._active_codes.append(code)
+            else:  # A single reset code resets everything
+                self._active_codes = []
+
+        # Always ensure each line is color terminted if any colors are
+        # still active, otherwise colors will bleed into other cells on the console
+        if len(self._active_codes) > 0:
+            new_line = new_line + _ansi_color_reset_code
+
+        lines.append(new_line)
+
+    def _handle_long_word(self, reversed_chunks, cur_line, cur_len, width):
+        """_handle_long_word(chunks : [string],
+                             cur_line : [string],
+                             cur_len : int, width : int)
+        Handle a chunk of text (most likely a word, not whitespace) that
+        is too long to fit in any line.
+        """
+        # Figure out when indent is larger than the specified width, and make
+        # sure at least one character is stripped off on every pass
+        if width < 1:
+            space_left = 1
+        else:
+            space_left = width - cur_len
+
+        # If we're allowed to break long words, then do so: put as much
+        # of the next chunk onto the current line as will fit.
+        if self.break_long_words:
+            # Tabulate Custom: Build the string up piece-by-piece in order to
+            # take each charcter's width into account
+            chunk = reversed_chunks[-1]
+            i = 1
+            while self._len(chunk[:i]) <= space_left:
+                i = i + 1
+            cur_line.append(chunk[: i - 1])
+            reversed_chunks[-1] = chunk[i - 1 :]
+
+        # Otherwise, we have to preserve the long word intact.  Only add
+        # it to the current line if there's nothing already there --
+        # that minimizes how much we violate the width constraint.
+        elif not cur_line:
+            cur_line.append(reversed_chunks.pop())
+
+        # If we're not allowed to break long words, and there's already
+        # text on the current line, do nothing.  Next time through the
+        # main loop of _wrap_chunks(), we'll wind up here again, but
+        # cur_len will be zero, so the next line will be entirely
+        # devoted to the long word that we can't handle right now.
+
+    def _wrap_chunks(self, chunks):
+        """_wrap_chunks(chunks : [string]) -> [string]
+        Wrap a sequence of text chunks and return a list of lines of
+        length 'self.width' or less.  (If 'break_long_words' is false,
+        some lines may be longer than this.)  Chunks correspond roughly
+        to words and the whitespace between them: each chunk is
+        indivisible (modulo 'break_long_words'), but a line break can
+        come between any two chunks.  Chunks should not have internal
+        whitespace; ie. a chunk is either all whitespace or a "word".
+        Whitespace chunks will be removed from the beginning and end of
+        lines, but apart from that whitespace is preserved.
+        """
+        lines = []
+        if self.width <= 0:
+            raise ValueError("invalid width %r (must be > 0)" % self.width)
+        if self.max_lines is not None:
+            if self.max_lines > 1:
+                indent = self.subsequent_indent
+            else:
+                indent = self.initial_indent
+            if self._len(indent) + self._len(self.placeholder.lstrip()) > self.width:
+                raise ValueError("placeholder too large for max width")
+
+        # Arrange in reverse order so items can be efficiently popped
+        # from a stack of chucks.
+        chunks.reverse()
+
+        while chunks:
+
+            # Start the list of chunks that will make up the current line.
+            # cur_len is just the length of all the chunks in cur_line.
+            cur_line = []
+            cur_len = 0
+
+            # Figure out which static string will prefix this line.
+            if lines:
+                indent = self.subsequent_indent
+            else:
+                indent = self.initial_indent
+
+            # Maximum width for this line.
+            width = self.width - self._len(indent)
+
+            # First chunk on line is whitespace -- drop it, unless this
+            # is the very beginning of the text (ie. no lines started yet).
+            if self.drop_whitespace and chunks[-1].strip() == "" and lines:
+                del chunks[-1]
+
+            while chunks:
+                chunk_len = self._len(chunks[-1])
+
+                # Can at least squeeze this chunk onto the current line.
+                if cur_len + chunk_len <= width:
+                    cur_line.append(chunks.pop())
+                    cur_len += chunk_len
+
+                # Nope, this line is full.
+                else:
+                    break
+
+            # The current line is full, and the next chunk is too big to
+            # fit on *any* line (not just this one).
+            if chunks and self._len(chunks[-1]) > width:
+                self._handle_long_word(chunks, cur_line, cur_len, width)
+                cur_len = sum(map(self._len, cur_line))
+
+            # If the last chunk on this line is all whitespace, drop it.
+            if self.drop_whitespace and cur_line and cur_line[-1].strip() == "":
+                cur_len -= self._len(cur_line[-1])
+                del cur_line[-1]
+
+            if cur_line:
+                if (
+                    self.max_lines is None
+                    or len(lines) + 1 < self.max_lines
+                    or (
+                        not chunks
+                        or self.drop_whitespace
+                        and len(chunks) == 1
+                        and not chunks[0].strip()
+                    )
+                    and cur_len <= width
+                ):
+                    # Convert current line back to a string and store it in
+                    # list of all lines (return value).
+                    self._update_lines(lines, indent + "".join(cur_line))
+                else:
+                    while cur_line:
+                        if (
+                            cur_line[-1].strip()
+                            and cur_len + self._len(self.placeholder) <= width
+                        ):
+                            cur_line.append(self.placeholder)
+                            self._update_lines(lines, indent + "".join(cur_line))
+                            break
+                        cur_len -= self._len(cur_line[-1])
+                        del cur_line[-1]
+                    else:
+                        if lines:
+                            prev_line = lines[-1].rstrip()
+                            if (
+                                self._len(prev_line) + self._len(self.placeholder)
+                                <= self.width
+                            ):
+                                lines[-1] = prev_line + self.placeholder
+                                break
+                        self._update_lines(lines, indent + self.placeholder.lstrip())
+                    break
+
+        return lines
 
 
 def _main():
