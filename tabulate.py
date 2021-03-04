@@ -1862,6 +1862,7 @@ class _CustomTextWrap(textwrap.TextWrapper):
 
     def __init__(self, *args, **kwargs):
         self._active_codes = []
+        self.max_lines = None  # For python2 compatibility
         textwrap.TextWrapper.__init__(self, *args, **kwargs)
 
     @staticmethod

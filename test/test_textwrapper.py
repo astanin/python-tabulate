@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """Discretely test functionality of our custom TextWrapper"""
+from __future__ import unicode_literals
 
 from tabulate import _CustomTextWrap as CTW
 from textwrap import TextWrapper as OTW
