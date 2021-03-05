@@ -590,6 +590,37 @@ def test_fancy_grid_multiline_with_empty_cells_headerless():
     assert_equal(expected, result)
 
 
+def test_fancy_grid_multiline_row_align():
+    "Output: fancy_grid with multiline cells aligning some text not to top of cell"
+    table = [
+        ["0", "some\ndefault\ntext", "up\ntop"],
+        ["1", "very\nlong\ndata\ncell", "mid\ntest"],
+        ["2", "also\nvery\nlong\ndata\ncell", "fold\nthis"],
+    ]
+    expected = "\n".join(
+        [
+            "╒═══╤═════════╤══════╕",
+            "│ 0 │ some    │ up   │",
+            "│   │ default │ top  │",
+            "│   │ text    │      │",
+            "├───┼─────────┼──────┤",
+            "│   │ very    │      │",
+            "│ 1 │ long    │ mid  │",
+            "│   │ data    │ test │",
+            "│   │ cell    │      │",
+            "├───┼─────────┼──────┤",
+            "│   │ also    │      │",
+            "│   │ very    │      │",
+            "│   │ long    │      │",
+            "│   │ data    │ fold │",
+            "│ 2 │ cell    │ this │",
+            "╘═══╧═════════╧══════╛",
+        ]
+    )
+    result = tabulate(table, tablefmt="fancy_grid", rowalign=[None, "center", "bottom"])
+    assert_equal(expected, result)
+
+
 def test_pipe():
     "Output: pipe with headers"
     expected = "\n".join(

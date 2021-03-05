@@ -47,6 +47,79 @@ def test_align_column_multiline():
     assert_equal(output, expected)
 
 
+def test_align_cell_veritically_one_line_only():
+    "Internal: Aligning a single height cell is same regardless of alignment value"
+    lines = ["one line"]
+    column_width = 8
+
+    top = T._align_cell_veritically(lines, 1, column_width, "top")
+    center = T._align_cell_veritically(lines, 1, column_width, "center")
+    bottom = T._align_cell_veritically(lines, 1, column_width, "bottom")
+    none = T._align_cell_veritically(lines, 1, column_width, None)
+
+    expected = ["one line"]
+    assert top == center == bottom == none == expected
+
+
+def test_align_cell_veritically_top_single_text_multiple_pad():
+    "Internal: Align single cell text to top"
+    result = T._align_cell_veritically(["one line"], 3, 8, "top")
+
+    expected = ["one line", "        ", "        "]
+
+    assert_equal(expected, result)
+
+
+def test_align_cell_veritically_center_single_text_multiple_pad():
+    "Internal: Align single cell text to center"
+    result = T._align_cell_veritically(["one line"], 3, 8, "center")
+
+    expected = ["        ", "one line", "        "]
+
+    assert_equal(expected, result)
+
+
+def test_align_cell_veritically_bottom_single_text_multiple_pad():
+    "Internal: Align single cell text to bottom"
+    result = T._align_cell_veritically(["one line"], 3, 8, "bottom")
+
+    expected = ["        ", "        ", "one line"]
+
+    assert_equal(expected, result)
+
+
+def test_align_cell_veritically_top_multi_text_multiple_pad():
+    "Internal: Align multiline celltext text to top"
+    text = ["just", "one ", "cell"]
+    result = T._align_cell_veritically(text, 6, 4, "top")
+
+    expected = ["just", "one ", "cell", "    ", "    ", "    "]
+
+    assert_equal(expected, result)
+
+
+def test_align_cell_veritically_center_multi_text_multiple_pad():
+    "Internal: Align multiline celltext text to center"
+    text = ["just", "one ", "cell"]
+    result = T._align_cell_veritically(text, 6, 4, "center")
+
+    # Even number of rows, can't perfectly center, but we pad less
+    # at top when required to do make a judgement
+    expected = ["    ", "just", "one ", "cell", "    ", "    "]
+
+    assert_equal(expected, result)
+
+
+def test_align_cell_veritically_bottom_multi_text_multiple_pad():
+    "Internal: Align multiline celltext text to bottom"
+    text = ["just", "one ", "cell"]
+    result = T._align_cell_veritically(text, 6, 4, "bottom")
+
+    expected = ["    ", "    ", "    ", "just", "one ", "cell"]
+
+    assert_equal(expected, result)
+
+
 def test_wrap_text_to_colwidths():
     "Internal: Test _wrap_text_to_colwidths to show it will wrap text based on colwidths"
     rows = [
