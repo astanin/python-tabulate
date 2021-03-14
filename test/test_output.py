@@ -5,7 +5,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 import tabulate as tabulate_module
-from tabulate import tabulate, simple_separated_format
+from tabulate import tabulate, simple_separated_format, TabulateContextManager
 from common import assert_equal, raises, skip
 
 
@@ -1710,3 +1710,39 @@ def test_preserve_whitespace():
     expected = "\n".join(["h1    h2    h3", "----  ----  ----", "foo   bar   foo"])
     result = tabulate(test_table, table_headers)
     assert_equal(expected, result)
+
+
+def test_context_manager():
+    expected = "\n".join(
+        ["strings      numbers", "spam         41.9999", "eggs        451"]
+    )
+    # Using a list because we need to access this from a nested function so
+    # this needs to be a mutable variable
+    result = [""]
+
+    def print_fn(value):
+        result[0] = value
+
+    with TabulateContextManager(
+        tablefmt="plain", headers=_test_table_headers, print_fn=print_fn
+    ) as t:
+        for row in _test_table:
+            t(*row)
+
+    assert_equal(expected, result[0])
+
+
+def test_context_manager_headerless():
+    expected = "\n".join(["spam   41.9999", "eggs  451"])
+    # Using a list because we need to access this from a nested function so
+    # this needs to be a mutable variable
+    result = [""]
+
+    def print_fn(value):
+        result[0] = value
+
+    with TabulateContextManager(tablefmt="plain", print_fn=print_fn) as t:
+        for row in _test_table:
+            t(*row)
+
+    assert_equal(expected, result[0])

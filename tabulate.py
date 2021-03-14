@@ -1694,6 +1694,59 @@ def tabulate(
     return _format_table(tablefmt, headers, rows, minwidths, aligns, is_multiline)
 
 
+class TabulateContextManager(object):
+    """ Use `tabulate` as a context manager. Incrementally add rows to the
+        table inside the `with` body. Upon exit, the whole table will be
+        printed to the standard output.
+
+        Usage:
+
+            with TabulateContextManager() as t:
+                t("Bill", 25)
+                t("Mary", 26)
+
+            ----  --
+            Bill  25
+            Mary  26
+            ----  --
+
+        Accepts the same parameters as `tabulate`:
+
+            with TabulateContextManager(headers="firstrow",
+                                        tablefmt="github") as t:
+                t('name', 'age')
+                t("Bill", 25)
+                t("Mary", 26)
+
+            | name   |   age |
+            |--------|-------|
+            | Bill   |    25 |
+            | Mary   |    26 |
+
+        If you don't want to print to the standard output, you can supply the
+        `print_fn` keyword argument which will be called on exit:
+
+            with open('output.txt', 'w') as f:
+                with TabulateContextManager(print_fn=f.write) as t:
+                    t("Bill", 25)
+                    t("Mary", 26)
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.print = kwargs.pop("print_fn", print)
+        self.args = args
+        self.kwargs = kwargs
+        self.rows = []
+
+    def __enter__(self):
+        def t(*values):
+            self.rows.append(values)
+        return t
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.print(tabulate(self.rows, *self.args, **self.kwargs))
+
+
 def _expand_numparse(disable_numparse, column_count):
     """
     Return a list of bools of length `column_count` which indicates whether

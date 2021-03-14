@@ -663,7 +663,45 @@ the lines being wrapped would probably be significantly longer than this.
     |            | Manager |
     +------------+---------+
 
+### Usage as a context manager
 
+You can call `TabulateContextManager` in a `with` statement to incrementally
+add rows to the table. Upon exit, the whole table will be printed to the
+standard output:
+
+```python
+with TabulateContextManager() as t:
+    t("Bill", 25)
+    t("Mary", 26)
+
+# <<< ----  --
+# ... Bill  25
+# ... Mary  26
+# ... ----  --
+```
+
+`TabulateContextManager` accepts the same parameters as `tabulate`:
+
+```python
+with TabulateContextManager(headers="firstrow", tablefmt="github") as t:
+    t('name', 'age')
+    t("Bill", 25)
+    t("Mary", 26)
+# <<< | name   |   age |
+# ... |--------|-------|
+# ... | Bill   |    25 |
+# ... | Mary   |    26 |
+```
+
+If you don't want to print to the standard output, you can supply the
+`print_fn` keyword argument which will be called on exit:
+
+```python
+with open('output.txt', 'w') as f:
+    with TabulateContextManager(print_fn=f.write) as t:
+        t("Bill", 25)
+        t("Mary", 26)
+```
 
 Usage of the command line utility
 ---------------------------------
