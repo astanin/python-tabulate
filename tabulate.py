@@ -16,6 +16,11 @@ if sys.version_info >= (3, 3):
 else:
     from collections import Iterable
 
+if sys.version_info >= (3, 7, 0):
+    import dataclasses
+else:
+    dataclasses = None
+
 if sys.version_info[0] < 3:
     from itertools import izip_longest
     from functools import partial
@@ -1057,6 +1062,8 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
     * list of OrderedDicts (usually used with headers="keys")
 
+    * list of dataclasses (Python 3.7+ only, usually used with headers="keys")
+
     * 2D NumPy arrays
 
     * NumPy record arrays (usually used with headers="keys")
@@ -1112,7 +1119,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         if headers == "keys":
             headers = list(map(_text_type, keys))  # headers should be strings
 
-    else:  # it's a usual an iterable of iterables, or a NumPy array
+    else:  # it's a usual iterable of iterables, or a NumPy array, or an iterable of dataclasses
         rows = list(tabular_data)
 
         if headers == "keys" and not rows:
@@ -1175,6 +1182,17 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             # Python Database API cursor object (PEP 0249)
             # print tabulate(cursor, headers='keys')
             headers = [column[0] for column in tabular_data.description]
+
+        elif (
+            dataclasses is not None
+            and len(rows) > 0
+            and dataclasses.is_dataclass(rows[0])
+        ):
+            # Python 3.7+'s dataclass
+            field_names = [field.name for field in dataclasses.fields(rows[0])]
+            if headers == "keys":
+                headers = field_names
+            rows = [[getattr(row, f) for f in field_names] for row in rows]
 
         elif headers == "keys" and len(rows) > 0:
             # keys are column indices
@@ -1264,8 +1282,8 @@ def tabulate(
     The first required argument (`tabular_data`) can be a
     list-of-lists (or another iterable of iterables), a list of named
     tuples, a dictionary of iterables, an iterable of dictionaries,
-    a two-dimensional NumPy array, NumPy record array, or a Pandas'
-    dataframe.
+    an iterable of dataclasses (Python 3.7+), a two-dimensional NumPy array,
+    NumPy record array, or a Pandas' dataframe.
 
 
     Table headers

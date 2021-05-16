@@ -480,3 +480,45 @@ def test_py27orlater_list_of_ordereddicts():
     expected = "\n".join(["  b    a", "---  ---", "  1    2", "  1    2"])
     result = tabulate(lod, headers="keys")
     assert_equal(expected, result)
+
+
+def test_py37orlater_list_of_dataclasses_keys():
+    "Input: a list of dataclasses with first item's fields as keys and headers"
+    try:
+        from dataclasses import make_dataclass
+
+        Person = make_dataclass("Person", ["name", "age", "height"])
+        ld = [Person("Alice", 23, 169.5), Person("Bob", 27, 175.0)]
+        result = tabulate(ld, headers="keys")
+        expected = "\n".join(
+            [
+                "name      age    height",
+                "------  -----  --------",
+                "Alice      23     169.5",
+                "Bob        27     175",
+            ]
+        )
+        assert_equal(expected, result)
+    except ImportError:
+        skip("test_py37orlater_list_of_dataclasses_keys is skipped")
+
+
+def test_py37orlater_list_of_dataclasses_headers():
+    "Input: a list of dataclasses with user-supplied headers"
+    try:
+        from dataclasses import make_dataclass
+
+        Person = make_dataclass("Person", ["name", "age", "height"])
+        ld = [Person("Alice", 23, 169.5), Person("Bob", 27, 175.0)]
+        result = tabulate(ld, headers=["person", "years", "cm"])
+        expected = "\n".join(
+            [
+                "person      years     cm",
+                "--------  -------  -----",
+                "Alice          23  169.5",
+                "Bob            27  175",
+            ]
+        )
+        assert_equal(expected, result)
+    except ImportError:
+        skip("test_py37orlater_list_of_dataclasses_headers is skipped")
