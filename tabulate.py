@@ -1088,9 +1088,12 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         if hasattr(tabular_data.values, "__call__"):
             # likely a conventional dict
             keys = tabular_data.keys()
-            rows = list(
-                izip_longest(*tabular_data.values())
-            )  # columns have to be transposed
+            if (all(type(value) in (str,int) for value in tabular_data.values())):
+                rows = [tabular_data.values()]
+            else:    
+                rows = list(
+                    izip_longest(*tabular_data.values())
+                )  # columns have to be transposed
         elif hasattr(tabular_data, "index"):
             # values is a property, has .index => it's likely a pandas.DataFrame (pandas 0.11.0)
             keys = list(tabular_data)
