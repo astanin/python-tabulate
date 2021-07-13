@@ -1089,7 +1089,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             # likely a conventional dict
             keys = tabular_data.keys()
             if (all(type(value) in (str,int) for value in tabular_data.values())):
-                rows = [tabular_data.values()]
+                rows = [tabular_data.values()] # make the dictionary a list 
             else:    
                 rows = list(
                     izip_longest(*tabular_data.values())

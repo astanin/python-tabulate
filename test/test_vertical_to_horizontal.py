@@ -5,7 +5,7 @@ import tabulate as tabulate_module
 from tabulate import tabulate
 from common import assert_equal
 
-def test_vertical():
+def test_vertical_to_horizontal():
     "Input: a dict of iterables with keys."
     table = {"song_name_question": 'Toxic', "album_name_question": "Singles", "artist_name_question": "Britney Spears"}    
    
