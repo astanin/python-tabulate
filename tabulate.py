@@ -1088,9 +1088,9 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         if hasattr(tabular_data.values, "__call__"):
             # likely a conventional dict
             keys = tabular_data.keys()
-            if (all(type(value) in (str,int) for value in tabular_data.values())):
-                rows = [tabular_data.values()] # make the dictionary a list 
-            else:    
+            if all(type(value) in (str, int) for value in tabular_data.values()):
+                rows = [tabular_data.values()]  # make the dictionary a list
+            else:
                 rows = list(
                     izip_longest(*tabular_data.values())
                 )  # columns have to be transposed
