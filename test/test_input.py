@@ -480,11 +480,3 @@ def test_py27orlater_list_of_ordereddicts():
     expected = "\n".join(["  b    a", "---  ---", "  1    2", "  1    2"])
     result = tabulate(lod, headers="keys")
     assert_equal(expected, result)
-
-
-def test_blank_list_firstrow():
-    "Input: a blank list with the first row as headers."
-    ll = []
-    expected = ""
-    result = tabulate(ll, headers="firstrow")
-    assert_equal(expected, result)

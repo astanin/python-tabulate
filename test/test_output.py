@@ -1412,6 +1412,13 @@ def test_empty_data_without_headers():
     assert_equal(expected, result)
 
 
+def test_empty_data_with_headers():
+    "Output: table with empty data and headers as firstrow"
+    expected = ""
+    result = tabulate([], headers="firstrow")
+    assert_equal(expected, result)
+
+
 def test_floatfmt():
     "Output: floating point format"
     result = tabulate([["1.23456789"], [1.0]], floatfmt=".3f", tablefmt="plain")
