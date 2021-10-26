@@ -216,6 +216,21 @@ corresponds to the `pipe` format without alignment colons:
     │ bacon  │     0 │
     ╘════════╧═══════╛
 
+`fancy_grid_single` draws a grid using box-drawing characters
+similar to fancy_grid, but using heavy lines instead of double
+lines - makes it compatible with linux consolefonts
+
+    >>> print(tabulate(table, headers, tablefmt="fancy_grid_single"))
+    ┍━━━━━━━━┯━━━━━━━┑
+    │ item   │   qty │
+    ┝━━━━━━━━┿━━━━━━━┥
+    │ spam   │    42 │
+    ├────────┼───────┤
+    │ eggs   │   451 │
+    ├────────┼───────┤
+    │ bacon  │     0 │
+    ┕━━━━━━━━┷━━━━━━━┙
+
 `presto` is like tables formatted by Presto cli:
 
     >>> print(tabulate(table, headers, tablefmt="presto"))
@@ -560,6 +575,19 @@ a multiline cell, and headers with a multiline cell:
     │ spam   │       │
     ╘════════╧═══════╛
 
+`fancy_grid_simple` tables:
+
+    >>> print(tabulate(table, headers, tablefmt="fancy_grid_simple"))
+    ┍━━━━━━━━┯━━━━━━━┑
+    │ item   │   qty │
+    │ name   │       │
+    ┝━━━━━━━━┿━━━━━━━┥
+    │ eggs   │   451 │
+    ├────────┼───────┤
+    │ more   │    42 │
+    │ spam   │       │
+    ┕━━━━━━━━┷━━━━━━━┙
+
 `pipe` tables:
 
     >>> print(tabulate(table, headers, tablefmt="pipe"))
@@ -681,9 +709,10 @@ Usage of the command line utility
     -s REGEXP, --sep REGEXP   use a custom column separator (default: whitespace)
     -F FPFMT, --float FPFMT   floating point number format (default: g)
     -f FMT, --format FMT      set output table format; supported formats:
-                              plain, simple, github, grid, fancy_grid, pipe,
-                              orgtbl, rst, mediawiki, html, latex, latex_raw,
-                              latex_booktabs, latex_longtable, tsv
+                              plain, simple, github, grid, fancy_grid,
+                              fancy_grid_single, pipe, orgtbl, rst, mediawiki,
+                              html, latex, latex_raw, latex_booktabs,
+                              latex_longtable, tsv
                               (default: simple)
 
 Performance considerations
