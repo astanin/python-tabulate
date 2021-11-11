@@ -1251,6 +1251,7 @@ def tabulate(
     disable_numparse=False,
     colalign=None,
     maxcolwidths=None,
+    maxheadercolwidths=None,
 ):
     """Format a fixed width table for pretty printing.
 
@@ -1572,6 +1573,7 @@ def tabulate(
     |            |            | better if it is wrapped a bit |
     +------------+------------+-------------------------------+
 
+    Header column width can be specified in a similar way using `maxheadercolwidth`
 
     """
 
@@ -1592,6 +1594,19 @@ def tabulate(
         list_of_lists = _wrap_text_to_colwidths(
             list_of_lists, maxcolwidths, numparses=numparses
         )
+
+    if maxheadercolwidths is not None:
+        num_cols = len(list_of_lists[0])
+        if isinstance(maxheadercolwidths, int):  # Expand scalar for all columns
+            maxheadercolwidths = _expand_iterable(maxheadercolwidths, num_cols, maxheadercolwidths)
+        else:  # Ignore col width for any 'trailing' columns
+            maxheadercolwidths = _expand_iterable(maxheadercolwidths, num_cols, None)
+
+        numparses = _expand_numparse(disable_numparse, num_cols)
+        headers = _wrap_text_to_colwidths(
+            [headers], maxheadercolwidths, numparses=numparses
+        )[0]
+
 
     # empty values in the first column of RST tables should be escaped (issue #82)
     # "" should be escaped as "\\ " or ".."
