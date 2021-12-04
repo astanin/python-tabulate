@@ -627,10 +627,7 @@ def _isnumber_with_thousands_separator(string):
     except (UnicodeDecodeError, AttributeError):
         pass
 
-    if re.match(_float_with_thousands_separators, string):
-        return True
-
-    return False
+    return bool(re.match(_float_with_thousands_separators, string))
 
 
 def _isconvertible(conv, string):
