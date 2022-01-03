@@ -5,7 +5,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 import tabulate as tabulate_module
-from tabulate import tabulate, simple_separated_format
+from tabulate import tabulate, simple_separated_format, SEPARATING_LINE
 from common import assert_equal, raises, skip
 
 
@@ -14,6 +14,7 @@ from common import assert_equal, raises, skip
 #  - left alignment of text,
 #  - decimal point alignment of numbers
 _test_table = [["spam", 41.9999], ["eggs", "451.0"]]
+_test_table_with_sep_line = [["spam", 41.9999], SEPARATING_LINE, ["eggs", "451.0"]]
 _test_table_headers = ["strings", "numbers"]
 
 
@@ -107,9 +108,19 @@ def test_plain_multiline_with_empty_cells_headerless():
 def test_plain_maxcolwidth_autowraps():
     "Output: maxcolwidth will result in autowrapping longer cells"
     table = [["hdr", "fold"], ["1", "very long data"]]
-    expected = "\n".join(["  hdr  fold", "    1  very long", "       data"])
+    expected = "\n".join(["  hdr  fold", "-----  ---------, "    1  very long", "       data"])
     result = tabulate(
         table, headers="firstrow", tablefmt="plain", maxcolwidths=[10, 10]
+    )
+    assert_equal(expected, result)
+
+
+def test_plain_maxcolwidth_autowraps_with_sep():
+    "Output: maxcolwidth will result in autowrapping longer cells and separating line"
+    table = [["hdr", "fold"], ["1", "very long data"], SEPARATING_LINE, ["2", "last line"]]
+    expected = "\n".join(["  hdr  fold", "    1  very long", "       data"])
+    result = tabulate(
+        table, headers="firstrow", tablefmt="", maxcolwidths=[10, 10]
     )
     assert_equal(expected, result)
 
@@ -215,6 +226,21 @@ def test_simple():
     assert_equal(expected, result)
 
 
+def test_simple_with_sep_line():
+    "Output: simple with headers and separating line"
+    expected = "\n".join(
+        [
+            "strings      numbers",
+            "---------  ---------",
+            "spam         41.9999",
+            "---------  ---------",
+            "eggs        451",
+        ]
+    )
+    result = tabulate(_test_table_with_sep_line, _test_table_headers, tablefmt="simple")
+    assert_equal(expected, result)
+
+
 def test_simple_multiline_2():
     "Output: simple with multiline cells"
     expected = "\n".join(
@@ -230,6 +256,22 @@ def test_simple_multiline_2():
     result = tabulate(table, headers="firstrow", stralign="center", tablefmt="simple")
     assert_equal(expected, result)
 
+def test_simple_multiline_2_with_sep_line():
+    "Output: simple with multiline cells"
+    expected = "\n".join(
+        [
+            " key     value",
+            "-----  ---------",
+            " foo      bar",
+            "-----  ---------",
+            "spam   multiline",
+            "         world",
+        ]
+    )
+    table = [["key", "value"], ["foo", "bar"], SEPARATING_LINE, ["spam", "multiline\nworld"]]
+    result = tabulate(table, headers="firstrow", stralign="center", tablefmt="simple")
+    assert_equal(expected, result)
+
 
 def test_simple_headerless():
     "Output: simple without headers"
@@ -237,6 +279,20 @@ def test_simple_headerless():
         ["----  --------", "spam   41.9999", "eggs  451", "----  --------"]
     )
     result = tabulate(_test_table, tablefmt="simple")
+    assert_equal(expected, result)
+
+
+def test_simple_headerless_with_sep_line():
+    "Output: simple without headers"
+    expected = "\n".join(
+        ["----  --------",
+         "spam   41.9999",
+         "----  --------",
+         "eggs  451",
+         "----  --------"
+         ]
+    )
+    result = tabulate(_test_table_with_sep_line, tablefmt="simple")
     assert_equal(expected, result)
 
 
@@ -1437,6 +1493,15 @@ def test_colalign_multi():
     assert_equal(expected, result)
 
 
+def test_colalign_multi_with_sep_line():
+    "Output: string columns with custom colalign"
+    result = tabulate(
+        [["one", "two"], SEPARATING_LINE, ["three", "four"]], colalign=("right",), tablefmt="plain"
+    )
+    expected = "  one  two\n\nthree  four"
+    assert_equal(expected, result)
+
+
 def test_float_conversions():
     "Output: float format parsed"
     test_headers = ["str", "bad_float", "just_float", "with_inf", "with_nan", "neg_inf"]
@@ -1612,7 +1677,30 @@ def test_list_of_lists_with_index():
     # keys' order (hence columns' order) is not deterministic in Python 3
     # => we have to consider both possible results as valid
     expected = "\n".join(
-        ["      a    b", "--  ---  ---", " 0    0  101", " 1    1  102", " 2    2  103"]
+        ["      a    b",
+         "--  ---  ---",
+         " 0    0  101",
+         " 1    1  102",
+         " 2    2  103"
+         ]
+    )
+    result = tabulate(dd, headers=["a", "b"], showindex=True)
+    assert_equal(result, expected)
+
+
+def test_list_of_lists_with_index_with_sep_line():
+    "Output: a table with a running index"
+    dd = [(0, 101), SEPARATING_LINE, (1, 102), (2, 103)]
+    # keys' order (hence columns' order) is not deterministic in Python 3
+    # => we have to consider both possible results as valid
+    expected = "\n".join(
+        ["      a    b",
+         "--  ---  ---",
+         " 0    0  101",
+         "--  ---  ---",
+         " 1    1  102",
+         " 2    2  103"
+         ]
     )
     result = tabulate(dd, headers=["a", "b"], showindex=True)
     assert_equal(result, expected)

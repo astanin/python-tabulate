@@ -82,6 +82,9 @@ _DEFAULT_ALIGN = "default"
 # if True, enable wide-character (CJK) support
 WIDE_CHARS_MODE = wcwidth is not None
 
+# Constant that can be used as part of passed rows to generate a separating line
+# It is purposely an unprintable character, very unlikely to be used in a table
+SEPARATING_LINE = "\001"
 
 Line = namedtuple("Line", ["begin", "hline", "sep", "end"])
 
@@ -1023,6 +1026,26 @@ def _align_header(
     else:
         return _padleft(width, header)
 
+def _remove_separating_lines(rows):
+    if type(rows) == list:
+        separating_lines = []
+        sans_rows = []
+        for index, row in enumerate(rows):
+            row_type = type(row)
+            if (row_type == list or row_type == str) and row[0] == SEPARATING_LINE:
+                separating_lines.append(index)
+            else:
+                sans_rows.append(row)
+        return sans_rows, separating_lines
+    else:
+        return rows, None
+
+
+def _reinsert_separating_lines(rows, separating_lines):
+    if separating_lines:
+        for index in separating_lines:
+            rows.insert(index, SEPARATING_LINE)
+
 
 def _prepend_row_index(rows, index):
     """Add a left-most index column."""
@@ -1032,7 +1055,9 @@ def _prepend_row_index(rows, index):
         print("index=", index)
         print("rows=", rows)
         raise ValueError("index must be as long as the number of data rows")
-    rows = [[v] + list(row) for v, row in zip(index, rows)]
+    sans_rows, separating_lines = _remove_separating_lines(rows)
+    rows = [[v] + list(row) for v, row in zip(index, sans_rows)]
+    _reinsert_separating_lines(rows, separating_lines)
     return rows
 
 
@@ -1191,7 +1216,8 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         rows = rows[1:]
 
     headers = list(map(_text_type, headers))
-    rows = list(map(list, rows))
+#    rows = list(map(list, rows))
+    rows = list(map(lambda r: r if r == SEPARATING_LINE else list(r), rows))
 
     # add or remove an index column
     showindex_is_a_str = type(showindex) in [_text_type, _binary_type]
@@ -1577,9 +1603,9 @@ def tabulate(
 
     if tabular_data is None:
         tabular_data = []
-    list_of_lists, headers = _normalize_tabular_data(
-        tabular_data, headers, showindex=showindex
-    )
+
+    list_of_lists, headers = _normalize_tabular_data(tabular_data, headers, showindex=showindex)
+    list_of_lists, separating_lines = _remove_separating_lines(list_of_lists)
 
     if maxcolwidths is not None:
         num_cols = len(list_of_lists[0])
@@ -1691,6 +1717,7 @@ def tabulate(
     if not isinstance(tablefmt, TableFormat):
         tablefmt = _table_formats.get(tablefmt, _table_formats["simple"])
 
+    _reinsert_separating_lines(rows, separating_lines)
     return _format_table(tablefmt, headers, rows, minwidths, aligns, is_multiline)
 
 
@@ -1836,8 +1863,20 @@ def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline):
         # the last row without a line below
         append_row(lines, padded_rows[-1], padded_widths, colaligns, fmt.datarow)
     else:
+        separating_line = (
+            fmt.linebetweenrows
+            or fmt.linebelowheader
+            or fmt.linebelow
+            or fmt.lineabove
+            or Line("", "", "", "")
+        )
         for row in padded_rows:
-            append_row(lines, row, padded_widths, colaligns, fmt.datarow)
+            # test to see if the either the 1st column or the 2nd column (account for showindex) has
+            # the SEPARATING_LINE flag
+            if row[0].strip() == SEPARATING_LINE or (len(row) > 1  and row[1].strip() == SEPARATING_LINE):
+                _append_line(lines, padded_widths, colaligns, separating_line)
+            else:
+                append_row(lines, row, padded_widths, colaligns, fmt.datarow)
 
     if fmt.linebelow and "linebelow" not in hidden:
         _append_line(lines, padded_widths, colaligns, fmt.linebelow)
