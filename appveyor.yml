@@ -11,7 +11,6 @@ environment:
     - PYTHON: "C:\\Python37"
     - PYTHON: "C:\\Python38"
     - PYTHON: "C:\\Python39"
-    - PYTHON: "C:\\Python310"
     - PYTHON: "C:\\Python37-x64"
     - PYTHON: "C:\\Python38-x64"
     - PYTHON: "C:\\Python39-x64"
