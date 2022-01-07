@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
-
 """Regression tests."""
 
-from __future__ import print_function
-from __future__ import unicode_literals
 from tabulate import tabulate, TableFormat, Line, DataRow
 from common import assert_equal, skip
 
@@ -20,7 +16,7 @@ def test_ansi_color_in_table_cells():
             "| test   | \x1b[31mtest\x1b[0m   | \x1b[32mtest\x1b[0m   |",
         ]
     )
-    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
     assert_equal(expected, formatted)
 
 
@@ -43,7 +39,7 @@ def test_alignment_of_colored_cells():
             "+--------+--------+--------+",
         ]
     )
-    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
     assert_equal(expected, formatted)
 
 
@@ -66,7 +62,7 @@ def test_alignment_of_link_cells():
             "+--------+--------+--------+",
         ]
     )
-    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
     assert_equal(expected, formatted)
 
 
@@ -89,7 +85,7 @@ def test_alignment_of_link_text_cells():
             "+--------+----------+--------+",
         ]
     )
-    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
     assert_equal(expected, formatted)
 
 
@@ -98,15 +94,13 @@ def test_iter_of_iters_with_headers():
 
     def mk_iter_of_iters():
         def mk_iter():
-            for i in range(3):
-                yield i
+            yield from range(3)
 
         for r in range(3):
             yield mk_iter()
 
     def mk_headers():
-        for h in ["a", "b", "c"]:
-            yield h
+        yield from ["a", "b", "c"]
 
     formatted = tabulate(mk_iter_of_iters(), headers=mk_headers())
     expected = "\n".join(
@@ -118,7 +112,7 @@ def test_iter_of_iters_with_headers():
             "  0    1    2",
         ]
     )
-    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
     assert_equal(expected, formatted)
 
 
@@ -137,7 +131,7 @@ def test_datetime_values():
             "-------------------  ----------  --------",
         ]
     )
-    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
     assert_equal(expected, formatted)
 
 
@@ -148,7 +142,7 @@ def test_simple_separated_format():
     fmt = simple_separated_format("!")
     expected = "spam!eggs"
     formatted = tabulate([["spam", "eggs"]], tablefmt=fmt)
-    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
     assert_equal(expected, formatted)
 
 
@@ -178,7 +172,7 @@ def test_numeric_column_headers():
     expected = "  42\n----\n   1\n   2"
     assert_equal(result, expected)
 
-    lod = [dict((p, i) for p in range(5)) for i in range(5)]
+    lod = [{p: i for p in range(5)} for i in range(5)]
     result = tabulate(lod, "keys")
     expected = "\n".join(
         [
@@ -206,7 +200,7 @@ def test_88_256_ANSI_color_codes():
             "| \x1b[48;5;196mred\x1b[49m          | \x1b[38;5;196mred\x1b[39m          |",
         ]
     )
-    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
     assert_equal(expected, formatted)
 
 

@@ -11,7 +11,7 @@ import os
 import re
 
 # strip links from the description on the PyPI
-LONG_DESCRIPTION = open("README.md", "r", encoding="utf-8").read()
+LONG_DESCRIPTION = open("README.md", encoding="utf-8").read()
 
 # strip Build Status from the PyPI package
 try:
@@ -25,7 +25,7 @@ except TypeError:
         raise
 
 install_options = os.environ.get("TABULATE_INSTALL", "").split(",")
-libonly_flags = set(["lib-only", "libonly", "no-cli", "without-cli"])
+libonly_flags = {"lib-only", "libonly", "no-cli", "without-cli"}
 if libonly_flags.intersection(install_options):
     console_scripts = []
 else:

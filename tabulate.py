@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
-
 """Pretty-print tabular data."""
 
-from __future__ import print_function
-from __future__ import unicode_literals
 from collections import namedtuple
 from collections.abc import Iterable
 from html import escape as htmlescape
@@ -167,7 +163,7 @@ def _html_row_with_attrs(celltag, unsafe, cell_values, colwidths, colaligns):
         ]
     rowhtml = "<tr>{}</tr>".format("".join(values_with_attrs).rstrip())
     if celltag == "th":  # it's a header row, create a new table header
-        rowhtml = "<table>\n<thead>\n{}\n</thead>\n<tbody>".format(rowhtml)
+        rowhtml = f"<table>\n<thead>\n{rowhtml}\n</thead>\n<tbody>"
     return rowhtml
 
 
@@ -179,7 +175,7 @@ def _moin_row_with_attrs(celltag, cell_values, colwidths, colaligns, header=""):
         "decimal": '<style="text-align: right;">',
     }
     values_with_attrs = [
-        "{0}{1} {2} ".format(celltag, alignment.get(a, ""), header + c + header)
+        "{}{} {} ".format(celltag, alignment.get(a, ""), header + c + header)
         for c, a in zip(cell_values, colaligns)
     ]
     return "".join(values_with_attrs) + "||"
@@ -939,7 +935,7 @@ def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
         return missingval
 
     if valtype in [int, str]:
-        return "{0}".format(val)
+        return f"{val}"
     elif valtype is bytes:
         try:
             return str(val, "ascii")
@@ -954,7 +950,7 @@ def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
         else:
             return format(float(val), floatfmt)
     else:
-        return "{0}".format(val)
+        return f"{val}"
 
 
 def _align_header(
@@ -975,7 +971,7 @@ def _align_header(
     elif alignment == "center":
         return _padboth(width, header)
     elif not alignment:
-        return "{0}".format(header)
+        return f"{header}"
     else:
         return _padleft(width, header)
 

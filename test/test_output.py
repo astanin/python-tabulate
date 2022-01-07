@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
-
 """Test output of the various forms of tabular data."""
 
-from __future__ import print_function
-from __future__ import unicode_literals
 import tabulate as tabulate_module
 from tabulate import tabulate, simple_separated_format
 from common import assert_equal, raises, skip
