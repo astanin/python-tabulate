@@ -5,16 +5,11 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 from tabulate import tabulate, tabulate_formats, simple_separated_format
-from platform import python_version_tuple
 from common import skip
 
 
 try:
-    if python_version_tuple() >= ("3", "3", "0"):
-        from inspect import signature, _empty
-    else:
-        signature = None
-        _empty = None
+    from inspect import signature, _empty
 except ImportError:
     signature = None
     _empty = None

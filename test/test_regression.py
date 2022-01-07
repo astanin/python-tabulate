@@ -4,8 +4,8 @@
 
 from __future__ import print_function
 from __future__ import unicode_literals
-from tabulate import tabulate, _text_type, _long_type, TableFormat, Line, DataRow
-from common import assert_equal, assert_in, skip
+from tabulate import tabulate, TableFormat, Line, DataRow
+from common import assert_equal, skip
 
 
 def test_ansi_color_in_table_cells():
@@ -152,15 +152,6 @@ def test_simple_separated_format():
     assert_equal(expected, formatted)
 
 
-def py3test_require_py3():
-    "Regression: py33 tests should actually use Python 3 (issue #13)"
-    from platform import python_version_tuple
-
-    print("Expected Python version: 3.x.x")
-    print("Python version used for tests: %s.%s.%s" % python_version_tuple())
-    assert_equal(python_version_tuple()[0], "3")
-
-
 def test_simple_separated_format_with_headers():
     "Regression: simple_separated_format() on tables with headers (issue #15)"
     from tabulate import simple_separated_format
@@ -174,10 +165,10 @@ def test_simple_separated_format_with_headers():
 
 def test_column_type_of_bytestring_columns():
     "Regression: column type for columns of bytestrings (issue #16)"
-    from tabulate import _column_type, _binary_type
+    from tabulate import _column_type
 
     result = _column_type([b"foo", b"bar"])
-    expected = _binary_type
+    expected = bytes
     assert_equal(result, expected)
 
 
@@ -246,10 +237,9 @@ def test_latex_escape_special_chars():
 
 def test_isconvertible_on_set_values():
     "Regression: don't fail with TypeError on set values (issue #35)"
-    expected_py2 = "\n".join(["a    b", "---  -------", "Foo  set([])"])
-    expected_py3 = "\n".join(["a    b", "---  -----", "Foo  set()"])
+    expected = "\n".join(["a    b", "---  -----", "Foo  set()"])
     result = tabulate([["Foo", set()]], headers=["a", "b"])
-    assert_in(result, [expected_py2, expected_py3])
+    assert_equal(result, expected)
 
 
 def test_ansi_color_for_decimal_numbers():
@@ -304,7 +294,7 @@ def test_colorclass_colors():
         assert_equal(result, expected)
     except ImportError:
 
-        class textclass(_text_type):
+        class textclass(str):
             pass
 
         s = textclass("\x1b[35m3.14\x1b[39m")
@@ -357,7 +347,7 @@ def test_multiline_with_wide_characters():
 
 def test_align_long_integers():
     "Regression: long integers should be aligned as integers (issue #61)"
-    table = [[_long_type(1)], [_long_type(234)]]
+    table = [[int(1)], [int(234)]]
     result = tabulate(table, tablefmt="plain")
     expected = "\n".join(["  1", "234"])
     assert_equal(result, expected)
