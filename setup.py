@@ -46,6 +46,7 @@ setup(
     author_email="s.astanin@gmail.com",
     url="https://github.com/astanin/python-tabulate",
     license="MIT",
+    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: MIT License",
@@ -58,6 +59,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Topic :: Software Development :: Libraries",
     ],
     py_modules=["tabulate"],
