@@ -594,7 +594,7 @@ def _isint(string, inttype=int):
     """
     return (
         type(string) is inttype
-        or (isinstance(string, bytes) or isinstance(string, str))
+        or isinstance(string, (bytes, str))
         and _isconvertible(inttype, string)
     )
 
@@ -629,7 +629,7 @@ def _type(string, has_invisible=True, numparse=True):
 
     """
 
-    if has_invisible and (isinstance(string, str) or isinstance(string, bytes)):
+    if has_invisible and isinstance(string, (str, bytes)):
         string = _strip_invisible(string)
 
     if string is None:
@@ -738,7 +738,7 @@ def _visible_width(s):
         len_fn = wcwidth.wcswidth
     else:
         len_fn = len
-    if isinstance(s, str) or isinstance(s, bytes):
+    if isinstance(s, (str, bytes)):
         return len_fn(_strip_invisible(s))
     else:
         return len_fn(str(s))
