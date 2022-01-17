@@ -15,6 +15,7 @@ def assert_in(result, expected_set):
     print("Got:\n%s\n" % result)
     assert result in expected_set
 
+
 def cols_to_pipe_str(cols):
     return "|".join([str(col) for col in cols])
 
@@ -25,4 +26,4 @@ def rows_to_pipe_table_str(rows):
         line = cols_to_pipe_str(row)
         lines.append(line)
 
-    return '\n'.join(lines)
+    return "\n".join(lines)

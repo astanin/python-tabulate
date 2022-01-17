@@ -213,18 +213,34 @@ def test_wrap_text_to_colwidths_multi_ansi_colors_in_subset():
 
 
 def test__remove_separating_lines():
-    with_rows = [[0, 'a'], [1, 'b'], T.SEPARATING_LINE, [2, 'c'], T.SEPARATING_LINE, [3, 'c'], T.SEPARATING_LINE]
+    with_rows = [
+        [0, "a"],
+        [1, "b"],
+        T.SEPARATING_LINE,
+        [2, "c"],
+        T.SEPARATING_LINE,
+        [3, "c"],
+        T.SEPARATING_LINE,
+    ]
     result, sep_lines = T._remove_separating_lines(with_rows)
-    expected = rows_to_pipe_table_str([[0, 'a'], [1, 'b'], [2, 'c'], [3, 'c']])
+    expected = rows_to_pipe_table_str([[0, "a"], [1, "b"], [2, "c"], [3, "c"]])
 
     assert_equal(expected, rows_to_pipe_table_str(result))
     assert_equal("2|4|6", cols_to_pipe_str(sep_lines))
 
+
 def test__reinsert_separating_lines():
-    with_rows = [[0, 'a'], [1, 'b'], T.SEPARATING_LINE, [2, 'c'], T.SEPARATING_LINE, [3, 'c'], T.SEPARATING_LINE]
+    with_rows = [
+        [0, "a"],
+        [1, "b"],
+        T.SEPARATING_LINE,
+        [2, "c"],
+        T.SEPARATING_LINE,
+        [3, "c"],
+        T.SEPARATING_LINE,
+    ]
     sans_rows, sep_lines = T._remove_separating_lines(with_rows)
     T._reinsert_separating_lines(sans_rows, sep_lines)
     expected = rows_to_pipe_table_str(with_rows)
 
     assert_equal(expected, rows_to_pipe_table_str(sans_rows))
-

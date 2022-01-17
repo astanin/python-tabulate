@@ -1026,6 +1026,7 @@ def _align_header(
     else:
         return _padleft(width, header)
 
+
 def _remove_separating_lines(rows):
     if type(rows) == list:
         separating_lines = []
@@ -1216,7 +1217,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         rows = rows[1:]
 
     headers = list(map(_text_type, headers))
-#    rows = list(map(list, rows))
+    #    rows = list(map(list, rows))
     rows = list(map(lambda r: r if r == SEPARATING_LINE else list(r), rows))
 
     # add or remove an index column
@@ -1604,7 +1605,9 @@ def tabulate(
     if tabular_data is None:
         tabular_data = []
 
-    list_of_lists, headers = _normalize_tabular_data(tabular_data, headers, showindex=showindex)
+    list_of_lists, headers = _normalize_tabular_data(
+        tabular_data, headers, showindex=showindex
+    )
     list_of_lists, separating_lines = _remove_separating_lines(list_of_lists)
 
     if maxcolwidths is not None:
@@ -1873,7 +1876,9 @@ def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline):
         for row in padded_rows:
             # test to see if either the 1st column or the 2nd column (account for showindex) has
             # the SEPARATING_LINE flag
-            if row[0].strip() == SEPARATING_LINE or (len(row) > 1 and row[1].strip() == SEPARATING_LINE):
+            if row[0].strip() == SEPARATING_LINE or (
+                len(row) > 1 and row[1].strip() == SEPARATING_LINE
+            ):
                 _append_line(lines, padded_widths, colaligns, separating_line)
             else:
                 append_row(lines, row, padded_widths, colaligns, fmt.datarow)

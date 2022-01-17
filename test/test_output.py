@@ -4,10 +4,10 @@
 
 from __future__ import print_function
 from __future__ import unicode_literals
-import tabulate as tabulate_module
-from tabulate import tabulate, simple_separated_format, SEPARATING_LINE
-from common import assert_equal, raises, skip
 
+import tabulate as tabulate_module
+from common import assert_equal, raises, skip
+from tabulate import tabulate, simple_separated_format, SEPARATING_LINE
 
 # _test_table shows
 #  - coercion of a string to a number,
@@ -117,13 +117,15 @@ def test_plain_maxcolwidth_autowraps():
 
 def test_plain_maxcolwidth_autowraps_with_sep():
     "Output: maxcolwidth will result in autowrapping longer cells and separating line"
-    table = [["hdr", "fold"], ["1", "very long data"], SEPARATING_LINE, ["2", "last line"]]
-    expected = "\n".join(["  hdr  fold",
-                          "    1  very long",
-                          "       data",
-                          "",
-                          "    2  last line",
-                          ])
+    table = [
+        ["hdr", "fold"],
+        ["1", "very long data"],
+        SEPARATING_LINE,
+        ["2", "last line"],
+    ]
+    expected = "\n".join(
+        ["  hdr  fold", "    1  very long", "       data", "", "    2  last line"]
+    )
     result = tabulate(
         table, headers="firstrow", tablefmt="plain", maxcolwidths=[10, 10]
     )
@@ -246,6 +248,22 @@ def test_simple_with_sep_line():
     assert_equal(expected, result)
 
 
+def test_readme_example_with_sep():
+    table = [["Earth", 6371], ["Mars", 3390], SEPARATING_LINE, ["Moon", 1737]]
+    expected = "\n".join(
+        [
+            "-----  ----",
+            "Earth  6371",
+            "Mars   3390",
+            "-----  ----",
+            "Moon   1737",
+            "-----  ----",
+        ]
+    )
+    result = tabulate(table, tablefmt="simple")
+    assert_equal(expected, result)
+
+
 def test_simple_multiline_2():
     "Output: simple with multiline cells"
     expected = "\n".join(
@@ -261,6 +279,7 @@ def test_simple_multiline_2():
     result = tabulate(table, headers="firstrow", stralign="center", tablefmt="simple")
     assert_equal(expected, result)
 
+
 def test_simple_multiline_2_with_sep_line():
     "Output: simple with multiline cells"
     expected = "\n".join(
@@ -273,7 +292,12 @@ def test_simple_multiline_2_with_sep_line():
             "         world",
         ]
     )
-    table = [["key", "value"], ["foo", "bar"], SEPARATING_LINE, ["spam", "multiline\nworld"]]
+    table = [
+        ["key", "value"],
+        ["foo", "bar"],
+        SEPARATING_LINE,
+        ["spam", "multiline\nworld"],
+    ]
     result = tabulate(table, headers="firstrow", stralign="center", tablefmt="simple")
     assert_equal(expected, result)
 
@@ -290,12 +314,13 @@ def test_simple_headerless():
 def test_simple_headerless_with_sep_line():
     "Output: simple without headers"
     expected = "\n".join(
-        ["----  --------",
-         "spam   41.9999",
-         "----  --------",
-         "eggs  451",
-         "----  --------"
-         ]
+        [
+            "----  --------",
+            "spam   41.9999",
+            "----  --------",
+            "eggs  451",
+            "----  --------",
+        ]
     )
     result = tabulate(_test_table_with_sep_line, tablefmt="simple")
     assert_equal(expected, result)
@@ -1501,7 +1526,9 @@ def test_colalign_multi():
 def test_colalign_multi_with_sep_line():
     "Output: string columns with custom colalign"
     result = tabulate(
-        [["one", "two"], SEPARATING_LINE, ["three", "four"]], colalign=("right",), tablefmt="plain"
+        [["one", "two"], SEPARATING_LINE, ["three", "four"]],
+        colalign=("right",),
+        tablefmt="plain",
     )
     expected = "  one  two\n\nthree  four"
     assert_equal(expected, result)
@@ -1682,12 +1709,7 @@ def test_list_of_lists_with_index():
     # keys' order (hence columns' order) is not deterministic in Python 3
     # => we have to consider both possible results as valid
     expected = "\n".join(
-        ["      a    b",
-         "--  ---  ---",
-         " 0    0  101",
-         " 1    1  102",
-         " 2    2  103"
-         ]
+        ["      a    b", "--  ---  ---", " 0    0  101", " 1    1  102", " 2    2  103"]
     )
     result = tabulate(dd, headers=["a", "b"], showindex=True)
     assert_equal(result, expected)
@@ -1699,13 +1721,14 @@ def test_list_of_lists_with_index_with_sep_line():
     # keys' order (hence columns' order) is not deterministic in Python 3
     # => we have to consider both possible results as valid
     expected = "\n".join(
-        ["      a    b",
-         "--  ---  ---",
-         " 0    0  101",
-         "--  ---  ---",
-         " 1    1  102",
-         " 2    2  103"
-         ]
+        [
+            "      a    b",
+            "--  ---  ---",
+            " 0    0  101",
+            "--  ---  ---",
+            " 1    1  102",
+            " 2    2  103",
+        ]
     )
     result = tabulate(dd, headers=["a", "b"], showindex=True)
     assert_equal(result, expected)
