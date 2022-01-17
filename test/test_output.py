@@ -114,7 +114,6 @@ def test_plain_maxcolwidth_autowraps():
     )
     assert_equal(expected, result)
 
-
 def test_plain_maxcolwidth_autowraps_with_sep():
     "Output: maxcolwidth will result in autowrapping longer cells and separating line"
     table = [

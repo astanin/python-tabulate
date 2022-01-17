@@ -1877,8 +1877,7 @@ def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline):
             # test to see if either the 1st column or the 2nd column (account for showindex) has
             # the SEPARATING_LINE flag
             if row[0].strip() == SEPARATING_LINE or (
-                len(row) > 1 and row[1].strip() == SEPARATING_LINE
-            ):
+                len(row) > 1 and row[1].strip() == SEPARATING_LINE ):
                 _append_line(lines, padded_widths, colaligns, separating_line)
             else:
                 append_row(lines, row, padded_widths, colaligns, fmt.datarow)
