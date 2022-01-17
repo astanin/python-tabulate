@@ -108,19 +108,23 @@ def test_plain_multiline_with_empty_cells_headerless():
 def test_plain_maxcolwidth_autowraps():
     "Output: maxcolwidth will result in autowrapping longer cells"
     table = [["hdr", "fold"], ["1", "very long data"]]
-    expected = "\n".join(["  hdr  fold", "-----  ---------, "    1  very long", "       data"])
+    expected = "\n".join(["  hdr  fold", "    1  very long", "       data"])
     result = tabulate(
         table, headers="firstrow", tablefmt="plain", maxcolwidths=[10, 10]
     )
     assert_equal(expected, result)
 
-
 def test_plain_maxcolwidth_autowraps_with_sep():
     "Output: maxcolwidth will result in autowrapping longer cells and separating line"
     table = [["hdr", "fold"], ["1", "very long data"], SEPARATING_LINE, ["2", "last line"]]
-    expected = "\n".join(["  hdr  fold", "    1  very long", "       data"])
+    expected = "\n".join(["  hdr  fold",
+                          "    1  very long",
+                          "       data",
+                          "",
+                          "    2  last line",
+                          ])
     result = tabulate(
-        table, headers="firstrow", tablefmt="", maxcolwidths=[10, 10]
+        table, headers="firstrow", tablefmt="plain", maxcolwidths=[10, 10]
     )
     assert_equal(expected, result)
 
