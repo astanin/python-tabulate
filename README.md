@@ -649,7 +649,7 @@ To assign the same max width for all columns, a singular int scaler can be used.
 Use `None` for any columns where an explicit maximum does not need to be provided,
 and thus no automate multiline wrapping will take place.
 
-The wraping uses the python standard [textwrap.wrap](https://docs.python.org/3/library/textwrap.html#textwrap.wrap)
+The wrapping uses the python standard [textwrap.wrap](https://docs.python.org/3/library/textwrap.html#textwrap.wrap)
 function with default parameters - aside from width.
 
 This example demonstrates usagage of automatic multiline wrapping, though typically
