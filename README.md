@@ -1,21 +1,19 @@
-python-tabulate
-===============
+# python-tabulate
 
 Pretty-print tabular data in Python, a library and a command-line
 utility.
 
 The main use cases of the library are:
 
--   printing small tables without hassle: just one function call,
-    formatting is guided by the data itself
--   authoring tabular data for lightweight plain-text markup: multiple
-    output formats suitable for further editing or transformation
--   readable presentation of mixed textual and numeric data: smart
-    column alignment, configurable number formatting, alignment by a
-    decimal point
+- printing small tables without hassle: just one function call,
+  formatting is guided by the data itself
+- authoring tabular data for lightweight plain-text markup: multiple
+  output formats suitable for further editing or transformation
+- readable presentation of mixed textual and numeric data: smart
+  column alignment, configurable number formatting, alignment by a
+  decimal point
 
-Installation
-------------
+## Installation
 
 To install the Python library and the command line utility, run:
 
@@ -43,13 +41,11 @@ On Windows:
     set TABULATE_INSTALL=lib-only
     pip install tabulate
 
-Build status
-------------
+## Build status
 
 [![Build status](https://circleci.com/gh/astanin/python-tabulate.svg?style=svg)](https://circleci.com/gh/astanin/python-tabulate/tree/master) [![Build status](https://ci.appveyor.com/api/projects/status/8745yksvvol7h3d7/branch/master?svg=true)](https://ci.appveyor.com/project/astanin/python-tabulate/branch/master)
 
-Library usage
--------------
+## Library usage
 
 The module provides just one function, `tabulate`, which takes a list of
 lists or another tabular data type as the first argument, and outputs a
@@ -69,12 +65,12 @@ nicely formatted plain-text table:
 
 The following tabular data types are supported:
 
--   list of lists or another iterable of iterables
--   list or another iterable of dicts (keys as columns)
--   dict of iterables (keys as columns)
--   two-dimensional NumPy array
--   NumPy record arrays (names as columns)
--   pandas.DataFrame
+- list of lists or another iterable of iterables
+- list or another iterable of dicts (keys as columns)
+- dict of iterables (keys as columns)
+- two-dimensional NumPy array
+- NumPy record arrays (names as columns)
+- pandas.DataFrame
 
 Examples in this file use Python2. Tabulate supports Python3 too.
 
@@ -133,29 +129,29 @@ optional argument named `tablefmt` defines how the table is formatted.
 
 Supported table formats are:
 
--   "plain"
--   "simple"
--   "github"
--   "grid"
--   "fancy\_grid"
--   "pipe"
--   "orgtbl"
--   "jira"
--   "presto"
--   "pretty"
--   "psql"
--   "rst"
--   "mediawiki"
--   "moinmoin"
--   "youtrack"
--   "html"
--   "unsafehtml"
--   "latex"
--   "latex\_raw"
--   "latex\_booktabs"
--   "latex\_longtable"
--   "textile"
--   "tsv"
+- "plain"
+- "simple"
+- "github"
+- "grid"
+- "fancy\_grid"
+- "pipe"
+- "orgtbl"
+- "jira"
+- "presto"
+- "pretty"
+- "psql"
+- "rst"
+- "mediawiki"
+- "moinmoin"
+- "youtrack"
+- "html"
+- "unsafehtml"
+- "latex"
+- "latex\_raw"
+- "latex\_booktabs"
+- "latex\_longtable"
+- "textile"
+- "tsv"
 
 `plain` tables do not use any pseudo-graphics to draw lines:
 
@@ -423,7 +419,6 @@ file:
     eggs   451
     ----  ----
 
-
 To disable this feature use `disable_numparse=True`.
 
     >>> print(tabulate.tabulate([["Ver1", "18.0"], ["Ver2","19.2"]], tablefmt="simple", disable_numparse=True))
@@ -431,7 +426,6 @@ To disable this feature use `disable_numparse=True`.
     Ver1  18.0
     Ver2  19.2
     ----  ----
-
 
 ### Custom column alignment
 
@@ -639,6 +633,7 @@ a multiline cell, and headers with a multiline cell:
 Multiline cells are not well supported for the other table formats.
 
 ### Automating Multilines
+
 While tabulate supports data passed in with multiines entries explicitly provided,
 it also provides some support to help manage this work internally.
 
@@ -663,10 +658,7 @@ the lines being wrapped would probably be significantly longer than this.
     |            | Manager |
     +------------+---------+
 
-
-
-Usage of the command line utility
----------------------------------
+## Usage of the command line utility
 
     Usage: tabulate [options] [FILE ...]
 
@@ -686,16 +678,15 @@ Usage of the command line utility
                               latex_booktabs, latex_longtable, tsv
                               (default: simple)
 
-Performance considerations
---------------------------
+## Performance considerations
 
 Such features as decimal point alignment and trying to parse everything
 as a number imply that `tabulate`:
 
--   has to "guess" how to print a particular tabular data type
--   needs to keep the entire table in-memory
--   has to "transpose" the table twice
--   does much more work than it may appear
+- has to "guess" how to print a particular tabular data type
+- needs to keep the entire table in-memory
+- has to "transpose" the table twice
+- does much more work than it may appear
 
 It may not be suitable for serializing really big tables (but who's
 going to do that, anyway?) or printing tables in performance sensitive
@@ -720,14 +711,11 @@ was run in Python 3.8.3 in Windows 10 x64:
     texttable (1.6.2)                      1352.2        108.6
     =================================  ==========  ===========
 
-
-Version history
----------------
+## Version history
 
 The full version history can be found at the [changelog](https://github.com/astanin/python-tabulate/blob/master/CHANGELOG).
 
-How to contribute
------------------
+## How to contribute
 
 Contributions should include tests and an explanation for the changes
 they propose. Documentation (examples, docstrings, README.md) should be
@@ -768,8 +756,7 @@ To fix code formatting:
 See `tox.ini` file to learn how to use to test
 individual Python versions.
 
-Contributors
-------------
+## Contributors
 
 Sergey Astanin, Pau Tallada Crespí, Erwin Marsi, Mik Kocikowski, Bill
 Ryder, Zach Dwiel, Frederik Rietdijk, Philipp Bogensberger, Greg
