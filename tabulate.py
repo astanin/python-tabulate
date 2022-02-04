@@ -1251,6 +1251,9 @@ def tabulate(
     disable_numparse=False,
     colalign=None,
     maxcolwidths=None,
+        caption = None,
+        label = None,
+        attr = None,
 ):
     """Format a fixed width table for pretty printing.
 
@@ -1435,6 +1438,23 @@ def tabulate(
     | spam      |   41.9999 |
     | eggs      |  451      |
 
+    Additionally you can control the prelude to the table with arguments
+    caption, label and attr
+
+    >>> tabulate(df,
+    ...     caption='extended tabulate',
+    ...     label='labextend',
+    ...     attr=':environment longtable :align p{2cm}p{3cm}p{3cm} :placement [h] :center t',
+    ...     headers=df.columns, tablefmt='orgtbl',
+    ...     showindex=False)
+    #+caption: extended tabulate
+    #+label: labextend
+    #+ATTR_LATEX: :environment longtable :align p{2cm}p{3cm}p{3cm} :placement [h] :center t
+    |        x |       sin(x) |    cos(x) |
+    |----------+--------------+-----------|
+    | 0        |  0           |  1        |
+    | 0.628319 |  0.587785    |  0.809017 |
+    | 1.25664  |  0.951057    |  0.309017 |
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="orgtbl"))
     | spam |  41.9999 |
@@ -1691,7 +1711,17 @@ def tabulate(
     if not isinstance(tablefmt, TableFormat):
         tablefmt = _table_formats.get(tablefmt, _table_formats["simple"])
 
-    return _format_table(tablefmt, headers, rows, minwidths, aligns, is_multiline)
+    result = ''
+    if tablefmt == 'orgtbl':
+        #
+        # add additional org-mode headers to control the format
+        # of the generated table
+        #
+        result = '' if caption is None else '#+caption: '+caption+'}\n'
+        if label is not None: result += f'#+label: '+label+'\n'
+        if attr is not None: result += f'#+ATTR_LATEX: {attr}\n'
+
+    return result + _format_table(tablefmt, headers, rows, minwidths, aligns, is_multiline)
 
 
 def _expand_numparse(disable_numparse, column_count):
