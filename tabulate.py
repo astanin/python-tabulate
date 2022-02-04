@@ -1708,11 +1708,12 @@ def tabulate(
         minwidths = [max(width_fn(cl) for cl in c) for c in cols]
         rows = list(zip(*cols))
 
+    _is_orgtbl = tablefmt == 'orgtbl'
     if not isinstance(tablefmt, TableFormat):
         tablefmt = _table_formats.get(tablefmt, _table_formats["simple"])
 
     result = ''
-    if tablefmt == 'orgtbl':
+    if _is_orgtbl:
         #
         # add additional org-mode headers to control the format
         # of the generated table
