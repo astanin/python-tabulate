@@ -122,7 +122,8 @@ DataRow = namedtuple("DataRow", ["begin", "sep", "end"])
 #
 # extras:
 #   - _undefined_kwargs to return the table as such and warn about undefined extra keywords
-#   - a function(table_text, **kwargs) to further process the table and warn about extra keywords
+#   - a function(table_text, **kwargs) to further process the table text and warn about extra keywords
+#   TODO: change to function(output_lines[], **kwargs)... Does it make sense?
 
 TableFormat = namedtuple(
     "TableFormat",
@@ -284,26 +285,34 @@ def _rst_escape_first_column(rows, headers):
         new_rows.append(new_row)
     return new_rows, new_headers
 
-def _undefined_kwargs (table_text, **kwargs):
+#
+# Handle extra arguments for the different table formats
+# Currently only for orgtbl
+# TODO: add for other formats
+#
+def _undefined_kwargs (table_text, abort=False, **kwargs):
+    #
+    # Check that the caller didn't add any unidentified keyword
+    # Just warn FTMB
+    # TODO: Think about an exception when (and if) abort=True
+    #
     for key in kwargs.keys():
-        print(f'Undefined keyword {key}', file=sys.stderr)
+        print(f'In tabulate.tabulate(): Undefined keyword `{key}`', file=sys.stderr)
     return table_text
 
 def _orgtbl_extras (table_text, **kwargs):
-    caption = kwargs.pop('caption',None)
-    label   = kwargs.pop('label',None)
-    attr    = kwargs.pop('attr',None)
     #
     # add additional org-mode headers to control the format
     # of the generated table
     #
+    caption = kwargs.pop('caption',None)
+    label   = kwargs.pop('label',None)
+    attr    = kwargs.pop('attr',None)
     result = '' if caption is None else '#+caption: '+caption+'}\n'
     if label is not None: result += f'#+label: '+label+'\n'
     if attr is not None: result += f'#+ATTR_LATEX: {attr}\n'
 
-    for key in kwargs.keys():
-        print(f'Undefined keyword {key}', file=sys.stderr)
-    return result + table_text
+    return _undefined_kwargs(result + table_text,**kwargs)
 
 _table_formats = {
     "simple": TableFormat(
@@ -326,6 +335,7 @@ _table_formats = {
         datarow=DataRow("", "  ", ""),
         padding=0,
         with_header_hide=None,
+        extras = _undefined_kwargs,
     ),
     "grid": TableFormat(
         lineabove=Line("+", "-", "+", "+"),
@@ -391,7 +401,7 @@ _table_formats = {
         datarow=DataRow("|", "|", "|"),
         padding=1,
         with_header_hide=None,
-        extras = _orgtbl_extras, # TODO
+        extras = _orgtbl_extras,
     ),
     "jira": TableFormat(
         lineabove=None,
@@ -495,6 +505,7 @@ _table_formats = {
         datarow=partial(_html_row_with_attrs, "td", False),
         padding=0,
         with_header_hide=["lineabove"],
+        extras = _undefined_kwargs,
     ),
     "unsafehtml": TableFormat(
         lineabove=_html_begin_table_without_header,
@@ -1754,7 +1765,6 @@ def tabulate(
         minwidths = [max(width_fn(cl) for cl in c) for c in cols]
         rows = list(zip(*cols))
 
-    _is_orgtbl = tablefmt == 'orgtbl'
     if not isinstance(tablefmt, TableFormat):
         tablefmt = _table_formats.get(tablefmt, _table_formats["simple"])
 
@@ -1911,7 +1921,7 @@ def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline,**kwarg
 
     if headers or rows:
         # TODO: maybe treat lines and then join
-        output = fmt.extras("\n".join(lines),kwargs)
+        output = fmt.extras("\n".join(lines), **kwargs)
         if fmt.lineabove == _html_begin_table_without_header:
             return JupyterHTMLStr(output)
         else:
