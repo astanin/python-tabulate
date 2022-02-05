@@ -676,7 +676,26 @@ the lines being wrapped would probably be significantly longer than this.
     |            | Manager |
     +------------+---------+
 
+Extensibility
+-------------
 
+The `TableFormat` structure provides for an `extras` function to add
+format-specific arguments to `tabulate()`.  Currently there are two
+functions defined:
+
+1. `def _undefined_kwargs (table_text, abort=False, **kwargs):` to
+   warn about unused extra arguments in the call to `tabulate`
+2. `def _orgtbl_extras (table_text, **kwargs):` for the case of the
+   `'orgtbl'` format, which accepts three optional keyword arguments,
+   which are used in org-mode export to LaTeX:
+   1. `caption` : To add a caption to the table with `#+caption: `
+   2. `label` : To add a label for cross-referencing with `#+label:`
+   3. `attr` : To control the class, positioning, etc. of the table
+   with `#+ATTR_LATEX: `
+   This function takes the table text and prepends the directives
+   requested in the call.
+
+*TODO*: Further `_..._extras` functions can be defined for other table formats.
 
 Usage of the command line utility
 ---------------------------------
