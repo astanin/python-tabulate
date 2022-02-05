@@ -63,7 +63,7 @@ except ImportError:
 
 
 __all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
-__version__ = "0.8.10"
+__version__ = "0.8.10a"
 
 
 # minimum extra space in headers
@@ -308,9 +308,9 @@ def _orgtbl_extras (table_text, **kwargs):
     caption = kwargs.pop('caption',None)
     label   = kwargs.pop('label',None)
     attr    = kwargs.pop('attr',None)
-    result = '' if caption is None else '#+caption: '+caption+'}\n'
-    if label is not None: result += f'#+label: '+label+'\n'
-    if attr is not None: result += f'#+ATTR_LATEX: {attr}\n'
+    result = '' if caption is None else '#+caption: '+caption+'\n'
+    if label is not None: result += '#+label: '+label+'\n'
+    if attr is not None: result += '#+ATTR_LATEX: '+attr+'\n'
 
     return _undefined_kwargs(result + table_text,**kwargs)
 
