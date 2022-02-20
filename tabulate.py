@@ -307,7 +307,7 @@ def _orgtbl_extras (table_text, **kwargs):
     #
     caption = kwargs.pop('caption',None)
     label   = kwargs.pop('label',None)
-    attr    = kwargs.pop('attr',None)
+    attr    = kwargs.pop('attr_latex',None)
     result = '' if caption is None else '#+caption: '+caption+'\n'
     if label is not None: result += '#+label: '+label+'\n'
     if attr is not None: result += '#+ATTR_LATEX: '+attr+'\n'
