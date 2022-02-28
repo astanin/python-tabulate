@@ -305,14 +305,11 @@ def _orgtbl_extras (table_text, **kwargs):
     # add additional org-mode headers to control the format
     # of the generated table
     #
-    caption = kwargs.pop('caption',None)
-    label   = kwargs.pop('label',None)
-    attr    = kwargs.pop('attr_latex',None)
-    result = '' if caption is None else '#+caption: '+caption+'\n'
-    if label is not None: result += '#+label: '+label+'\n'
-    if attr is not None: result += '#+ATTR_LATEX: '+attr+'\n'
-
-    return _undefined_kwargs(result + table_text,**kwargs)
+    result = ''
+    for kw in ['caption','label','attr_latex']:
+        value = kwargs.pop(kw, None)
+        if value is not None: result += f'#+{kw.upper()}: {value}'
+    return _undefined_kwargs(result + table_text, **kwargs)
 
 _table_formats = {
     "simple": TableFormat(
