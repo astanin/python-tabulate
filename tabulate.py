@@ -994,7 +994,7 @@ def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
         )
         if is_a_colored_number:
             raw_val = _strip_invisible(val)
-            formatted_val = format(float(val), floatfmt)
+            formatted_val = format(float(raw_val), floatfmt)
             return val.replace(raw_val, formatted_val)
         else:
             try:
