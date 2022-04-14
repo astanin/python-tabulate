@@ -1428,6 +1428,12 @@ def test_floatfmt_multi():
     assert_equal(expected, result)
 
 
+def test_floatfmt_precision():
+    result = tabulate([[99999998999.999980]], floatfmt=".6f", tablefmt="plain")
+    expected = "99999998999.999980"
+    assert_equal(expected, result)
+
+
 def test_colalign_multi():
     "Output: string columns with custom colalign"
     result = tabulate(
