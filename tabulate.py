@@ -998,9 +998,7 @@ def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
             return val.replace(raw_val, formatted_val)
         else:
             try:
-                if "f" in floatfmt:
-                    if int(Decimal(val)) == Decimal(val):
-                        val = int(Decimal(val))
+                if "f" in floatfmt and float('-inf') < float(val) < float('inf'):
                     val = Decimal(str(val))
                 else:
                     val = float(val)
