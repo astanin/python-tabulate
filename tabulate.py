@@ -5,7 +5,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 from collections import namedtuple
-from decimal import Decimal
+from decimal import Decimal, getcontext, setcontext, Context
 import sys
 import re
 import math
@@ -993,11 +993,23 @@ def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
             val, (_text_type, _binary_type)
         )
         if is_a_colored_number:
+            print("HIIIIII", val)
             raw_val = _strip_invisible(val)
-            formatted_val = format(Decimal(raw_val), floatfmt)
+            formatted_val = format(Decimal(str(raw_val)), floatfmt)
             return val.replace(raw_val, formatted_val)
         else:
-            return format(Decimal(val), floatfmt)
+            context = Context(clamp=1, prec=6)
+            setcontext(context)
+            try:
+                if "f" in floatfmt:
+                    if int(Decimal(val)) == Decimal(val):
+                        val = int(Decimal(val, context=context))
+                    val = Decimal(str(val), context=context)
+                else:
+                    val = float(val)
+            except (OverflowError, ValueError):
+                val = float(val)
+            return format(val, floatfmt)
     else:
         return "{0}".format(val)
 
