@@ -40,6 +40,16 @@ jobs:
           key: v1-dependencies-{{ checksum ".circleci/requirements.txt" }}
 
       - run:
+          name: build wheel
+          command: |
+            . venv/bin/activate
+            python -m build -nwx .
+
+      - store_artifacts:
+          path: dist
+          destination: dist
+
+      - run:
           name: run tests
           command: |
             . venv/bin/activate
