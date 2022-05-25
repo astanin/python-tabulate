@@ -308,7 +308,7 @@ def _orgtbl_extras (table_text, **kwargs):
     result = ''
     for kw in ['caption','label','attr_latex']:
         value = kwargs.pop(kw, None)
-        if value is not None: result += f'#+{kw.upper()}: {value}'
+        if value is not None: result += f'#+{kw.upper()}: {value}\n'
     return _undefined_kwargs(result + table_text, **kwargs)
 
 _table_formats = {
