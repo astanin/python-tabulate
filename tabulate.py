@@ -572,6 +572,10 @@ _invisible_codes_link = re.compile(
 
 _ansi_color_reset_code = "\033[0m"
 
+_float_with_thousands_separators = re.compile(
+    r"^(([+-]?[0-9]{1,3})(?:,([0-9]{3}))*)?(?(1)\.[0-9]*|\.[0-9]+)?$"
+)
+
 
 def simple_separated_format(separator):
     """Construct a simple TableFormat with columns separated by a separator.
@@ -591,6 +595,39 @@ def simple_separated_format(separator):
         padding=0,
         with_header_hide=None,
     )
+
+
+def _isnumber_with_thousands_separator(string):
+    """
+    >>> _isnumber_with_thousands_separator(".")
+    False
+    >>> _isnumber_with_thousands_separator("1")
+    True
+    >>> _isnumber_with_thousands_separator("1.")
+    True
+    >>> _isnumber_with_thousands_separator(".1")
+    True
+    >>> _isnumber_with_thousands_separator("1000")
+    False
+    >>> _isnumber_with_thousands_separator("1,000")
+    True
+    >>> _isnumber_with_thousands_separator("1,0000")
+    False
+    >>> _isnumber_with_thousands_separator("1,000.1234")
+    True
+    >>> _isnumber_with_thousands_separator(b"1,000.1234")
+    True
+    >>> _isnumber_with_thousands_separator("+1,000.1234")
+    True
+    >>> _isnumber_with_thousands_separator("-1,000.1234")
+    True
+    """
+    try:
+        string = string.decode()
+    except (UnicodeDecodeError, AttributeError):
+        pass
+
+    return bool(re.match(_float_with_thousands_separators, string))
 
 
 def _isconvertible(conv, string):
@@ -701,9 +738,11 @@ def _afterpoint(string):
     -1
     >>> _afterpoint("123e45")
     2
+    >>> _afterpoint("123,456.78")
+    2
 
     """
-    if _isnumber(string):
+    if _isnumber(string) or _isnumber_with_thousands_separator(string):
         if _isint(string):
             return -1
         else:
