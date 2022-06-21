@@ -31,7 +31,6 @@ if sys.version_info[0] < 3:
     def _is_file(f):
         return hasattr(f, "read")
 
-
 else:
     from itertools import zip_longest as izip_longest
     from functools import reduce, partial
