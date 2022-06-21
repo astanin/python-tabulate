@@ -706,19 +706,19 @@ At the same time, `tabulate` is comparable to other table
 pretty-printers. Given a 10x10 table (a list of lists) of mixed text and
 numeric data, `tabulate` appears to be slower than `asciitable`, and
 faster than `PrettyTable` and `texttable` The following mini-benchmark
-was run in Python 3.8.3 in Windows 10 x64:
+was run in Python 3.8.2 in Ubuntu 20.04:
 
-    =================================  ==========  ===========
-    Table formatter                      time, μs    rel. time
-    =================================  ==========  ===========
-    csv to StringIO                          12.5          1.0
-    join with tabs and newlines              15.6          1.3
-    asciitable (0.8.0)                      191.4         15.4
-    tabulate (0.8.9)                        472.8         38.0
-    tabulate (0.8.9, WIDE_CHARS_MODE)       789.6         63.4
-    PrettyTable (0.7.2)                     879.1         70.6
-    texttable (1.6.2)                      1352.2        108.6
-    =================================  ==========  ===========
+    ==================================  ==========  ===========
+    Table formatter                       time, μs    rel. time
+    ==================================  ==========  ===========
+    csv to StringIO                            9.0          1.0
+    join with tabs and newlines               10.7          1.2
+    asciitable (0.8.0)                       174.6         19.4
+    tabulate (0.8.10)                        385.0         42.8
+    tabulate (0.8.10, WIDE_CHARS_MODE)       509.1         56.5
+    PrettyTable (3.3.0)                      827.7         91.9
+    texttable (1.6.4)                        952.1        105.7
+    ==================================  ==========  ===========
 
 
 Version history
@@ -785,4 +785,5 @@ Wes Turner, Andrew Tija, Marco Gorelli, Sean McGinnis, danja100,
 endolith, Dominic Davis-Foster, pavlocat, Daniel Aslau, paulc,
 Felix Yan, Shane Loretz, Frank Busse, Harsh Singh, Derek Weitzel,
 Vladimir Vrzić, 서승우 (chrd5273), Georgy Frolov, Christian Cwienk,
-Bart Broere, Vilhelm Prytz.
+Bart Broere, Vilhelm Prytz, Alexander Gažo, Hugo van Kemenade,
+jamescooke, Matt Warner.
