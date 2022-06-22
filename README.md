@@ -872,6 +872,27 @@ the lines being wrapped would probably be significantly longer than this.
 +------------+---------+
 ```
 
+### Adding Separating lines
+One might want to add one or more separating lines to highlight different sections in a table.
+
+The separating lines will be of the same type as the one defined by the specified formatter as either the
+linebetweenrows, linebelowheader, linebelow, lineabove or just a simple empty line when none is defined for the formatter
+
+
+    >>> from tabulate import tabulate, SEPARATING_LINE
+
+    table = [["Earth",6371],
+             ["Mars",3390],
+             SEPARATING_LINE,
+             ["Moon",1737]]
+    print(tabulate(table, tablefmt="simple"))
+    -----  ----
+    Earth  6371
+    Mars   3390
+    -----  ----
+    Moon   1737
+    -----  ----
+
 
 Usage of the command line utility
 ---------------------------------
@@ -954,6 +975,17 @@ of the project source tree.
 On Linux `tox` expects to find executables like `python3.7`, `python3.8` etc.
 On Windows it looks for `C:\Python37\python.exe`, `C:\Python38\python.exe` etc. respectively.
 
+One way to install all the required versions of the Python interpreter is to use [pyenv](https://github.com/pyenv/pyenv).
+All versions can then be easily installed with something like:
+
+     pyenv install 3.7.12
+     pyenv install 3.8.12
+     ...
+
+Don't forget to change your `PATH` so that `tox` knows how to find all the installed versions. Something like
+
+     export PATH="${PATH}:${HOME}/.pyenv/shims"    
+
 To test only some Python environments, use `-e` option. For example, to
 test only against Python 3.7 and Python 3.10, run:
 
@@ -999,4 +1031,4 @@ endolith, Dominic Davis-Foster, pavlocat, Daniel Aslau, paulc,
 Felix Yan, Shane Loretz, Frank Busse, Harsh Singh, Derek Weitzel,
 Vladimir Vrzić, 서승우 (chrd5273), Georgy Frolov, Christian Cwienk,
 Bart Broere, Vilhelm Prytz, Alexander Gažo, Hugo van Kemenade,
-jamescooke, Matt Warner.
+jamescooke, Matt Warner, Jérôme Provensal.
