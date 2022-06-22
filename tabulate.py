@@ -310,6 +310,36 @@ _table_formats = {
         padding=1,
         with_header_hide=None,
     ),
+    "simple_grid": TableFormat(
+        lineabove=Line("┌", "─", "┬", "┐"),
+        linebelowheader=Line("├", "─", "┼", "┤"),
+        linebetweenrows=Line("├", "─", "┼", "┤"),
+        linebelow=Line("└", "─", "┴", "┘"),
+        headerrow=DataRow("│", "│", "│"),
+        datarow=DataRow("│", "│", "│"),
+        padding=1,
+        with_header_hide=None,
+    ),
+    "rounded_grid": TableFormat(
+        lineabove=Line("╭", "─", "┬", "╮"),
+        linebelowheader=Line("├", "─", "┼", "┤"),
+        linebetweenrows=Line("├", "─", "┼", "┤"),
+        linebelow=Line("╰", "─", "┴", "╯"),
+        headerrow=DataRow("│", "│", "│"),
+        datarow=DataRow("│", "│", "│"),
+        padding=1,
+        with_header_hide=None,
+    ),
+    "double_grid": TableFormat(
+        lineabove=Line("╔", "═", "╦", "╗"),
+        linebelowheader=Line("╠", "═", "╬", "╣"),
+        linebetweenrows=Line("╠", "═", "╬", "╣"),
+        linebelow=Line("╚", "═", "╩", "╝"),
+        headerrow=DataRow("║", "║", "║"),
+        datarow=DataRow("║", "║", "║"),
+        padding=1,
+        with_header_hide=None,
+    ),
     "fancy_grid": TableFormat(
         lineabove=Line("╒", "═", "╤", "╕"),
         linebelowheader=Line("╞", "═", "╪", "╡"),
@@ -317,6 +347,46 @@ _table_formats = {
         linebelow=Line("╘", "═", "╧", "╛"),
         headerrow=DataRow("│", "│", "│"),
         datarow=DataRow("│", "│", "│"),
+        padding=1,
+        with_header_hide=None,
+    ),
+    "outline": TableFormat(
+        lineabove=Line("+", "-", "+", "+"),
+        linebelowheader=Line("+", "=", "+", "+"),
+        linebetweenrows=None,
+        linebelow=Line("+", "-", "+", "+"),
+        headerrow=DataRow("|", "|", "|"),
+        datarow=DataRow("|", "|", "|"),
+        padding=1,
+        with_header_hide=None,
+    ),
+    "simple_outline": TableFormat(
+        lineabove=Line("┌", "─", "┬", "┐"),
+        linebelowheader=Line("├", "─", "┼", "┤"),
+        linebetweenrows=None,
+        linebelow=Line("└", "─", "┴", "┘"),
+        headerrow=DataRow("│", "│", "│"),
+        datarow=DataRow("│", "│", "│"),
+        padding=1,
+        with_header_hide=None,
+    ),
+    "rounded_outline": TableFormat(
+        lineabove=Line("╭", "─", "┬", "╮"),
+        linebelowheader=Line("├", "─", "┼", "┤"),
+        linebetweenrows=None,
+        linebelow=Line("╰", "─", "┴", "╯"),
+        headerrow=DataRow("│", "│", "│"),
+        datarow=DataRow("│", "│", "│"),
+        padding=1,
+        with_header_hide=None,
+    ),
+    "double_outline": TableFormat(
+        lineabove=Line("╔", "═", "╦", "╗"),
+        linebelowheader=Line("╠", "═", "╬", "╣"),
+        linebetweenrows=None,
+        linebelow=Line("╚", "═", "╩", "╝"),
+        headerrow=DataRow("║", "║", "║"),
+        datarow=DataRow("║", "║", "║"),
         padding=1,
         with_header_hide=None,
     ),
@@ -537,6 +607,9 @@ multiline_formats = {
     "plain": "plain",
     "simple": "simple",
     "grid": "grid",
+    "simple_grid": "simple_grid",
+    "rounded_grid": "rounded_grid",
+    "double_grid": "double_grid",
     "fancy_grid": "fancy_grid",
     "pipe": "pipe",
     "orgtbl": "orgtbl",
@@ -1425,7 +1498,47 @@ def tabulate(
     | eggs | 451      |
     +------+----------+
 
-    "fancy_grid" draws a grid using box-drawing characters:
+    "simple_grid" draws a grid using single-line box-drawing
+    characters:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "simple_grid"))
+    ┌───────────┬───────────┐
+    │ strings   │   numbers │
+    ├───────────┼───────────┤
+    │ spam      │   41.9999 │
+    ├───────────┼───────────┤
+    │ eggs      │  451      │
+    └───────────┴───────────┘
+
+    "rounded_grid" draws a grid using single-line box-drawing
+    characters with rounded corners:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "rounded_grid"))
+    ╭───────────┬───────────╮
+    │ strings   │   numbers │
+    ├───────────┼───────────┤
+    │ spam      │   41.9999 │
+    ├───────────┼───────────┤
+    │ eggs      │  451      │
+    ╰───────────┴───────────╯
+
+    "double_grid" draws a grid using double-line box-drawing
+    characters:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "double_grid"))
+    ╔═══════════╦═══════════╗
+    ║ strings   ║   numbers ║
+    ╠═══════════╬═══════════╣
+    ║ spam      ║   41.9999 ║
+    ╠═══════════╬═══════════╣
+    ║ eggs      ║  451      ║
+    ╚═══════════╩═══════════╝
+
+    "fancy_grid" draws a grid using a mix of single and
+    double-line box-drawing characters:
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
     ...                ["strings", "numbers"], "fancy_grid"))
@@ -1434,6 +1547,67 @@ def tabulate(
     ╞═══════════╪═══════════╡
     │ spam      │   41.9999 │
     ├───────────┼───────────┤
+    │ eggs      │  451      │
+    ╘═══════════╧═══════════╛
+
+    "outline" is the same as the "grid" format but doesn't draw lines between rows:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "outline"))
+    +-----------+-----------+
+    | strings   |   numbers |
+    +===========+===========+
+    | spam      |   41.9999 |
+    | eggs      |  451      |
+    +-----------+-----------+
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="outline"))
+    +------+----------+
+    | spam |  41.9999 |
+    | eggs | 451      |
+    +------+----------+
+
+    "simple_outline" is the same as the "simple_grid" format but doesn't draw lines between rows:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "simple_outline"))
+    ┌───────────┬───────────┐
+    │ strings   │   numbers │
+    ├───────────┼───────────┤
+    │ spam      │   41.9999 │
+    │ eggs      │  451      │
+    └───────────┴───────────┘
+
+    "rounded_outline" is the same as the "rounded_grid" format but doesn't draw lines between rows:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "rounded_outline"))
+    ╭───────────┬───────────╮
+    │ strings   │   numbers │
+    ├───────────┼───────────┤
+    │ spam      │   41.9999 │
+    │ eggs      │  451      │
+    ╰───────────┴───────────╯
+
+    "double_outline" is the same as the "double_grid" format but doesn't draw lines between rows:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "double_outline"))
+    ╔═══════════╦═══════════╗
+    ║ strings   ║   numbers ║
+    ╠═══════════╬═══════════╣
+    ║ spam      ║   41.9999 ║
+    ║ eggs      ║  451      ║
+    ╚═══════════╩═══════════╝
+
+    "fancy_outline" is the same as the "fancy_grid" format but doesn't draw lines between rows:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "fancy_outline"))
+    ╒═══════════╤═══════════╕
+    │ strings   │   numbers │
+    ╞═══════════╪═══════════╡
+    │ spam      │   41.9999 │
     │ eggs      │  451      │
     ╘═══════════╧═══════════╛
 

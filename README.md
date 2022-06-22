@@ -137,7 +137,15 @@ Supported table formats are:
 -   "simple"
 -   "github"
 -   "grid"
+-   "simple\_grid"
+-   "rounded\_grid"
+-   "double\_grid"
 -   "fancy\_grid"
+-   "outline"
+-   "simple\_outline"
+-   "rounded\_outline"
+-   "double\_outline"
+-   "fancy\_outline"
 -   "pipe"
 -   "orgtbl"
 -   "jira"
@@ -203,7 +211,47 @@ corresponds to the `pipe` format without alignment colons:
     | bacon  |     0 |
     +--------+-------+
 
-`fancy_grid` draws a grid using box-drawing characters:
+`simple_grid` draws a grid using single-line box-drawing characters:
+
+    >>> print(tabulate(table, headers, tablefmt="simple_grid"))
+    ┌────────┬───────┐
+    │ item   │   qty │
+    ├────────┼───────┤
+    │ spam   │    42 │
+    ├────────┼───────┤
+    │ eggs   │   451 │
+    ├────────┼───────┤
+    │ bacon  │     0 │
+    └────────┴───────┘
+
+`rounded_grid` draws a grid using single-line box-drawing characters with rounded corners:
+
+    >>> print(tabulate(table, headers, tablefmt="rounded_grid"))
+    ╭────────┬───────╮
+    │ item   │   qty │
+    ├────────┼───────┤
+    │ spam   │    42 │
+    ├────────┼───────┤
+    │ eggs   │   451 │
+    ├────────┼───────┤
+    │ bacon  │     0 │
+    ╰────────┴───────╯
+
+`double_grid` draws a grid using double-line box-drawing characters:
+
+    >>> print(tabulate(table, headers, tablefmt="double_grid"))
+    ╔════════╦═══════╗
+    ║ item   ║   qty ║
+    ╠════════╬═══════╣
+    ║ spam   ║    42 ║
+    ╠════════╬═══════╣
+    ║ eggs   ║   451 ║
+    ╠════════╬═══════╣
+    ║ bacon  ║     0 ║
+    ╚════════╩═══════╝
+
+`fancy_grid` draws a grid using a mix of single and
+    double-line box-drawing characters:
 
     >>> print(tabulate(table, headers, tablefmt="fancy_grid"))
     ╒════════╤═══════╕
@@ -213,6 +261,61 @@ corresponds to the `pipe` format without alignment colons:
     ├────────┼───────┤
     │ eggs   │   451 │
     ├────────┼───────┤
+    │ bacon  │     0 │
+    ╘════════╧═══════╛
+
+`outline` is the same as the `grid` format but doesn't draw lines between rows:
+
+    >>> print(tabulate(table, headers, tablefmt="outline"))
+    +--------+-------+
+    | item   |   qty |
+    +========+=======+
+    | spam   |    42 |
+    | eggs   |   451 |
+    | bacon  |     0 |
+    +--------+-------+
+
+`simple_outline` is the same as the `simple_grid` format but doesn't draw lines between rows:
+
+    >>> print(tabulate(table, headers, tablefmt="simple_outline"))
+    ┌────────┬───────┐
+    │ item   │   qty │
+    ├────────┼───────┤
+    │ spam   │    42 │
+    │ eggs   │   451 │
+    │ bacon  │     0 │
+    └────────┴───────┘
+
+`rounded_outline` is the same as the `rounded_grid` format but doesn't draw lines between rows:
+
+    >>> print(tabulate(table, headers, tablefmt="rounded_outline"))
+    ╭────────┬───────╮
+    │ item   │   qty │
+    ├────────┼───────┤
+    │ spam   │    42 │
+    │ eggs   │   451 │
+    │ bacon  │     0 │
+    ╰────────┴───────╯
+
+`double_outline` is the same as the `double_grid` format but doesn't draw lines between rows:
+
+    >>> print(tabulate(table, headers, tablefmt="double_outline"))
+    ╔════════╦═══════╗
+    ║ item   ║   qty ║
+    ╠════════╬═══════╣
+    ║ spam   ║    42 ║
+    ║ eggs   ║   451 ║
+    ║ bacon  ║     0 ║
+    ╚════════╩═══════╝
+
+`fancy_outline` is the same as the `fancy_grid` format but doesn't draw lines between rows:
+
+    >>> print(tabulate(table, headers, tablefmt="fancy_outline"))
+    ╒════════╤═══════╕
+    │ item   │   qty │
+    ╞════════╪═══════╡
+    │ spam   │    42 │
+    │ eggs   │   451 │
     │ bacon  │     0 │
     ╘════════╧═══════╛
 
