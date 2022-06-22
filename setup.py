@@ -10,7 +10,7 @@ from platform import python_version_tuple, python_implementation
 import os
 import re
 
-# strip links from the descripton on the PyPI
+# strip links from the description on the PyPI
 if python_version_tuple()[0] >= "3":
     LONG_DESCRIPTION = open("README.md", "r", encoding="utf-8").read()
 else:
