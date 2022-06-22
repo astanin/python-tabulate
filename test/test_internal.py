@@ -27,6 +27,36 @@ def test_align_column_decimal():
     assert_equal(output, expected)
 
 
+def test_align_column_decimal_with_thousand_separators():
+    "Internal: _align_column(..., 'decimal')"
+    column = ["12.345", "-1234.5", "1.23", "1,234.5", "1e+234", "1.0e234"]
+    output = T._align_column(column, "decimal")
+    expected = [
+        "   12.345  ",
+        "-1234.5    ",
+        "    1.23   ",
+        "1,234.5    ",
+        "    1e+234 ",
+        "    1.0e234",
+    ]
+    assert_equal(output, expected)
+
+
+def test_align_column_decimal_with_incorrect_thousand_separators():
+    "Internal: _align_column(..., 'decimal')"
+    column = ["12.345", "-1234.5", "1.23", "12,34.5", "1e+234", "1.0e234"]
+    output = T._align_column(column, "decimal")
+    expected = [
+        "     12.345  ",
+        "  -1234.5    ",
+        "      1.23   ",
+        "12,34.5      ",
+        "      1e+234 ",
+        "      1.0e234",
+    ]
+    assert_equal(output, expected)
+
+
 def test_align_column_none():
     "Internal: _align_column(..., None)"
     column = ["123.4", "56.7890"]

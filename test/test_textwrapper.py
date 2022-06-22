@@ -8,7 +8,7 @@ from common import skip, assert_equal
 
 def test_wrap_multiword_non_wide():
     """TextWrapper: non-wide character regression tests"""
-    data = "this is a test string for regression spiltting"
+    data = "this is a test string for regression splitting"
     for width in range(1, len(data)):
         orig = OTW(width=width)
         cust = CTW(width=width)
@@ -19,7 +19,7 @@ def test_wrap_multiword_non_wide():
 
 
 def test_wrap_multiword_non_wide_with_hypens():
-    """TextWrapper: non-wide character regression tests that contain hypens"""
+    """TextWrapper: non-wide character regression tests that contain hyphens"""
     data = "how should-we-split-this non-sense string that-has-lots-of-hypens"
     for width in range(1, len(data)):
         orig = OTW(width=width)
@@ -43,7 +43,7 @@ def test_wrap_longword_non_wide():
 
 
 def test_wrap_wide_char_multiword():
-    """TextWrapper: wrapping support for wide characters with mulitple words"""
+    """TextWrapper: wrapping support for wide characters with multiple words"""
     try:
         import wcwidth  # noqa
     except ImportError:
@@ -84,14 +84,14 @@ def test_wrap_mixed_string():
 
     data = (
         "This content of this string (この文字列のこの内容) contains "
-        "mulitple character types (複数の文字タイプが含まれています)"
+        "multiple character types (複数の文字タイプが含まれています)"
     )
 
     expected = [
         "This content of this",
         "string (この文字列の",
         "この内容) contains",
-        "mulitple character",
+        "multiple character",
         "types (複数の文字タイ",
         "プが含まれています)",
     ]
@@ -125,7 +125,7 @@ def test_wrap_full_line_color():
 
 def test_wrap_color_in_single_line():
     """TextWrapper: Wrap a line - preserve internal color tags, and don't
-    propogate them to other lines when they don't need to be"""
+    propagate them to other lines when they don't need to be"""
     # This has both a text color and a background color
     data = "This is a test string for testing \033[31mTextWrap\033[0m with colors"
 

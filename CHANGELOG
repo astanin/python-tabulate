@@ -1,4 +1,5 @@
-- 0.8.10: Future version
+- 0.8.11: Future version
+- 0.8.10: Python 3.10 support. Bug fixes.
 - 0.8.9: Bug fix. Revert support of decimal separators.
 - 0.8.8: Python 3.9 support, 3.10 ready.
   New formats: ``unsafehtml``, ``latex_longtable``, ``fancy_outline``.
@@ -11,7 +12,7 @@
 - 0.8.6: Bug fixes. Stop supporting Python 3.3, 3.4.
 - 0.8.5: Fix broken Windows package. Minor documentation updates.
 - 0.8.4: Bug fixes.
-- 0.8.3: New formats: `github`. Custom colum alignment. Bug fixes.
+- 0.8.3: New formats: `github`. Custom column alignment. Bug fixes.
 - 0.8.2: Bug fixes.
 - 0.8.1: Multiline data in several output formats.
   New ``latex_raw`` format.
