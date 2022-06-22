@@ -1341,6 +1341,7 @@ def tabulate(
     disable_numparse=False,
     colalign=None,
     maxcolwidths=None,
+    rowalign=None,
     maxheadercolwidths=None,
 ):
     """Format a fixed width table for pretty printing.
@@ -1912,7 +1913,12 @@ def tabulate(
     if not isinstance(tablefmt, TableFormat):
         tablefmt = _table_formats.get(tablefmt, _table_formats["simple"])
 
-    return _format_table(tablefmt, headers, rows, minwidths, aligns, is_multiline)
+    ra_default = rowalign if isinstance(rowalign, str) else None
+    rowaligns = _expand_iterable(rowalign, len(rows), ra_default)
+
+    return _format_table(
+        tablefmt, headers, rows, minwidths, aligns, is_multiline, rowaligns=rowaligns
+    )
 
 
 def _expand_numparse(disable_numparse, column_count):
@@ -1940,7 +1946,7 @@ def _expand_iterable(original, num_desired, default):
     If `original` is not a list to begin with (i.e. scalar value) a list of
     length `num_desired` completely populated with `default will be returned
     """
-    if isinstance(original, Iterable):
+    if isinstance(original, Iterable) and not isinstance(original, str):
         return original + [default] * (num_desired - len(original))
     else:
         return [default] * num_desired
@@ -1971,20 +1977,39 @@ def _build_row(padded_cells, colwidths, colaligns, rowfmt):
         return _build_simple_row(padded_cells, rowfmt)
 
 
-def _append_basic_row(lines, padded_cells, colwidths, colaligns, rowfmt):
+def _append_basic_row(lines, padded_cells, colwidths, colaligns, rowfmt, rowalign=None):
+    # NOTE: rowalign is ignored and exists for api compatibility with _append_multiline_row
     lines.append(_build_row(padded_cells, colwidths, colaligns, rowfmt))
     return lines
 
 
+def _align_cell_veritically(text_lines, num_lines, column_width, row_alignment):
+    delta_lines = num_lines - len(text_lines)
+    blank = [" " * column_width]
+    if row_alignment == "bottom":
+        return blank * delta_lines + text_lines
+    elif row_alignment == "center":
+        top_delta = delta_lines // 2
+        bottom_delta = delta_lines - top_delta
+        return top_delta * blank + text_lines + bottom_delta * blank
+    else:
+        return text_lines + blank * delta_lines
+
+
 def _append_multiline_row(
-    lines, padded_multiline_cells, padded_widths, colaligns, rowfmt, pad
+    lines, padded_multiline_cells, padded_widths, colaligns, rowfmt, pad, rowalign=None
 ):
     colwidths = [w - 2 * pad for w in padded_widths]
     cells_lines = [c.splitlines() for c in padded_multiline_cells]
     nlines = max(map(len, cells_lines))  # number of lines in the row
     # vertically pad cells where some lines are missing
+    # cells_lines = [
+    #     (cl + [" " * w] * (nlines - len(cl))) for cl, w in zip(cells_lines, colwidths)
+    # ]
+
     cells_lines = [
-        (cl + [" " * w] * (nlines - len(cl))) for cl, w in zip(cells_lines, colwidths)
+        _align_cell_veritically(cl, nlines, w, rowalign)
+        for cl, w in zip(cells_lines, colwidths)
     ]
     lines_cells = [[cl[i] for cl in cells_lines] for i in range(nlines)]
     for ln in lines_cells:
@@ -2023,7 +2048,7 @@ class JupyterHTMLStr(str):
         return self
 
 
-def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline):
+def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline, rowaligns):
     """Produce a plain-text representation of the table."""
     lines = []
     hidden = fmt.with_header_hide if (headers and fmt.with_header_hide) else []
@@ -2051,11 +2076,20 @@ def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline):
 
     if padded_rows and fmt.linebetweenrows and "linebetweenrows" not in hidden:
         # initial rows with a line below
-        for row in padded_rows[:-1]:
-            append_row(lines, row, padded_widths, colaligns, fmt.datarow)
+        for row, ralign in zip(padded_rows[:-1], rowaligns):
+            append_row(
+                lines, row, padded_widths, colaligns, fmt.datarow, rowalign=ralign
+            )
             _append_line(lines, padded_widths, colaligns, fmt.linebetweenrows)
         # the last row without a line below
-        append_row(lines, padded_rows[-1], padded_widths, colaligns, fmt.datarow)
+        append_row(
+            lines,
+            padded_rows[-1],
+            padded_widths,
+            colaligns,
+            fmt.datarow,
+            rowalign=rowaligns[-1],
+        )
     else:
         for row in padded_rows:
             append_row(lines, row, padded_widths, colaligns, fmt.datarow)
