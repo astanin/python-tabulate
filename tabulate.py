@@ -1779,7 +1779,9 @@ def tabulate(
     if maxheadercolwidths is not None:
         num_cols = len(list_of_lists[0])
         if isinstance(maxheadercolwidths, int):  # Expand scalar for all columns
-            maxheadercolwidths = _expand_iterable(maxheadercolwidths, num_cols, maxheadercolwidths)
+            maxheadercolwidths = _expand_iterable(
+                maxheadercolwidths, num_cols, maxheadercolwidths
+            )
         else:  # Ignore col width for any 'trailing' columns
             maxheadercolwidths = _expand_iterable(maxheadercolwidths, num_cols, None)
 
@@ -1787,7 +1789,6 @@ def tabulate(
         headers = _wrap_text_to_colwidths(
             [headers], maxheadercolwidths, numparses=numparses
         )[0]
-
 
     # empty values in the first column of RST tables should be escaped (issue #82)
     # "" should be escaped as "\\ " or ".."
