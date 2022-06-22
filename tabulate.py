@@ -1313,7 +1313,13 @@ def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True):
 
             if width is not None:
                 wrapper = _CustomTextWrap(width=width)
-                wrapped = wrapper.wrap(cell)
+                # Cast based on our internal type handling
+                # Any future custom formatting of types (such as datetimes)
+                # may need to be more explict than just `str` of the object
+                casted_cell = (
+                    str(cell) if _isnumber(cell) else _type(cell, numparse)(cell)
+                )
+                wrapped = wrapper.wrap(casted_cell)
                 new_row.append("\n".join(wrapped))
             else:
                 new_row.append(cell)
