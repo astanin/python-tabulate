@@ -98,6 +98,15 @@ TableFormat = namedtuple(
 )
 
 
+def _is_separating_line(row):
+    row_type = type(row)
+    is_sl = (row_type == list or row_type == str) and (
+        (len(row) >= 1 and row[0] == SEPARATING_LINE)
+        or (len(row) >= 2 and row[1] == SEPARATING_LINE)
+    )
+    return is_sl
+
+
 def _pipe_segment_with_colons(align, colwidth):
     """Return a segment of a horizontal line with optional colons which
     indicate column's alignment (as in `pipe` output format)."""
@@ -1100,8 +1109,7 @@ def _remove_separating_lines(rows):
         separating_lines = []
         sans_rows = []
         for index, row in enumerate(rows):
-            row_type = type(row)
-            if (row_type == list or row_type == str) and row[0] == SEPARATING_LINE:
+            if _is_separating_line(row):
                 separating_lines.append(index)
             else:
                 sans_rows.append(row)
@@ -1307,7 +1315,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
     headers = list(map(str, headers))
     #    rows = list(map(list, rows))
-    rows = list(map(lambda r: r if r == SEPARATING_LINE else list(r), rows))
+    rows = list(map(lambda r: r if _is_separating_line(r) else list(r), rows))
 
     # add or remove an index column
     showindex_is_a_str = type(showindex) in [str, bytes]
@@ -2139,9 +2147,7 @@ def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline, rowali
         for row in padded_rows:
             # test to see if either the 1st column or the 2nd column (account for showindex) has
             # the SEPARATING_LINE flag
-            if row[0].strip() == SEPARATING_LINE or (
-                len(row) > 1 and row[1].strip() == SEPARATING_LINE
-            ):
+            if _is_separating_line(row):
                 _append_line(lines, padded_widths, colaligns, separating_line)
             else:
                 append_row(lines, row, padded_widths, colaligns, fmt.datarow)

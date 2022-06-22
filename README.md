@@ -984,7 +984,7 @@ All versions can then be easily installed with something like:
 
 Don't forget to change your `PATH` so that `tox` knows how to find all the installed versions. Something like
 
-     export PATH="${PATH}:${HOME}/.pyenv/shims"    
+     export PATH="${PATH}:${HOME}/.pyenv/shims"
 
 To test only some Python environments, use `-e` option. For example, to
 test only against Python 3.7 and Python 3.10, run:

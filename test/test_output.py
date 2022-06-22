@@ -109,6 +109,7 @@ def test_plain_maxcolwidth_autowraps():
     )
     assert_equal(expected, result)
 
+
 def test_plain_maxcolwidth_autowraps_with_sep():
     "Output: maxcolwidth will result in autowrapping longer cells and separating line"
     table = [
@@ -1142,7 +1143,7 @@ def test_fancy_grid_multiline_row_align():
     result = tabulate(table, tablefmt="fancy_grid", rowalign=[None, "center", "bottom"])
     assert_equal(expected, result)
 
-    
+
 def test_outline():
     "Output: outline with headers"
     expected = "\n".join(
