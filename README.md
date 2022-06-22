@@ -71,6 +71,7 @@ The following tabular data types are supported:
 -   list of lists or another iterable of iterables
 -   list or another iterable of dicts (keys as columns)
 -   dict of iterables (keys as columns)
+-   list of dataclasses (Python 3.7+ only, field names as columns)
 -   two-dimensional NumPy array
 -   NumPy record arrays (names as columns)
 -   pandas.DataFrame
