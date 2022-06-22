@@ -137,7 +137,15 @@ Supported table formats are:
 -   "simple"
 -   "github"
 -   "grid"
+-   "simple\_grid"
+-   "rounded\_grid"
+-   "double\_grid"
 -   "fancy\_grid"
+-   "outline"
+-   "simple\_outline"
+-   "rounded\_outline"
+-   "double\_outline"
+-   "fancy\_outline"
 -   "pipe"
 -   "orgtbl"
 -   "jira"
@@ -203,7 +211,47 @@ corresponds to the `pipe` format without alignment colons:
     | bacon  |     0 |
     +--------+-------+
 
-`fancy_grid` draws a grid using box-drawing characters:
+`simple_grid` draws a grid using single-line box-drawing characters:
+
+    >>> print(tabulate(table, headers, tablefmt="simple_grid"))
+    ┌────────┬───────┐
+    │ item   │   qty │
+    ├────────┼───────┤
+    │ spam   │    42 │
+    ├────────┼───────┤
+    │ eggs   │   451 │
+    ├────────┼───────┤
+    │ bacon  │     0 │
+    └────────┴───────┘
+
+`rounded_grid` draws a grid using single-line box-drawing characters with rounded corners:
+
+    >>> print(tabulate(table, headers, tablefmt="rounded_grid"))
+    ╭────────┬───────╮
+    │ item   │   qty │
+    ├────────┼───────┤
+    │ spam   │    42 │
+    ├────────┼───────┤
+    │ eggs   │   451 │
+    ├────────┼───────┤
+    │ bacon  │     0 │
+    ╰────────┴───────╯
+
+`double_grid` draws a grid using double-line box-drawing characters:
+
+    >>> print(tabulate(table, headers, tablefmt="double_grid"))
+    ╔════════╦═══════╗
+    ║ item   ║   qty ║
+    ╠════════╬═══════╣
+    ║ spam   ║    42 ║
+    ╠════════╬═══════╣
+    ║ eggs   ║   451 ║
+    ╠════════╬═══════╣
+    ║ bacon  ║     0 ║
+    ╚════════╩═══════╝
+
+`fancy_grid` draws a grid using a mix of single and
+    double-line box-drawing characters:
 
     >>> print(tabulate(table, headers, tablefmt="fancy_grid"))
     ╒════════╤═══════╕
@@ -213,6 +261,61 @@ corresponds to the `pipe` format without alignment colons:
     ├────────┼───────┤
     │ eggs   │   451 │
     ├────────┼───────┤
+    │ bacon  │     0 │
+    ╘════════╧═══════╛
+
+`outline` is the same as the `grid` format but doesn't draw lines between rows:
+
+    >>> print(tabulate(table, headers, tablefmt="outline"))
+    +--------+-------+
+    | item   |   qty |
+    +========+=======+
+    | spam   |    42 |
+    | eggs   |   451 |
+    | bacon  |     0 |
+    +--------+-------+
+
+`simple_outline` is the same as the `simple_grid` format but doesn't draw lines between rows:
+
+    >>> print(tabulate(table, headers, tablefmt="simple_outline"))
+    ┌────────┬───────┐
+    │ item   │   qty │
+    ├────────┼───────┤
+    │ spam   │    42 │
+    │ eggs   │   451 │
+    │ bacon  │     0 │
+    └────────┴───────┘
+
+`rounded_outline` is the same as the `rounded_grid` format but doesn't draw lines between rows:
+
+    >>> print(tabulate(table, headers, tablefmt="rounded_outline"))
+    ╭────────┬───────╮
+    │ item   │   qty │
+    ├────────┼───────┤
+    │ spam   │    42 │
+    │ eggs   │   451 │
+    │ bacon  │     0 │
+    ╰────────┴───────╯
+
+`double_outline` is the same as the `double_grid` format but doesn't draw lines between rows:
+
+    >>> print(tabulate(table, headers, tablefmt="double_outline"))
+    ╔════════╦═══════╗
+    ║ item   ║   qty ║
+    ╠════════╬═══════╣
+    ║ spam   ║    42 ║
+    ║ eggs   ║   451 ║
+    ║ bacon  ║     0 ║
+    ╚════════╩═══════╝
+
+`fancy_outline` is the same as the `fancy_grid` format but doesn't draw lines between rows:
+
+    >>> print(tabulate(table, headers, tablefmt="fancy_outline"))
+    ╒════════╤═══════╕
+    │ item   │   qty │
+    ╞════════╪═══════╡
+    │ spam   │    42 │
+    │ eggs   │   451 │
     │ bacon  │     0 │
     ╘════════╧═══════╛
 
@@ -646,6 +749,33 @@ a multiline cell, and headers with a multiline cell:
 
 Multiline cells are not well supported for the other table formats.
 
+### Automating Multilines
+While tabulate supports data passed in with multiines entries explicitly provided,
+it also provides some support to help manage this work internally.
+
+The `maxcolwidths` argument is a list where each entry specifies the max width for
+it's respective column. Any cell that will exceed this will automatically wrap the content.
+To assign the same max width for all columns, a singular int scaler can be used.
+
+Use `None` for any columns where an explicit maximum does not need to be provided,
+and thus no automate multiline wrapping will take place.
+
+The wrapping uses the python standard [textwrap.wrap](https://docs.python.org/3/library/textwrap.html#textwrap.wrap)
+function with default parameters - aside from width.
+
+This example demonstrates usage of automatic multiline wrapping, though typically
+the lines being wrapped would probably be significantly longer than this.
+
+    >>> print(tabulate([["John Smith", "Middle Manager"]], headers=["Name", "Title"], tablefmt="grid", maxcolwidths=[None, 8]))
+    +------------+---------+
+    | Name       | Title   |
+    +============+=========+
+    | John Smith | Middle  |
+    |            | Manager |
+    +------------+---------+
+
+
+
 Usage of the command line utility
 ---------------------------------
 
@@ -688,19 +818,19 @@ At the same time, `tabulate` is comparable to other table
 pretty-printers. Given a 10x10 table (a list of lists) of mixed text and
 numeric data, `tabulate` appears to be slower than `asciitable`, and
 faster than `PrettyTable` and `texttable` The following mini-benchmark
-was run in Python 3.8.3 in Windows 10 x64:
+was run in Python 3.8.2 in Ubuntu 20.04:
 
-    =================================  ==========  ===========
-    Table formatter                      time, μs    rel. time
-    =================================  ==========  ===========
-    csv to StringIO                          12.5          1.0
-    join with tabs and newlines              15.6          1.3
-    asciitable (0.8.0)                      191.4         15.4
-    tabulate (0.8.9)                        472.8         38.0
-    tabulate (0.8.9, WIDE_CHARS_MODE)       789.6         63.4
-    PrettyTable (0.7.2)                     879.1         70.6
-    texttable (1.6.2)                      1352.2        108.6
-    =================================  ==========  ===========
+    ==================================  ==========  ===========
+    Table formatter                       time, μs    rel. time
+    ==================================  ==========  ===========
+    csv to StringIO                            9.0          1.0
+    join with tabs and newlines               10.7          1.2
+    asciitable (0.8.0)                       174.6         19.4
+    tabulate (0.8.10)                        385.0         42.8
+    tabulate (0.8.10, WIDE_CHARS_MODE)       509.1         56.5
+    PrettyTable (3.3.0)                      827.7         91.9
+    texttable (1.6.4)                        952.1        105.7
+    ==================================  ==========  ===========
 
 
 Version history
@@ -767,4 +897,5 @@ Wes Turner, Andrew Tija, Marco Gorelli, Sean McGinnis, danja100,
 endolith, Dominic Davis-Foster, pavlocat, Daniel Aslau, paulc,
 Felix Yan, Shane Loretz, Frank Busse, Harsh Singh, Derek Weitzel,
 Vladimir Vrzić, 서승우 (chrd5273), Georgy Frolov, Christian Cwienk,
-Bart Broere, Vilhelm Prytz.
+Bart Broere, Vilhelm Prytz, Alexander Gažo, Hugo van Kemenade,
+jamescooke, Matt Warner.

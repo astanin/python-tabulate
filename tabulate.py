@@ -1,68 +1,27 @@
-# -*- coding: utf-8 -*-
-
 """Pretty-print tabular data."""
 
-from __future__ import print_function
-from __future__ import unicode_literals
 from collections import namedtuple
-import sys
+from collections.abc import Iterable
+from html import escape as htmlescape
+from itertools import zip_longest as izip_longest
+from functools import reduce, partial
+import io
 import re
 import math
-
-
-if sys.version_info >= (3, 3):
-    from collections.abc import Iterable
-else:
-    from collections import Iterable
-
-if sys.version_info[0] < 3:
-    from itertools import izip_longest
-    from functools import partial
-
-    _none_type = type(None)
-    _bool_type = bool
-    _int_type = int
-    _long_type = long  # noqa
-    _float_type = float
-    _text_type = unicode  # noqa
-    _binary_type = str
-
-    def _is_file(f):
-        return hasattr(f, "read")
-
-
-else:
-    from itertools import zip_longest as izip_longest
-    from functools import reduce, partial
-
-    _none_type = type(None)
-    _bool_type = bool
-    _int_type = int
-    _long_type = int
-    _float_type = float
-    _text_type = str
-    _binary_type = bytes
-    basestring = str
-
-    import io
-
-    def _is_file(f):
-        return isinstance(f, io.IOBase)
-
+import textwrap
 
 try:
     import wcwidth  # optional wide-character (CJK) support
 except ImportError:
     wcwidth = None
 
-try:
-    from html import escape as htmlescape
-except ImportError:
-    from cgi import escape as htmlescape
+
+def _is_file(f):
+    return isinstance(f, io.IOBase)
 
 
 __all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
-__version__ = "0.8.10"
+__version__ = "0.8.11"
 
 
 # minimum extra space in headers
@@ -89,7 +48,7 @@ Line = namedtuple("Line", ["begin", "hline", "sep", "end"])
 DataRow = namedtuple("DataRow", ["begin", "sep", "end"])
 
 
-# A table structure is suppposed to be:
+# A table structure is supposed to be:
 #
 #     --- lineabove ---------
 #         headerrow
@@ -205,7 +164,7 @@ def _html_row_with_attrs(celltag, unsafe, cell_values, colwidths, colaligns):
         ]
     rowhtml = "<tr>{}</tr>".format("".join(values_with_attrs).rstrip())
     if celltag == "th":  # it's a header row, create a new table header
-        rowhtml = "<table>\n<thead>\n{}\n</thead>\n<tbody>".format(rowhtml)
+        rowhtml = f"<table>\n<thead>\n{rowhtml}\n</thead>\n<tbody>"
     return rowhtml
 
 
@@ -217,7 +176,7 @@ def _moin_row_with_attrs(celltag, cell_values, colwidths, colaligns, header=""):
         "decimal": '<style="text-align: right;">',
     }
     values_with_attrs = [
-        "{0}{1} {2} ".format(celltag, alignment.get(a, ""), header + c + header)
+        "{}{} {} ".format(celltag, alignment.get(a, ""), header + c + header)
         for c, a in zip(cell_values, colaligns)
     ]
     return "".join(values_with_attrs) + "||"
@@ -263,7 +222,7 @@ def _latex_row(cell_values, colwidths, colaligns, escrules=LATEX_ESCAPE_RULES):
 
 def _rst_escape_first_column(rows, headers):
     def escape_empty(val):
-        if isinstance(val, (_text_type, _binary_type)) and not val.strip():
+        if isinstance(val, (str, bytes)) and not val.strip():
             return ".."
         else:
             return val
@@ -311,6 +270,36 @@ _table_formats = {
         padding=1,
         with_header_hide=None,
     ),
+    "simple_grid": TableFormat(
+        lineabove=Line("┌", "─", "┬", "┐"),
+        linebelowheader=Line("├", "─", "┼", "┤"),
+        linebetweenrows=Line("├", "─", "┼", "┤"),
+        linebelow=Line("└", "─", "┴", "┘"),
+        headerrow=DataRow("│", "│", "│"),
+        datarow=DataRow("│", "│", "│"),
+        padding=1,
+        with_header_hide=None,
+    ),
+    "rounded_grid": TableFormat(
+        lineabove=Line("╭", "─", "┬", "╮"),
+        linebelowheader=Line("├", "─", "┼", "┤"),
+        linebetweenrows=Line("├", "─", "┼", "┤"),
+        linebelow=Line("╰", "─", "┴", "╯"),
+        headerrow=DataRow("│", "│", "│"),
+        datarow=DataRow("│", "│", "│"),
+        padding=1,
+        with_header_hide=None,
+    ),
+    "double_grid": TableFormat(
+        lineabove=Line("╔", "═", "╦", "╗"),
+        linebelowheader=Line("╠", "═", "╬", "╣"),
+        linebetweenrows=Line("╠", "═", "╬", "╣"),
+        linebelow=Line("╚", "═", "╩", "╝"),
+        headerrow=DataRow("║", "║", "║"),
+        datarow=DataRow("║", "║", "║"),
+        padding=1,
+        with_header_hide=None,
+    ),
     "fancy_grid": TableFormat(
         lineabove=Line("╒", "═", "╤", "╕"),
         linebelowheader=Line("╞", "═", "╪", "╡"),
@@ -318,6 +307,46 @@ _table_formats = {
         linebelow=Line("╘", "═", "╧", "╛"),
         headerrow=DataRow("│", "│", "│"),
         datarow=DataRow("│", "│", "│"),
+        padding=1,
+        with_header_hide=None,
+    ),
+    "outline": TableFormat(
+        lineabove=Line("+", "-", "+", "+"),
+        linebelowheader=Line("+", "=", "+", "+"),
+        linebetweenrows=None,
+        linebelow=Line("+", "-", "+", "+"),
+        headerrow=DataRow("|", "|", "|"),
+        datarow=DataRow("|", "|", "|"),
+        padding=1,
+        with_header_hide=None,
+    ),
+    "simple_outline": TableFormat(
+        lineabove=Line("┌", "─", "┬", "┐"),
+        linebelowheader=Line("├", "─", "┼", "┤"),
+        linebetweenrows=None,
+        linebelow=Line("└", "─", "┴", "┘"),
+        headerrow=DataRow("│", "│", "│"),
+        datarow=DataRow("│", "│", "│"),
+        padding=1,
+        with_header_hide=None,
+    ),
+    "rounded_outline": TableFormat(
+        lineabove=Line("╭", "─", "┬", "╮"),
+        linebelowheader=Line("├", "─", "┼", "┤"),
+        linebetweenrows=None,
+        linebelow=Line("╰", "─", "┴", "╯"),
+        headerrow=DataRow("│", "│", "│"),
+        datarow=DataRow("│", "│", "│"),
+        padding=1,
+        with_header_hide=None,
+    ),
+    "double_outline": TableFormat(
+        lineabove=Line("╔", "═", "╦", "╗"),
+        linebelowheader=Line("╠", "═", "╬", "╣"),
+        linebetweenrows=None,
+        linebelow=Line("╚", "═", "╩", "╝"),
+        headerrow=DataRow("║", "║", "║"),
+        datarow=DataRow("║", "║", "║"),
         padding=1,
         with_header_hide=None,
     ),
@@ -538,6 +567,9 @@ multiline_formats = {
     "plain": "plain",
     "simple": "simple",
     "grid": "grid",
+    "simple_grid": "simple_grid",
+    "rounded_grid": "rounded_grid",
+    "double_grid": "double_grid",
     "fancy_grid": "fancy_grid",
     "pipe": "pipe",
     "orgtbl": "orgtbl",
@@ -570,6 +602,12 @@ _invisible_codes_link = re.compile(
     r"\x1B]8;[a-zA-Z0-9:]*;[^\x1B]+\x1B\\([^\x1b]+)\x1B]8;;\x1B\\"
 )  # Terminal hyperlinks
 
+_ansi_color_reset_code = "\033[0m"
+
+_float_with_thousands_separators = re.compile(
+    r"^(([+-]?[0-9]{1,3})(?:,([0-9]{3}))*)?(?(1)\.[0-9]*|\.[0-9]+)?$"
+)
+
 
 def simple_separated_format(separator):
     """Construct a simple TableFormat with columns separated by a separator.
@@ -589,6 +627,39 @@ def simple_separated_format(separator):
         padding=0,
         with_header_hide=None,
     )
+
+
+def _isnumber_with_thousands_separator(string):
+    """
+    >>> _isnumber_with_thousands_separator(".")
+    False
+    >>> _isnumber_with_thousands_separator("1")
+    True
+    >>> _isnumber_with_thousands_separator("1.")
+    True
+    >>> _isnumber_with_thousands_separator(".1")
+    True
+    >>> _isnumber_with_thousands_separator("1000")
+    False
+    >>> _isnumber_with_thousands_separator("1,000")
+    True
+    >>> _isnumber_with_thousands_separator("1,0000")
+    False
+    >>> _isnumber_with_thousands_separator("1,000.1234")
+    True
+    >>> _isnumber_with_thousands_separator(b"1,000.1234")
+    True
+    >>> _isnumber_with_thousands_separator("+1,000.1234")
+    True
+    >>> _isnumber_with_thousands_separator("-1,000.1234")
+    True
+    """
+    try:
+        string = string.decode()
+    except (UnicodeDecodeError, AttributeError):
+        pass
+
+    return bool(re.match(_float_with_thousands_separators, string))
 
 
 def _isconvertible(conv, string):
@@ -614,7 +685,7 @@ def _isnumber(string):
     """
     if not _isconvertible(float, string):
         return False
-    elif isinstance(string, (_text_type, _binary_type)) and (
+    elif isinstance(string, (str, bytes)) and (
         math.isinf(float(string)) or math.isnan(float(string))
     ):
         return string.lower() in ["inf", "-inf", "nan"]
@@ -630,7 +701,7 @@ def _isint(string, inttype=int):
     """
     return (
         type(string) is inttype
-        or (isinstance(string, _binary_type) or isinstance(string, _text_type))
+        or isinstance(string, (bytes, str))
         and _isconvertible(inttype, string)
     )
 
@@ -644,8 +715,8 @@ def _isbool(string):
     >>> _isbool(1)
     False
     """
-    return type(string) is _bool_type or (
-        isinstance(string, (_binary_type, _text_type)) and string in ("True", "False")
+    return type(string) is bool or (
+        isinstance(string, (bytes, str)) and string in ("True", "False")
     )
 
 
@@ -665,27 +736,23 @@ def _type(string, has_invisible=True, numparse=True):
 
     """
 
-    if has_invisible and (
-        isinstance(string, _text_type) or isinstance(string, _binary_type)
-    ):
+    if has_invisible and isinstance(string, (str, bytes)):
         string = _strip_invisible(string)
 
     if string is None:
-        return _none_type
+        return type(None)
     elif hasattr(string, "isoformat"):  # datetime.datetime, date, and time
-        return _text_type
+        return str
     elif _isbool(string):
-        return _bool_type
+        return bool
     elif _isint(string) and numparse:
-        return int
-    elif _isint(string, _long_type) and numparse:
         return int
     elif _isnumber(string) and numparse:
         return float
-    elif isinstance(string, _binary_type):
-        return _binary_type
+    elif isinstance(string, bytes):
+        return bytes
     else:
-        return _text_type
+        return str
 
 
 def _afterpoint(string):
@@ -699,9 +766,11 @@ def _afterpoint(string):
     -1
     >>> _afterpoint("123e45")
     2
+    >>> _afterpoint("123,456.78")
+    2
 
     """
-    if _isnumber(string):
+    if _isnumber(string) or _isnumber_with_thousands_separator(string):
         if _isint(string):
             return -1
         else:
@@ -759,7 +828,7 @@ def _strip_invisible(s):
     'This is a link'
 
     """
-    if isinstance(s, _text_type):
+    if isinstance(s, str):
         links_removed = re.sub(_invisible_codes_link, "\\1", s)
         return re.sub(_invisible_codes, "", links_removed)
     else:  # a bytestring
@@ -778,14 +847,14 @@ def _visible_width(s):
         len_fn = wcwidth.wcswidth
     else:
         len_fn = len
-    if isinstance(s, _text_type) or isinstance(s, _binary_type):
+    if isinstance(s, (str, bytes)):
         return len_fn(_strip_invisible(s))
     else:
-        return len_fn(_text_type(s))
+        return len_fn(str(s))
 
 
 def _is_multiline(s):
-    if isinstance(s, _text_type):
+    if isinstance(s, str):
         return bool(re.search(_multiline_codes, s))
     else:  # a bytestring
         return bool(re.search(_multiline_codes_bytes, s))
@@ -918,20 +987,20 @@ def _align_column(
 
 def _more_generic(type1, type2):
     types = {
-        _none_type: 0,
-        _bool_type: 1,
+        type(None): 0,
+        bool: 1,
         int: 2,
         float: 3,
-        _binary_type: 4,
-        _text_type: 5,
+        bytes: 4,
+        str: 5,
     }
     invtypes = {
-        5: _text_type,
-        4: _binary_type,
+        5: str,
+        4: bytes,
         3: float,
         2: int,
-        1: _bool_type,
-        0: _none_type,
+        1: bool,
+        0: type(None),
     }
     moregeneric = max(types.get(type1, 5), types.get(type2, 5))
     return invtypes[moregeneric]
@@ -940,27 +1009,27 @@ def _more_generic(type1, type2):
 def _column_type(strings, has_invisible=True, numparse=True):
     """The least generic type all column values are convertible to.
 
-    >>> _column_type([True, False]) is _bool_type
+    >>> _column_type([True, False]) is bool
     True
-    >>> _column_type(["1", "2"]) is _int_type
+    >>> _column_type(["1", "2"]) is int
     True
-    >>> _column_type(["1", "2.3"]) is _float_type
+    >>> _column_type(["1", "2.3"]) is float
     True
-    >>> _column_type(["1", "2.3", "four"]) is _text_type
+    >>> _column_type(["1", "2.3", "four"]) is str
     True
-    >>> _column_type(["four", '\u043f\u044f\u0442\u044c']) is _text_type
+    >>> _column_type(["four", '\u043f\u044f\u0442\u044c']) is str
     True
-    >>> _column_type([None, "brux"]) is _text_type
+    >>> _column_type([None, "brux"]) is str
     True
-    >>> _column_type([1, 2, None]) is _int_type
+    >>> _column_type([1, 2, None]) is int
     True
     >>> import datetime as dt
-    >>> _column_type([dt.datetime(1991,2,19), dt.time(17,35)]) is _text_type
+    >>> _column_type([dt.datetime(1991,2,19), dt.time(17,35)]) is str
     True
 
     """
     types = [_type(s, has_invisible, numparse) for s in strings]
-    return reduce(_more_generic, types, _bool_type)
+    return reduce(_more_generic, types, bool)
 
 
 def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
@@ -978,19 +1047,17 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
     if val is None:
         return missingval
 
-    if valtype is _text_type:
-        return "{0}".format(val)
+    if valtype is str:
+        return f"{val}"
     elif valtype is int:
         return format(val, intfmt)
-    elif valtype is _binary_type:
+    elif valtype is bytes:
         try:
-            return _text_type(val, "ascii")
+            return str(val, "ascii")
         except TypeError:
-            return _text_type(val)
+            return str(val)
     elif valtype is float:
-        is_a_colored_number = has_invisible and isinstance(
-            val, (_text_type, _binary_type)
-        )
+        is_a_colored_number = has_invisible and isinstance(val, (str, bytes))
         if is_a_colored_number:
             raw_val = _strip_invisible(val)
             formatted_val = format(float(raw_val), floatfmt)
@@ -998,7 +1065,7 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
         else:
             return format(float(val), floatfmt)
     else:
-        return "{0}".format(val)
+        return f"{val}"
 
 
 def _align_header(
@@ -1019,7 +1086,7 @@ def _align_header(
     elif alignment == "center":
         return _padboth(width, header)
     elif not alignment:
-        return "{0}".format(header)
+        return f"{header}"
     else:
         return _padleft(width, header)
 
@@ -1110,7 +1177,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             raise ValueError("tabular data doesn't appear to be a dict or a DataFrame")
 
         if headers == "keys":
-            headers = list(map(_text_type, keys))  # headers should be strings
+            headers = list(map(str, keys))  # headers should be strings
 
     else:  # it's a usual an iterable of iterables, or a NumPy array
         rows = list(tabular_data)
@@ -1132,7 +1199,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             and hasattr(rows[0], "_fields")
         ):
             # namedtuple
-            headers = list(map(_text_type, rows[0]._fields))
+            headers = list(map(str, rows[0]._fields))
         elif len(rows) > 0 and hasattr(rows[0], "keys") and hasattr(rows[0], "values"):
             # dict-like object
             uniq_keys = set()  # implements hashed lookup
@@ -1153,11 +1220,11 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             elif isinstance(headers, dict):
                 # a dict of headers for a list of dicts
                 headers = [headers.get(k, k) for k in keys]
-                headers = list(map(_text_type, headers))
+                headers = list(map(str, headers))
             elif headers == "firstrow":
                 if len(rows) > 0:
                     headers = [firstdict.get(k, k) for k in keys]
-                    headers = list(map(_text_type, headers))
+                    headers = list(map(str, headers))
                 else:
                     headers = []
             elif headers:
@@ -1178,7 +1245,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
         elif headers == "keys" and len(rows) > 0:
             # keys are column indices
-            headers = list(map(_text_type, range(len(rows[0]))))
+            headers = list(map(str, range(len(rows[0]))))
 
     # take headers from the first row if necessary
     if headers == "firstrow" and len(rows) > 0:
@@ -1187,14 +1254,16 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             index = index[1:]
         else:
             headers = rows[0]
-        headers = list(map(_text_type, headers))  # headers should be strings
+        headers = list(map(str, headers))  # headers should be strings
         rows = rows[1:]
+    elif headers == "firstrow":
+        headers = []
 
-    headers = list(map(_text_type, headers))
+    headers = list(map(str, headers))
     rows = list(map(list, rows))
 
     # add or remove an index column
-    showindex_is_a_str = type(showindex) in [_text_type, _binary_type]
+    showindex_is_a_str = type(showindex) in [str, bytes]
     if showindex == "default" and index is not None:
         rows = _prepend_row_index(rows, index)
     elif isinstance(showindex, Iterable) and not showindex_is_a_str:
@@ -1216,6 +1285,29 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     return rows, headers
 
 
+def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True):
+    numparses = _expand_iterable(numparses, len(list_of_lists[0]), True)
+
+    result = []
+
+    for row in list_of_lists:
+        new_row = []
+        for cell, width, numparse in zip(row, colwidths, numparses):
+            if _isnumber(cell) and numparse:
+                new_row.append(cell)
+                continue
+
+            if width is not None:
+                wrapper = _CustomTextWrap(width=width)
+                wrapped = wrapper.wrap(cell)
+                new_row.append("\n".join(wrapped))
+            else:
+                new_row.append(cell)
+        result.append(new_row)
+
+    return result
+
+
 def tabulate(
     tabular_data,
     headers=(),
@@ -1228,6 +1320,8 @@ def tabulate(
     showindex="default",
     disable_numparse=False,
     colalign=None,
+    maxcolwidths=None,
+    maxheadercolwidths=None,
 ):
     """Format a fixed width table for pretty printing.
 
@@ -1368,7 +1462,47 @@ def tabulate(
     | eggs | 451      |
     +------+----------+
 
-    "fancy_grid" draws a grid using box-drawing characters:
+    "simple_grid" draws a grid using single-line box-drawing
+    characters:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "simple_grid"))
+    ┌───────────┬───────────┐
+    │ strings   │   numbers │
+    ├───────────┼───────────┤
+    │ spam      │   41.9999 │
+    ├───────────┼───────────┤
+    │ eggs      │  451      │
+    └───────────┴───────────┘
+
+    "rounded_grid" draws a grid using single-line box-drawing
+    characters with rounded corners:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "rounded_grid"))
+    ╭───────────┬───────────╮
+    │ strings   │   numbers │
+    ├───────────┼───────────┤
+    │ spam      │   41.9999 │
+    ├───────────┼───────────┤
+    │ eggs      │  451      │
+    ╰───────────┴───────────╯
+
+    "double_grid" draws a grid using double-line box-drawing
+    characters:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "double_grid"))
+    ╔═══════════╦═══════════╗
+    ║ strings   ║   numbers ║
+    ╠═══════════╬═══════════╣
+    ║ spam      ║   41.9999 ║
+    ╠═══════════╬═══════════╣
+    ║ eggs      ║  451      ║
+    ╚═══════════╩═══════════╝
+
+    "fancy_grid" draws a grid using a mix of single and
+    double-line box-drawing characters:
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
     ...                ["strings", "numbers"], "fancy_grid"))
@@ -1377,6 +1511,67 @@ def tabulate(
     ╞═══════════╪═══════════╡
     │ spam      │   41.9999 │
     ├───────────┼───────────┤
+    │ eggs      │  451      │
+    ╘═══════════╧═══════════╛
+
+    "outline" is the same as the "grid" format but doesn't draw lines between rows:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "outline"))
+    +-----------+-----------+
+    | strings   |   numbers |
+    +===========+===========+
+    | spam      |   41.9999 |
+    | eggs      |  451      |
+    +-----------+-----------+
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="outline"))
+    +------+----------+
+    | spam |  41.9999 |
+    | eggs | 451      |
+    +------+----------+
+
+    "simple_outline" is the same as the "simple_grid" format but doesn't draw lines between rows:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "simple_outline"))
+    ┌───────────┬───────────┐
+    │ strings   │   numbers │
+    ├───────────┼───────────┤
+    │ spam      │   41.9999 │
+    │ eggs      │  451      │
+    └───────────┴───────────┘
+
+    "rounded_outline" is the same as the "rounded_grid" format but doesn't draw lines between rows:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "rounded_outline"))
+    ╭───────────┬───────────╮
+    │ strings   │   numbers │
+    ├───────────┼───────────┤
+    │ spam      │   41.9999 │
+    │ eggs      │  451      │
+    ╰───────────┴───────────╯
+
+    "double_outline" is the same as the "double_grid" format but doesn't draw lines between rows:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "double_outline"))
+    ╔═══════════╦═══════════╗
+    ║ strings   ║   numbers ║
+    ╠═══════════╬═══════════╣
+    ║ spam      ║   41.9999 ║
+    ║ eggs      ║  451      ║
+    ╚═══════════╩═══════════╝
+
+    "fancy_outline" is the same as the "fancy_grid" format but doesn't draw lines between rows:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "fancy_outline"))
+    ╒═══════════╤═══════════╕
+    │ strings   │   numbers │
+    ╞═══════════╪═══════════╡
+    │ spam      │   41.9999 │
     │ eggs      │  451      │
     ╘═══════════╧═══════════╛
 
@@ -1529,6 +1724,32 @@ def tabulate(
     indices is used to disable number parsing only on those columns
     e.g. `disable_numparse=[0, 2]` would disable number parsing only on the
     first and third columns.
+
+    Column Widths and Auto Line Wrapping
+    ------------------------------------
+    Tabulate will, by default, set the width of each column to the length of the
+    longest element in that column. However, in situations where fields are expected
+    to reasonably be too long to look good as a single line, tabulate can help automate
+    word wrapping long fields for you. Use the parameter `maxcolwidth` to provide a
+    list of maximal column widths
+
+    >>> print(tabulate( \
+          [('1', 'John Smith', \
+            'This is a rather long description that might look better if it is wrapped a bit')], \
+          headers=("Issue Id", "Author", "Description"), \
+          maxcolwidths=[None, None, 30], \
+          tablefmt="grid"  \
+        ))
+    +------------+------------+-------------------------------+
+    |   Issue Id | Author     | Description                   |
+    +============+============+===============================+
+    |          1 | John Smith | This is a rather long         |
+    |            |            | description that might look   |
+    |            |            | better if it is wrapped a bit |
+    +------------+------------+-------------------------------+
+
+    Header column width can be specified in a similar way using `maxheadercolwidth`
+
     """
 
     if tabular_data is None:
@@ -1536,6 +1757,31 @@ def tabulate(
     list_of_lists, headers = _normalize_tabular_data(
         tabular_data, headers, showindex=showindex
     )
+
+    if maxcolwidths is not None:
+        num_cols = len(list_of_lists[0])
+        if isinstance(maxcolwidths, int):  # Expand scalar for all columns
+            maxcolwidths = _expand_iterable(maxcolwidths, num_cols, maxcolwidths)
+        else:  # Ignore col width for any 'trailing' columns
+            maxcolwidths = _expand_iterable(maxcolwidths, num_cols, None)
+
+        numparses = _expand_numparse(disable_numparse, num_cols)
+        list_of_lists = _wrap_text_to_colwidths(
+            list_of_lists, maxcolwidths, numparses=numparses
+        )
+
+    if maxheadercolwidths is not None:
+        num_cols = len(list_of_lists[0])
+        if isinstance(maxheadercolwidths, int):  # Expand scalar for all columns
+            maxheadercolwidths = _expand_iterable(maxheadercolwidths, num_cols, maxheadercolwidths)
+        else:  # Ignore col width for any 'trailing' columns
+            maxheadercolwidths = _expand_iterable(maxheadercolwidths, num_cols, None)
+
+        numparses = _expand_numparse(disable_numparse, num_cols)
+        headers = _wrap_text_to_colwidths(
+            [headers], maxheadercolwidths, numparses=numparses
+        )[0]
+
 
     # empty values in the first column of RST tables should be escaped (issue #82)
     # "" should be escaped as "\\ " or ".."
@@ -1559,8 +1805,8 @@ def tabulate(
     # optimization: look for ANSI control codes once,
     # enable smart width functions only if a control code is found
     plain_text = "\t".join(
-        ["\t".join(map(_text_type, headers))]
-        + ["\t".join(map(_text_type, row)) for row in list_of_lists]
+        ["\t".join(map(str, headers))]
+        + ["\t".join(map(str, row)) for row in list_of_lists]
     )
 
     has_invisible = re.search(_invisible_codes, plain_text)
@@ -1582,7 +1828,7 @@ def tabulate(
     cols = list(izip_longest(*list_of_lists))
     numparses = _expand_numparse(disable_numparse, len(cols))
     coltypes = [_column_type(col, numparse=np) for col, np in zip(cols, numparses)]
-    if isinstance(floatfmt, basestring):  # old version
+    if isinstance(floatfmt, str):  # old version
         float_formats = len(cols) * [
             floatfmt
         ]  # just duplicate the string to use in each column
@@ -1590,7 +1836,7 @@ def tabulate(
         float_formats = list(floatfmt)
         if len(float_formats) < len(cols):
             float_formats.extend((len(cols) - len(float_formats)) * [_DEFAULT_FLOATFMT])
-    if isinstance(intfmt, basestring):  # old version
+    if isinstance(intfmt, str):  # old version
         int_formats = len(cols) * [
             intfmt
         ]  # just duplicate the string to use in each column
@@ -1598,7 +1844,7 @@ def tabulate(
         int_formats = list(intfmt)
         if len(int_formats) < len(cols):
             int_formats.extend((len(cols) - len(int_formats)) * [_DEFAULT_INTFMT])
-    if isinstance(missingval, basestring):
+    if isinstance(missingval, str):
         missing_vals = len(cols) * [missingval]
     else:
         missing_vals = list(missingval)
@@ -1663,6 +1909,20 @@ def _expand_numparse(disable_numparse, column_count):
         return numparses
     else:
         return [not disable_numparse] * column_count
+
+
+def _expand_iterable(original, num_desired, default):
+    """
+    Expands the `original` argument to return a return a list of
+    length `num_desired`. If `original` is shorter than `num_desired`, it will
+    be padded with the value in `default`.
+    If `original` is not a list to begin with (i.e. scalar value) a list of
+    length `num_desired` completely populated with `default will be returned
+    """
+    if isinstance(original, Iterable):
+        return original + [default] * (num_desired - len(original))
+    else:
+        return [default] * num_desired
 
 
 def _pad_row(cells, padding):
@@ -1790,6 +2050,206 @@ def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline):
             return output
     else:  # a completely empty table
         return ""
+
+
+class _CustomTextWrap(textwrap.TextWrapper):
+    """A custom implementation of CPython's textwrap.TextWrapper. This supports
+    both wide characters (Korea, Japanese, Chinese)  - including mixed string.
+    For the most part, the `_handle_long_word` and `_wrap_chunks` functions were
+    copy pasted out of the CPython baseline, and updated with our custom length
+    and line appending logic.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self._active_codes = []
+        self.max_lines = None  # For python2 compatibility
+        textwrap.TextWrapper.__init__(self, *args, **kwargs)
+
+    @staticmethod
+    def _len(item):
+        """Custom len that gets console column width for wide
+        and non-wide characters as well as ignores color codes"""
+        stripped = _strip_invisible(item)
+        if wcwidth:
+            return wcwidth.wcswidth(stripped)
+        else:
+            return len(stripped)
+
+    def _update_lines(self, lines, new_line):
+        """Adds a new line to the list of lines the text is being wrapped into
+        This function will also track any ANSI color codes in this string as well
+        as add any colors from previous lines order to preserve the same formatting
+        as a single unwrapped string.
+        """
+        code_matches = [x for x in re.finditer(_invisible_codes, new_line)]
+        color_codes = [
+            code.string[code.span()[0] : code.span()[1]] for code in code_matches
+        ]
+
+        # Add color codes from earlier in the unwrapped line, and then track any new ones we add.
+        new_line = "".join(self._active_codes) + new_line
+
+        for code in color_codes:
+            if code != _ansi_color_reset_code:
+                self._active_codes.append(code)
+            else:  # A single reset code resets everything
+                self._active_codes = []
+
+        # Always ensure each line is color terminted if any colors are
+        # still active, otherwise colors will bleed into other cells on the console
+        if len(self._active_codes) > 0:
+            new_line = new_line + _ansi_color_reset_code
+
+        lines.append(new_line)
+
+    def _handle_long_word(self, reversed_chunks, cur_line, cur_len, width):
+        """_handle_long_word(chunks : [string],
+                             cur_line : [string],
+                             cur_len : int, width : int)
+        Handle a chunk of text (most likely a word, not whitespace) that
+        is too long to fit in any line.
+        """
+        # Figure out when indent is larger than the specified width, and make
+        # sure at least one character is stripped off on every pass
+        if width < 1:
+            space_left = 1
+        else:
+            space_left = width - cur_len
+
+        # If we're allowed to break long words, then do so: put as much
+        # of the next chunk onto the current line as will fit.
+        if self.break_long_words:
+            # Tabulate Custom: Build the string up piece-by-piece in order to
+            # take each charcter's width into account
+            chunk = reversed_chunks[-1]
+            i = 1
+            while self._len(chunk[:i]) <= space_left:
+                i = i + 1
+            cur_line.append(chunk[: i - 1])
+            reversed_chunks[-1] = chunk[i - 1 :]
+
+        # Otherwise, we have to preserve the long word intact.  Only add
+        # it to the current line if there's nothing already there --
+        # that minimizes how much we violate the width constraint.
+        elif not cur_line:
+            cur_line.append(reversed_chunks.pop())
+
+        # If we're not allowed to break long words, and there's already
+        # text on the current line, do nothing.  Next time through the
+        # main loop of _wrap_chunks(), we'll wind up here again, but
+        # cur_len will be zero, so the next line will be entirely
+        # devoted to the long word that we can't handle right now.
+
+    def _wrap_chunks(self, chunks):
+        """_wrap_chunks(chunks : [string]) -> [string]
+        Wrap a sequence of text chunks and return a list of lines of
+        length 'self.width' or less.  (If 'break_long_words' is false,
+        some lines may be longer than this.)  Chunks correspond roughly
+        to words and the whitespace between them: each chunk is
+        indivisible (modulo 'break_long_words'), but a line break can
+        come between any two chunks.  Chunks should not have internal
+        whitespace; ie. a chunk is either all whitespace or a "word".
+        Whitespace chunks will be removed from the beginning and end of
+        lines, but apart from that whitespace is preserved.
+        """
+        lines = []
+        if self.width <= 0:
+            raise ValueError("invalid width %r (must be > 0)" % self.width)
+        if self.max_lines is not None:
+            if self.max_lines > 1:
+                indent = self.subsequent_indent
+            else:
+                indent = self.initial_indent
+            if self._len(indent) + self._len(self.placeholder.lstrip()) > self.width:
+                raise ValueError("placeholder too large for max width")
+
+        # Arrange in reverse order so items can be efficiently popped
+        # from a stack of chucks.
+        chunks.reverse()
+
+        while chunks:
+
+            # Start the list of chunks that will make up the current line.
+            # cur_len is just the length of all the chunks in cur_line.
+            cur_line = []
+            cur_len = 0
+
+            # Figure out which static string will prefix this line.
+            if lines:
+                indent = self.subsequent_indent
+            else:
+                indent = self.initial_indent
+
+            # Maximum width for this line.
+            width = self.width - self._len(indent)
+
+            # First chunk on line is whitespace -- drop it, unless this
+            # is the very beginning of the text (ie. no lines started yet).
+            if self.drop_whitespace and chunks[-1].strip() == "" and lines:
+                del chunks[-1]
+
+            while chunks:
+                chunk_len = self._len(chunks[-1])
+
+                # Can at least squeeze this chunk onto the current line.
+                if cur_len + chunk_len <= width:
+                    cur_line.append(chunks.pop())
+                    cur_len += chunk_len
+
+                # Nope, this line is full.
+                else:
+                    break
+
+            # The current line is full, and the next chunk is too big to
+            # fit on *any* line (not just this one).
+            if chunks and self._len(chunks[-1]) > width:
+                self._handle_long_word(chunks, cur_line, cur_len, width)
+                cur_len = sum(map(self._len, cur_line))
+
+            # If the last chunk on this line is all whitespace, drop it.
+            if self.drop_whitespace and cur_line and cur_line[-1].strip() == "":
+                cur_len -= self._len(cur_line[-1])
+                del cur_line[-1]
+
+            if cur_line:
+                if (
+                    self.max_lines is None
+                    or len(lines) + 1 < self.max_lines
+                    or (
+                        not chunks
+                        or self.drop_whitespace
+                        and len(chunks) == 1
+                        and not chunks[0].strip()
+                    )
+                    and cur_len <= width
+                ):
+                    # Convert current line back to a string and store it in
+                    # list of all lines (return value).
+                    self._update_lines(lines, indent + "".join(cur_line))
+                else:
+                    while cur_line:
+                        if (
+                            cur_line[-1].strip()
+                            and cur_len + self._len(self.placeholder) <= width
+                        ):
+                            cur_line.append(self.placeholder)
+                            self._update_lines(lines, indent + "".join(cur_line))
+                            break
+                        cur_len -= self._len(cur_line[-1])
+                        del cur_line[-1]
+                    else:
+                        if lines:
+                            prev_line = lines[-1].rstrip()
+                            if (
+                                self._len(prev_line) + self._len(self.placeholder)
+                                <= self.width
+                            ):
+                                lines[-1] = prev_line + self.placeholder
+                                break
+                        self._update_lines(lines, indent + self.placeholder.lstrip())
+                    break
+
+        return lines
 
 
 def _main():
