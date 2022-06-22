@@ -453,3 +453,20 @@ def test_string_with_comma_between_digits_without_floatfmt_grouping_option():
     expected = "126,000"
     result = tabulate(table, tablefmt="plain")
     assert_equal(result, expected)  # no exception
+
+
+def test_iterable_row_index():
+    "Regression: accept 'infinite' row indices (github issue #175)"
+    table = [["a"], ["b"], ["c"]]
+
+    def count(start, step=1):
+        n = start
+        while True:
+            yield n
+            n += step
+            if n >= 10:  # safety valve
+                raise IndexError("consuming too many values from the count iterator")
+
+    expected = "1  a\n2  b\n3  c"
+    result = tabulate(table, showindex=count(1), tablefmt="plain")
+    assert_equal(result, expected)

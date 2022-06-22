@@ -1,7 +1,7 @@
 """Pretty-print tabular data."""
 
 from collections import namedtuple
-from collections.abc import Iterable
+from collections.abc import Iterable, Sized
 from html import escape as htmlescape
 from itertools import zip_longest as izip_longest
 from functools import reduce, partial
@@ -1120,12 +1120,18 @@ def _prepend_row_index(rows, index):
     """Add a left-most index column."""
     if index is None or index is False:
         return rows
-    if len(index) != len(rows):
-        print("index=", index)
-        print("rows=", rows)
-        raise ValueError("index must be as long as the number of data rows")
+    if isinstance(index, Sized) and len(index) != len(rows):
+        raise ValueError(
+            "index must be as long as the number of data rows: "
+            + "len(index)={} len(rows)={}".format(len(index), len(rows))
+        )
     sans_rows, separating_lines = _remove_separating_lines(rows)
-    rows = [[v] + list(row) for v, row in zip(index, sans_rows)]
+    new_rows = []
+    index_iter = iter(index)
+    for row in sans_rows:
+        index_v = next(index_iter)
+        new_rows.append([index_v] + list(row))
+    rows = new_rows
     _reinsert_separating_lines(rows, separating_lines)
     return rows
 
@@ -1307,8 +1313,10 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     showindex_is_a_str = type(showindex) in [str, bytes]
     if showindex == "default" and index is not None:
         rows = _prepend_row_index(rows, index)
-    elif isinstance(showindex, Iterable) and not showindex_is_a_str:
+    elif isinstance(showindex, Sized) and not showindex_is_a_str:
         rows = _prepend_row_index(rows, list(showindex))
+    elif isinstance(showindex, Iterable) and not showindex_is_a_str:
+        rows = _prepend_row_index(rows, showindex)
     elif showindex == "always" or (_bool(showindex) and not showindex_is_a_str):
         if index is None:
             index = list(range(len(rows)))
@@ -2132,7 +2140,8 @@ def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline, rowali
             # test to see if either the 1st column or the 2nd column (account for showindex) has
             # the SEPARATING_LINE flag
             if row[0].strip() == SEPARATING_LINE or (
-                len(row) > 1 and row[1].strip() == SEPARATING_LINE ):
+                len(row) > 1 and row[1].strip() == SEPARATING_LINE
+            ):
                 _append_line(lines, padded_widths, colaligns, separating_line)
             else:
                 append_row(lines, row, padded_widths, colaligns, fmt.datarow)
@@ -2452,7 +2461,14 @@ def _pprint_file(fobject, headers, tablefmt, sep, floatfmt, intfmt, file, colali
     rows = fobject.readlines()
     table = [re.split(sep, r.rstrip()) for r in rows if r.strip()]
     print(
-        tabulate(table, headers, tablefmt, floatfmt=floatfmt, intfmt=intfmt, colalign=colalign),
+        tabulate(
+            table,
+            headers,
+            tablefmt,
+            floatfmt=floatfmt,
+            intfmt=intfmt,
+            colalign=colalign,
+        ),
         file=file,
     )
 
