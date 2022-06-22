@@ -196,6 +196,14 @@ def test_maxcolwidth_honor_disable_parsenum():
     result = tabulate(table, tablefmt="grid", maxcolwidths=6, disable_numparse=[2])
     assert_equal(expected, result)
 
+def test_plain_maxheadercolwidths_autowraps():
+    "Output: maxheadercolwidths will result in autowrapping header cell"
+    table = [["hdr", "fold"], ["1", "very long data"]]
+    expected = "\n".join(["  hdr  fo","       ld", "    1  very long", "       data"])
+    result = tabulate(
+        table, headers="firstrow", tablefmt="plain", maxcolwidths=[10, 10], maxheadercolwidths=[None, 2]
+    )
+    assert_equal(expected, result)
 
 def test_simple():
     "Output: simple with headers"
