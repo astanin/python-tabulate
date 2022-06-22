@@ -1,11 +1,7 @@
-# -*- coding: utf-8 -*-
-
 """Regression tests."""
 
-from __future__ import print_function
-from __future__ import unicode_literals
-from tabulate import tabulate, _text_type, _long_type, TableFormat, Line, DataRow
-from common import assert_equal, assert_in, skip
+from tabulate import tabulate, TableFormat, Line, DataRow
+from common import assert_equal, skip
 
 
 def test_ansi_color_in_table_cells():
@@ -20,7 +16,7 @@ def test_ansi_color_in_table_cells():
             "| test   | \x1b[31mtest\x1b[0m   | \x1b[32mtest\x1b[0m   |",
         ]
     )
-    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
     assert_equal(expected, formatted)
 
 
@@ -43,7 +39,7 @@ def test_alignment_of_colored_cells():
             "+--------+--------+--------+",
         ]
     )
-    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
     assert_equal(expected, formatted)
 
 
@@ -66,7 +62,7 @@ def test_alignment_of_link_cells():
             "+--------+--------+--------+",
         ]
     )
-    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
     assert_equal(expected, formatted)
 
 
@@ -89,7 +85,7 @@ def test_alignment_of_link_text_cells():
             "+--------+----------+--------+",
         ]
     )
-    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
     assert_equal(expected, formatted)
 
 
@@ -98,15 +94,13 @@ def test_iter_of_iters_with_headers():
 
     def mk_iter_of_iters():
         def mk_iter():
-            for i in range(3):
-                yield i
+            yield from range(3)
 
         for r in range(3):
             yield mk_iter()
 
     def mk_headers():
-        for h in ["a", "b", "c"]:
-            yield h
+        yield from ["a", "b", "c"]
 
     formatted = tabulate(mk_iter_of_iters(), headers=mk_headers())
     expected = "\n".join(
@@ -118,7 +112,7 @@ def test_iter_of_iters_with_headers():
             "  0    1    2",
         ]
     )
-    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
     assert_equal(expected, formatted)
 
 
@@ -137,7 +131,7 @@ def test_datetime_values():
             "-------------------  ----------  --------",
         ]
     )
-    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
     assert_equal(expected, formatted)
 
 
@@ -148,17 +142,8 @@ def test_simple_separated_format():
     fmt = simple_separated_format("!")
     expected = "spam!eggs"
     formatted = tabulate([["spam", "eggs"]], tablefmt=fmt)
-    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
     assert_equal(expected, formatted)
-
-
-def py3test_require_py3():
-    "Regression: py33 tests should actually use Python 3 (issue #13)"
-    from platform import python_version_tuple
-
-    print("Expected Python version: 3.x.x")
-    print("Python version used for tests: %s.%s.%s" % python_version_tuple())
-    assert_equal(python_version_tuple()[0], "3")
 
 
 def test_simple_separated_format_with_headers():
@@ -174,10 +159,10 @@ def test_simple_separated_format_with_headers():
 
 def test_column_type_of_bytestring_columns():
     "Regression: column type for columns of bytestrings (issue #16)"
-    from tabulate import _column_type, _binary_type
+    from tabulate import _column_type
 
     result = _column_type([b"foo", b"bar"])
-    expected = _binary_type
+    expected = bytes
     assert_equal(result, expected)
 
 
@@ -187,7 +172,7 @@ def test_numeric_column_headers():
     expected = "  42\n----\n   1\n   2"
     assert_equal(result, expected)
 
-    lod = [dict((p, i) for p in range(5)) for i in range(5)]
+    lod = [{p: i for p in range(5)} for i in range(5)]
     result = tabulate(lod, "keys")
     expected = "\n".join(
         [
@@ -215,7 +200,7 @@ def test_88_256_ANSI_color_codes():
             "| \x1b[48;5;196mred\x1b[49m          | \x1b[38;5;196mred\x1b[39m          |",
         ]
     )
-    print("expected: %r\n\ngot:      %r\n" % (expected, formatted))
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
     assert_equal(expected, formatted)
 
 
@@ -246,10 +231,9 @@ def test_latex_escape_special_chars():
 
 def test_isconvertible_on_set_values():
     "Regression: don't fail with TypeError on set values (issue #35)"
-    expected_py2 = "\n".join(["a    b", "---  -------", "Foo  set([])"])
-    expected_py3 = "\n".join(["a    b", "---  -----", "Foo  set()"])
+    expected = "\n".join(["a    b", "---  -----", "Foo  set()"])
     result = tabulate([["Foo", set()]], headers=["a", "b"])
-    assert_in(result, [expected_py2, expected_py3])
+    assert_equal(result, expected)
 
 
 def test_ansi_color_for_decimal_numbers():
@@ -304,7 +288,7 @@ def test_colorclass_colors():
         assert_equal(result, expected)
     except ImportError:
 
-        class textclass(_text_type):
+        class textclass(str):
             pass
 
         s = textclass("\x1b[35m3.14\x1b[39m")
@@ -357,7 +341,7 @@ def test_multiline_with_wide_characters():
 
 def test_align_long_integers():
     "Regression: long integers should be aligned as integers (issue #61)"
-    table = [[_long_type(1)], [_long_type(234)]]
+    table = [[int(1)], [int(234)]]
     result = tabulate(table, tablefmt="plain")
     expected = "\n".join(["  1", "234"])
     assert_equal(result, expected)

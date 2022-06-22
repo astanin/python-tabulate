@@ -1,33 +1,17 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-from __future__ import print_function
 from timeit import timeit
 import tabulate
 import asciitable
 import prettytable
 import texttable
 import sys
-import codecs
-from platform import python_version_tuple
 
 setup_code = r"""
 from csv import writer
-try: # Python 2
-    from StringIO import StringIO
-except: # Python 3
-    from io import StringIO
+from io import StringIO
 import tabulate
 import asciitable
 import prettytable
 import texttable
-
-
-import platform
-if platform.platform().startswith("Windows") \
-   and \
-   platform.python_version_tuple() < ('3','6','0'):
-    import win_unicode_console
-    win_unicode_console.enable()
 
 
 table=[["some text"]+list(range(i,i+9)) for i in range(10)]
@@ -108,14 +92,7 @@ def benchmark(n):
         results, ["Table formatter", "time, μs", "rel. time"], "rst", floatfmt=".1f"
     )
 
-    from platform import platform
-
-    if platform().startswith("Windows"):
-        print(table)
-    elif python_version_tuple()[0] < "3":
-        print(codecs.encode(table, "utf-8"))
-    else:
-        print(table)
+    print(table)
 
 
 if __name__ == "__main__":
