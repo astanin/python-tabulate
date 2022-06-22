@@ -1253,6 +1253,8 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             headers = rows[0]
         headers = list(map(str, headers))  # headers should be strings
         rows = rows[1:]
+    elif headers == "firstrow":
+        headers = []
 
     headers = list(map(str, headers))
     rows = list(map(list, rows))
