@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
-
 """Tests of the internal tabulate functions."""
 
-from __future__ import print_function
-from __future__ import unicode_literals
 import tabulate as T
 from common import assert_equal, skip
 
@@ -27,6 +23,36 @@ def test_align_column_decimal():
         " 1234.5    ",
         "    1e+234 ",
         "    1.0e234",
+    ]
+    assert_equal(output, expected)
+
+
+def test_align_column_decimal_with_thousand_separators():
+    "Internal: _align_column(..., 'decimal')"
+    column = ["12.345", "-1234.5", "1.23", "1,234.5", "1e+234", "1.0e234"]
+    output = T._align_column(column, "decimal")
+    expected = [
+        "   12.345  ",
+        "-1234.5    ",
+        "    1.23   ",
+        "1,234.5    ",
+        "    1e+234 ",
+        "    1.0e234",
+    ]
+    assert_equal(output, expected)
+
+
+def test_align_column_decimal_with_incorrect_thousand_separators():
+    "Internal: _align_column(..., 'decimal')"
+    column = ["12.345", "-1234.5", "1.23", "12,34.5", "1e+234", "1.0e234"]
+    output = T._align_column(column, "decimal")
+    expected = [
+        "     12.345  ",
+        "  -1234.5    ",
+        "      1.23   ",
+        "12,34.5      ",
+        "      1e+234 ",
+        "      1.0e234",
     ]
     assert_equal(output, expected)
 

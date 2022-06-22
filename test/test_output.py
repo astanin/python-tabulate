@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
-
 """Test output of the various forms of tabular data."""
 
-from __future__ import print_function
-from __future__ import unicode_literals
 import tabulate as tabulate_module
 from tabulate import tabulate, simple_separated_format
 from common import assert_equal, raises, skip
@@ -198,6 +194,20 @@ def test_maxcolwidth_honor_disable_parsenum():
     )
     # Grid makes showing the alignment difference a little easier
     result = tabulate(table, tablefmt="grid", maxcolwidths=6, disable_numparse=[2])
+    assert_equal(expected, result)
+
+
+def test_plain_maxheadercolwidths_autowraps():
+    "Output: maxheadercolwidths will result in autowrapping header cell"
+    table = [["hdr", "fold"], ["1", "very long data"]]
+    expected = "\n".join(["  hdr  fo", "       ld", "    1  very long", "       data"])
+    result = tabulate(
+        table,
+        headers="firstrow",
+        tablefmt="plain",
+        maxcolwidths=[10, 10],
+        maxheadercolwidths=[None, 2],
+    )
     assert_equal(expected, result)
 
 
@@ -478,6 +488,411 @@ def test_grid_multiline_with_empty_cells_headerless():
     assert_equal(expected, result)
 
 
+def test_simple_grid():
+    "Output: simple_grid with headers"
+    expected = "\n".join(
+        [
+            "┌───────────┬───────────┐",
+            "│ strings   │   numbers │",
+            "├───────────┼───────────┤",
+            "│ spam      │   41.9999 │",
+            "├───────────┼───────────┤",
+            "│ eggs      │  451      │",
+            "└───────────┴───────────┘",
+        ]
+    )
+    result = tabulate(_test_table, _test_table_headers, tablefmt="simple_grid")
+    assert_equal(expected, result)
+
+
+def test_simple_grid_wide_characters():
+    "Output: simple_grid with wide characters in headers"
+    try:
+        import wcwidth  # noqa
+    except ImportError:
+        skip("test_simple_grid_wide_characters is skipped")
+    headers = list(_test_table_headers)
+    headers[1] = "配列"
+    expected = "\n".join(
+        [
+            "┌───────────┬──────────┐",
+            "│ strings   │     配列 │",
+            "├───────────┼──────────┤",
+            "│ spam      │  41.9999 │",
+            "├───────────┼──────────┤",
+            "│ eggs      │ 451      │",
+            "└───────────┴──────────┘",
+        ]
+    )
+    result = tabulate(_test_table, headers, tablefmt="simple_grid")
+    assert_equal(expected, result)
+
+
+def test_simple_grid_headerless():
+    "Output: simple_grid without headers"
+    expected = "\n".join(
+        [
+            "┌──────┬──────────┐",
+            "│ spam │  41.9999 │",
+            "├──────┼──────────┤",
+            "│ eggs │ 451      │",
+            "└──────┴──────────┘",
+        ]
+    )
+    result = tabulate(_test_table, tablefmt="simple_grid")
+    assert_equal(expected, result)
+
+
+def test_simple_grid_multiline_headerless():
+    "Output: simple_grid with multiline cells without headers"
+    table = [["foo bar\nbaz\nbau", "hello"], ["", "multiline\nworld"]]
+    expected = "\n".join(
+        [
+            "┌─────────┬───────────┐",
+            "│ foo bar │   hello   │",
+            "│   baz   │           │",
+            "│   bau   │           │",
+            "├─────────┼───────────┤",
+            "│         │ multiline │",
+            "│         │   world   │",
+            "└─────────┴───────────┘",
+        ]
+    )
+    result = tabulate(table, stralign="center", tablefmt="simple_grid")
+    assert_equal(expected, result)
+
+
+def test_simple_grid_multiline():
+    "Output: simple_grid with multiline cells with headers"
+    table = [[2, "foo\nbar"]]
+    headers = ("more\nspam \x1b[31meggs\x1b[0m", "more spam\n& eggs")
+    expected = "\n".join(
+        [
+            "┌─────────────┬─────────────┐",
+            "│        more │ more spam   │",
+            "│   spam \x1b[31meggs\x1b[0m │ & eggs      │",
+            "├─────────────┼─────────────┤",
+            "│           2 │ foo         │",
+            "│             │ bar         │",
+            "└─────────────┴─────────────┘",
+        ]
+    )
+    result = tabulate(table, headers, tablefmt="simple_grid")
+    assert_equal(expected, result)
+
+
+def test_simple_grid_multiline_with_empty_cells():
+    "Output: simple_grid with multiline cells and empty cells with headers"
+    table = [
+        ["hdr", "data", "fold"],
+        ["1", "", ""],
+        ["2", "very long data", "fold\nthis"],
+    ]
+    expected = "\n".join(
+        [
+            "┌───────┬────────────────┬────────┐",
+            "│   hdr │ data           │ fold   │",
+            "├───────┼────────────────┼────────┤",
+            "│     1 │                │        │",
+            "├───────┼────────────────┼────────┤",
+            "│     2 │ very long data │ fold   │",
+            "│       │                │ this   │",
+            "└───────┴────────────────┴────────┘",
+        ]
+    )
+    result = tabulate(table, headers="firstrow", tablefmt="simple_grid")
+    assert_equal(expected, result)
+
+
+def test_simple_grid_multiline_with_empty_cells_headerless():
+    "Output: simple_grid with multiline cells and empty cells without headers"
+    table = [["0", "", ""], ["1", "", ""], ["2", "very long data", "fold\nthis"]]
+    expected = "\n".join(
+        [
+            "┌───┬────────────────┬──────┐",
+            "│ 0 │                │      │",
+            "├───┼────────────────┼──────┤",
+            "│ 1 │                │      │",
+            "├───┼────────────────┼──────┤",
+            "│ 2 │ very long data │ fold │",
+            "│   │                │ this │",
+            "└───┴────────────────┴──────┘",
+        ]
+    )
+    result = tabulate(table, tablefmt="simple_grid")
+    assert_equal(expected, result)
+
+
+def test_rounded_grid():
+    "Output: rounded_grid with headers"
+    expected = "\n".join(
+        [
+            "╭───────────┬───────────╮",
+            "│ strings   │   numbers │",
+            "├───────────┼───────────┤",
+            "│ spam      │   41.9999 │",
+            "├───────────┼───────────┤",
+            "│ eggs      │  451      │",
+            "╰───────────┴───────────╯",
+        ]
+    )
+    result = tabulate(_test_table, _test_table_headers, tablefmt="rounded_grid")
+    assert_equal(expected, result)
+
+
+def test_rounded_grid_wide_characters():
+    "Output: rounded_grid with wide characters in headers"
+    try:
+        import wcwidth  # noqa
+    except ImportError:
+        skip("test_rounded_grid_wide_characters is skipped")
+    headers = list(_test_table_headers)
+    headers[1] = "配列"
+    expected = "\n".join(
+        [
+            "╭───────────┬──────────╮",
+            "│ strings   │     配列 │",
+            "├───────────┼──────────┤",
+            "│ spam      │  41.9999 │",
+            "├───────────┼──────────┤",
+            "│ eggs      │ 451      │",
+            "╰───────────┴──────────╯",
+        ]
+    )
+    result = tabulate(_test_table, headers, tablefmt="rounded_grid")
+    assert_equal(expected, result)
+
+
+def test_rounded_grid_headerless():
+    "Output: rounded_grid without headers"
+    expected = "\n".join(
+        [
+            "╭──────┬──────────╮",
+            "│ spam │  41.9999 │",
+            "├──────┼──────────┤",
+            "│ eggs │ 451      │",
+            "╰──────┴──────────╯",
+        ]
+    )
+    result = tabulate(_test_table, tablefmt="rounded_grid")
+    assert_equal(expected, result)
+
+
+def test_rounded_grid_multiline_headerless():
+    "Output: rounded_grid with multiline cells without headers"
+    table = [["foo bar\nbaz\nbau", "hello"], ["", "multiline\nworld"]]
+    expected = "\n".join(
+        [
+            "╭─────────┬───────────╮",
+            "│ foo bar │   hello   │",
+            "│   baz   │           │",
+            "│   bau   │           │",
+            "├─────────┼───────────┤",
+            "│         │ multiline │",
+            "│         │   world   │",
+            "╰─────────┴───────────╯",
+        ]
+    )
+    result = tabulate(table, stralign="center", tablefmt="rounded_grid")
+    assert_equal(expected, result)
+
+
+def test_rounded_grid_multiline():
+    "Output: rounded_grid with multiline cells with headers"
+    table = [[2, "foo\nbar"]]
+    headers = ("more\nspam \x1b[31meggs\x1b[0m", "more spam\n& eggs")
+    expected = "\n".join(
+        [
+            "╭─────────────┬─────────────╮",
+            "│        more │ more spam   │",
+            "│   spam \x1b[31meggs\x1b[0m │ & eggs      │",
+            "├─────────────┼─────────────┤",
+            "│           2 │ foo         │",
+            "│             │ bar         │",
+            "╰─────────────┴─────────────╯",
+        ]
+    )
+    result = tabulate(table, headers, tablefmt="rounded_grid")
+    assert_equal(expected, result)
+
+
+def test_rounded_grid_multiline_with_empty_cells():
+    "Output: rounded_grid with multiline cells and empty cells with headers"
+    table = [
+        ["hdr", "data", "fold"],
+        ["1", "", ""],
+        ["2", "very long data", "fold\nthis"],
+    ]
+    expected = "\n".join(
+        [
+            "╭───────┬────────────────┬────────╮",
+            "│   hdr │ data           │ fold   │",
+            "├───────┼────────────────┼────────┤",
+            "│     1 │                │        │",
+            "├───────┼────────────────┼────────┤",
+            "│     2 │ very long data │ fold   │",
+            "│       │                │ this   │",
+            "╰───────┴────────────────┴────────╯",
+        ]
+    )
+    result = tabulate(table, headers="firstrow", tablefmt="rounded_grid")
+    assert_equal(expected, result)
+
+
+def test_rounded_grid_multiline_with_empty_cells_headerless():
+    "Output: rounded_grid with multiline cells and empty cells without headers"
+    table = [["0", "", ""], ["1", "", ""], ["2", "very long data", "fold\nthis"]]
+    expected = "\n".join(
+        [
+            "╭───┬────────────────┬──────╮",
+            "│ 0 │                │      │",
+            "├───┼────────────────┼──────┤",
+            "│ 1 │                │      │",
+            "├───┼────────────────┼──────┤",
+            "│ 2 │ very long data │ fold │",
+            "│   │                │ this │",
+            "╰───┴────────────────┴──────╯",
+        ]
+    )
+    result = tabulate(table, tablefmt="rounded_grid")
+    assert_equal(expected, result)
+
+
+def test_double_grid():
+    "Output: double_grid with headers"
+    expected = "\n".join(
+        [
+            "╔═══════════╦═══════════╗",
+            "║ strings   ║   numbers ║",
+            "╠═══════════╬═══════════╣",
+            "║ spam      ║   41.9999 ║",
+            "╠═══════════╬═══════════╣",
+            "║ eggs      ║  451      ║",
+            "╚═══════════╩═══════════╝",
+        ]
+    )
+    result = tabulate(_test_table, _test_table_headers, tablefmt="double_grid")
+    assert_equal(expected, result)
+
+
+def test_double_grid_wide_characters():
+    "Output: double_grid with wide characters in headers"
+    try:
+        import wcwidth  # noqa
+    except ImportError:
+        skip("test_double_grid_wide_characters is skipped")
+    headers = list(_test_table_headers)
+    headers[1] = "配列"
+    expected = "\n".join(
+        [
+            "╔═══════════╦══════════╗",
+            "║ strings   ║     配列 ║",
+            "╠═══════════╬══════════╣",
+            "║ spam      ║  41.9999 ║",
+            "╠═══════════╬══════════╣",
+            "║ eggs      ║ 451      ║",
+            "╚═══════════╩══════════╝",
+        ]
+    )
+    result = tabulate(_test_table, headers, tablefmt="double_grid")
+    assert_equal(expected, result)
+
+
+def test_double_grid_headerless():
+    "Output: double_grid without headers"
+    expected = "\n".join(
+        [
+            "╔══════╦══════════╗",
+            "║ spam ║  41.9999 ║",
+            "╠══════╬══════════╣",
+            "║ eggs ║ 451      ║",
+            "╚══════╩══════════╝",
+        ]
+    )
+    result = tabulate(_test_table, tablefmt="double_grid")
+    assert_equal(expected, result)
+
+
+def test_double_grid_multiline_headerless():
+    "Output: double_grid with multiline cells without headers"
+    table = [["foo bar\nbaz\nbau", "hello"], ["", "multiline\nworld"]]
+    expected = "\n".join(
+        [
+            "╔═════════╦═══════════╗",
+            "║ foo bar ║   hello   ║",
+            "║   baz   ║           ║",
+            "║   bau   ║           ║",
+            "╠═════════╬═══════════╣",
+            "║         ║ multiline ║",
+            "║         ║   world   ║",
+            "╚═════════╩═══════════╝",
+        ]
+    )
+    result = tabulate(table, stralign="center", tablefmt="double_grid")
+    assert_equal(expected, result)
+
+
+def test_double_grid_multiline():
+    "Output: double_grid with multiline cells with headers"
+    table = [[2, "foo\nbar"]]
+    headers = ("more\nspam \x1b[31meggs\x1b[0m", "more spam\n& eggs")
+    expected = "\n".join(
+        [
+            "╔═════════════╦═════════════╗",
+            "║        more ║ more spam   ║",
+            "║   spam \x1b[31meggs\x1b[0m ║ & eggs      ║",
+            "╠═════════════╬═════════════╣",
+            "║           2 ║ foo         ║",
+            "║             ║ bar         ║",
+            "╚═════════════╩═════════════╝",
+        ]
+    )
+    result = tabulate(table, headers, tablefmt="double_grid")
+    assert_equal(expected, result)
+
+
+def test_double_grid_multiline_with_empty_cells():
+    "Output: double_grid with multiline cells and empty cells with headers"
+    table = [
+        ["hdr", "data", "fold"],
+        ["1", "", ""],
+        ["2", "very long data", "fold\nthis"],
+    ]
+    expected = "\n".join(
+        [
+            "╔═══════╦════════════════╦════════╗",
+            "║   hdr ║ data           ║ fold   ║",
+            "╠═══════╬════════════════╬════════╣",
+            "║     1 ║                ║        ║",
+            "╠═══════╬════════════════╬════════╣",
+            "║     2 ║ very long data ║ fold   ║",
+            "║       ║                ║ this   ║",
+            "╚═══════╩════════════════╩════════╝",
+        ]
+    )
+    result = tabulate(table, headers="firstrow", tablefmt="double_grid")
+    assert_equal(expected, result)
+
+
+def test_double_grid_multiline_with_empty_cells_headerless():
+    "Output: double_grid with multiline cells and empty cells without headers"
+    table = [["0", "", ""], ["1", "", ""], ["2", "very long data", "fold\nthis"]]
+    expected = "\n".join(
+        [
+            "╔═══╦════════════════╦══════╗",
+            "║ 0 ║                ║      ║",
+            "╠═══╬════════════════╬══════╣",
+            "║ 1 ║                ║      ║",
+            "╠═══╬════════════════╬══════╣",
+            "║ 2 ║ very long data ║ fold ║",
+            "║   ║                ║ this ║",
+            "╚═══╩════════════════╩══════╝",
+        ]
+    )
+    result = tabulate(table, tablefmt="double_grid")
+    assert_equal(expected, result)
+
+
 def test_fancy_grid():
     "Output: fancy_grid with headers"
     expected = "\n".join(
@@ -492,6 +907,29 @@ def test_fancy_grid():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="fancy_grid")
+    assert_equal(expected, result)
+
+
+def test_fancy_grid_wide_characters():
+    "Output: fancy_grid with wide characters in headers"
+    try:
+        import wcwidth  # noqa
+    except ImportError:
+        skip("test_fancy_grid_wide_characters is skipped")
+    headers = list(_test_table_headers)
+    headers[1] = "配列"
+    expected = "\n".join(
+        [
+            "╒═══════════╤══════════╕",
+            "│ strings   │     配列 │",
+            "╞═══════════╪══════════╡",
+            "│ spam      │  41.9999 │",
+            "├───────────┼──────────┤",
+            "│ eggs      │ 451      │",
+            "╘═══════════╧══════════╛",
+        ]
+    )
+    result = tabulate(_test_table, headers, tablefmt="fancy_grid")
     assert_equal(expected, result)
 
 
@@ -618,6 +1056,266 @@ def test_fancy_grid_multiline_row_align():
         ]
     )
     result = tabulate(table, tablefmt="fancy_grid", rowalign=[None, "center", "bottom"])
+    assert_equal(expected, result)
+
+    
+def test_outline():
+    "Output: outline with headers"
+    expected = "\n".join(
+        [
+            "+-----------+-----------+",
+            "| strings   |   numbers |",
+            "+===========+===========+",
+            "| spam      |   41.9999 |",
+            "| eggs      |  451      |",
+            "+-----------+-----------+",
+        ]
+    )
+    result = tabulate(_test_table, _test_table_headers, tablefmt="outline")
+    assert_equal(expected, result)
+
+
+def test_outline_wide_characters():
+    "Output: outline with wide characters in headers"
+    try:
+        import wcwidth  # noqa
+    except ImportError:
+        skip("test_outline_wide_characters is skipped")
+    headers = list(_test_table_headers)
+    headers[1] = "配列"
+    expected = "\n".join(
+        [
+            "+-----------+----------+",
+            "| strings   |     配列 |",
+            "+===========+==========+",
+            "| spam      |  41.9999 |",
+            "| eggs      | 451      |",
+            "+-----------+----------+",
+        ]
+    )
+    result = tabulate(_test_table, headers, tablefmt="outline")
+    assert_equal(expected, result)
+
+
+def test_outline_headerless():
+    "Output: outline without headers"
+    expected = "\n".join(
+        [
+            "+------+----------+",
+            "| spam |  41.9999 |",
+            "| eggs | 451      |",
+            "+------+----------+",
+        ]
+    )
+    result = tabulate(_test_table, tablefmt="outline")
+    assert_equal(expected, result)
+
+
+def test_simple_outline():
+    "Output: simple_outline with headers"
+    expected = "\n".join(
+        [
+            "┌───────────┬───────────┐",
+            "│ strings   │   numbers │",
+            "├───────────┼───────────┤",
+            "│ spam      │   41.9999 │",
+            "│ eggs      │  451      │",
+            "└───────────┴───────────┘",
+        ]
+    )
+    result = tabulate(_test_table, _test_table_headers, tablefmt="simple_outline")
+    assert_equal(expected, result)
+
+
+def test_simple_outline_wide_characters():
+    "Output: simple_outline with wide characters in headers"
+    try:
+        import wcwidth  # noqa
+    except ImportError:
+        skip("test_simple_outline_wide_characters is skipped")
+    headers = list(_test_table_headers)
+    headers[1] = "配列"
+    expected = "\n".join(
+        [
+            "┌───────────┬──────────┐",
+            "│ strings   │     配列 │",
+            "├───────────┼──────────┤",
+            "│ spam      │  41.9999 │",
+            "│ eggs      │ 451      │",
+            "└───────────┴──────────┘",
+        ]
+    )
+    result = tabulate(_test_table, headers, tablefmt="simple_outline")
+    assert_equal(expected, result)
+
+
+def test_simple_outline_headerless():
+    "Output: simple_outline without headers"
+    expected = "\n".join(
+        [
+            "┌──────┬──────────┐",
+            "│ spam │  41.9999 │",
+            "│ eggs │ 451      │",
+            "└──────┴──────────┘",
+        ]
+    )
+    result = tabulate(_test_table, tablefmt="simple_outline")
+    assert_equal(expected, result)
+
+
+def test_rounded_outline():
+    "Output: rounded_outline with headers"
+    expected = "\n".join(
+        [
+            "╭───────────┬───────────╮",
+            "│ strings   │   numbers │",
+            "├───────────┼───────────┤",
+            "│ spam      │   41.9999 │",
+            "│ eggs      │  451      │",
+            "╰───────────┴───────────╯",
+        ]
+    )
+    result = tabulate(_test_table, _test_table_headers, tablefmt="rounded_outline")
+    assert_equal(expected, result)
+
+
+def test_rounded_outline_wide_characters():
+    "Output: rounded_outline with wide characters in headers"
+    try:
+        import wcwidth  # noqa
+    except ImportError:
+        skip("test_rounded_outline_wide_characters is skipped")
+    headers = list(_test_table_headers)
+    headers[1] = "配列"
+    expected = "\n".join(
+        [
+            "╭───────────┬──────────╮",
+            "│ strings   │     配列 │",
+            "├───────────┼──────────┤",
+            "│ spam      │  41.9999 │",
+            "│ eggs      │ 451      │",
+            "╰───────────┴──────────╯",
+        ]
+    )
+    result = tabulate(_test_table, headers, tablefmt="rounded_outline")
+    assert_equal(expected, result)
+
+
+def test_rounded_outline_headerless():
+    "Output: rounded_outline without headers"
+    expected = "\n".join(
+        [
+            "╭──────┬──────────╮",
+            "│ spam │  41.9999 │",
+            "│ eggs │ 451      │",
+            "╰──────┴──────────╯",
+        ]
+    )
+    result = tabulate(_test_table, tablefmt="rounded_outline")
+    assert_equal(expected, result)
+
+
+def test_double_outline():
+    "Output: double_outline with headers"
+    expected = "\n".join(
+        [
+            "╔═══════════╦═══════════╗",
+            "║ strings   ║   numbers ║",
+            "╠═══════════╬═══════════╣",
+            "║ spam      ║   41.9999 ║",
+            "║ eggs      ║  451      ║",
+            "╚═══════════╩═══════════╝",
+        ]
+    )
+    result = tabulate(_test_table, _test_table_headers, tablefmt="double_outline")
+    assert_equal(expected, result)
+
+
+def test_double_outline_wide_characters():
+    "Output: double_outline with wide characters in headers"
+    try:
+        import wcwidth  # noqa
+    except ImportError:
+        skip("test_double_outline_wide_characters is skipped")
+    headers = list(_test_table_headers)
+    headers[1] = "配列"
+    expected = "\n".join(
+        [
+            "╔═══════════╦══════════╗",
+            "║ strings   ║     配列 ║",
+            "╠═══════════╬══════════╣",
+            "║ spam      ║  41.9999 ║",
+            "║ eggs      ║ 451      ║",
+            "╚═══════════╩══════════╝",
+        ]
+    )
+    result = tabulate(_test_table, headers, tablefmt="double_outline")
+    assert_equal(expected, result)
+
+
+def test_double_outline_headerless():
+    "Output: double_outline without headers"
+    expected = "\n".join(
+        [
+            "╔══════╦══════════╗",
+            "║ spam ║  41.9999 ║",
+            "║ eggs ║ 451      ║",
+            "╚══════╩══════════╝",
+        ]
+    )
+    result = tabulate(_test_table, tablefmt="double_outline")
+    assert_equal(expected, result)
+
+
+def test_fancy_outline():
+    "Output: fancy_outline with headers"
+    expected = "\n".join(
+        [
+            "╒═══════════╤═══════════╕",
+            "│ strings   │   numbers │",
+            "╞═══════════╪═══════════╡",
+            "│ spam      │   41.9999 │",
+            "│ eggs      │  451      │",
+            "╘═══════════╧═══════════╛",
+        ]
+    )
+    result = tabulate(_test_table, _test_table_headers, tablefmt="fancy_outline")
+    assert_equal(expected, result)
+
+
+def test_fancy_outline_wide_characters():
+    "Output: fancy_outline with wide characters in headers"
+    try:
+        import wcwidth  # noqa
+    except ImportError:
+        skip("test_fancy_outline_wide_characters is skipped")
+    headers = list(_test_table_headers)
+    headers[1] = "配列"
+    expected = "\n".join(
+        [
+            "╒═══════════╤══════════╕",
+            "│ strings   │     配列 │",
+            "╞═══════════╪══════════╡",
+            "│ spam      │  41.9999 │",
+            "│ eggs      │ 451      │",
+            "╘═══════════╧══════════╛",
+        ]
+    )
+    result = tabulate(_test_table, headers, tablefmt="fancy_outline")
+    assert_equal(expected, result)
+
+
+def test_fancy_outline_headerless():
+    "Output: fancy_outline without headers"
+    expected = "\n".join(
+        [
+            "╒══════╤══════════╕",
+            "│ spam │  41.9999 │",
+            "│ eggs │ 451      │",
+            "╘══════╧══════════╛",
+        ]
+    )
+    result = tabulate(_test_table, tablefmt="fancy_outline")
     assert_equal(expected, result)
 
 
@@ -1440,6 +2138,20 @@ def test_empty_data_without_headers():
     "Output: table with empty data and no headers"
     expected = ""
     result = tabulate([], tablefmt="simple")
+    assert_equal(expected, result)
+
+
+def test_intfmt():
+    "Output: integer format"
+    result = tabulate([[10000], [10]], intfmt=",", tablefmt="plain")
+    expected = "10,000\n    10"
+    assert_equal(expected, result)
+
+
+def test_empty_data_with_headers():
+    "Output: table with empty data and headers as firstrow"
+    expected = ""
+    result = tabulate([], headers="firstrow")
     assert_equal(expected, result)
 
 

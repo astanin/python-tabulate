@@ -45,12 +45,6 @@ jobs:
             . venv/bin/activate
             tox -e py38-extra
 
-      - run:
-          name: run linting
-          command: |
-            . venv/bin/activate
-            tox -e lint
-
       - store_artifacts:
           path: test-reports
           destination: test-reports

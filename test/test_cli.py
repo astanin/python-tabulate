@@ -3,8 +3,6 @@
 """
 
 
-from __future__ import print_function
-from __future__ import unicode_literals
 import os
 import sys
 
@@ -93,11 +91,11 @@ def run_and_capture_stdout(cmd, input=None):
     out, err = x.communicate(input=input_buf)
     out = out.decode("utf-8")
     if x.returncode != 0:
-        raise IOError(err)
+        raise OSError(err)
     return out
 
 
-class TemporaryTextFile(object):
+class TemporaryTextFile:
     def __init__(self):
         self.tmpfile = None
 

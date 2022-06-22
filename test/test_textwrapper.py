@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
-
 """Discretely test functionality of our custom TextWrapper"""
 from __future__ import unicode_literals
 
-from tabulate import _CustomTextWrap as CTW
+import datetime
+
+from tabulate import _CustomTextWrap as CTW, tabulate
 from textwrap import TextWrapper as OTW
 
 from common import skip, assert_equal
@@ -11,7 +11,7 @@ from common import skip, assert_equal
 
 def test_wrap_multiword_non_wide():
     """TextWrapper: non-wide character regression tests"""
-    data = "this is a test string for regression spiltting"
+    data = "this is a test string for regression splitting"
     for width in range(1, len(data)):
         orig = OTW(width=width)
         cust = CTW(width=width)
@@ -22,7 +22,7 @@ def test_wrap_multiword_non_wide():
 
 
 def test_wrap_multiword_non_wide_with_hypens():
-    """TextWrapper: non-wide character regression tests that contain hypens"""
+    """TextWrapper: non-wide character regression tests that contain hyphens"""
     data = "how should-we-split-this non-sense string that-has-lots-of-hypens"
     for width in range(1, len(data)):
         orig = OTW(width=width)
@@ -46,7 +46,7 @@ def test_wrap_longword_non_wide():
 
 
 def test_wrap_wide_char_multiword():
-    """TextWrapper: wrapping support for wide characters with mulitple words"""
+    """TextWrapper: wrapping support for wide characters with multiple words"""
     try:
         import wcwidth  # noqa
     except ImportError:
@@ -87,14 +87,14 @@ def test_wrap_mixed_string():
 
     data = (
         "This content of this string (この文字列のこの内容) contains "
-        "mulitple character types (複数の文字タイプが含まれています)"
+        "multiple character types (複数の文字タイプが含まれています)"
     )
 
     expected = [
         "This content of this",
         "string (この文字列の",
         "この内容) contains",
-        "mulitple character",
+        "multiple character",
         "types (複数の文字タイ",
         "プが含まれています)",
     ]
@@ -128,7 +128,7 @@ def test_wrap_full_line_color():
 
 def test_wrap_color_in_single_line():
     """TextWrapper: Wrap a line - preserve internal color tags, and don't
-    propogate them to other lines when they don't need to be"""
+    propagate them to other lines when they don't need to be"""
     # This has both a text color and a background color
     data = "This is a test string for testing \033[31mTextWrap\033[0m with colors"
 
@@ -155,4 +155,32 @@ def test_wrap_color_line_splillover():
     ]
     wrapper = CTW(width=25)
     result = wrapper.wrap(data)
+    assert_equal(expected, result)
+
+
+def test_wrap_datetime():
+    """TextWrapper: Show that datetimes can be wrapped without crashing"""
+    data = [
+        ["First Entry", datetime.datetime(2020, 1, 1, 5, 6, 7)],
+        ["Second Entry", datetime.datetime(2021, 2, 2, 0, 0, 0)],
+    ]
+    headers = ["Title", "When"]
+    result = tabulate(data, headers=headers, tablefmt="grid", maxcolwidths=[7, 5])
+
+    expected = [
+        "+---------+--------+",
+        "| Title   | When   |",
+        "+=========+========+",
+        "| First   | 2020-  |",
+        "| Entry   | 01-01  |",
+        "|         | 05:06  |",
+        "|         | :07    |",
+        "+---------+--------+",
+        "| Second  | 2021-  |",
+        "| Entry   | 02-02  |",
+        "|         | 00:00  |",
+        "|         | :00    |",
+        "+---------+--------+",
+    ]
+    expected = "\n".join(expected)
     assert_equal(expected, result)
