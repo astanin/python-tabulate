@@ -5,6 +5,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 from collections import namedtuple
+from decimal import Decimal
 import sys
 import re
 import math
@@ -1107,7 +1108,14 @@ def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
             formatted_val = format(float(raw_val), floatfmt)
             return val.replace(raw_val, formatted_val)
         else:
-            return format(float(val), floatfmt)
+            try:
+                if "f" in floatfmt and float('-inf') < float(val) < float('inf'):
+                    val = Decimal(str(val))
+                else:
+                    val = float(val)
+            except (OverflowError, ValueError):
+                val = float(val)
+            return format(val, floatfmt)
     else:
         return "{0}".format(val)
 
