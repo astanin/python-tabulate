@@ -1,5 +1,5 @@
-- 0.8.11: Future version
-- 0.8.10: Python 3.10 support. Bug fixes.
+- 0.8.11: Future version. Drop support for Python 2.7, 3.5, 3.6. New formats. Improve column width options.
+- 0.8.10: Python 3.10 support. Bug fixes. Column width parameter.
 - 0.8.9: Bug fix. Revert support of decimal separators.
 - 0.8.8: Python 3.9 support, 3.10 ready.
   New formats: ``unsafehtml``, ``latex_longtable``, ``fancy_outline``.
