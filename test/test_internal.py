@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
-
 """Tests of the internal tabulate functions."""
 
-from __future__ import print_function
-from __future__ import unicode_literals
 import tabulate as T
 from common import assert_equal, skip
 

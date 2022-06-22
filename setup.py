@@ -6,21 +6,17 @@ except ImportError:
     from distutils.core import setup
 
 
-from platform import python_version_tuple, python_implementation
+from platform import python_implementation
 import os
 import re
 
 # strip links from the description on the PyPI
-if python_version_tuple()[0] >= "3":
-    LONG_DESCRIPTION = open("README.md", "r", encoding="utf-8").read()
-else:
-    LONG_DESCRIPTION = open("README.md", "r").read()
+LONG_DESCRIPTION = open("README.md", encoding="utf-8").read()
 
 # strip Build Status from the PyPI package
 try:
-    if python_version_tuple()[:2] >= ("2", "7"):
-        status_re = "^Build status\n(.*\n){7}"
-        LONG_DESCRIPTION = re.sub(status_re, "", LONG_DESCRIPTION, flags=re.M)
+    status_re = "^Build status\n(.*\n){7}"
+    LONG_DESCRIPTION = re.sub(status_re, "", LONG_DESCRIPTION, flags=re.M)
 except TypeError:
     if python_implementation() == "IronPython":
         # IronPython doesn't support flags in re.sub (IronPython issue #923)
@@ -29,7 +25,7 @@ except TypeError:
         raise
 
 install_options = os.environ.get("TABULATE_INSTALL", "").split(",")
-libonly_flags = set(["lib-only", "libonly", "no-cli", "without-cli"])
+libonly_flags = {"lib-only", "libonly", "no-cli", "without-cli"}
 if libonly_flags.intersection(install_options):
     console_scripts = []
 else:
@@ -46,20 +42,17 @@ setup(
     author_email="s.astanin@gmail.com",
     url="https://github.com/astanin/python-tabulate",
     license="MIT",
-    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
+    python_requires=">=3.7",
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3 :: Only",
         "Topic :: Software Development :: Libraries",
     ],
     py_modules=["tabulate"],

@@ -1,6 +1,6 @@
 repos:
 -   repo: https://github.com/python/black
-    rev: 19.3b0
+    rev: 21.12b0
     hooks:
     -   id: black
         args: [--safe]

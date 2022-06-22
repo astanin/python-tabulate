@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
-
 """Test support of the various forms of tabular data."""
 
-from __future__ import print_function
-from __future__ import unicode_literals
 from tabulate import tabulate
 from common import assert_equal, assert_in, raises, skip
 
@@ -471,7 +467,7 @@ def test_list_of_dicts_with_list_of_headers():
         tabulate(table, headers=headers)
 
 
-def test_py27orlater_list_of_ordereddicts():
+def test_list_of_ordereddicts():
     "Input: a list of OrderedDicts."
     from collections import OrderedDict
 

@@ -1,64 +1,23 @@
-# -*- coding: utf-8 -*-
-
 """Pretty-print tabular data."""
 
-from __future__ import print_function
-from __future__ import unicode_literals
 from collections import namedtuple
-import sys
+from collections.abc import Iterable
+from html import escape as htmlescape
+from itertools import zip_longest as izip_longest
+from functools import reduce, partial
+import io
 import re
 import math
 import textwrap
-
-
-if sys.version_info >= (3, 3):
-    from collections.abc import Iterable
-else:
-    from collections import Iterable
-
-if sys.version_info[0] < 3:
-    from itertools import izip_longest
-    from functools import partial
-
-    _none_type = type(None)
-    _bool_type = bool
-    _int_type = int
-    _long_type = long  # noqa
-    _float_type = float
-    _text_type = unicode  # noqa
-    _binary_type = str
-
-    def _is_file(f):
-        return hasattr(f, "read")
-
-else:
-    from itertools import zip_longest as izip_longest
-    from functools import reduce, partial
-
-    _none_type = type(None)
-    _bool_type = bool
-    _int_type = int
-    _long_type = int
-    _float_type = float
-    _text_type = str
-    _binary_type = bytes
-    basestring = str
-
-    import io
-
-    def _is_file(f):
-        return isinstance(f, io.IOBase)
-
 
 try:
     import wcwidth  # optional wide-character (CJK) support
 except ImportError:
     wcwidth = None
 
-try:
-    from html import escape as htmlescape
-except ImportError:
-    from cgi import escape as htmlescape
+
+def _is_file(f):
+    return isinstance(f, io.IOBase)
 
 
 __all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
@@ -88,7 +47,7 @@ Line = namedtuple("Line", ["begin", "hline", "sep", "end"])
 DataRow = namedtuple("DataRow", ["begin", "sep", "end"])
 
 
-# A table structure is suppposed to be:
+# A table structure is supposed to be:
 #
 #     --- lineabove ---------
 #         headerrow
@@ -204,7 +163,7 @@ def _html_row_with_attrs(celltag, unsafe, cell_values, colwidths, colaligns):
         ]
     rowhtml = "<tr>{}</tr>".format("".join(values_with_attrs).rstrip())
     if celltag == "th":  # it's a header row, create a new table header
-        rowhtml = "<table>\n<thead>\n{}\n</thead>\n<tbody>".format(rowhtml)
+        rowhtml = f"<table>\n<thead>\n{rowhtml}\n</thead>\n<tbody>"
     return rowhtml
 
 
@@ -216,7 +175,7 @@ def _moin_row_with_attrs(celltag, cell_values, colwidths, colaligns, header=""):
         "decimal": '<style="text-align: right;">',
     }
     values_with_attrs = [
-        "{0}{1} {2} ".format(celltag, alignment.get(a, ""), header + c + header)
+        "{}{} {} ".format(celltag, alignment.get(a, ""), header + c + header)
         for c, a in zip(cell_values, colaligns)
     ]
     return "".join(values_with_attrs) + "||"
@@ -262,7 +221,7 @@ def _latex_row(cell_values, colwidths, colaligns, escrules=LATEX_ESCAPE_RULES):
 
 def _rst_escape_first_column(rows, headers):
     def escape_empty(val):
-        if isinstance(val, (_text_type, _binary_type)) and not val.strip():
+        if isinstance(val, (str, bytes)) and not val.strip():
             return ".."
         else:
             return val
@@ -725,7 +684,7 @@ def _isnumber(string):
     """
     if not _isconvertible(float, string):
         return False
-    elif isinstance(string, (_text_type, _binary_type)) and (
+    elif isinstance(string, (str, bytes)) and (
         math.isinf(float(string)) or math.isnan(float(string))
     ):
         return string.lower() in ["inf", "-inf", "nan"]
@@ -741,7 +700,7 @@ def _isint(string, inttype=int):
     """
     return (
         type(string) is inttype
-        or (isinstance(string, _binary_type) or isinstance(string, _text_type))
+        or isinstance(string, (bytes, str))
         and _isconvertible(inttype, string)
     )
 
@@ -755,8 +714,8 @@ def _isbool(string):
     >>> _isbool(1)
     False
     """
-    return type(string) is _bool_type or (
-        isinstance(string, (_binary_type, _text_type)) and string in ("True", "False")
+    return type(string) is bool or (
+        isinstance(string, (bytes, str)) and string in ("True", "False")
     )
 
 
@@ -776,27 +735,23 @@ def _type(string, has_invisible=True, numparse=True):
 
     """
 
-    if has_invisible and (
-        isinstance(string, _text_type) or isinstance(string, _binary_type)
-    ):
+    if has_invisible and isinstance(string, (str, bytes)):
         string = _strip_invisible(string)
 
     if string is None:
-        return _none_type
+        return type(None)
     elif hasattr(string, "isoformat"):  # datetime.datetime, date, and time
-        return _text_type
+        return str
     elif _isbool(string):
-        return _bool_type
+        return bool
     elif _isint(string) and numparse:
-        return int
-    elif _isint(string, _long_type) and numparse:
         return int
     elif _isnumber(string) and numparse:
         return float
-    elif isinstance(string, _binary_type):
-        return _binary_type
+    elif isinstance(string, bytes):
+        return bytes
     else:
-        return _text_type
+        return str
 
 
 def _afterpoint(string):
@@ -872,7 +827,7 @@ def _strip_invisible(s):
     'This is a link'
 
     """
-    if isinstance(s, _text_type):
+    if isinstance(s, str):
         links_removed = re.sub(_invisible_codes_link, "\\1", s)
         return re.sub(_invisible_codes, "", links_removed)
     else:  # a bytestring
@@ -891,14 +846,14 @@ def _visible_width(s):
         len_fn = wcwidth.wcswidth
     else:
         len_fn = len
-    if isinstance(s, _text_type) or isinstance(s, _binary_type):
+    if isinstance(s, (str, bytes)):
         return len_fn(_strip_invisible(s))
     else:
-        return len_fn(_text_type(s))
+        return len_fn(str(s))
 
 
 def _is_multiline(s):
-    if isinstance(s, _text_type):
+    if isinstance(s, str):
         return bool(re.search(_multiline_codes, s))
     else:  # a bytestring
         return bool(re.search(_multiline_codes_bytes, s))
@@ -1031,20 +986,20 @@ def _align_column(
 
 def _more_generic(type1, type2):
     types = {
-        _none_type: 0,
-        _bool_type: 1,
+        type(None): 0,
+        bool: 1,
         int: 2,
         float: 3,
-        _binary_type: 4,
-        _text_type: 5,
+        bytes: 4,
+        str: 5,
     }
     invtypes = {
-        5: _text_type,
-        4: _binary_type,
+        5: str,
+        4: bytes,
         3: float,
         2: int,
-        1: _bool_type,
-        0: _none_type,
+        1: bool,
+        0: type(None),
     }
     moregeneric = max(types.get(type1, 5), types.get(type2, 5))
     return invtypes[moregeneric]
@@ -1053,27 +1008,27 @@ def _more_generic(type1, type2):
 def _column_type(strings, has_invisible=True, numparse=True):
     """The least generic type all column values are convertible to.
 
-    >>> _column_type([True, False]) is _bool_type
+    >>> _column_type([True, False]) is bool
     True
-    >>> _column_type(["1", "2"]) is _int_type
+    >>> _column_type(["1", "2"]) is int
     True
-    >>> _column_type(["1", "2.3"]) is _float_type
+    >>> _column_type(["1", "2.3"]) is float
     True
-    >>> _column_type(["1", "2.3", "four"]) is _text_type
+    >>> _column_type(["1", "2.3", "four"]) is str
     True
-    >>> _column_type(["four", '\u043f\u044f\u0442\u044c']) is _text_type
+    >>> _column_type(["four", '\u043f\u044f\u0442\u044c']) is str
     True
-    >>> _column_type([None, "brux"]) is _text_type
+    >>> _column_type([None, "brux"]) is str
     True
-    >>> _column_type([1, 2, None]) is _int_type
+    >>> _column_type([1, 2, None]) is int
     True
     >>> import datetime as dt
-    >>> _column_type([dt.datetime(1991,2,19), dt.time(17,35)]) is _text_type
+    >>> _column_type([dt.datetime(1991,2,19), dt.time(17,35)]) is str
     True
 
     """
     types = [_type(s, has_invisible, numparse) for s in strings]
-    return reduce(_more_generic, types, _bool_type)
+    return reduce(_more_generic, types, bool)
 
 
 def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
@@ -1091,17 +1046,15 @@ def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
     if val is None:
         return missingval
 
-    if valtype in [int, _text_type]:
-        return "{0}".format(val)
-    elif valtype is _binary_type:
+    if valtype in [int, str]:
+        return f"{val}"
+    elif valtype is bytes:
         try:
-            return _text_type(val, "ascii")
+            return str(val, "ascii")
         except TypeError:
-            return _text_type(val)
+            return str(val)
     elif valtype is float:
-        is_a_colored_number = has_invisible and isinstance(
-            val, (_text_type, _binary_type)
-        )
+        is_a_colored_number = has_invisible and isinstance(val, (str, bytes))
         if is_a_colored_number:
             raw_val = _strip_invisible(val)
             formatted_val = format(float(raw_val), floatfmt)
@@ -1109,7 +1062,7 @@ def _format(val, valtype, floatfmt, missingval="", has_invisible=True):
         else:
             return format(float(val), floatfmt)
     else:
-        return "{0}".format(val)
+        return f"{val}"
 
 
 def _align_header(
@@ -1130,7 +1083,7 @@ def _align_header(
     elif alignment == "center":
         return _padboth(width, header)
     elif not alignment:
-        return "{0}".format(header)
+        return f"{header}"
     else:
         return _padleft(width, header)
 
@@ -1221,7 +1174,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             raise ValueError("tabular data doesn't appear to be a dict or a DataFrame")
 
         if headers == "keys":
-            headers = list(map(_text_type, keys))  # headers should be strings
+            headers = list(map(str, keys))  # headers should be strings
 
     else:  # it's a usual an iterable of iterables, or a NumPy array
         rows = list(tabular_data)
@@ -1243,7 +1196,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             and hasattr(rows[0], "_fields")
         ):
             # namedtuple
-            headers = list(map(_text_type, rows[0]._fields))
+            headers = list(map(str, rows[0]._fields))
         elif len(rows) > 0 and hasattr(rows[0], "keys") and hasattr(rows[0], "values"):
             # dict-like object
             uniq_keys = set()  # implements hashed lookup
@@ -1264,11 +1217,11 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             elif isinstance(headers, dict):
                 # a dict of headers for a list of dicts
                 headers = [headers.get(k, k) for k in keys]
-                headers = list(map(_text_type, headers))
+                headers = list(map(str, headers))
             elif headers == "firstrow":
                 if len(rows) > 0:
                     headers = [firstdict.get(k, k) for k in keys]
-                    headers = list(map(_text_type, headers))
+                    headers = list(map(str, headers))
                 else:
                     headers = []
             elif headers:
@@ -1289,7 +1242,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
         elif headers == "keys" and len(rows) > 0:
             # keys are column indices
-            headers = list(map(_text_type, range(len(rows[0]))))
+            headers = list(map(str, range(len(rows[0]))))
 
     # take headers from the first row if necessary
     if headers == "firstrow" and len(rows) > 0:
@@ -1298,14 +1251,14 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             index = index[1:]
         else:
             headers = rows[0]
-        headers = list(map(_text_type, headers))  # headers should be strings
+        headers = list(map(str, headers))  # headers should be strings
         rows = rows[1:]
 
-    headers = list(map(_text_type, headers))
+    headers = list(map(str, headers))
     rows = list(map(list, rows))
 
     # add or remove an index column
-    showindex_is_a_str = type(showindex) in [_text_type, _binary_type]
+    showindex_is_a_str = type(showindex) in [str, bytes]
     if showindex == "default" and index is not None:
         rows = _prepend_row_index(rows, index)
     elif isinstance(showindex, Iterable) and not showindex_is_a_str:
@@ -1827,8 +1780,8 @@ def tabulate(
     # optimization: look for ANSI control codes once,
     # enable smart width functions only if a control code is found
     plain_text = "\t".join(
-        ["\t".join(map(_text_type, headers))]
-        + ["\t".join(map(_text_type, row)) for row in list_of_lists]
+        ["\t".join(map(str, headers))]
+        + ["\t".join(map(str, row)) for row in list_of_lists]
     )
 
     has_invisible = re.search(_invisible_codes, plain_text)
@@ -1850,7 +1803,7 @@ def tabulate(
     cols = list(izip_longest(*list_of_lists))
     numparses = _expand_numparse(disable_numparse, len(cols))
     coltypes = [_column_type(col, numparse=np) for col, np in zip(cols, numparses)]
-    if isinstance(floatfmt, basestring):  # old version
+    if isinstance(floatfmt, str):  # old version
         float_formats = len(cols) * [
             floatfmt
         ]  # just duplicate the string to use in each column
@@ -1858,7 +1811,7 @@ def tabulate(
         float_formats = list(floatfmt)
         if len(float_formats) < len(cols):
             float_formats.extend((len(cols) - len(float_formats)) * [_DEFAULT_FLOATFMT])
-    if isinstance(missingval, basestring):
+    if isinstance(missingval, str):
         missing_vals = len(cols) * [missingval]
     else:
         missing_vals = list(missingval)
