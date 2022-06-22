@@ -2110,6 +2110,13 @@ def test_empty_data_without_headers():
     assert_equal(expected, result)
 
 
+def test_intfmt():
+    "Output: integer format"
+    result = tabulate([[10000], [10]], intfmt=",", tablefmt="plain")
+    expected = "10,000\n    10"
+    assert_equal(expected, result)
+
+
 def test_empty_data_with_headers():
     "Output: table with empty data and headers as firstrow"
     expected = ""

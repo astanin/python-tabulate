@@ -569,6 +569,14 @@ column, in which case every column may have different number formatting:
     0.1  0.123  0.12345
     ---  -----  -------
 
+`intfmt` works similarly for integers
+
+    >>> print(tabulate([["a",1000],["b",90000]], intfmt=","))
+    -  ------
+    a   1,000
+    b  90,000
+    -  ------
+
 ### Text formatting
 
 By default, `tabulate` removes leading and trailing whitespace from text
@@ -783,6 +791,7 @@ Usage of the command line utility
     -o FILE, --output FILE    print table to FILE (default: stdout)
     -s REGEXP, --sep REGEXP   use a custom column separator (default: whitespace)
     -F FPFMT, --float FPFMT   floating point number format (default: g)
+    -I INTFMT, --int INTFMT   integer point number format (default: "")
     -f FMT, --format FMT      set output table format; supported formats:
                               plain, simple, github, grid, fancy_grid, pipe,
                               orgtbl, rst, mediawiki, html, latex, latex_raw,
