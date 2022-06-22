@@ -23,8 +23,7 @@ To install the Python library and the command line utility, run:
 
 The command line utility will be installed as `tabulate` to `bin` on
 Linux (e.g. `/usr/bin`); or as `tabulate.exe` to `Scripts` in your
-Python installation on Windows (e.g.
-`C:\Python27\Scripts\tabulate.exe`).
+Python installation on Windows (e.g. `C:\Python37\Scripts\tabulate.exe`).
 
 You may consider installing the library only for the current user:
 
@@ -845,21 +844,19 @@ To run tests on all supported Python versions, make sure all Python
 interpreters, `pytest` and `tox` are installed, then run `tox` in the root
 of the project source tree.
 
-On Linux `tox` expects to find executables like `python2.6`,
-`python2.7`, `python3.4` etc. On Windows it looks for
-`C:\Python26\python.exe`, `C:\Python27\python.exe` and
-`C:\Python34\python.exe` respectively.
+On Linux `tox` expects to find executables like `python3.7`, `python3.8` etc.
+On Windows it looks for `C:\Python37\python.exe`, `C:\Python38\python.exe` etc. respectively.
 
 To test only some Python environments, use `-e` option. For example, to
-test only against Python 2.7 and Python 3.8, run:
+test only against Python 3.7 and Python 3.8, run:
 
-    tox -e py27,py38
+    tox -e py37,py38
 
 in the root of the project source tree.
 
 To enable NumPy and Pandas tests, run:
 
-    tox -e py27-extra,py38-extra
+    tox -e py37-extra,py38-extra
 
 (this may take a long time the first time, because NumPy and Pandas will
 have to be installed in the new virtual environments)
