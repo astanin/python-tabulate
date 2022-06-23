@@ -303,6 +303,26 @@ _table_formats = {
         padding=1,
         with_header_hide=None,
     ),
+    "heavy_grid": TableFormat(
+        lineabove=Line("┏", "━", "┳", "┓"),
+        linebelowheader=Line("┣", "━", "╋", "┫"),
+        linebetweenrows=Line("┣", "━", "╋", "┫"),
+        linebelow=Line("┗", "━", "┻", "┛"),
+        headerrow=DataRow("┃", "┃", "┃"),
+        datarow=DataRow("┃", "┃", "┃"),
+        padding=1,
+        with_header_hide=None,
+    ),
+    "mixed_grid": TableFormat(
+        lineabove=Line("┍", "━", "┯", "┑"),
+        linebelowheader=Line("┝", "━", "┿", "┥"),
+        linebetweenrows=Line("├", "─", "┼", "┤"),
+        linebelow=Line("┕", "━", "┷", "┙"),
+        headerrow=DataRow("│", "│", "│"),
+        datarow=DataRow("│", "│", "│"),
+        padding=1,
+        with_header_hide=None,
+    ),
     "double_grid": TableFormat(
         lineabove=Line("╔", "═", "╦", "╗"),
         linebelowheader=Line("╠", "═", "╬", "╣"),
@@ -348,6 +368,26 @@ _table_formats = {
         linebelowheader=Line("├", "─", "┼", "┤"),
         linebetweenrows=None,
         linebelow=Line("╰", "─", "┴", "╯"),
+        headerrow=DataRow("│", "│", "│"),
+        datarow=DataRow("│", "│", "│"),
+        padding=1,
+        with_header_hide=None,
+    ),
+    "heavy_outline": TableFormat(
+        lineabove=Line("┏", "━", "┳", "┓"),
+        linebelowheader=Line("┣", "━", "╋", "┫"),
+        linebetweenrows=None,
+        linebelow=Line("┗", "━", "┻", "┛"),
+        headerrow=DataRow("┃", "┃", "┃"),
+        datarow=DataRow("┃", "┃", "┃"),
+        padding=1,
+        with_header_hide=None,
+    ),
+    "mixed_outline": TableFormat(
+        lineabove=Line("┍", "━", "┯", "┑"),
+        linebelowheader=Line("┝", "━", "┿", "┥"),
+        linebetweenrows=None,
+        linebelow=Line("┕", "━", "┷", "┙"),
         headerrow=DataRow("│", "│", "│"),
         datarow=DataRow("│", "│", "│"),
         padding=1,
@@ -582,6 +622,8 @@ multiline_formats = {
     "grid": "grid",
     "simple_grid": "simple_grid",
     "rounded_grid": "rounded_grid",
+    "heavy_grid": "heavy_grid",
+    "mixed_grid": "mixed_grid",
     "double_grid": "double_grid",
     "fancy_grid": "fancy_grid",
     "pipe": "pipe",
@@ -1552,6 +1594,32 @@ def tabulate(
     │ eggs      │  451      │
     ╰───────────┴───────────╯
 
+    "heavy_grid" draws a grid using bold (thick) single-line box-drawing
+    characters:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "heavy_grid"))
+    ┏━━━━━━━━━━━┳━━━━━━━━━━━┓
+    ┃ strings   ┃   numbers ┃
+    ┣━━━━━━━━━━━╋━━━━━━━━━━━┫
+    ┃ spam      ┃   41.9999 ┃
+    ┣━━━━━━━━━━━╋━━━━━━━━━━━┫
+    ┃ eggs      ┃  451      ┃
+    ┗━━━━━━━━━━━┻━━━━━━━━━━━┛
+
+    "mixed_grid" draws a grid using a mix of light (thin) and heavy (thick) lines box-drawing characters:
+    characters:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "mixed_grid"))
+    ┍━━━━━━━━━━━┯━━━━━━━━━━━┑
+    │ strings   │   numbers │
+    ┝━━━━━━━━━━━┿━━━━━━━━━━━┥
+    │ spam      │   41.9999 │
+    ├───────────┼───────────┤
+    │ eggs      │  451      │
+    ┕━━━━━━━━━━━┷━━━━━━━━━━━┙
+
     "double_grid" draws a grid using double-line box-drawing
     characters:
 
@@ -1616,6 +1684,28 @@ def tabulate(
     │ spam      │   41.9999 │
     │ eggs      │  451      │
     ╰───────────┴───────────╯
+
+    "heavy_outline" is the same as the "heavy_grid" format but doesn't draw lines between rows:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "heavy_outline"))
+    ┏━━━━━━━━━━━┳━━━━━━━━━━━┓
+    ┃ strings   ┃   numbers ┃
+    ┣━━━━━━━━━━━╋━━━━━━━━━━━┫
+    ┃ spam      ┃   41.9999 ┃
+    ┃ eggs      ┃  451      ┃
+    ┗━━━━━━━━━━━┻━━━━━━━━━━━┛
+
+    "mixed_outline" is the same as the "mixed_grid" format but doesn't draw lines between rows:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "mixed_outline"))
+    ┍━━━━━━━━━━━┯━━━━━━━━━━━┑
+    │ strings   │   numbers │
+    ┝━━━━━━━━━━━┿━━━━━━━━━━━┥
+    │ spam      │   41.9999 │
+    │ eggs      │  451      │
+    ┕━━━━━━━━━━━┷━━━━━━━━━━━┙
 
     "double_outline" is the same as the "double_grid" format but doesn't draw lines between rows:
 
