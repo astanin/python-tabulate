@@ -896,21 +896,20 @@ linebetweenrows, linebelowheader, linebelow, lineabove or just a simple empty li
 ### ANSI support
 ANSI escape codes are non-printable byte sequences usually used for terminal operations like setting
 color output or modifying cursor positions. Because multi-byte ANSI sequences are inherently non-printable,
-they can still introduce unwanted length calculating string length. For example:
+they can still introduce unwanted extra length to strings. For example:
 
     >>> len('\033[31mthis text is red\033[0m')  # printable length is 16
     25
 
-To deal with this, string lengths are calculated after first remove all ANSI escape sequences. This ensures
+To deal with this, string lengths are calculated after first removing all ANSI escape sequences. This ensures
 that the actual printable length is used for column widths, rather than the byte length. In the final, printable
-table, however, ANSI escape sequences are not removed. This ensures that any output, particularly within the
-context of a terminal, retains its original styling.
+table, however, ANSI escape sequences are not removed so the original styling is preserved.
 
 Some terminals support a special grouping of ANSI escape sequences that are intended to display hyperlinks
-in terminal displays much in the same why they are shown in browsers. These are handled in the same way
-as mentioned before: non-printable ANSI escape sequences are removed prior to string length calculation.
-The only diifference with escaped hyperlinks is that column width will be based on the length of the URL
-_text_ rather than the URL itself (terminals would show this text). For example:
+much in the same way they are shown in browsers. These are handled just as mentioned before: non-printable
+ANSI escape sequences are removed prior to string length calculation. The only diifference with escaped
+hyperlinks is that column width will be based on the length of the URL _text_ rather than the URL
+itself (terminals would show this text). For example:
 
     >>> len('\x1b]8;;https://example.com\x1b\\example\x1b]8;;\x1b\\')  # display length is 7, showing 'example'
     45

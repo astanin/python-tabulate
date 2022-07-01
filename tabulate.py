@@ -625,7 +625,7 @@ _multiline_codes_bytes = re.compile(b"\r|\n|\r\n")
 # Example: \x1b]8;;https://example.com\x5ctext to show\x1b]8;;\x5c
 #
 # Where:
-# OSC: ESC followed by the ']' character (0x5b)
+# OSC: ESC followed by the ']' character (0x5d)
 # params: 0..n optional key value pairs separated by ':' (e.g. foo=bar:baz=qux:abc=123)
 # URI: the actual URI with protocol scheme (e.g. https://, file://, ftp://)
 # ST: ESC followed by the '\' character (0x5c)
