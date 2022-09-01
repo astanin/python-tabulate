@@ -400,10 +400,6 @@ indicate column alignment:
 | bacon  |     0 |
 ```
 
-`orgtbl` follows the conventions of Emacs
-[org-mode](http://orgmode.org/manual/Tables.html), and is editable also
-in the minor orgtbl-mode. Hence its name:
-
 `asciidoc` formats data like a simple table of the
 [AsciiDoctor](https://docs.asciidoctor.org/asciidoc/latest/syntax-quick-reference/#tables)
 format:
@@ -418,6 +414,10 @@ format:
 | bacon  |     0 
 |====
 ```
+
+`orgtbl` follows the conventions of Emacs
+[org-mode](http://orgmode.org/manual/Tables.html), and is editable also
+in the minor orgtbl-mode. Hence its name:
 
 ```pycon
 >>> print(tabulate(table, headers, tablefmt="orgtbl"))
