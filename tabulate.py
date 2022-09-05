@@ -1067,7 +1067,7 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
     elif valtype is bytes:
         try:
             return str(val, "ascii")
-        except TypeError:
+        except (TypeError, UnicodeDecodeError):
             return str(val)
     elif valtype is float:
         is_a_colored_number = has_invisible and isinstance(val, (str, bytes))
