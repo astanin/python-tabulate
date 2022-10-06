@@ -1536,6 +1536,35 @@ def test_orgtbl_headerless():
     result = tabulate(_test_table, tablefmt="orgtbl")
     assert_equal(expected, result)
 
+def test_asciidoc():
+    "Output: asciidoc with headers"
+    expected = "\n".join(
+        [
+            '[cols="11<,11>",options="header"]',
+            '|====',
+            '| strings   |   numbers ',
+            '| spam      |   41.9999 ',
+            '| eggs      |  451      ',
+            '|===='
+        ]
+    )
+    result = tabulate(_test_table, _test_table_headers, tablefmt="asciidoc")
+    assert_equal(expected, result)
+
+
+def test_asciidoc_headerless():
+    "Output: asciidoc without headers"
+    expected = "\n".join(
+        [
+            '[cols="6<,10>"]',
+            '|====',
+            '| spam |  41.9999 ',
+            '| eggs | 451      ',
+            '|===='
+        ]
+    )
+    result = tabulate(_test_table, tablefmt="asciidoc")
+    assert_equal(expected, result)
 
 def test_psql():
     "Output: psql with headers"

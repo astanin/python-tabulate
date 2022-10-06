@@ -166,6 +166,7 @@ Supported table formats are:
 -   "fancy\_outline"
 -   "pipe"
 -   "orgtbl"
+-   "asciidoc"
 -   "jira"
 -   "presto"
 -   "pretty"
@@ -397,6 +398,21 @@ indicate column alignment:
 | spam   |    42 |
 | eggs   |   451 |
 | bacon  |     0 |
+```
+
+`asciidoc` formats data like a simple table of the
+[AsciiDoctor](https://docs.asciidoctor.org/asciidoc/latest/syntax-quick-reference/#tables)
+format:
+
+```pycon
+>>> print(tabulate(table, headers, tablefmt="asciidoc"))
+[cols="8<,7>",options="header"]
+|====
+| item   |   qty 
+| spam   |    42 
+| eggs   |   451 
+| bacon  |     0 
+|====
 ```
 
 `orgtbl` follows the conventions of Emacs
