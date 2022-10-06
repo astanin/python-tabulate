@@ -1,8 +1,7 @@
 # update contributors and CHANGELOG in README
+# tag version release
 python3 benchmark.py  # then update README
-tox -e py33,py34,py36-extra
-python3 setup.py sdist bdist_wheel
+tox -e py37-extra,py38-extra,py39-extra,py310-extra
+python3 -m build -nswx .
 twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 twine upload dist/*
-# tag version release
-# bump version number in setup.py in tabulate.py

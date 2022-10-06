@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.2.0", "wheel", "setuptools_scm[toml]>=3.4.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tabulate"
+authors = [{name = "Sergey Astanin", email = "s.astanin@gmail.com"}]
+license = {text = "MIT"}
+description = "Pretty-print tabular data"
+readme = "README.md"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Software Development :: Libraries",
+]
+requires-python = ">=3.7"
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/astanin/python-tabulate"
+
+[project.optional-dependencies]
+widechars = ["wcwidth"]
+
+[project.scripts]
+tabulate = "tabulate:_main"
+
+[tool.setuptools]
+packages = ["tabulate"]
+
+[tool.setuptools_scm]
+write_to = "tabulate/version.py"
