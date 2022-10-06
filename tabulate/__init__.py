@@ -22,7 +22,8 @@ def _is_file(f):
 
 
 __all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
-from .version import version as __version__  # noqa: F401
+if __name__ != "__main__":
+    from .version import version as __version__  # noqa: F401
 
 
 # minimum extra space in headers
