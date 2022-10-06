@@ -22,7 +22,10 @@ def _is_file(f):
 
 
 __all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
-__version__ = "0.8.11"
+try:
+    from .version import version as __version__  # noqa: F401
+except ImportError:
+    pass  # running __init__.py as a script, AppVeyor pytests
 
 
 # minimum extra space in headers
