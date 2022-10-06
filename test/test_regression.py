@@ -470,3 +470,19 @@ def test_iterable_row_index():
     expected = "1  a\n2  b\n3  c"
     result = tabulate(table, showindex=count(1), tablefmt="plain")
     assert_equal(result, expected)
+
+
+def test_preserve_line_breaks_with_maxcolwidths():
+    "Regression: preserve line breaks when using maxcolwidths (github issue #190)"
+    table = [["123456789 bbb\nccc"]]
+    expected = "\n".join(
+        [
+            "+-----------+",
+            "| 123456789 |",
+            "| bbb       |",
+            "| ccc       |",
+            "+-----------+",
+        ]
+    )
+    result = tabulate(table, tablefmt="grid", maxcolwidths=10)
+    assert_equal(result, expected)

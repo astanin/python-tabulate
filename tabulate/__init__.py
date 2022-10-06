@@ -1515,7 +1515,11 @@ def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True):
                 casted_cell = (
                     str(cell) if _isnumber(cell) else _type(cell, numparse)(cell)
                 )
-                wrapped = wrapper.wrap(casted_cell)
+                wrapped = [
+                    "\n".join(wrapper.wrap(line))
+                    for line in casted_cell.splitlines()
+                    if line.strip() != ""
+                ]
                 new_row.append("\n".join(wrapped))
             else:
                 new_row.append(cell)
