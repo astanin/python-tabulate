@@ -18,7 +18,7 @@ environment:
 
 install:
   # We need wheel installed to build wheels
-  - "%PYTHON%\\python.exe -m pip install wheel"
+  - "%PYTHON%\\python.exe -m pip install wheel build setuptools setuptools_scm"
   - "%PYTHON%\\python.exe -m pip install pytest numpy pandas"
 
 build: off
@@ -40,7 +40,7 @@ after_test:
   # 64-bit Python 3.3/3.4. And you need to use %PYTHON% to get the correct
   # interpreter
   #- "build.cmd %PYTHON%\\python.exe setup.py bdist_wheel"
-  - "%PYTHON%\\python.exe setup.py sdist bdist_wheel"
+  - "%PYTHON%\\python.exe -m build -nswx ."
 
 artifacts:
   # bdist_wheel puts your built wheel in the dist directory
