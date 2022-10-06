@@ -157,11 +157,15 @@ Supported table formats are:
 -   "grid"
 -   "simple\_grid"
 -   "rounded\_grid"
+-   "heavy\_grid"
+-   "mixed\_grid"
 -   "double\_grid"
 -   "fancy\_grid"
 -   "outline"
 -   "simple\_outline"
 -   "rounded\_outline"
+-   "heavy\_outline"
+-   "mixed\_outline"
 -   "double\_outline"
 -   "fancy\_outline"
 -   "pipe"
@@ -264,6 +268,32 @@ corresponds to the `pipe` format without alignment colons:
     │ bacon  │     0 │
     ╰────────┴───────╯
 
+`heavy_grid` draws a grid using bold (thick) single-line box-drawing characters:
+
+    >>> print(tabulate(table, headers, tablefmt="heavy_grid"))
+    ┏━━━━━━━━┳━━━━━━━┓
+    ┃ item   ┃   qty ┃
+    ┣━━━━━━━━╋━━━━━━━┫
+    ┃ spam   ┃    42 ┃
+    ┣━━━━━━━━╋━━━━━━━┫
+    ┃ eggs   ┃   451 ┃
+    ┣━━━━━━━━╋━━━━━━━┫
+    ┃ bacon  ┃     0 ┃
+    ┗━━━━━━━━┻━━━━━━━┛
+
+`mixed_grid` draws a grid using a mix of light (thin) and heavy (thick) lines box-drawing characters:
+
+    >>> print(tabulate(table, headers, tablefmt="mixed_grid"))
+    ┍━━━━━━━━┯━━━━━━━┑
+    │ item   │   qty │
+    ┝━━━━━━━━┿━━━━━━━┥
+    │ spam   │    42 │
+    ├────────┼───────┤
+    │ eggs   │   451 │
+    ├────────┼───────┤
+    │ bacon  │     0 │
+    ┕━━━━━━━━┷━━━━━━━┙
+
 `double_grid` draws a grid using double-line box-drawing characters:
 
     >>> print(tabulate(table, headers, tablefmt="double_grid"))
@@ -325,6 +355,28 @@ corresponds to the `pipe` format without alignment colons:
     │ eggs   │   451 │
     │ bacon  │     0 │
     ╰────────┴───────╯
+
+`heavy_outline` is the same as the `heavy_grid` format but doesn't draw lines between rows:
+
+    >>> print(tabulate(table, headers, tablefmt="heavy_outline"))
+    ┏━━━━━━━━┳━━━━━━━┓
+    ┃ item   ┃   qty ┃
+    ┣━━━━━━━━╋━━━━━━━┫
+    ┃ spam   ┃    42 ┃
+    ┃ eggs   ┃   451 ┃
+    ┃ bacon  ┃     0 ┃
+    ┗━━━━━━━━┻━━━━━━━┛
+
+`mixed_outline` is the same as the `mixed_grid` format but doesn't draw lines between rows:
+
+    >>> print(tabulate(table, headers, tablefmt="mixed_outline"))
+    ┍━━━━━━━━┯━━━━━━━┑
+    │ item   │   qty │
+    ┝━━━━━━━━┿━━━━━━━┥
+    │ spam   │    42 │
+    │ eggs   │   451 │
+    │ bacon  │     0 │
+    ┕━━━━━━━━┷━━━━━━━┙
 
 `double_outline` is the same as the `double_grid` format but doesn't draw lines between rows:
 
