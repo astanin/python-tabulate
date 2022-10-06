@@ -3,7 +3,7 @@
 from collections import namedtuple
 from collections.abc import Iterable, Sized
 from html import escape as htmlescape
-from itertools import zip_longest as izip_longest
+from itertools import chain, zip_longest as izip_longest
 from functools import reduce, partial
 import io
 import re
@@ -663,16 +663,55 @@ multiline_formats = {
 
 _multiline_codes = re.compile(r"\r|\n|\r\n")
 _multiline_codes_bytes = re.compile(b"\r|\n|\r\n")
-_invisible_codes = re.compile(
-    r"\x1b\[\d+[;\d]*m|\x1b\[\d*\;\d*\;\d*m|\x1b\]8;;(.*?)\x1b\\"
-)  # ANSI color codes
-_invisible_codes_bytes = re.compile(
-    b"\x1b\\[\\d+\\[;\\d]*m|\x1b\\[\\d*;\\d*;\\d*m|\\x1b\\]8;;(.*?)\\x1b\\\\"
-)  # ANSI color codes
-_invisible_codes_link = re.compile(
-    r"\x1B]8;[a-zA-Z0-9:]*;[^\x1B]+\x1B\\([^\x1b]+)\x1B]8;;\x1B\\"
-)  # Terminal hyperlinks
 
+# Handle ANSI escape sequences for both control sequence introducer (CSI) and
+# operating system command (OSC). Both of these begin with 0x1b (or octal 033),
+# which will be shown below as ESC.
+#
+# CSI ANSI escape codes have the following format, defined in section 5.4 of ECMA-48:
+#
+# CSI: ESC followed by the '[' character (0x5b)
+# Parameter Bytes: 0..n bytes in the range 0x30-0x3f
+# Intermediate Bytes: 0..n bytes in the range 0x20-0x2f
+# Final Byte: a single byte in the range 0x40-0x7e
+#
+# Also include the terminal hyperlink sequences as described here:
+# https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
+#
+# OSC 8 ; params ; uri ST display_text OSC 8 ;; ST
+#
+# Example: \x1b]8;;https://example.com\x5ctext to show\x1b]8;;\x5c
+#
+# Where:
+# OSC: ESC followed by the ']' character (0x5d)
+# params: 0..n optional key value pairs separated by ':' (e.g. foo=bar:baz=qux:abc=123)
+# URI: the actual URI with protocol scheme (e.g. https://, file://, ftp://)
+# ST: ESC followed by the '\' character (0x5c)
+_esc = r"\x1b"
+_csi = rf"{_esc}\["
+_osc = rf"{_esc}\]"
+_st = rf"{_esc}\\"
+
+_ansi_escape_pat = rf"""
+    (
+        # terminal colors, etc
+        {_csi}        # CSI
+        [\x30-\x3f]*  # parameter bytes
+        [\x20-\x2f]*  # intermediate bytes
+        [\x40-\x7e]   # final byte
+    |
+        # terminal hyperlinks
+        {_osc}8;        # OSC opening
+        (\w+=\w+:?)*    # key=value params list (submatch 2)
+        ;               # delimiter
+        ([^{_esc}]+)    # URI - anything but ESC (submatch 3)
+        {_st}           # ST
+        ([^{_esc}]+)    # link text - anything but ESC (submatch 4)
+        {_osc}8;;{_st}  # "closing" OSC sequence
+    )
+"""
+_ansi_codes = re.compile(_ansi_escape_pat, re.VERBOSE)
+_ansi_codes_bytes = re.compile(_ansi_escape_pat.encode("utf8"), re.VERBOSE)
 _ansi_color_reset_code = "\033[0m"
 
 _float_with_thousands_separators = re.compile(
@@ -808,7 +847,7 @@ def _type(string, has_invisible=True, numparse=True):
     """
 
     if has_invisible and isinstance(string, (str, bytes)):
-        string = _strip_invisible(string)
+        string = _strip_ansi(string)
 
     if string is None:
         return type(None)
@@ -892,18 +931,24 @@ def _padnone(ignore_width, s):
     return s
 
 
-def _strip_invisible(s):
-    r"""Remove invisible ANSI color codes.
+def _strip_ansi(s):
+    r"""Remove ANSI escape sequences, both CSI (color codes, etc) and OSC hyperlinks.
 
-    >>> str(_strip_invisible('\x1B]8;;https://example.com\x1B\\This is a link\x1B]8;;\x1B\\'))
-    'This is a link'
+    CSI sequences are simply removed from the output, while OSC hyperlinks are replaced
+    with the link text. Note: it may be desirable to show the URI instead but this is not
+    supported.
+
+    >>> repr(_strip_ansi('\x1B]8;;https://example.com\x1B\\This is a link\x1B]8;;\x1B\\'))
+    "'This is a link'"
+
+    >>> repr(_strip_ansi('\x1b[31mred\x1b[0m text'))
+    "'red text'"
 
     """
     if isinstance(s, str):
-        links_removed = re.sub(_invisible_codes_link, "\\1", s)
-        return re.sub(_invisible_codes, "", links_removed)
+        return _ansi_codes.sub(r"\4", s)
     else:  # a bytestring
-        return re.sub(_invisible_codes_bytes, "", s)
+        return _ansi_codes_bytes.sub(r"\4", s)
 
 
 def _visible_width(s):
@@ -919,7 +964,7 @@ def _visible_width(s):
     else:
         len_fn = len
     if isinstance(s, (str, bytes)):
-        return len_fn(_strip_invisible(s))
+        return len_fn(_strip_ansi(s))
     else:
         return len_fn(str(s))
 
@@ -962,7 +1007,7 @@ def _align_column_choose_padfn(strings, alignment, has_invisible):
         padfn = _padboth
     elif alignment == "decimal":
         if has_invisible:
-            decimals = [_afterpoint(_strip_invisible(s)) for s in strings]
+            decimals = [_afterpoint(_strip_ansi(s)) for s in strings]
         else:
             decimals = [_afterpoint(s) for s in strings]
         maxdecimals = max(decimals)
@@ -1130,7 +1175,7 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
     elif valtype is float:
         is_a_colored_number = has_invisible and isinstance(val, (str, bytes))
         if is_a_colored_number:
-            raw_val = _strip_invisible(val)
+            raw_val = _strip_ansi(val)
             formatted_val = format(float(raw_val), floatfmt)
             return val.replace(raw_val, formatted_val)
         else:
@@ -1427,6 +1472,31 @@ def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True):
         result.append(new_row)
 
     return result
+
+
+def _to_str(s, encoding="utf8", errors="ignore"):
+    """
+    A type safe wrapper for converting a bytestring to str. This is essentially just
+    a wrapper around .decode() intended for use with things like map(), but with some
+    specific behavior:
+
+    1. if the given parameter is not a bytestring, it is returned unmodified
+    2. decode() is called for the given parameter and assumes utf8 encoding, but the
+       default error behavior is changed from 'strict' to 'ignore'
+
+    >>> repr(_to_str(b'foo'))
+    "'foo'"
+
+    >>> repr(_to_str('foo'))
+    "'foo'"
+
+    >>> repr(_to_str(42))
+    "'42'"
+
+    """
+    if isinstance(s, bytes):
+        return s.decode(encoding=encoding, errors=errors)
+    return str(s)
 
 
 def tabulate(
@@ -1929,14 +1999,21 @@ def tabulate(
 
     # optimization: look for ANSI control codes once,
     # enable smart width functions only if a control code is found
+    #
+    # convert the headers and rows into a single, tab-delimited string ensuring
+    # that any bytestrings are decoded safely (i.e. errors ignored)
     plain_text = "\t".join(
-        ["\t".join(map(str, headers))]
-        + ["\t".join(map(str, row)) for row in list_of_lists]
+        chain(
+            # headers
+            map(_to_str, headers),
+            # rows: chain the rows together into a single iterable after mapping
+            # the bytestring conversino to each cell value
+            chain.from_iterable(map(_to_str, row) for row in list_of_lists),
+        )
     )
 
-    has_invisible = re.search(_invisible_codes, plain_text)
-    if not has_invisible:
-        has_invisible = re.search(_invisible_codes_link, plain_text)
+    has_invisible = _ansi_codes.search(plain_text) is not None
+
     enable_widechars = wcwidth is not None and WIDE_CHARS_MODE
     if (
         not isinstance(tablefmt, TableFormat)
@@ -2240,7 +2317,7 @@ class _CustomTextWrap(textwrap.TextWrapper):
     def _len(item):
         """Custom len that gets console column width for wide
         and non-wide characters as well as ignores color codes"""
-        stripped = _strip_invisible(item)
+        stripped = _strip_ansi(item)
         if wcwidth:
             return wcwidth.wcswidth(stripped)
         else:
@@ -2252,7 +2329,7 @@ class _CustomTextWrap(textwrap.TextWrapper):
         as add any colors from previous lines order to preserve the same formatting
         as a single unwrapped string.
         """
-        code_matches = [x for x in re.finditer(_invisible_codes, new_line)]
+        code_matches = [x for x in _ansi_codes.finditer(new_line)]
         color_codes = [
             code.string[code.span()[0] : code.span()[1]] for code in code_matches
         ]
