@@ -518,3 +518,13 @@ def test_py37orlater_list_of_dataclasses_headers():
         assert_equal(expected, result)
     except ImportError:
         skip("test_py37orlater_list_of_dataclasses_headers is skipped")
+
+
+def test_list_bytes():
+    "Input: a list of bytes. (issue #192)"
+    lb = [["你好".encode("utf-8")], ["你好"]]
+    expected = "\n".join(
+        ["bytes", "---------------------------", r"b'\xe4\xbd\xa0\xe5\xa5\xbd'", "你好"]
+    )
+    result = tabulate(lb, headers=["bytes"])
+    assert_equal(expected, result)
