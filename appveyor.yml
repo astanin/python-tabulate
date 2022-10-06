@@ -17,8 +17,11 @@ environment:
     - PYTHON: "C:\\Python310-x64"
 
 install:
+  # Newer setuptools is needed for proper support of pyproject.toml
+  - "%PYTHON%\\python.exe -m pip install setuptools --upgrade"
   # We need wheel installed to build wheels
-  - "%PYTHON%\\python.exe -m pip install wheel build setuptools setuptools_scm"
+  - "%PYTHON%\\python.exe -m pip install wheel --upgrade"
+  - "%PYTHON%\\python.exe -m pip install build setuptools_scm"
   - "%PYTHON%\\python.exe -m pip install pytest numpy pandas"
 
 build: off
