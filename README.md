@@ -460,10 +460,10 @@ format:
 >>> print(tabulate(table, headers, tablefmt="asciidoc"))
 [cols="8<,7>",options="header"]
 |====
-| item   |   qty 
-| spam   |    42 
-| eggs   |   451 
-| bacon  |     0 
+| item   |   qty
+| spam   |    42
+| eggs   |   451
+| bacon  |     0
 |====
 ```
 
