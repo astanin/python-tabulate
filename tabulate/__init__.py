@@ -699,6 +699,13 @@ multiline_formats = {
     "pretty": "pretty",
     "psql": "psql",
     "rst": "rst",
+    "outline": "outline",
+    "simple_outline": "simple_outline",
+    "rounded_outline": "rounded_outline",
+    "heavy_outline": "heavy_outline",
+    "mixed_outline": "mixed_outline",
+    "double_outline": "double_outline",
+    "fancy_outline": "fancy_outline",
 }
 
 # TODO: Add multiline support for the remaining table formats:
