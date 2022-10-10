@@ -1503,7 +1503,11 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
 
 def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True):
-    numparses = _expand_iterable(numparses, len(list_of_lists[0]), True)
+    if len(list_of_lists):
+        num_cols = len(list_of_lists[0])
+    else:
+        num_cols = 0
+    numparses = _expand_iterable(numparses, num_cols, True)
 
     result = []
 
@@ -2062,7 +2066,10 @@ def tabulate(
     list_of_lists, separating_lines = _remove_separating_lines(list_of_lists)
 
     if maxcolwidths is not None:
-        num_cols = len(list_of_lists[0])
+        if len(list_of_lists):
+            num_cols = len(list_of_lists[0])
+        else:
+            num_cols = 0
         if isinstance(maxcolwidths, int):  # Expand scalar for all columns
             maxcolwidths = _expand_iterable(maxcolwidths, num_cols, maxcolwidths)
         else:  # Ignore col width for any 'trailing' columns

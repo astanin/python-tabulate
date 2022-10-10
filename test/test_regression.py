@@ -486,3 +486,9 @@ def test_preserve_line_breaks_with_maxcolwidths():
     )
     result = tabulate(table, tablefmt="grid", maxcolwidths=10)
     assert_equal(result, expected)
+
+
+def test_exception_on_empty_data_with_maxcolwidths():
+    "Regression: exception on empty data when using maxcolwidths (github issue #180)"
+    result = tabulate([], maxcolwidths=5)
+    assert_equal(result, "")
