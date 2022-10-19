@@ -492,3 +492,23 @@ def test_exception_on_empty_data_with_maxcolwidths():
     "Regression: exception on empty data when using maxcolwidths (github issue #180)"
     result = tabulate([], maxcolwidths=5)
     assert_equal(result, "")
+
+
+def test_numpy_int64_as_integer():
+    "Regression: format numpy.int64 as integer (github issue #18)"
+    try:
+        import numpy as np
+
+        headers = ["int", "float"]
+        table = [[np.int64(1), 3.14159]]
+        result = tabulate(table, headers, tablefmt="pipe", floatfmt=".2f")
+        expected = "\n".join(
+            [
+                "|   int |   float |",
+                "|------:|--------:|",
+                "|     1 |    3.14 |",
+            ]
+        )
+        assert_equal(result, expected)
+    except ImportError:
+        raise skip("")
