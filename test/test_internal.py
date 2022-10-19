@@ -16,7 +16,7 @@ def test_multiline_width():
 def test_align_column_decimal():
     "Internal: _align_column(..., 'decimal')"
     column = ["12.345", "-1234.5", "1.23", "1234.5", "1e+234", "1.0e234"]
-    output = T._align_column(column, "decimal")
+    result = T._align_column(column, "decimal")
     expected = [
         "   12.345  ",
         "-1234.5    ",
@@ -25,7 +25,7 @@ def test_align_column_decimal():
         "    1e+234 ",
         "    1.0e234",
     ]
-    assert_equal(output, expected)
+    assert_equal(expected, result)
 
 
 def test_align_column_decimal_with_thousand_separators():
@@ -40,7 +40,7 @@ def test_align_column_decimal_with_thousand_separators():
         "    1e+234 ",
         "    1.0e234",
     ]
-    assert_equal(output, expected)
+    assert_equal(expected, output)
 
 
 def test_align_column_decimal_with_incorrect_thousand_separators():
@@ -55,7 +55,7 @@ def test_align_column_decimal_with_incorrect_thousand_separators():
         "      1e+234 ",
         "      1.0e234",
     ]
-    assert_equal(output, expected)
+    assert_equal(expected, output)
 
 
 def test_align_column_none():
@@ -63,7 +63,7 @@ def test_align_column_none():
     column = ["123.4", "56.7890"]
     output = T._align_column(column, None)
     expected = ["123.4", "56.7890"]
-    assert_equal(output, expected)
+    assert_equal(expected, output)
 
 
 def test_align_column_multiline():
@@ -71,7 +71,7 @@ def test_align_column_multiline():
     column = ["1", "123", "12345\n6"]
     output = T._align_column(column, "center", is_multiline=True)
     expected = ["  1  ", " 123 ", "12345" + "\n" + "  6  "]
-    assert_equal(output, expected)
+    assert_equal(expected, output)
 
 
 def test_align_cell_veritically_one_line_only():
@@ -170,7 +170,7 @@ def test_wrap_text_to_colwidths():
     ]
     result = T._wrap_text_to_colwidths(rows, widths)
 
-    assert_equal(result, expected)
+    assert_equal(expected, result)
 
 
 def test_wrap_text_wide_chars():
@@ -185,7 +185,7 @@ def test_wrap_text_wide_chars():
     expected = [["청자\n청자\n청자\n청자\n청자", "약간 감싸면 더 잘\n보일 수있는 다소 긴\n설명입니다"]]
     result = T._wrap_text_to_colwidths(rows, widths)
 
-    assert_equal(result, expected)
+    assert_equal(expected, result)
 
 
 def test_wrap_text_to_numbers():
@@ -202,7 +202,7 @@ def test_wrap_text_to_numbers():
     ]
 
     result = T._wrap_text_to_colwidths(rows, widths, numparses=[True, True, False])
-    assert_equal(result, expected)
+    assert_equal(expected, result)
 
 
 def test_wrap_text_to_colwidths_single_ansi_colors_full_cell():

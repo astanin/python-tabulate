@@ -2847,7 +2847,7 @@ def test_dict_like_with_index():
     dd = {"b": range(101, 104)}
     expected = "\n".join(["      b", "--  ---", " 0  101", " 1  102", " 2  103"])
     result = tabulate(dd, "keys", showindex=True)
-    assert_equal(result, expected)
+    assert_equal(expected, result)
 
 
 def test_list_of_lists_with_index():
@@ -2859,7 +2859,7 @@ def test_list_of_lists_with_index():
         ["      a    b", "--  ---  ---", " 0    0  101", " 1    1  102", " 2    2  103"]
     )
     result = tabulate(dd, headers=["a", "b"], showindex=True)
-    assert_equal(result, expected)
+    assert_equal(expected, result)
 
 
 def test_list_of_lists_with_index_with_sep_line():
@@ -2878,7 +2878,7 @@ def test_list_of_lists_with_index_with_sep_line():
         ]
     )
     result = tabulate(dd, headers=["a", "b"], showindex=True)
-    assert_equal(result, expected)
+    assert_equal(expected, result)
 
 
 def test_list_of_lists_with_supplied_index():
@@ -2888,7 +2888,7 @@ def test_list_of_lists_with_supplied_index():
         ["      a    b", "--  ---  ---", " 1    0  101", " 2    1  102", " 3    2  103"]
     )
     result = tabulate(dd, headers=["a", "b"], showindex=[1, 2, 3])
-    assert_equal(result, expected)
+    assert_equal(expected, result)
     # TODO: make it a separate test case
     # the index must be as long as the number of rows
     with raises(ValueError):
@@ -2902,7 +2902,7 @@ def test_list_of_lists_with_index_firstrow():
         ["      a    b", "--  ---  ---", " 0    0  101", " 1    1  102", " 2    2  103"]
     )
     result = tabulate(dd, headers="firstrow", showindex=True)
-    assert_equal(result, expected)
+    assert_equal(expected, result)
     # TODO: make it a separate test case
     # the index must be as long as the number of rows
     with raises(ValueError):
