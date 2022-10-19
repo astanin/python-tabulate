@@ -869,7 +869,7 @@ def _isint(string, inttype=int):
     return (
         type(string) is inttype
         or (
-            hasattr(string, "is_integer")
+            (hasattr(string, "is_integer") or hasattr(string, "__array__"))
             and str(type(string)).startswith("<class 'numpy.int")
         )  # numpy.int64 and similar
         or (
