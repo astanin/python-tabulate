@@ -2322,11 +2322,11 @@ def test_mediawiki():
             '{| class="wikitable" style="text-align: left;"',
             "|+ <!-- caption -->",
             "|-",
-            '! strings   !! align="right"|   numbers',
+            '! strings   !! style="text-align: right;"|   numbers',
             "|-",
-            '| spam      || align="right"|   41.9999',
+            '| spam      || style="text-align: right;"|   41.9999',
             "|-",
-            '| eggs      || align="right"|  451',
+            '| eggs      || style="text-align: right;"|  451',
             "|}",
         ]
     )
@@ -2341,9 +2341,9 @@ def test_mediawiki_headerless():
             '{| class="wikitable" style="text-align: left;"',
             "|+ <!-- caption -->",
             "|-",
-            '| spam || align="right"|  41.9999',
+            '| spam || style="text-align: right;"|  41.9999',
             "|-",
-            '| eggs || align="right"| 451',
+            '| eggs || style="text-align: right;"| 451',
             "|}",
         ]
     )
