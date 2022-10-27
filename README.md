@@ -514,13 +514,13 @@ MediaWiki-based sites:
 {| class="wikitable" style="text-align: left;"
 |+ <!-- caption -->
 |-
-! item   !! align="right"|   qty
+! item   !! style="text-align: right;"|   qty
 |-
-| spam   || align="right"|    42
+| spam   || style="text-align: right;"|    42
 |-
-| eggs   || align="right"|   451
+| eggs   || style="text-align: right;"|   451
 |-
-| bacon  || align="right"|     0
+| bacon  || style="text-align: right;"|     0
 |}
 ```
 
