@@ -136,9 +136,9 @@ def _pipe_line_with_colons(colwidths, colaligns):
 def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
     alignment = {
         "left": "",
-        "right": 'align="right"| ',
-        "center": 'align="center"| ',
-        "decimal": 'align="right"| ',
+        "right": 'style="text-align: right;"| ',
+        "center": 'style="text-align: center;"| ',
+        "decimal": 'style="text-align: right;"| ',
     }
     # hard-coded padding _around_ align attribute and value together
     # rather than padding parameter which affects only the value
@@ -1952,11 +1952,11 @@ def tabulate(
     {| class="wikitable" style="text-align: left;"
     |+ <!-- caption -->
     |-
-    ! strings   !! align="right"|   numbers
+    ! strings   !! style="text-align: right;"|   numbers
     |-
-    | spam      || align="right"|   41.9999
+    | spam      || style="text-align: right;"|   41.9999
     |-
-    | eggs      || align="right"|  451
+    | eggs      || style="text-align: right;"|  451
     |}
 
     "html" produces HTML markup as an html.escape'd str
