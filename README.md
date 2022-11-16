@@ -927,6 +927,14 @@ and thus no automate multiline wrapping will take place.
 The wrapping uses the python standard [textwrap.wrap](https://docs.python.org/3/library/textwrap.html#textwrap.wrap)
 function with default parameters - aside from width.
 
+BREAK_LONG_WORDS and BREAK_LONG_WORDS can be used to turn off the TextWrapper break_long_words and break_on_hyphens options.
+
+```python
+import tabulate
+tabulate.BREAK_LONG_WORDS = False
+tabulate.BREAK_ON_HYPHENS = False
+```
+
 This example demonstrates usage of automatic multiline wrapping, though typically
 the lines being wrapped would probably be significantly longer than this.
 
