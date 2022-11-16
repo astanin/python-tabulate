@@ -33,10 +33,11 @@ MIN_PADDING = 2
 
 # Whether or not to preserve leading/trailing whitespace in data.
 PRESERVE_WHITESPACE = False
+
 # TextWrapper breaks words longer than 'width'.
-BREAK_LONG_WORDS = True
+_BREAK_LONG_WORDS = True
 # TextWrapper is breaking hyphenated words.
-BREAK_ON_HYPHENS = True
+_BREAK_ON_HYPHENS = True
 
 _DEFAULT_FLOATFMT = "g"
 _DEFAULT_INTFMT = ""
@@ -1511,7 +1512,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     return rows, headers
 
 
-def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True):
+def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True, break_long_words=_BREAK_LONG_WORDS, break_on_hyphens=_BREAK_ON_HYPHENS):
     if len(list_of_lists):
         num_cols = len(list_of_lists[0])
     else:
@@ -1528,7 +1529,7 @@ def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True):
                 continue
 
             if width is not None:
-                wrapper = _CustomTextWrap(width=width, break_long_words=BREAK_LONG_WORDS, break_on_hyphens=BREAK_ON_HYPHENS)
+                wrapper = _CustomTextWrap(width=width, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens)
                 # Cast based on our internal type handling
                 # Any future custom formatting of types (such as datetimes)
                 # may need to be more explicit than just `str` of the object
@@ -1588,6 +1589,8 @@ def tabulate(
     maxcolwidths=None,
     rowalign=None,
     maxheadercolwidths=None,
+    break_long_words=_BREAK_LONG_WORDS,
+    break_on_hyphens=_BREAK_ON_HYPHENS,
 ):
     """Format a fixed width table for pretty printing.
 
@@ -2086,7 +2089,7 @@ def tabulate(
 
         numparses = _expand_numparse(disable_numparse, num_cols)
         list_of_lists = _wrap_text_to_colwidths(
-            list_of_lists, maxcolwidths, numparses=numparses
+            list_of_lists, maxcolwidths, numparses=numparses, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens
         )
 
     if maxheadercolwidths is not None:
@@ -2100,7 +2103,7 @@ def tabulate(
 
         numparses = _expand_numparse(disable_numparse, num_cols)
         headers = _wrap_text_to_colwidths(
-            [headers], maxheadercolwidths, numparses=numparses
+            [headers], maxheadercolwidths, numparses=numparses, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens
         )[0]
 
     # empty values in the first column of RST tables should be escaped (issue #82)

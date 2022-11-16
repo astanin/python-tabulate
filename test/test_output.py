@@ -2979,30 +2979,26 @@ def test_break_long_words():
     table_headers = ["h1", "h2", "h3"]
     test_table = [["  foo1", " bar2   ", "foo3"]]
 
-    # Table is not wrapped
-    tabulate_module.BREAK_LONG_WORDS = False
+    # Table is not wrapped on 3 letters due to long word
     expected = "h1    h2    h3\n----  ----  ----\nfoo1  bar2  foo3"
-    result = tabulate(test_table, table_headers, maxcolwidths=3)
+    result = tabulate(test_table, table_headers, maxcolwidths=3, break_long_words=False)
     assert_equal(expected, result)
 
-    # Table is wrapped on 2 letters
-    tabulate_module.BREAK_LONG_WORDS = True
+    # Table max width is 3 letters
     expected = "h1    h2    h3\n----  ----  ----\nf     ba    foo\noo1   r2    3"
-    result = tabulate(test_table, table_headers, maxcolwidths=3)
+    result = tabulate(test_table, table_headers, maxcolwidths=3, break_long_words=True)
     assert_equal(expected, result)
 
 def test_break_on_hyphens():
     "Output: Default table output, with break on hyphens true."
-    tabulate_module.BREAK_ON_HYPHENS = False
     table_headers = ["h1", "h2", "h3"]
     test_table = [["  foo-bar", " bar-bar   ", "foo-foo"]]
-    # Table is wrapped on 2 letters
+    # Table max width is 5, long lines breaks on hyphens
     expected = "h1    h2    h3\n----  ----  -----\nfoo   bar-  foo-f\n-bar  bar   oo"
-    result = tabulate(test_table, table_headers, maxcolwidths=5)
+    result = tabulate(test_table, table_headers, maxcolwidths=5, break_on_hyphens=False)
     assert_equal(expected, result)
 
-    # Table is no longer wrapped
-    tabulate_module.BREAK_ON_HYPHENS = True
+    # Table data is no longer breaks on hyphens
     expected = "h1    h2    h3\n----  ----  ----\nfoo-  bar-  foo-\nbar   bar   foo"
-    result = tabulate(test_table, table_headers, maxcolwidths=5)
+    result = tabulate(test_table, table_headers, maxcolwidths=5, break_on_hyphens=True)
     assert_equal(expected, result)

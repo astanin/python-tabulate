@@ -927,14 +927,6 @@ and thus no automate multiline wrapping will take place.
 The wrapping uses the python standard [textwrap.wrap](https://docs.python.org/3/library/textwrap.html#textwrap.wrap)
 function with default parameters - aside from width.
 
-BREAK_LONG_WORDS and BREAK_LONG_WORDS can be used to turn off the TextWrapper break_long_words and break_on_hyphens options.
-
-```python
-import tabulate
-tabulate.BREAK_LONG_WORDS = False
-tabulate.BREAK_ON_HYPHENS = False
-```
-
 This example demonstrates usage of automatic multiline wrapping, though typically
 the lines being wrapped would probably be significantly longer than this.
 
@@ -946,6 +938,31 @@ the lines being wrapped would probably be significantly longer than this.
 | John Smith | Middle  |
 |            | Manager |
 +------------+---------+
+```
+
+Text is preferably wrapped on whitespaces and right after the hyphens in hyphenated words.
+
+break_long_words (default: True)  If true, then words longer than width will be broken in order to ensure that no lines are longer than width. 
+If it is false, long words will not be broken, and some lines may be longer than width.
+(Long words will be put on a line by themselves, in order to minimize the amount by which width is exceeded.)
+
+break_on_hyphens (default: True) If true, wrapping will occur preferably on whitespaces and right after hyphens in compound words, as it is customary in English. 
+If false, only whitespaces will be considered as potentially good places for line breaks.
+
+```pycon
+>>> print(tabulate([["John Smith", "Middle-Manager"]], headers=["Name", "Title"], tablefmt="grid", maxcolwidths=[None, 5], break_long_words=False))
++------------+---------+
+| Name       | Title   |
++============+=========+
+| John Smith | Middle- |
+|            | Manager |
++------------+---------+
+>>> print(tabulate([["John Smith", "Middle-Manager"]], headers=["Name", "Title"], tablefmt="grid", maxcolwidths=[None, 5], break_long_words=False, break_on_hyphens=False))
++------------+----------------+
+| Name       | Title          |
++============+================+
+| John Smith | Middle-Manager |
++------------+----------------+
 ```
 
 ### Adding Separating lines
