@@ -33,6 +33,10 @@ MIN_PADDING = 2
 
 # Whether or not to preserve leading/trailing whitespace in data.
 PRESERVE_WHITESPACE = False
+# TextWrapper breaks words longer than 'width'.
+BREAK_LONG_WORDS = True
+# TextWrapper is breaking hyphenated words.
+BREAK_ON_HYPHENS = True
 
 _DEFAULT_FLOATFMT = "g"
 _DEFAULT_INTFMT = ""
@@ -1524,7 +1528,7 @@ def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True):
                 continue
 
             if width is not None:
-                wrapper = _CustomTextWrap(width=width)
+                wrapper = _CustomTextWrap(width=width, break_long_words=BREAK_LONG_WORDS, break_on_hyphens=BREAK_ON_HYPHENS)
                 # Cast based on our internal type handling
                 # Any future custom formatting of types (such as datetimes)
                 # may need to be more explicit than just `str` of the object
