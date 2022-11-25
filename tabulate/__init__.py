@@ -1500,7 +1500,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     # pad with empty headers for initial columns if necessary
     headers_pad = 0
     if headers and len(rows) > 0:
-        headers_pad = len(rows[0]) - len(headers)
+        headers_pad = max(0, len(rows[0]) - len(headers))
         headers = [""] * headers_pad + headers
 
     return rows, headers, headers_pad
@@ -2234,7 +2234,7 @@ def tabulate(
         # then specific header alignements
         if headersalign is not None:
             assert isinstance(headersalign, Iterable)
-            for idx, align in enumerate(headersalign):
+            for idx, align in enumerate(headersalign[:len(aligns)]):
                 if align == "same": # same as column align
                     aligns_headers[headers_pad + idx] = aligns[headers_pad + idx]
                 elif align != "global":
