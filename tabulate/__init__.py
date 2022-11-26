@@ -2234,11 +2234,12 @@ def tabulate(
         # then specific header alignements
         if headersalign is not None:
             assert isinstance(headersalign, Iterable)
-            for idx, align in enumerate(headersalign[:len(aligns)]):
-                if align == "same": # same as column align
-                    aligns_headers[headers_pad + idx] = aligns[headers_pad + idx]
+            for idx, align in enumerate(headersalign[:len(aligns_headers)]):
+                hidx = headers_pad + idx
+                if align == "same" and hidx < len(aligns): # same as column align
+                    aligns_headers[hidx] = aligns[hidx]
                 elif align != "global":
-                    aligns_headers[headers_pad + idx] = align
+                    aligns_headers[hidx] = align
         minwidths = [
             max(minw, max(width_fn(cl) for cl in c))
             for minw, c in zip(minwidths, t_cols)
