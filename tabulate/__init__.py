@@ -2416,7 +2416,7 @@ def _format_table(fmt, headers, headersaligns, rows, colwidths, colaligns, is_mu
     if padded_headers:
         append_row(lines, padded_headers, padded_widths, headersaligns, headerrow)
         if fmt.linebelowheader and "linebelowheader" not in hidden:
-            _append_line(lines, padded_widths, headersaligns, fmt.linebelowheader)
+            _append_line(lines, padded_widths, colaligns, fmt.linebelowheader)
 
     if padded_rows and fmt.linebetweenrows and "linebetweenrows" not in hidden:
         # initial rows with a line below
