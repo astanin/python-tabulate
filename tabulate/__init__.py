@@ -1651,23 +1651,16 @@ def tabulate(
     `colglobalalign` allows for global alignment of columns, before any
         specific override from `colalign`. Possible values are: None
         (defaults according to coltype), "right", "center", "decimal",
-        "left". Other values are treated as "left".
+        "left".
     `colalign` allows for column-wise override starting from left-most
         column. Possible values are: "global" (no override), "right",
-        "center", "decimal", "left". Other values are teated as "left".
+        "center", "decimal", "left".
     `headersglobalalign` allows for global headers alignment, before any
         specific override from `headersalign`. Possible values are: None
-        (follow columns alignment), "right", "center", "left". Other
-        values are treated as "right".
+        (follow columns alignment), "right", "center", "left".
     `headersalign` allows for header-wise override starting from left-most
         given header. Possible values are: "global" (no override), "same"
-        (follow column alignment), "right", "center", "left". Other
-        values are teated as "right".
-
-    Note: if column alignment is illegal (treating it as left) and
-        corresponding header aligns as "same", it will treat it as "right".
-        Thus, in spite of "same" being specified, alignment will not
-        visually be the same in the end.
+        (follow column alignment), "right", "center", "left".
 
     Table formats
     -------------
@@ -2212,7 +2205,9 @@ def tabulate(
     if colalign is not None:
         assert isinstance(colalign, Iterable)
         for idx, align in enumerate(colalign):
-            if align != "global":
+            if not idx < len(aligns):
+                break
+            elif align != "global":
                 aligns[idx] = align
     minwidths = (
         [width_fn(h) + min_padding for h in headers] if headers else [0] * len(cols)
@@ -2234,9 +2229,11 @@ def tabulate(
         # then specific header alignements
         if headersalign is not None:
             assert isinstance(headersalign, Iterable)
-            for idx, align in enumerate(headersalign[:len(aligns_headers)]):
+            for idx, align in enumerate(headersalign):
                 hidx = headers_pad + idx
-                if align == "same" and hidx < len(aligns): # same as column align
+                if not hidx < len(aligns_headers):
+                    break
+                elif align == "same" and hidx < len(aligns): # same as column align
                     aligns_headers[hidx] = aligns[hidx]
                 elif align != "global":
                     aligns_headers[hidx] = align
