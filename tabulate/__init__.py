@@ -1662,6 +1662,10 @@ def tabulate(
         given header. Possible values are: "global" (no override), "same"
         (follow column alignment), "right", "center", "left".
 
+    Note on intended behaviour: If there is no `tabular_data`, any column
+        alignment argument is ignored. Hence, in this case, header
+        alignment cannot be inferred from column alignment.
+
     Table formats
     -------------
 
