@@ -2208,6 +2208,9 @@ def tabulate(
     # then specific alignements
     if colalign is not None:
         assert isinstance(colalign, Iterable)
+        if isinstance(colalign, str):
+            print(
+                f"Warning in `tabulate`: As a string, `colalign` is interpreted as {[c for c in colalign]}. Did you mean `colglobalalign = \"{colalign}\"` or `colalign = (\"{colalign}\",)`?")
         for idx, align in enumerate(colalign):
             if not idx < len(aligns):
                 break
@@ -2233,6 +2236,9 @@ def tabulate(
         # then specific header alignements
         if headersalign is not None:
             assert isinstance(headersalign, Iterable)
+            if isinstance(headersalign, str):
+                print(
+                    f"Warning in `tabulate`: As a string, `headersalign` is interpreted as {[c for c in headersalign]}. Did you mean `headersglobalalign = \"{headersalign}\"` or `headersalign = (\"{headersalign}\",)`?")
             for idx, align in enumerate(headersalign):
                 hidx = headers_pad + idx
                 if not hidx < len(aligns_headers):
