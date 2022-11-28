@@ -1,5 +1,6 @@
 """Pretty-print tabular data."""
 
+import warnings
 from collections import namedtuple
 from collections.abc import Iterable, Sized
 from html import escape as htmlescape
@@ -2209,8 +2210,7 @@ def tabulate(
     if colalign is not None:
         assert isinstance(colalign, Iterable)
         if isinstance(colalign, str):
-            print(
-                f"Warning in `tabulate`: As a string, `colalign` is interpreted as {[c for c in colalign]}. Did you mean `colglobalalign = \"{colalign}\"` or `colalign = (\"{colalign}\",)`?")
+            warnings.warn(f"As a string, `colalign` is interpreted as {[c for c in colalign]}. Did you mean `colglobalalign = \"{colalign}\"` or `colalign = (\"{colalign}\",)`?", stacklevel=2)
         for idx, align in enumerate(colalign):
             if not idx < len(aligns):
                 break
@@ -2237,8 +2237,7 @@ def tabulate(
         if headersalign is not None:
             assert isinstance(headersalign, Iterable)
             if isinstance(headersalign, str):
-                print(
-                    f"Warning in `tabulate`: As a string, `headersalign` is interpreted as {[c for c in headersalign]}. Did you mean `headersglobalalign = \"{headersalign}\"` or `headersalign = (\"{headersalign}\",)`?")
+                warnings.warn(f"As a string, `headersalign` is interpreted as {[c for c in headersalign]}. Did you mean `headersglobalalign = \"{headersalign}\"` or `headersalign = (\"{headersalign}\",)`?", stacklevel=2)
             for idx, align in enumerate(headersalign):
                 hidx = headers_pad + idx
                 if not hidx < len(aligns_headers):
