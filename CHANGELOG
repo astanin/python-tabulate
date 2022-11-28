@@ -1,7 +1,4 @@
-- 0.9.2: Future version.
-- 0.9.1: Add headers alignment with `headersglobalalign` and `headersalign`.
-  Enhance column alignment: add `colglobalalign` and bug fix when `colalign` too long.
-  Better warning when `colalign` or `headersalign` is a `string`.
+- 0.9.1: Future version.
 - 0.9.0: Drop support for Python 2.7, 3.5, 3.6.
   Migrate to pyproject.toml project layout (PEP 621).
   New output formats: `asciidoc`, various `*grid` and `*outline` formats.
