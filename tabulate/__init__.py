@@ -1357,15 +1357,24 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         is_headers2bool_broken = True  # noqa
         headers = list(headers)
 
+    err_msg = (
+        "\n\nTo build a table python-tabulate requires two-dimensional data "
+        "like a list of lists or similar."
+        "\nDid you forget a pair of extra [] or ',' in ()?"
+    )
     index = None
     if hasattr(tabular_data, "keys") and hasattr(tabular_data, "values"):
         # dict-like and pandas.DataFrame?
         if hasattr(tabular_data.values, "__call__"):
             # likely a conventional dict
             keys = tabular_data.keys()
-            rows = list(
-                izip_longest(*tabular_data.values())
-            )  # columns have to be transposed
+            try:
+                rows = list(
+                    izip_longest(*tabular_data.values())
+                )  # columns have to be transposed
+            except TypeError:  # not iterable
+                raise TypeError(err_msg)
+
         elif hasattr(tabular_data, "index"):
             # values is a property, has .index => it's likely a pandas.DataFrame (pandas 0.11.0)
             keys = list(tabular_data)
@@ -1388,7 +1397,10 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             headers = list(map(str, keys))  # headers should be strings
 
     else:  # it's a usual iterable of iterables, or a NumPy array, or an iterable of dataclasses
-        rows = list(tabular_data)
+        try:
+            rows = list(tabular_data)
+        except TypeError:  # not iterable
+            raise TypeError(err_msg)
 
         if headers == "keys" and not rows:
             # an empty table (issue #81)
