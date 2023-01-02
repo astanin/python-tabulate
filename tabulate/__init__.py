@@ -1224,10 +1224,15 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
     """  # noqa
     if val is None:
         return missingval
-
+    if _isbool(val):
+        # val should be a boolean literal to convert into a number if needed
+        val = val in (True, "True")
     if valtype is str:
         return f"{val}"
     elif valtype is int:
+        # do not convert strings and bools into integers if there is no special formatting
+        if intfmt:
+            val = int(val)
         return format(val, intfmt)
     elif valtype is bytes:
         try:
