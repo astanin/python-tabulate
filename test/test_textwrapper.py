@@ -1,6 +1,4 @@
 """Discretely test functionality of our custom TextWrapper"""
-from __future__ import unicode_literals
-
 import datetime
 
 from tabulate import _CustomTextWrap as CTW, tabulate
