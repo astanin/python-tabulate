@@ -16,6 +16,10 @@ try:
 except ImportError:
     wcwidth = None
 
+try:
+    _string_type = basestring
+except:
+    _string_type = str 
 
 def _is_file(f):
     return isinstance(f, io.IOBase)
@@ -1410,37 +1414,29 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             headers = list(map(str, rows[0]._fields))
         elif len(rows) > 0 and hasattr(rows[0], "keys") and hasattr(rows[0], "values"):
             # dict-like object
-            uniq_keys = set()  # implements hashed lookup
-            keys = []  # storage for set
+            
             if headers == "firstrow":
-                firstdict = rows[0] if len(rows) > 0 else {}
-                keys.extend(firstdict.keys())
-                uniq_keys.update(keys)
+                headers = rows[0] if len(rows) > 0 else {}
                 rows = rows[1:]
-            for row in rows:
-                for k in row.keys():
-                    # Save unique items in input order
-                    if k not in uniq_keys:
-                        keys.append(k)
-                        uniq_keys.add(k)
-            if headers == "keys":
-                headers = keys
-            elif isinstance(headers, dict):
-                # a dict of headers for a list of dicts
-                headers = [headers.get(k, k) for k in keys]
-                headers = list(map(str, headers))
-            elif headers == "firstrow":
-                if len(rows) > 0:
-                    headers = [firstdict.get(k, k) for k in keys]
-                    headers = list(map(str, headers))
-                else:
-                    headers = []
-            elif headers:
-                raise ValueError(
-                    "headers for a list of dicts is not a dict or a keyword"
-                )
-            rows = [[row.get(k) for k in keys] for row in rows]
 
+            if isinstance(headers,_string_type):
+                # list unique keys in input order
+                uniq_keys = set() # implements hashed lookup
+                keys = [] # storage for set
+                for row in rows:
+                    for k in row.keys():
+                        if k not in uniq_keys:
+                            keys.append(k)
+                            uniq_keys.add(k)
+            elif hasattr(headers,'keys') and hasattr(headers,'values'):
+                # dict-like { key => header name }
+                keys = list(headers.keys())
+                headers = list(headers.values())
+            else:
+                # list-like [key1, key2, ...]
+                keys = list(headers) 
+
+            rows = [[row.get(k) for k in keys] for row in rows]
         elif (
             headers == "keys"
             and hasattr(tabular_data, "description")
@@ -1499,10 +1495,10 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
     # pad with empty headers for initial columns if necessary
     if headers and len(rows) > 0:
-        nhs = len(headers)
+        nhead = len(headers)
         ncols = len(rows[0])
-        if nhs < ncols:
-            headers = [""] * (ncols - nhs) + headers
+        if nhead != ncols:
+           raise RuntimeError('Number of headers and columns do not match.')
 
     return rows, headers
 
