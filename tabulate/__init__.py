@@ -850,7 +850,7 @@ def _isnumber(string):
     >>> _isnumber("inf")
     True
     """
-    if not _isconvertible(float, string):
+    if not _isconvertible(float, str(string)):
         return False
     elif isinstance(string, (str, bytes)) and (
         math.isinf(float(string)) or math.isnan(float(string))
