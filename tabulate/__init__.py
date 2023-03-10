@@ -2376,13 +2376,14 @@ def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline, rowali
         if fmt.linebelowheader and "linebelowheader" not in hidden:
             _append_line(lines, padded_widths, colaligns, fmt.linebelowheader)
 
-    if padded_rows and fmt.linebetweenrows and "linebetweenrows" not in hidden:
+    if padded_rows:
         # initial rows with a line below
         for row, ralign in zip(padded_rows[:-1], rowaligns):
             append_row(
                 lines, row, padded_widths, colaligns, fmt.datarow, rowalign=ralign
             )
-            _append_line(lines, padded_widths, colaligns, fmt.linebetweenrows)
+            if fmt.linebetweenrows and "linebetweenrows" not in hidden:
+                _append_line(lines, padded_widths, colaligns, fmt.linebetweenrows)
         # the last row without a line below
         append_row(
             lines,
@@ -2392,21 +2393,7 @@ def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline, rowali
             fmt.datarow,
             rowalign=rowaligns[-1],
         )
-    else:
-        separating_line = (
-            fmt.linebetweenrows
-            or fmt.linebelowheader
-            or fmt.linebelow
-            or fmt.lineabove
-            or Line("", "", "", "")
-        )
-        for row in padded_rows:
-            # test to see if either the 1st column or the 2nd column (account for showindex) has
-            # the SEPARATING_LINE flag
-            if _is_separating_line(row):
-                _append_line(lines, padded_widths, colaligns, separating_line)
-            else:
-                append_row(lines, row, padded_widths, colaligns, fmt.datarow)
+
 
     if fmt.linebelow and "linebelow" not in hidden:
         _append_line(lines, padded_widths, colaligns, fmt.linebelow)
