@@ -470,13 +470,13 @@ _table_formats = {
         with_header_hide=None,
     ),
     "github": TableFormat(
-        lineabove=Line("|", "-", "|", "|"),
-        linebelowheader=Line("|", "-", "|", "|"),
+        lineabove=Line("| ", "-", " | ", " |"),
+        linebelowheader=Line("| ", "-", " | ", " |"),
         linebetweenrows=None,
         linebelow=None,
-        headerrow=DataRow("|", "|", "|"),
-        datarow=DataRow("|", "|", "|"),
-        padding=1,
+        headerrow=DataRow("| ", " | ", " |"),
+        datarow=DataRow("| ", " | ", " |"),
+        padding=0,
         with_header_hide=["lineabove"],
     ),
     "pipe": TableFormat(
@@ -1884,6 +1884,15 @@ def tabulate(
     │ spam      │   41.9999 │
     │ eggs      │  451      │
     ╘═══════════╧═══════════╛
+
+    "github" is the Github-Flavored Markdown syntax:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "github"))
+    | strings   |   numbers |
+    | --------- | --------- |
+    | spam      |   41.9999 |
+    | eggs      |  451      |
 
     "pipe" is like tables in PHP Markdown Extra extension or Pandoc
     pipe_tables:

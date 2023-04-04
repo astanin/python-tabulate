@@ -219,7 +219,7 @@ corresponds to the `pipe` format without alignment colons:
 ```pycon
 >>> print(tabulate(table, headers, tablefmt="github"))
 | item   | qty   |
-|--------|-------|
+| ------ | ----- |
 | spam   | 42    |
 | eggs   | 451   |
 | bacon  | 0     |
