@@ -110,27 +110,29 @@ def _is_separating_line(row):
     return is_sl
 
 
-def _pipe_segment_with_colons(align, colwidth):
+def _segment_with_colons(align, colwidth, sep="-"):
     """Return a segment of a horizontal line with optional colons which
     indicate column's alignment (as in `pipe` output format)."""
     w = colwidth
     if align in ["right", "decimal"]:
-        return ("-" * (w - 1)) + ":"
+        return (sep * (w - 1)) + ":"
     elif align == "center":
-        return ":" + ("-" * (w - 2)) + ":"
+        return ":" + (sep * (w - 2)) + ":"
     elif align == "left":
-        return ":" + ("-" * (w - 1))
+        return ":" + (sep * (w - 1))
     else:
-        return "-" * w
+        return sep * w
 
 
-def _pipe_line_with_colons(colwidths, colaligns):
+def _line_with_colons(colwidths, colaligns, begin="|", hline="|", sep="-", end="|"):
     """Return a horizontal line with optional colons to indicate column's
-    alignment (as in `pipe` output format)."""
+    alignment (as in `pipe` and `github` output format)."""
     if not colaligns:  # e.g. printing an empty data frame (github issue #15)
         colaligns = [""] * len(colwidths)
-    segments = [_pipe_segment_with_colons(a, w) for a, w in zip(colaligns, colwidths)]
-    return "|" + "|".join(segments) + "|"
+    segments = [
+        _segment_with_colons(a, w, sep=sep) for a, w in zip(colaligns, colwidths)
+    ]
+    return begin + hline.join(segments) + end
 
 
 def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
@@ -470,18 +472,24 @@ _table_formats = {
         with_header_hide=None,
     ),
     "github": TableFormat(
-        lineabove=Line("|", "-", "|", "|"),
-        linebelowheader=Line("|", "-", "|", "|"),
+        lineabove=partial(
+            _line_with_colons, begin="| ", hline=" | ", sep="-", end=" |"
+        ),
+        linebelowheader=partial(
+            _line_with_colons, begin="| ", hline=" | ", sep="-", end=" |"
+        ),
         linebetweenrows=None,
         linebelow=None,
-        headerrow=DataRow("|", "|", "|"),
-        datarow=DataRow("|", "|", "|"),
-        padding=1,
+        headerrow=DataRow("| ", " | ", " |"),
+        datarow=DataRow("| ", " | ", " |"),
+        padding=0,
         with_header_hide=["lineabove"],
     ),
     "pipe": TableFormat(
-        lineabove=_pipe_line_with_colons,
-        linebelowheader=_pipe_line_with_colons,
+        lineabove=partial(_line_with_colons, begin="|", hline="|", sep="-", end="|"),
+        linebelowheader=partial(
+            _line_with_colons, begin="|", hline="|", sep="-", end="|"
+        ),
         linebetweenrows=None,
         linebelow=None,
         headerrow=DataRow("|", "|", "|"),

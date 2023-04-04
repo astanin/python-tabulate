@@ -429,7 +429,7 @@ def test_github():
     expected = "\n".join(
         [
             "| strings   |   numbers |",
-            "|-----------|-----------|",
+            "| :-------- | --------: |",
             "| spam      |   41.9999 |",
             "| eggs      |  451      |",
         ]
