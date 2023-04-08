@@ -1581,6 +1581,7 @@ def tabulate(
     showindex="default",
     disable_numparse=False,
     colalign=None,
+    colwidth=None,
     maxcolwidths=None,
     rowalign=None,
     maxheadercolwidths=None,
@@ -2041,7 +2042,8 @@ def tabulate(
     longest element in that column. However, in situations where fields are expected
     to reasonably be too long to look good as a single line, tabulate can help automate
     word wrapping long fields for you. Use the parameter `maxcolwidth` to provide a
-    list of maximal column widths
+    list of maximal column widths. Alternatively, you can use `colwidth` to set a 
+    a fixed width for each column. This parameter takes a list or a single int.
 
     >>> print(tabulate( \
           [('1', 'John Smith', \
@@ -2070,11 +2072,21 @@ def tabulate(
     )
     list_of_lists, separating_lines = _remove_separating_lines(list_of_lists)
 
-    if maxcolwidths is not None:
-        if len(list_of_lists):
-            num_cols = len(list_of_lists[0])
+    if colwidth is not None:
+        len_of_longest_number_per_data_column = [max(map(lambda x: len(str(x)) if _isnumber(x) else 0, column))
+                                  for column in list(izip_longest(*list_of_lists))]
+        len_of_longest_number_per_header = [len(str(header)) if _isnumber(header) else 0 for header in headers]
+        len_of_longest_number_per_column = [max((i,j)) for i, j in zip(len_of_longest_number_per_data_column, len_of_longest_number_per_header)]
+        num_cols = len(list_of_lists[0])
+        len_of_longest_number_in_table = max(len_of_longest_number_per_column)
+        if isinstance(colwidth, int):
+            colwidth = [max(colwidth, len_of_longest_number_in_table) for _ in range(num_cols)]
         else:
-            num_cols = 0
+            colwidth = [max((i, j)) for i, j in zip(colwidth, len_of_longest_number_per_column)]
+        maxcolwidths, maxheadercolwidths = colwidth, colwidth
+
+    if maxcolwidths is not None:
+        num_cols = len(list_of_lists[0])
         if isinstance(maxcolwidths, int):  # Expand scalar for all columns
             maxcolwidths = _expand_iterable(maxcolwidths, num_cols, maxcolwidths)
         else:  # Ignore col width for any 'trailing' columns
@@ -2179,7 +2191,6 @@ def tabulate(
             cols, coltypes, float_formats, int_formats, missing_vals
         )
     ]
-
     # align columns
     aligns = [numalign if ct in [int, float] else stralign for ct in coltypes]
     if colalign is not None:
@@ -2189,11 +2200,12 @@ def tabulate(
     minwidths = (
         [width_fn(h) + min_padding for h in headers] if headers else [0] * len(cols)
     )
+    if colwidth is not None:
+        minwidths = maxcolwidths
     cols = [
         _align_column(c, a, minw, has_invisible, enable_widechars, is_multiline)
         for c, a, minw in zip(cols, aligns, minwidths)
     ]
-
     if headers:
         # align headers and add headers
         t_cols = cols or [[""]] * len(headers)
@@ -2202,6 +2214,9 @@ def tabulate(
             max(minw, max(width_fn(cl) for cl in c))
             for minw, c in zip(minwidths, t_cols)
         ]
+        if colwidth is not None:
+            minwidths = maxcolwidths
+
         headers = [
             _align_header(h, a, minw, width_fn(h), is_multiline, width_fn)
             for h, a, minw in zip(headers, t_aligns, minwidths)
@@ -2209,6 +2224,8 @@ def tabulate(
         rows = list(zip(*cols))
     else:
         minwidths = [max(width_fn(cl) for cl in c) for c in cols]
+        if colwidth is not None:
+            minwidths = maxcolwidths
         rows = list(zip(*cols))
 
     if not isinstance(tablefmt, TableFormat):
