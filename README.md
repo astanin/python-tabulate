@@ -14,6 +14,30 @@ The main use cases of the library are:
     column alignment, configurable number formatting, alignment by a
     decimal point
 
+Table of contents
+=================
+
+1. [Installation](#installation)
+2. [Build status](#build-status)
+3. [Library usage](#library-usage)
+   - [Headers](#headers)
+   - [Row Indices](#row-indices)
+   - [Table format](#table-format)
+   - [Column alignment](#column-alignment)
+   - [Custom column alignment](#custom-column-alignment)
+   - [Number formatting](#number-formatting)
+   - [Text formatting](#text-formatting)
+   - [Wide (fullwidth CJK) symbols](#wide-fullwidth-cjk-symbols)
+   - [Multiline cells](#multiline-cells)
+   - [Automating multilines](#automating-multilines)
+   - [Adding Separating lines](#adding-separating-lines)
+   - [ANSI support](#ansi-support)
+4. [Usage of the command line utility](#usage-of-the-command-line-utility)
+5. [Performance considerations](#performance-considerations)
+6. [Version history](#version-history)
+7. [How to contribute](#how-to-contribute)
+8. [Contributors](#contributors)
+
 Installation
 ------------
 
