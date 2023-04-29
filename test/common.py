@@ -1,7 +1,6 @@
 import pytest  # noqa
 from pytest import skip, raises  # noqa
 
-
 def assert_equal(expected, result):
     print("Expected:\n%s\n" % expected)
     print("Got:\n%s\n" % result)
