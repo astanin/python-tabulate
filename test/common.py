@@ -6,7 +6,6 @@ def assert_equal(expected, result):
     print("Got:\n%s\n" % result)
     assert expected == result
 
-
 def assert_in(result, expected_set):
     nums = range(1, len(expected_set) + 1)
     for i, expected in zip(nums, expected_set):
