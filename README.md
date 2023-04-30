@@ -666,18 +666,31 @@ Ver2  19.2
 
 ### Custom column alignment
 
-`tabulate` allows a custom column alignment to override the above. The
-`colalign` argument can be a list or a tuple of `stralign` named
-arguments. Possible column alignments are: `right`, `center`, `left`,
-`decimal` (only for numbers), and `None` (to disable alignment).
-Omitting an alignment uses the default. For example:
+`tabulate` allows a custom column alignment to override the smart alignment described above.
+Use `colglobalalign` to define a global setting. Possible alignments are: `right`, `center`, `left`, `decimal` (only for numbers).
+Furthermore, you can define `colalign` for column-specific alignment as a list or a tuple. Possible values are `global` (keeps global setting), `right`, `center`, `left`, `decimal` (only for numbers), `None` (to disable alignment). Missing alignments are treated as `global`.
 
 ```pycon
->>> print(tabulate([["one", "two"], ["three", "four"]], colalign=("right",))
------  ----
-  one  two
-three  four
------  ----
+>>> print(tabulate([[1,2,3,4],[111,222,333,444]], colglobalalign='center', colalign = ('global','left','right')))
+---  ---  ---  ---
+ 1   2      3   4
+111  222  333  444
+---  ---  ---  ---
+```
+
+### Custom header alignment
+
+Headers' alignment can be defined separately from columns'. Like for columns, you can use:
+- `headersglobalalign` to define a header-specific global alignment setting. Possible values are `right`, `center`, `left`, `None` (to follow column alignment),
+- `headersalign` list or tuple to further specify header-wise alignment. Possible values are `global` (keeps global setting), `same` (follow column alignment), `right`, `center`, `left`, `None` (to disable alignment). Missing alignments are treated as `global`.
+
+```pycon
+>>> print(tabulate([[1,2,3,4,5,6],[111,222,333,444,555,666]], colglobalalign = 'center', colalign = ('left',), headers = ['h','e','a','d','e','r'], headersglobalalign = 'right', headersalign = ('same','same','left','global','center')))
+
+h     e   a      d   e     r
+---  ---  ---  ---  ---  ---
+1     2    3    4    5    6
+111  222  333  444  555  666
 ```
 
 ### Number formatting
@@ -1123,5 +1136,5 @@ Bart Broere, Vilhelm Prytz, Alexander Gažo, Hugo van Kemenade,
 jamescooke, Matt Warner, Jérôme Provensal, Kevin Deldycke,
 Kian-Meng Ang, Kevin Patterson, Shodhan Save, cleoold, KOLANICH,
 Vijaya Krishna Kasula, Furcy Pin, Christian Fibich, Shaun Duncan,
-Dimitri Papadopoulos.
+Dimitri Papadopoulos, Élie Goudout.
 
