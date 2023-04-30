@@ -14,6 +14,30 @@ The main use cases of the library are:
     column alignment, configurable number formatting, alignment by a
     decimal point
 
+Table of contents
+=================
+
+1. [Installation](#installation)
+2. [Build status](#build-status)
+3. [Library usage](#library-usage)
+   - [Headers](#headers)
+   - [Row Indices](#row-indices)
+   - [Table format](#table-format)
+   - [Column alignment](#column-alignment)
+   - [Custom column alignment](#custom-column-alignment)
+   - [Number formatting](#number-formatting)
+   - [Text formatting](#text-formatting)
+   - [Wide (fullwidth CJK) symbols](#wide-fullwidth-cjk-symbols)
+   - [Multiline cells](#multiline-cells)
+   - [Automating multilines](#automating-multilines)
+   - [Adding Separating lines](#adding-separating-lines)
+   - [ANSI support](#ansi-support)
+4. [Usage of the command line utility](#usage-of-the-command-line-utility)
+5. [Performance considerations](#performance-considerations)
+6. [Version history](#version-history)
+7. [How to contribute](#how-to-contribute)
+8. [Contributors](#contributors)
+
 Installation
 ------------
 
@@ -50,10 +74,14 @@ set TABULATE_INSTALL=lib-only
 pip install tabulate
 ```
 
+[(Back to top)](#table-of-contents)
+
 Build status
 ------------
 
 [![Build status](https://circleci.com/gh/astanin/python-tabulate.svg?style=svg)](https://circleci.com/gh/astanin/python-tabulate/tree/master) [![Build status](https://ci.appveyor.com/api/projects/status/8745yksvvol7h3d7/branch/master?svg=true)](https://ci.appveyor.com/project/astanin/python-tabulate/branch/master)
+
+[(Back to top)](#table-of-contents)
 
 Library usage
 -------------
@@ -87,6 +115,8 @@ The following tabular data types are supported:
 -   pandas.DataFrame
 
 Tabulate is a Python3 library.
+
+[(Back to top)](#table-of-contents)
 
 ### Headers
 
@@ -127,6 +157,8 @@ dictionaries or named tuples:
    19  Bob
 ```
 
+[(Back to top)](#table-of-contents)
+
 ### Row Indices
 
 By default, only pandas.DataFrame tables have an additional column
@@ -143,6 +175,8 @@ or `showindex=False`. To add a custom row index column, pass
 1  M  19
 -  -  --
 ```
+
+[(Back to top)](#table-of-contents)
 
 ### Table format
 
@@ -599,6 +633,8 @@ spacing and style from the `booktabs` package.
 `latex_longtable` creates a table that can stretch along multiple pages,
 using the `longtable` package.
 
+[(Back to top)](#table-of-contents)
+
 ### Column alignment
 
 `tabulate` is smart about column alignment. It detects columns which
@@ -664,6 +700,8 @@ Ver2  19.2
 ----  ----
 ```
 
+[(Back to top)](#table-of-contents)
+
 ### Custom column alignment
 
 `tabulate` allows a custom column alignment to override the smart alignment described above.
@@ -692,6 +730,8 @@ h     e   a      d   e     r
 1     2    3    4    5    6
 111  222  333  444  555  666
 ```
+
+[(Back to top)](#table-of-contents)
 
 ### Number formatting
 
@@ -724,6 +764,8 @@ column, in which case every column may have different number formatting:
     b  90,000
     -  ------
 
+[(Back to top)](#table-of-contents)
+
 ### Text formatting
 
 By default, `tabulate` removes leading and trailing whitespace from text
@@ -734,6 +776,8 @@ columns. To disable whitespace removal, set the global module-level flag
 import tabulate
 tabulate.PRESERVE_WHITESPACE = True
 ```
+
+[(Back to top)](#table-of-contents)
 
 ### Wide (fullwidth CJK) symbols
 
@@ -755,6 +799,8 @@ uninstalling `wcwidth`, set the global module-level flag
 import tabulate
 tabulate.WIDE_CHARS_MODE = False
 ```
+
+[(Back to top)](#table-of-contents)
 
 ### Multiline cells
 
@@ -926,6 +972,8 @@ spam
 
 Multiline cells are not well-supported for the other table formats.
 
+[(Back to top)](#table-of-contents)
+
 ### Automating Multilines
 While tabulate supports data passed in with multilines entries explicitly provided,
 it also provides some support to help manage this work internally.
@@ -953,6 +1001,8 @@ the lines being wrapped would probably be significantly longer than this.
 +------------+---------+
 ```
 
+[(Back to top)](#table-of-contents)
+
 ### Adding Separating lines
 One might want to add one or more separating lines to highlight different sections in a table.
 
@@ -973,6 +1023,8 @@ linebetweenrows, linebelowheader, linebelow, lineabove or just a simple empty li
     -----  ----
     Moon   1737
     -----  ----
+
+[(Back to top)](#table-of-contents)
 
 ### ANSI support
 ANSI escape codes are non-printable byte sequences usually used for terminal operations like setting
@@ -995,6 +1047,7 @@ itself (terminals would show this text). For example:
     >>> len('\x1b]8;;https://example.com\x1b\\example\x1b]8;;\x1b\\')  # display length is 7, showing 'example'
     45
 
+[(Back to top)](#table-of-contents)
 
 Usage of the command line utility
 ---------------------------------
@@ -1017,6 +1070,8 @@ Usage of the command line utility
                               orgtbl, rst, mediawiki, html, latex, latex_raw,
                               latex_booktabs, latex_longtable, tsv
                               (default: simple)
+
+[(Back to top)](#table-of-contents)
 
 Performance considerations
 --------------------------
@@ -1052,11 +1107,14 @@ was run in Python 3.9.13 on Windows 10:
     texttable (1.6.4)                      1390.3        111.4
     =================================  ==========  ===========
 
+[(Back to top)](#table-of-contents)
 
 Version history
 ---------------
 
 The full version history can be found at the [changelog](https://github.com/astanin/python-tabulate/blob/master/CHANGELOG).
+
+[(Back to top)](#table-of-contents)
 
 How to contribute
 -----------------
@@ -1115,6 +1173,8 @@ tox -e lint
 See `tox.ini` file to learn how to use to test
 individual Python versions.
 
+[(Back to top)](#table-of-contents)
+
 Contributors
 ------------
 
@@ -1138,3 +1198,4 @@ Kian-Meng Ang, Kevin Patterson, Shodhan Save, cleoold, KOLANICH,
 Vijaya Krishna Kasula, Furcy Pin, Christian Fibich, Shaun Duncan,
 Dimitri Papadopoulos, Élie Goudout.
 
+[(Back to top)](#table-of-contents)
