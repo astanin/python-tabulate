@@ -50,6 +50,27 @@ def test_iterable_of_iterables_firstrow():
     assert_equal(expected, result)
 
 
+def test_mixed_bools():
+    "Input: a list of lists with mixed number and bool values."
+    ll = [
+        ["1.1", "1000", "1000"],
+        [True, True, True],
+        ["False", "False", "False"],
+    ]
+    # notice INCONSISTENCY in boolean representation
+    expected = "\n".join(
+        [
+            "---  -----  -----",
+            "1.1   1000  1,000",
+            "1.0   True      1",
+            "0.0  False      0",
+            "---  -----  -----",
+        ]
+    )
+    result = tabulate(ll, floatfmt=".1f", intfmt=("", "", ","))
+    assert_equal(expected, result)
+
+
 def test_list_of_lists():
     "Input: a list of lists with headers."
     ll = [["a", "one", 1], ["b", "two", None]]
