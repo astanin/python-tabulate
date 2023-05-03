@@ -213,16 +213,16 @@ eggs      451
 bacon       0
 ```
 
-`github` follows the conventions of GitHub flavored Markdown. It
-corresponds to the `pipe` format without alignment colons:
+`github` follows the conventions of GitHub flavored Markdown. This
+format uses colons to indicate column alignment:
 
 ```pycon
 >>> print(tabulate(table, headers, tablefmt="github"))
-| item   | qty   |
-|--------|-------|
-| spam   | 42    |
-| eggs   | 451   |
-| bacon  | 0     |
+| item    |   qty |
+| :------ | ----: |
+| spam    |    42 |
+| eggs    |   451 |
+| bacon   |     0 |
 ```
 
 `grid` is like tables formatted by Emacs'
