@@ -2935,6 +2935,27 @@ def test_list_of_lists_with_index_with_sep_line():
     assert_equal(expected, result)
 
 
+def test_with_padded_columns_with_sep_line():
+    table = [
+        ["1", "one"],  # "1" as a str on purpose
+        [1_000, "one K"],
+        SEPARATING_LINE,
+        [1_000_000, "one M"],
+    ]
+    expected = "\n".join(
+        [
+            "+---------+-------+",
+            "|       1 | one   |",
+            "|    1000 | one K |",
+            "|---------+-------|",
+            "| 1000000 | one M |",
+            "+---------+-------+",
+        ]
+    )
+    result = tabulate(table, tablefmt="psql")
+    assert_equal(expected, result)
+
+
 def test_list_of_lists_with_supplied_index():
     "Output: a table with a supplied index"
     dd = zip(*[list(range(3)), list(range(101, 104))])
