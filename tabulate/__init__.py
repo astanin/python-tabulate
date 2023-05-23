@@ -1461,7 +1461,12 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             field_names = [field.name for field in dataclasses.fields(rows[0])]
             if headers == "keys":
                 headers = field_names
-            rows = [[getattr(row, f) for f in field_names] for row in rows]
+            rows = [
+                [getattr(row, f) for f in field_names]
+                if not _is_separating_line(row)
+                else row
+                for row in rows
+            ]
 
         elif headers == "keys" and len(rows) > 0:
             # keys are column indices
