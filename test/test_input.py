@@ -1,6 +1,6 @@
 """Test support of the various forms of tabular data."""
 
-from tabulate import tabulate
+from tabulate import tabulate, SEPARATING_LINE
 from common import assert_equal, assert_in, raises, skip
 
 try:
@@ -518,6 +518,28 @@ def test_py37orlater_list_of_dataclasses_headers():
         assert_equal(expected, result)
     except ImportError:
         skip("test_py37orlater_list_of_dataclasses_headers is skipped")
+
+
+def test_py37orlater_list_of_dataclasses_with_separating_line():
+    "Input: a list of dataclasses with a separating line"
+    try:
+        from dataclasses import make_dataclass
+
+        Person = make_dataclass("Person", ["name", "age", "height"])
+        ld = [Person("Alice", 23, 169.5), SEPARATING_LINE, Person("Bob", 27, 175.0)]
+        result = tabulate(ld, headers="keys")
+        expected = "\n".join(
+            [
+                "name      age    height",
+                "------  -----  --------",
+                "Alice      23     169.5",
+                "------  -----  --------",
+                "Bob        27     175",
+            ]
+        )
+        assert_equal(expected, result)
+    except ImportError:
+        skip("test_py37orlater_list_of_dataclasses_keys is skipped")
 
 
 def test_list_bytes():
