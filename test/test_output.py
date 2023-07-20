@@ -257,6 +257,21 @@ def test_simple_with_sep_line():
     assert_equal(expected, result)
 
 
+def test_orgtbl_with_sep_line():
+    "Output: orgtbl with headers and separating line"
+    expected = "\n".join(
+        [
+            "| strings   |   numbers |",
+            "|-----------+-----------|",
+            "| spam      |   41.9999 |",
+            "|-----------+-----------|",
+            "| eggs      |  451      |",
+        ]
+    )
+    result = tabulate(_test_table_with_sep_line, _test_table_headers, tablefmt="orgtbl")
+    assert_equal(expected, result)
+
+
 def test_readme_example_with_sep():
     table = [["Earth", 6371], ["Mars", 3390], SEPARATING_LINE, ["Moon", 1737]]
     expected = "\n".join(
@@ -308,6 +323,28 @@ def test_simple_multiline_2_with_sep_line():
         ["spam", "multiline\nworld"],
     ]
     result = tabulate(table, headers="firstrow", stralign="center", tablefmt="simple")
+    assert_equal(expected, result)
+
+
+def test_orgtbl_multiline_2_with_sep_line():
+    "Output: simple with multiline cells"
+    expected = "\n".join(
+        [
+            "|  key  |   value   |",
+            "|-------+-----------|",
+            "|  foo  |    bar    |",
+            "|-------+-----------|",
+            "| spam  | multiline |",
+            "|       |   world   |",
+        ]
+    )
+    table = [
+        ["key", "value"],
+        ["foo", "bar"],
+        SEPARATING_LINE,
+        ["spam", "multiline\nworld"],
+    ]
+    result = tabulate(table, headers="firstrow", stralign="center", tablefmt="orgtbl")
     assert_equal(expected, result)
 
 

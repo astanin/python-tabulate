@@ -2414,7 +2414,6 @@ def _format_table(fmt, headers, headersaligns, rows, colwidths, colaligns, is_mu
         append_row = _append_basic_row
 
     padded_headers = pad_row(headers, pad)
-    padded_rows = [pad_row(row, pad) for row in rows]
 
     if fmt.lineabove and "lineabove" not in hidden:
         _append_line(lines, padded_widths, colaligns, fmt.lineabove)
@@ -2424,17 +2423,17 @@ def _format_table(fmt, headers, headersaligns, rows, colwidths, colaligns, is_mu
         if fmt.linebelowheader and "linebelowheader" not in hidden:
             _append_line(lines, padded_widths, colaligns, fmt.linebelowheader)
 
-    if padded_rows and fmt.linebetweenrows and "linebetweenrows" not in hidden:
+    if rows and fmt.linebetweenrows and "linebetweenrows" not in hidden:
         # initial rows with a line below
-        for row, ralign in zip(padded_rows[:-1], rowaligns):
+        for row, ralign in zip(rows[:-1], rowaligns):
             append_row(
-                lines, row, padded_widths, colaligns, fmt.datarow, rowalign=ralign
+                lines, pad_row(row, pad), padded_widths, colaligns, fmt.datarow, rowalign=ralign
             )
             _append_line(lines, padded_widths, colaligns, fmt.linebetweenrows)
         # the last row without a line below
         append_row(
             lines,
-            padded_rows[-1],
+            pad_row(rows[-1], pad),
             padded_widths,
             colaligns,
             fmt.datarow,
@@ -2448,13 +2447,13 @@ def _format_table(fmt, headers, headersaligns, rows, colwidths, colaligns, is_mu
             or fmt.lineabove
             or Line("", "", "", "")
         )
-        for row in padded_rows:
+        for row in rows:
             # test to see if either the 1st column or the 2nd column (account for showindex) has
             # the SEPARATING_LINE flag
             if _is_separating_line(row):
                 _append_line(lines, padded_widths, colaligns, separating_line)
             else:
-                append_row(lines, row, padded_widths, colaligns, fmt.datarow)
+                append_row(lines, pad_row(row, pad), padded_widths, colaligns, fmt.datarow)
 
     if fmt.linebelow and "linebelow" not in hidden:
         _append_line(lines, padded_widths, colaligns, fmt.linebelow)
