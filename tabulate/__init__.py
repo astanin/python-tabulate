@@ -933,7 +933,12 @@ def _isbool(string):
 def _type(string, has_invisible=True, numparse=True):
     """The least generic type (type(None), int, float, str, unicode).
 
+    Treats empty string as missing for the purposes of type deduction, so as to not influence
+    the type of an otherwise complete column; does *not* result in missingval replacement!
+
     >>> _type(None) is type(None)
+    True
+    >>> _type("") is type(None)
     True
     >>> _type("foo") is type("")
     True
@@ -949,15 +954,26 @@ def _type(string, has_invisible=True, numparse=True):
     if has_invisible and isinstance(string, (str, bytes)):
         string = _strip_ansi(string)
 
-    if string is None:
+    if string is None or (isinstance(string, (bytes, str)) and not string):
         return type(None)
     elif hasattr(string, "isoformat"):  # datetime.datetime, date, and time
         return str
     elif _isbool(string):
         return bool
-    elif _isint(string) and numparse:
+    elif numparse and (
+        _isint(string) or (
+            isinstance(string, str)
+            and _isnumber_with_thousands_separator(string)
+            and '.' not in string 
+        )
+    ):
         return int
-    elif _isnumber(string) and numparse:
+    elif numparse and (
+        _isnumber(string) or (
+            isinstance(string, str)
+            and _isnumber_with_thousands_separator(string)
+        )
+    ):
         return float
     elif isinstance(string, bytes):
         return bytes
@@ -1251,7 +1267,7 @@ def _column_type(strings, has_invisible=True, numparse=True):
 
 
 def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
-    """Format a value according to its type.
+    """Format a value according to its deduced type.  Empty values are deemed valid for any type.
 
     Unicode is supported:
 
@@ -1264,6 +1280,8 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
     """  # noqa
     if val is None:
         return missingval
+    if isinstance(val, (bytes, str)) and not val:
+        return ""
 
     if valtype is str:
         return f"{val}"
@@ -1298,6 +1316,8 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
             formatted_val = format(float(raw_val), floatfmt)
             return val.replace(raw_val, formatted_val)
         else:
+            if isinstance(val,str) and ',' in val:
+                val = val.replace(',', '')  # handle thousands-separators
             return format(float(val), floatfmt)
     else:
         return f"{val}"
@@ -1592,9 +1612,10 @@ def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True):
 
             if width is not None:
                 wrapper = _CustomTextWrap(width=width)
-                # Cast based on our internal type handling
-                # Any future custom formatting of types (such as datetimes)
-                # may need to be more explicit than just `str` of the object
+                # Cast based on our internal type handling. Any future custom
+                # formatting of types (such as datetimes) may need to be more
+                # explicit than just `str` of the object. Also doesn't work for
+                # custom floatfmt/intfmt, nor with any missing/blank cells.
                 casted_cell = (
                     str(cell) if _isnumber(cell) else _type(cell, numparse)(cell)
                 )
