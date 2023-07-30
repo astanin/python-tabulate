@@ -104,7 +104,7 @@ TableFormat = namedtuple(
 
 def _is_separating_line(row):
     row_type = type(row)
-    is_sl = (row_type == list or row_type == str) and (
+    is_sl = (row_type in (list, str)) and (
         (len(row) >= 1 and row[0] == SEPARATING_LINE)
         or (len(row) >= 2 and row[1] == SEPARATING_LINE)
     )
