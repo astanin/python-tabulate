@@ -2210,7 +2210,7 @@ def tabulate(
     if colalign is not None:
         assert isinstance(colalign, Iterable)
         if isinstance(colalign, str):
-            warnings.warn(f"As a string, `colalign` is interpreted as {[c for c in colalign]}. Did you mean `colglobalalign = \"{colalign}\"` or `colalign = (\"{colalign}\",)`?", stacklevel=2)
+            warnings.warn(f"As a string, `colalign` is interpreted as {list(colalign)}. Did you mean `colglobalalign = \"{colalign}\"` or `colalign = (\"{colalign}\",)`?", stacklevel=2)
         for idx, align in enumerate(colalign):
             if not idx < len(aligns):
                 break
@@ -2237,7 +2237,7 @@ def tabulate(
         if headersalign is not None:
             assert isinstance(headersalign, Iterable)
             if isinstance(headersalign, str):
-                warnings.warn(f"As a string, `headersalign` is interpreted as {[c for c in headersalign]}. Did you mean `headersglobalalign = \"{headersalign}\"` or `headersalign = (\"{headersalign}\",)`?", stacklevel=2)
+                warnings.warn(f"As a string, `headersalign` is interpreted as {list(headersalign)}. Did you mean `headersglobalalign = \"{headersalign}\"` or `headersalign = (\"{headersalign}\",)`?", stacklevel=2)
             for idx, align in enumerate(headersalign):
                 hidx = headers_pad + idx
                 if not hidx < len(aligns_headers):
@@ -2498,7 +2498,7 @@ class _CustomTextWrap(textwrap.TextWrapper):
         as add any colors from previous lines order to preserve the same formatting
         as a single unwrapped string.
         """
-        code_matches = [x for x in _ansi_codes.finditer(new_line)]
+        code_matches = list(_ansi_codes.finditer(new_line))
         color_codes = [
             code.string[code.span()[0] : code.span()[1]] for code in code_matches
         ]

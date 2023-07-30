@@ -454,7 +454,6 @@ disable=raw-checker-failed,
         too-many-nested-blocks,
         too-many-branches,
         too-many-boolean-expressions,
-        unnecessary-comprehension,
         too-many-statements
 
 
