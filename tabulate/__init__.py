@@ -2078,7 +2078,7 @@ def tabulate(
     list_of_lists, separating_lines = _remove_separating_lines(list_of_lists)
 
     if maxcolwidths is not None:
-        if len(list_of_lists):
+        if list_of_lists:
             num_cols = len(list_of_lists[0])
         else:
             num_cols = 0
