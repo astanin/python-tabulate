@@ -2214,7 +2214,7 @@ def tabulate(
         for idx, align in enumerate(colalign):
             if not idx < len(aligns):
                 break
-            elif align != "global":
+            if align != "global":
                 aligns[idx] = align
     minwidths = (
         [width_fn(h) + min_padding for h in headers] if headers else [0] * len(cols)
@@ -2242,7 +2242,7 @@ def tabulate(
                 hidx = headers_pad + idx
                 if not hidx < len(aligns_headers):
                     break
-                elif align == "same" and hidx < len(aligns): # same as column align
+                if align == "same" and hidx < len(aligns): # same as column align
                     aligns_headers[hidx] = aligns[hidx]
                 elif align != "global":
                     aligns_headers[hidx] = align

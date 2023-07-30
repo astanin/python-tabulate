@@ -455,7 +455,6 @@ disable=raw-checker-failed,
         too-many-branches,
         too-many-boolean-expressions,
         unnecessary-comprehension,
-        no-else-break,
         too-many-statements,
         comparison-with-callable
 
