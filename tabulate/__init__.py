@@ -1353,9 +1353,9 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
     try:
         bool(headers)
-        is_headers2bool_broken = False  # noqa
+        is_headers2bool_broken = False  # noqa, pylint: disable=unused-variable
     except ValueError:  # numpy.ndarray, pandas.core.index.Index, ...
-        is_headers2bool_broken = True  # noqa
+        is_headers2bool_broken = True  # noqa, pylint: disable=unused-variable
         headers = list(headers)
 
     index = None
