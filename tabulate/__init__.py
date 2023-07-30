@@ -117,12 +117,11 @@ def _pipe_segment_with_colons(align, colwidth):
     w = colwidth
     if align in ["right", "decimal"]:
         return ("-" * (w - 1)) + ":"
-    elif align == "center":
+    if align == "center":
         return ":" + ("-" * (w - 2)) + ":"
-    elif align == "left":
+    if align == "left":
         return ":" + ("-" * (w - 1))
-    else:
-        return "-" * w
+    return "-" * w
 
 
 def _pipe_line_with_colons(colwidths, colaligns):
@@ -246,7 +245,7 @@ def _asciidoc_row(is_header, *args):
         # print the table header with column widths and optional header tag
         return make_header_line(False, *args)
 
-    elif len(args) == 3:
+    if len(args) == 3:
         # three arguments are passed if called in the context of dataline or headerline
         # print the table line and make the aboveline if it is a header
 
@@ -255,14 +254,12 @@ def _asciidoc_row(is_header, *args):
 
         if is_header:
             return make_header_line(True, colwidths, colaligns) + "\n" + data_line
-        else:
-            return data_line
+        return data_line
 
-    else:
-        raise ValueError(
-            " _asciidoc_row() requires two (colwidths, colaligns) "
-            + "or three (cell_values, colwidths, colaligns) arguments) "
-        )
+    raise ValueError(
+        " _asciidoc_row() requires two (colwidths, colaligns) "
+        + "or three (cell_values, colwidths, colaligns) arguments) "
+    )
 
 
 LATEX_ESCAPE_RULES = {
@@ -294,8 +291,7 @@ def _rst_escape_first_column(rows, headers):
     def escape_empty(val):
         if isinstance(val, (str, bytes)) and not val.strip():
             return ".."
-        else:
-            return val
+        return val
 
     new_headers = list(headers)
     new_rows = []
@@ -853,7 +849,7 @@ def _isnumber(string):
     """
     if not _isconvertible(float, string):
         return False
-    elif isinstance(string, (str, bytes)) and (
+    if isinstance(string, (str, bytes)) and (
         math.isinf(float(string)) or math.isnan(float(string))
     ):
         return string.lower() in ["inf", "-inf", "nan"]
@@ -914,18 +910,17 @@ def _type(string, has_invisible=True, numparse=True):
 
     if string is None:
         return type(None)
-    elif hasattr(string, "isoformat"):  # datetime.datetime, date, and time
+    if hasattr(string, "isoformat"):  # datetime.datetime, date, and time
         return str
-    elif _isbool(string):
+    if _isbool(string):
         return bool
-    elif _isint(string) and numparse:
+    if _isint(string) and numparse:
         return int
-    elif _isnumber(string) and numparse:
+    if _isnumber(string) and numparse:
         return float
-    elif isinstance(string, bytes):
+    if isinstance(string, bytes):
         return bytes
-    else:
-        return str
+    return str
 
 
 def _afterpoint(string):
@@ -946,15 +941,12 @@ def _afterpoint(string):
     if _isnumber(string) or _isnumber_with_thousands_separator(string):
         if _isint(string):
             return -1
-        else:
-            pos = string.rfind(".")
-            pos = string.lower().rfind("e") if pos < 0 else pos
-            if pos >= 0:
-                return len(string) - pos - 1
-            else:
-                return -1  # no point
-    else:
-        return -1  # not a number
+        pos = string.rfind(".")
+        pos = string.lower().rfind("e") if pos < 0 else pos
+        if pos >= 0:
+            return len(string) - pos - 1
+        return -1  # no point
+    return -1  # not a number
 
 
 def _padleft(width, s):
@@ -1010,8 +1002,7 @@ def _strip_ansi(s):
     """
     if isinstance(s, str):
         return _ansi_codes.sub(r"\4", s)
-    else:  # a bytestring
-        return _ansi_codes_bytes.sub(r"\4", s)
+    return _ansi_codes_bytes.sub(r"\4", s)
 
 
 def _visible_width(s):
@@ -1028,15 +1019,13 @@ def _visible_width(s):
         len_fn = len
     if isinstance(s, (str, bytes)):
         return len_fn(_strip_ansi(s))
-    else:
-        return len_fn(str(s))
+    return len_fn(str(s))
 
 
 def _is_multiline(s):
     if isinstance(s, str):
         return bool(re.search(_multiline_codes, s))
-    else:  # a bytestring
-        return bool(re.search(_multiline_codes_bytes, s))
+    return bool(re.search(_multiline_codes_bytes, s))
 
 
 def _multiline_width(multiline_s, line_width_fn=len):
@@ -1228,23 +1217,21 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
 
     if valtype is str:
         return f"{val}"
-    elif valtype is int:
+    if valtype is int:
         return format(val, intfmt)
-    elif valtype is bytes:
+    if valtype is bytes:
         try:
             return str(val, "ascii")
         except (TypeError, UnicodeDecodeError):
             return str(val)
-    elif valtype is float:
+    if valtype is float:
         is_a_colored_number = has_invisible and isinstance(val, (str, bytes))
         if is_a_colored_number:
             raw_val = _strip_ansi(val)
             formatted_val = format(float(raw_val), floatfmt)
             return val.replace(raw_val, formatted_val)
-        else:
-            return format(float(val), floatfmt)
-    else:
-        return f"{val}"
+        return format(float(val), floatfmt)
+    return f"{val}"
 
 
 def _align_header(
@@ -1262,12 +1249,11 @@ def _align_header(
     width += ninvisible
     if alignment == "left":
         return _padright(width, header)
-    elif alignment == "center":
+    if alignment == "center":
         return _padboth(width, header)
-    elif not alignment:
+    if not alignment:
         return f"{header}"
-    else:
-        return _padleft(width, header)
+    return _padleft(width, header)
 
 
 def _remove_separating_lines(rows):
@@ -1280,8 +1266,7 @@ def _remove_separating_lines(rows):
             else:
                 sans_rows.append(row)
         return sans_rows, separating_lines
-    else:
-        return rows, None
+    return rows, None
 
 
 def _reinsert_separating_lines(rows, separating_lines):
@@ -2284,8 +2269,7 @@ def _expand_numparse(disable_numparse, column_count):
         for index in disable_numparse:
             numparses[index] = False
         return numparses
-    else:
-        return [not disable_numparse] * column_count
+    return [not disable_numparse] * column_count
 
 
 def _expand_iterable(original, num_desired, default):
@@ -2298,8 +2282,7 @@ def _expand_iterable(original, num_desired, default):
     """
     if isinstance(original, Iterable) and not isinstance(original, str):
         return original + [default] * (num_desired - len(original))
-    else:
-        return [default] * num_desired
+    return [default] * num_desired
 
 
 def _pad_row(cells, padding):
@@ -2307,8 +2290,7 @@ def _pad_row(cells, padding):
         pad = " " * padding
         padded_cells = [pad + cell + pad for cell in cells]
         return padded_cells
-    else:
-        return cells
+    return cells
 
 
 def _build_simple_row(padded_cells, rowfmt):
@@ -2323,8 +2305,7 @@ def _build_row(padded_cells, colwidths, colaligns, rowfmt):
         return None
     if hasattr(rowfmt, "__call__"):
         return rowfmt(padded_cells, colwidths, colaligns)
-    else:
-        return _build_simple_row(padded_cells, rowfmt)
+    return _build_simple_row(padded_cells, rowfmt)
 
 
 def _append_basic_row(lines, padded_cells, colwidths, colaligns, rowfmt, rowalign=None):
@@ -2338,12 +2319,11 @@ def _align_cell_veritically(text_lines, num_lines, column_width, row_alignment):
     blank = [" " * column_width]
     if row_alignment == "bottom":
         return blank * delta_lines + text_lines
-    elif row_alignment == "center":
+    if row_alignment == "center":
         top_delta = delta_lines // 2
         bottom_delta = delta_lines - top_delta
         return top_delta * blank + text_lines + bottom_delta * blank
-    else:
-        return text_lines + blank * delta_lines
+    return text_lines + blank * delta_lines
 
 
 def _append_multiline_row(
@@ -2374,10 +2354,10 @@ def _build_line(colwidths, colaligns, linefmt):
         return None
     if hasattr(linefmt, "__call__"):
         return linefmt(colwidths, colaligns)
-    else:
-        begin, fill, sep, end = linefmt
-        cells = [fill * w for w in colwidths]
-        return _build_simple_row(cells, (begin, sep, end))
+
+    begin, fill, sep, end = linefmt
+    cells = [fill * w for w in colwidths]
+    return _build_simple_row(cells, (begin, sep, end))
 
 
 def _append_line(lines, colwidths, colaligns, linefmt):
@@ -2463,10 +2443,8 @@ def _format_table(fmt, headers, headersaligns, rows, colwidths, colaligns, is_mu
         output = "\n".join(lines)
         if fmt.lineabove == _html_begin_table_without_header: # pylint: disable=comparison-with-callable
             return JupyterHTMLStr(output)
-        else:
-            return output
-    else:  # a completely empty table
-        return ""
+        return output
+    return ""
 
 
 class _CustomTextWrap(textwrap.TextWrapper):
@@ -2489,8 +2467,7 @@ class _CustomTextWrap(textwrap.TextWrapper):
         stripped = _strip_ansi(item)
         if wcwidth:
             return wcwidth.wcswidth(stripped)
-        else:
-            return len(stripped)
+        return len(stripped)
 
     def _update_lines(self, lines, new_line):
         """Adds a new line to the list of lines the text is being wrapped into
