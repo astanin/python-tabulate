@@ -2461,7 +2461,7 @@ def _format_table(fmt, headers, headersaligns, rows, colwidths, colaligns, is_mu
 
     if headers or rows:
         output = "\n".join(lines)
-        if fmt.lineabove == _html_begin_table_without_header:
+        if fmt.lineabove == _html_begin_table_without_header: # pylint: disable=comparison-with-callable
             return JupyterHTMLStr(output)
         else:
             return output

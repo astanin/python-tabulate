@@ -455,8 +455,7 @@ disable=raw-checker-failed,
         too-many-branches,
         too-many-boolean-expressions,
         unnecessary-comprehension,
-        too-many-statements,
-        comparison-with-callable
+        too-many-statements
 
 
 # Enable the message, report, category or checker with the given id(s). You can
