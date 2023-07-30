@@ -278,7 +278,9 @@ LATEX_ESCAPE_RULES = {
 }
 
 
-def _latex_row(cell_values, colwidths, colaligns, escrules=LATEX_ESCAPE_RULES):
+def _latex_row(cell_values, colwidths, colaligns, escrules=None):
+    if escrules is None:
+        escrules = LATEX_ESCAPE_RULES
     def escape_char(c):
         return escrules.get(c, c)
 
