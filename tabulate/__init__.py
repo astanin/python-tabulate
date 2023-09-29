@@ -2647,7 +2647,7 @@ class _CustomTextWrap(textwrap.TextWrapper):
             else:  # A single reset code resets everything
                 self._active_codes = []
 
-        # Always ensure each line is color terminted if any colors are
+        # Always ensure each line is color terminated if any colors are
         # still active, otherwise colors will bleed into other cells on the console
         if len(self._active_codes) > 0:
             new_line = new_line + _ansi_color_reset_code
