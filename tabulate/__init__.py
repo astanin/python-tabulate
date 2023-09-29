@@ -2206,7 +2206,7 @@ def tabulate(
         aligns = [colglobalalign] * len(cols)
     else: # default
         aligns = [numalign if ct in [int, float] else stralign for ct in coltypes]
-    # then specific alignements
+    # then specific alignments
     if colalign is not None:
         assert isinstance(colalign, Iterable)
         if isinstance(colalign, str):
@@ -2233,7 +2233,7 @@ def tabulate(
             aligns_headers = [headersglobalalign] * len(t_cols)
         else: # default
             aligns_headers = aligns or [stralign] * len(headers)
-        # then specific header alignements
+        # then specific header alignments
         if headersalign is not None:
             assert isinstance(headersalign, Iterable)
             if isinstance(headersalign, str):
@@ -2512,7 +2512,7 @@ class _CustomTextWrap(textwrap.TextWrapper):
             else:  # A single reset code resets everything
                 self._active_codes = []
 
-        # Always ensure each line is color terminted if any colors are
+        # Always ensure each line is color terminated if any colors are
         # still active, otherwise colors will bleed into other cells on the console
         if len(self._active_codes) > 0:
             new_line = new_line + _ansi_color_reset_code
