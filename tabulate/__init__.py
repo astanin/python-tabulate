@@ -259,7 +259,7 @@ def _asciidoc_row(is_header, *args):
             colwidths, [alignment[colalign] for colalign in colaligns]
         )
         asciidoc_column_specifiers = [
-            f"{width:d}{align}" for width, align in asciidoc_alignments
+            f"{align}{width:d}" for width, align in asciidoc_alignments
         ]
         header_list = ['cols="' + (",".join(asciidoc_column_specifiers)) + '"']
 
