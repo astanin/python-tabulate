@@ -164,7 +164,7 @@ def _html_begin_table_without_header(colwidths_ignore, colaligns_ignore):
 
 def _html_row_with_attrs(celltag, unsafe, cell_values, colwidths, colaligns):
     alignment = {
-        "left": "",
+        "left": ' style="text-align: left;"',
         "right": ' style="text-align: right;"',
         "center": ' style="text-align: center;"',
         "decimal": ' style="text-align: right;"',
@@ -187,7 +187,7 @@ def _html_row_with_attrs(celltag, unsafe, cell_values, colwidths, colaligns):
 
 def _moin_row_with_attrs(celltag, cell_values, colwidths, colaligns, header=""):
     alignment = {
-        "left": "",
+        "left": ' style="text-align: left;"',
         "right": '<style="text-align: right;">',
         "center": '<style="text-align: center;">',
         "decimal": '<style="text-align: right;">',
