@@ -1123,5 +1123,5 @@ Bart Broere, Vilhelm Prytz, Alexander Gažo, Hugo van Kemenade,
 jamescooke, Matt Warner, Jérôme Provensal, Kevin Deldycke,
 Kian-Meng Ang, Kevin Patterson, Shodhan Save, cleoold, KOLANICH,
 Vijaya Krishna Kasula, Furcy Pin, Christian Fibich, Shaun Duncan,
-Dimitri Papadopoulos, Racerroar.
+Dimitri Papadopoulos, Élie Goudout, Racerroar, Phill Zarfos.
 
