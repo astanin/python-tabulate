@@ -48,8 +48,11 @@ def test_tabulate_signature():
         ("missingval", ""),
         ("showindex", "default"),
         ("disable_numparse", False),
+        ("colglobalalign", None),
         ("colalign", None),
         ("maxcolwidths", None),
+        ("headersglobalalign", None),
+        ("headersalign", None),
         ("rowalign", None),
         ("maxheadercolwidths", None),
     ]
