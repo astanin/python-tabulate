@@ -1331,7 +1331,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
     * list of OrderedDicts (usually used with headers="keys")
 
-    * list of dataclasses (Python 3.7+ only, usually used with headers="keys")
+    * list of dataclasses (usually used with headers="keys")
 
     * 2D NumPy arrays
 
@@ -1457,7 +1457,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             and len(rows) > 0
             and dataclasses.is_dataclass(rows[0])
         ):
-            # Python 3.7+'s dataclass
+            # Python's dataclass
             field_names = [field.name for field in dataclasses.fields(rows[0])]
             if headers == "keys":
                 headers = field_names
@@ -1600,7 +1600,7 @@ def tabulate(
     The first required argument (`tabular_data`) can be a
     list-of-lists (or another iterable of iterables), a list of named
     tuples, a dictionary of iterables, an iterable of dictionaries,
-    an iterable of dataclasses (Python 3.7+), a two-dimensional NumPy array,
+    an iterable of dataclasses, a two-dimensional NumPy array,
     NumPy record array, or a Pandas' dataframe.
 
 

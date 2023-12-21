@@ -81,7 +81,7 @@ The following tabular data types are supported:
 -   list of lists or another iterable of iterables
 -   list or another iterable of dicts (keys as columns)
 -   dict of iterables (keys as columns)
--   list of dataclasses (Python 3.7+ only, field names as columns)
+-   list of dataclasses (field names as columns)
 -   two-dimensional NumPy array
 -   NumPy record arrays (names as columns)
 -   pandas.DataFrame
@@ -1074,14 +1074,14 @@ To run tests on all supported Python versions, make sure all Python
 interpreters, `pytest` and `tox` are installed, then run `tox` in the root
 of the project source tree.
 
-On Linux `tox` expects to find executables like `python3.7`, `python3.8` etc.
-On Windows it looks for `C:\Python37\python.exe`, `C:\Python38\python.exe` etc. respectively.
+On Linux `tox` expects to find executables like `python3.11`, `python3.12` etc.
+On Windows it looks for `C:\Python311\python.exe`, `C:\Python312\python.exe` etc. respectively.
 
 One way to install all the required versions of the Python interpreter is to use [pyenv](https://github.com/pyenv/pyenv).
 All versions can then be easily installed with something like:
 
-     pyenv install 3.7.12
-     pyenv install 3.8.12
+     pyenv install 3.11.7
+     pyenv install 3.12.1
      ...
 
 Don't forget to change your `PATH` so that `tox` knows how to find all the installed versions. Something like
@@ -1089,10 +1089,10 @@ Don't forget to change your `PATH` so that `tox` knows how to find all the insta
      export PATH="${PATH}:${HOME}/.pyenv/shims"
 
 To test only some Python environments, use `-e` option. For example, to
-test only against Python 3.7 and Python 3.10, run:
+test only against Python 3.11 and Python 3.12, run:
 
 ```shell
-tox -e py37,py310
+tox -e py311,py312
 ```
 
 in the root of the project source tree.
@@ -1100,7 +1100,7 @@ in the root of the project source tree.
 To enable NumPy and Pandas tests, run:
 
 ```shell
-tox -e py37-extra,py310-extra
+tox -e py311-extra,py312-extra
 ```
 
 (this may take a long time the first time, because NumPy and Pandas will
