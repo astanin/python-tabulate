@@ -522,7 +522,7 @@ def test_py37orlater_list_of_dataclasses_headers():
 
 def test_list_bytes():
     "Input: a list of bytes. (issue #192)"
-    lb = [["你好".encode("utf-8")], ["你好"]]
+    lb = [["你好".encode()], ["你好"]]
     expected = "\n".join(
         ["bytes", "---------------------------", r"b'\xe4\xbd\xa0\xe5\xa5\xbd'", "你好"]
     )

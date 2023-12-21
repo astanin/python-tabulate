@@ -1,7 +1,7 @@
 # update contributors and CHANGELOG in README
 # tag version release
 python3 benchmark.py  # then update README
-tox -e py37-extra,py38-extra,py39-extra,py310-extra
+tox -e py38-extra,py39-extra,py310-extra,py311-extra,py312-extra
 python3 -m build -nswx .
 twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 twine upload dist/*

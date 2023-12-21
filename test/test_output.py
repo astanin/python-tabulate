@@ -2680,60 +2680,72 @@ def test_colalign_multi_with_sep_line():
     expected = "  one  two\n\nthree  four"
     assert_equal(expected, result)
 
+
 def test_column_global_and_specific_alignment():
-    """ Test `colglobalalign` and `"global"` parameter for `colalign`. """
-    table = [[1,2,3,4],[111,222,333,444]]
-    colglobalalign = 'center'
-    colalign = ('global','left', 'right')
+    """Test `colglobalalign` and `"global"` parameter for `colalign`."""
+    table = [[1, 2, 3, 4], [111, 222, 333, 444]]
+    colglobalalign = "center"
+    colalign = ("global", "left", "right")
     result = tabulate(table, colglobalalign=colglobalalign, colalign=colalign)
-    expected = '\n'.join([
-        "---  ---  ---  ---",
-        " 1   2      3   4",
-        "111  222  333  444",
-        "---  ---  ---  ---"])
+    expected = "\n".join(
+        [
+            "---  ---  ---  ---",
+            " 1   2      3   4",
+            "111  222  333  444",
+            "---  ---  ---  ---",
+        ]
+    )
     assert_equal(expected, result)
+
 
 def test_headers_global_and_specific_alignment():
-    """ Test `headersglobalalign` and `headersalign`. """
-    table = [[1,2,3,4,5,6],[111,222,333,444,555,666]]
-    colglobalalign = 'center'
-    colalign = ('left',)
-    headers = ['h', 'e', 'a', 'd', 'e', 'r']
-    headersglobalalign = 'right'
-    headersalign = ('same', 'same', 'left', 'global', 'center')
-    result = tabulate(table, headers=headers, colglobalalign=colglobalalign, colalign=colalign, headersglobalalign=headersglobalalign, headersalign=headersalign)
-    expected = '\n'.join([
-        "h     e   a      d   e     r",
-        "---  ---  ---  ---  ---  ---",
-        "1     2    3    4    5    6",
-        "111  222  333  444  555  666"])
+    """Test `headersglobalalign` and `headersalign`."""
+    table = [[1, 2, 3, 4, 5, 6], [111, 222, 333, 444, 555, 666]]
+    colglobalalign = "center"
+    colalign = ("left",)
+    headers = ["h", "e", "a", "d", "e", "r"]
+    headersglobalalign = "right"
+    headersalign = ("same", "same", "left", "global", "center")
+    result = tabulate(
+        table,
+        headers=headers,
+        colglobalalign=colglobalalign,
+        colalign=colalign,
+        headersglobalalign=headersglobalalign,
+        headersalign=headersalign,
+    )
+    expected = "\n".join(
+        [
+            "h     e   a      d   e     r",
+            "---  ---  ---  ---  ---  ---",
+            "1     2    3    4    5    6",
+            "111  222  333  444  555  666",
+        ]
+    )
     assert_equal(expected, result)
+
 
 def test_colalign_or_headersalign_too_long():
-    """ Test `colalign` and `headersalign` too long. """
-    table = [[1,2],[111,222]]
-    colalign = ('global', 'left', 'center')
-    headers = ['h']
-    headersalign = ('center', 'right', 'same')
-    result = tabulate(table, headers=headers, colalign=colalign, headersalign=headersalign)
-    expected = '\n'.join([
-        "      h",
-        "---  ---",
-        "  1  2",
-        "111  222"])
+    """Test `colalign` and `headersalign` too long."""
+    table = [[1, 2], [111, 222]]
+    colalign = ("global", "left", "center")
+    headers = ["h"]
+    headersalign = ("center", "right", "same")
+    result = tabulate(
+        table, headers=headers, colalign=colalign, headersalign=headersalign
+    )
+    expected = "\n".join(["      h", "---  ---", "  1  2", "111  222"])
     assert_equal(expected, result)
 
+
 def test_warning_when_colalign_or_headersalign_is_string():
-    """ Test user warnings when `colalign` or `headersalign` is a string. """
-    table = [[1,"bar"]]
-    opt = {
-        'colalign': "center",
-        'headers': ['foo', '2'],
-        'headersalign': "center"}
-    check_warnings((tabulate, [table], opt),
-        num = 2,
-        category = UserWarning,
-        contain = "As a string")
+    """Test user warnings when `colalign` or `headersalign` is a string."""
+    table = [[1, "bar"]]
+    opt = {"colalign": "center", "headers": ["foo", "2"], "headersalign": "center"}
+    check_warnings(
+        (tabulate, [table], opt), num=2, category=UserWarning, contain="As a string"
+    )
+
 
 def test_float_conversions():
     "Output: float format parsed"
