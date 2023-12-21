@@ -224,7 +224,7 @@ def _asciidoc_row(is_header, *args):
             colwidths, [alignment[colalign] for colalign in colaligns]
         )
         asciidoc_column_specifiers = [
-            "{:d}{}".format(width, align) for width, align in asciidoc_alignments
+            f"{width:d}{align}" for width, align in asciidoc_alignments
         ]
         header_list = ['cols="' + (",".join(asciidoc_column_specifiers)) + '"']
 
@@ -1297,7 +1297,7 @@ def _prepend_row_index(rows, index):
     if isinstance(index, Sized) and len(index) != len(rows):
         raise ValueError(
             "index must be as long as the number of data rows: "
-            + "len(index)={} len(rows)={}".format(len(index), len(rows))
+            + f"len(index)={len(index)} len(rows)={len(rows)}"
         )
     sans_rows, separating_lines = _remove_separating_lines(rows)
     new_rows = []
