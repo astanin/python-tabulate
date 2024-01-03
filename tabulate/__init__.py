@@ -2207,7 +2207,7 @@ def tabulate(
     else: # default
         aligns = [numalign if ct in [int, float] else stralign for ct in coltypes]
     # then specific alignements
-    if colalign is not None:
+    if colalign is not None and aligns:
         assert isinstance(colalign, Iterable)
         if isinstance(colalign, str):
             warnings.warn(f"As a string, `colalign` is interpreted as {[c for c in colalign]}. Did you mean `colglobalalign = \"{colalign}\"` or `colalign = (\"{colalign}\",)`?", stacklevel=2)
