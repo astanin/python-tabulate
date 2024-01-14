@@ -2540,16 +2540,19 @@ class _CustomTextWrap(textwrap.TextWrapper):
             # take each charcter's width into account
             chunk = reversed_chunks[-1]
             i = 1
+            # Only count printable characters, so strip_ansi first, index later.
             while len(_strip_ansi(chunk)[:i]) <= space_left:
                 i = i + 1
             # Consider escape codes when breaking words up
             total_escape_len = 0
+            last_group = 0
             if _ansi_codes.search(chunk) is not None:
                 for group, _, _, _ in _ansi_codes.findall(chunk):
                     escape_len = len(group)
-                    # FIXME: Needs to keep track of found groups and search from there
-                    if group in chunk[: i  + total_escape_len + escape_len - 1]:
+                    if group in chunk[last_group: i + total_escape_len + escape_len - 1]:
                         total_escape_len += escape_len
+                        found = _ansi_codes.search(chunk[last_group:])
+                        last_group += found.end()
             cur_line.append(chunk[: i  + total_escape_len - 1])
             reversed_chunks[-1] = chunk[i + total_escape_len - 1 :]
 

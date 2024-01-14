@@ -177,22 +177,22 @@ def test_wrap_color_line_longword():
 
 
 def test_wrap_color_line_multiple_escapes():
-    data = '012345(\x1b[32ma\x1b[0mbc\x1b[32mdefghij\x1b[0m)'
+    data = "012345(\x1b[32ma\x1b[0mbc\x1b[32mdefghij\x1b[0m)"
     expected = [
-        "012345(\x1b[32ma\x1b[0mbc\x1b[32mdefg\x1b[0m",
-        "\x1b[32mhij\x1b[0m)",
+        "012345(\x1b[32ma\x1b[0mbc\x1b[32m\x1b[0m",
+        "\x1b[32mdefghij\x1b[0m)",
     ]
     wrapper = CTW(width=10)
     result = wrapper.wrap(data)
     assert_equal(expected, result)
+
     clean_data = _strip_ansi(data)
     for width in range(2, len(clean_data)):
-        # Currently fails with 14, 15 and 16, because a escape code gets split at the end
         wrapper = CTW(width=width)
         result = wrapper.wrap(data)
-        # print(width, result)
         # Comparing after stripping ANSI should be enough to catch broken escape codes
         assert_equal(clean_data, _strip_ansi("".join(result)))
+
 
 def test_wrap_datetime():
     """TextWrapper: Show that datetimes can be wrapped without crashing"""
