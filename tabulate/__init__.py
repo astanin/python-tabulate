@@ -2424,13 +2424,14 @@ def _format_table(fmt, headers, headersaligns, rows, colwidths, colaligns, is_mu
         if fmt.linebelowheader and "linebelowheader" not in hidden:
             _append_line(lines, padded_widths, colaligns, fmt.linebelowheader)
 
-    if padded_rows and fmt.linebetweenrows and "linebetweenrows" not in hidden:
+    if padded_rows:
         # initial rows with a line below
         for row, ralign in zip(padded_rows[:-1], rowaligns):
             append_row(
                 lines, row, padded_widths, colaligns, fmt.datarow, rowalign=ralign
             )
-            _append_line(lines, padded_widths, colaligns, fmt.linebetweenrows)
+            if fmt.linebetweenrows and "linebetweenrows" not in hidden:
+                _append_line(lines, padded_widths, colaligns, fmt.linebetweenrows)
         # the last row without a line below
         append_row(
             lines,
@@ -2440,21 +2441,7 @@ def _format_table(fmt, headers, headersaligns, rows, colwidths, colaligns, is_mu
             fmt.datarow,
             rowalign=rowaligns[-1],
         )
-    else:
-        separating_line = (
-            fmt.linebetweenrows
-            or fmt.linebelowheader
-            or fmt.linebelow
-            or fmt.lineabove
-            or Line("", "", "", "")
-        )
-        for row in padded_rows:
-            # test to see if either the 1st column or the 2nd column (account for showindex) has
-            # the SEPARATING_LINE flag
-            if _is_separating_line(row):
-                _append_line(lines, padded_widths, colaligns, separating_line)
-            else:
-                append_row(lines, row, padded_widths, colaligns, fmt.datarow)
+
 
     if fmt.linebelow and "linebelow" not in hidden:
         _append_line(lines, padded_widths, colaligns, fmt.linebelow)
@@ -2540,10 +2527,21 @@ class _CustomTextWrap(textwrap.TextWrapper):
             # take each charcter's width into account
             chunk = reversed_chunks[-1]
             i = 1
-            while self._len(chunk[:i]) <= space_left:
+            # Only count printable characters, so strip_ansi first, index later.
+            while len(_strip_ansi(chunk)[:i]) <= space_left:
                 i = i + 1
-            cur_line.append(chunk[: i - 1])
-            reversed_chunks[-1] = chunk[i - 1 :]
+            # Consider escape codes when breaking words up
+            total_escape_len = 0
+            last_group = 0
+            if _ansi_codes.search(chunk) is not None:
+                for group, _, _, _ in _ansi_codes.findall(chunk):
+                    escape_len = len(group)
+                    if group in chunk[last_group: i + total_escape_len + escape_len - 1]:
+                        total_escape_len += escape_len
+                        found = _ansi_codes.search(chunk[last_group:])
+                        last_group += found.end()
+            cur_line.append(chunk[: i  + total_escape_len - 1])
+            reversed_chunks[-1] = chunk[i + total_escape_len - 1 :]
 
         # Otherwise, we have to preserve the long word intact.  Only add
         # it to the current line if there's nothing already there --
