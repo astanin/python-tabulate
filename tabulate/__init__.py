@@ -1,5 +1,6 @@
 """Pretty-print tabular data."""
 
+import warnings
 from collections import namedtuple
 from collections.abc import Iterable, Sized
 from html import escape as htmlescape
@@ -1318,7 +1319,7 @@ def _bool(val):
 
 
 def _normalize_tabular_data(tabular_data, headers, showindex="default"):
-    """Transform a supported data type to a list of lists, and a list of headers.
+    """Transform a supported data type to a list of lists, and a list of headers, with headers padding.
 
     Supported tabular data types:
 
@@ -1498,13 +1499,12 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         pass
 
     # pad with empty headers for initial columns if necessary
+    headers_pad = 0
     if headers and len(rows) > 0:
-        nhs = len(headers)
-        ncols = len(rows[0])
-        if nhs < ncols:
-            headers = [""] * (ncols - nhs) + headers
+        headers_pad = max(0, len(rows[0]) - len(headers))
+        headers = [""] * headers_pad + headers
 
-    return rows, headers
+    return rows, headers, headers_pad
 
 
 def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True):
@@ -1580,8 +1580,11 @@ def tabulate(
     missingval=_DEFAULT_MISSINGVAL,
     showindex="default",
     disable_numparse=False,
+    colglobalalign=None,
     colalign=None,
     maxcolwidths=None,
+    headersglobalalign=None,
+    headersalign=None,
     rowalign=None,
     maxheadercolwidths=None,
 ):
@@ -1636,8 +1639,8 @@ def tabulate(
     -  -  --
 
 
-    Column alignment
-    ----------------
+    Column and Headers alignment
+    ----------------------------
 
     `tabulate` tries to detect column types automatically, and aligns
     the values properly. By default it aligns decimal points of the
@@ -1646,6 +1649,23 @@ def tabulate(
     (`numalign`, `stralign`) are: "right", "center", "left", "decimal"
     (only for `numalign`), and None (to disable alignment).
 
+    `colglobalalign` allows for global alignment of columns, before any
+        specific override from `colalign`. Possible values are: None
+        (defaults according to coltype), "right", "center", "decimal",
+        "left".
+    `colalign` allows for column-wise override starting from left-most
+        column. Possible values are: "global" (no override), "right",
+        "center", "decimal", "left".
+    `headersglobalalign` allows for global headers alignment, before any
+        specific override from `headersalign`. Possible values are: None
+        (follow columns alignment), "right", "center", "left".
+    `headersalign` allows for header-wise override starting from left-most
+        given header. Possible values are: "global" (no override), "same"
+        (follow column alignment), "right", "center", "left".
+
+    Note on intended behaviour: If there is no `tabular_data`, any column
+        alignment argument is ignored. Hence, in this case, header
+        alignment cannot be inferred from column alignment.
 
     Table formats
     -------------
@@ -2065,7 +2085,7 @@ def tabulate(
     if tabular_data is None:
         tabular_data = []
 
-    list_of_lists, headers = _normalize_tabular_data(
+    list_of_lists, headers, headers_pad = _normalize_tabular_data(
         tabular_data, headers, showindex=showindex
     )
     list_of_lists, separating_lines = _remove_separating_lines(list_of_lists)
@@ -2181,11 +2201,21 @@ def tabulate(
     ]
 
     # align columns
-    aligns = [numalign if ct in [int, float] else stralign for ct in coltypes]
+    # first set global alignment
+    if colglobalalign is not None: # if global alignment provided
+        aligns = [colglobalalign] * len(cols)
+    else: # default
+        aligns = [numalign if ct in [int, float] else stralign for ct in coltypes]
+    # then specific alignements
     if colalign is not None:
         assert isinstance(colalign, Iterable)
+        if isinstance(colalign, str):
+            warnings.warn(f"As a string, `colalign` is interpreted as {[c for c in colalign]}. Did you mean `colglobalalign = \"{colalign}\"` or `colalign = (\"{colalign}\",)`?", stacklevel=2)
         for idx, align in enumerate(colalign):
-            aligns[idx] = align
+            if not idx < len(aligns):
+                break
+            elif align != "global":
+                aligns[idx] = align
     minwidths = (
         [width_fn(h) + min_padding for h in headers] if headers else [0] * len(cols)
     )
@@ -2194,17 +2224,35 @@ def tabulate(
         for c, a, minw in zip(cols, aligns, minwidths)
     ]
 
+    aligns_headers = None
     if headers:
         # align headers and add headers
         t_cols = cols or [[""]] * len(headers)
-        t_aligns = aligns or [stralign] * len(headers)
+        # first set global alignment
+        if headersglobalalign is not None: # if global alignment provided
+            aligns_headers = [headersglobalalign] * len(t_cols)
+        else: # default
+            aligns_headers = aligns or [stralign] * len(headers)
+        # then specific header alignements
+        if headersalign is not None:
+            assert isinstance(headersalign, Iterable)
+            if isinstance(headersalign, str):
+                warnings.warn(f"As a string, `headersalign` is interpreted as {[c for c in headersalign]}. Did you mean `headersglobalalign = \"{headersalign}\"` or `headersalign = (\"{headersalign}\",)`?", stacklevel=2)
+            for idx, align in enumerate(headersalign):
+                hidx = headers_pad + idx
+                if not hidx < len(aligns_headers):
+                    break
+                elif align == "same" and hidx < len(aligns): # same as column align
+                    aligns_headers[hidx] = aligns[hidx]
+                elif align != "global":
+                    aligns_headers[hidx] = align
         minwidths = [
             max(minw, max(width_fn(cl) for cl in c))
             for minw, c in zip(minwidths, t_cols)
         ]
         headers = [
             _align_header(h, a, minw, width_fn(h), is_multiline, width_fn)
-            for h, a, minw in zip(headers, t_aligns, minwidths)
+            for h, a, minw in zip(headers, aligns_headers, minwidths)
         ]
         rows = list(zip(*cols))
     else:
@@ -2219,7 +2267,7 @@ def tabulate(
     _reinsert_separating_lines(rows, separating_lines)
 
     return _format_table(
-        tablefmt, headers, rows, minwidths, aligns, is_multiline, rowaligns=rowaligns
+        tablefmt, headers, aligns_headers, rows, minwidths, aligns, is_multiline, rowaligns=rowaligns
     )
 
 
@@ -2350,7 +2398,7 @@ class JupyterHTMLStr(str):
         return self
 
 
-def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline, rowaligns):
+def _format_table(fmt, headers, headersaligns, rows, colwidths, colaligns, is_multiline, rowaligns):
     """Produce a plain-text representation of the table."""
     lines = []
     hidden = fmt.with_header_hide if (headers and fmt.with_header_hide) else []
@@ -2372,7 +2420,7 @@ def _format_table(fmt, headers, rows, colwidths, colaligns, is_multiline, rowali
         _append_line(lines, padded_widths, colaligns, fmt.lineabove)
 
     if padded_headers:
-        append_row(lines, padded_headers, padded_widths, colaligns, headerrow)
+        append_row(lines, padded_headers, padded_widths, headersaligns, headerrow)
         if fmt.linebelowheader and "linebelowheader" not in hidden:
             _append_line(lines, padded_widths, colaligns, fmt.linebelowheader)
 
