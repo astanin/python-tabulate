@@ -528,3 +528,59 @@ def test_list_bytes():
     )
     result = tabulate(lb, headers=["bytes"])
     assert_equal(expected, result)
+
+
+def test_pydantic_model_keys():
+    "Input: a Pydantic BaseModel with keys as headers."
+    try:
+        import pydantic
+
+        class Person(pydantic.BaseModel):
+            name: str
+            age: int
+            height: float
+
+        ld = [
+            Person(name="Alice", age=23, height=169.5),
+            Person(name="Bob", age=27, height=175.0),
+        ]
+        result = tabulate(ld, headers="keys")
+        expected = "\n".join(
+            [
+                "name      age    height",
+                "------  -----  --------",
+                "Alice      23     169.5",
+                "Bob        27     175",
+            ]
+        )
+        assert_equal(expected, result)
+    except ImportError:
+        skip("test_pydantic_model_keys is skipped")
+
+
+def test_pydantic_model_headers():
+    "Input: a Pydantic BaseModel with keys as headers."
+    try:
+        import pydantic
+
+        class Person(pydantic.BaseModel):
+            name: str
+            age: int
+            height: float
+
+        ld = [
+            Person(name="Alice", age=23, height=169.5),
+            Person(name="Bob", age=27, height=175.0),
+        ]
+        result = tabulate(ld, headers=["person", "years", "cm"])
+        expected = "\n".join(
+            [
+                "person      years     cm",
+                "--------  -------  -----",
+                "Alice          23  169.5",
+                "Bob            27  175",
+            ]
+        )
+        assert_equal(expected, result)
+    except ImportError:
+        skip("test_pydantic_model_headers is skipped")

@@ -1463,6 +1463,17 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
                 headers = field_names
             rows = [[getattr(row, f) for f in field_names] for row in rows]
 
+        elif (
+            len(rows) > 0
+            and hasattr(rows[0], "__pydantic_core_schema__")
+        ):
+            # Pydantic Model requires private `__pydantic_core_schema__`
+            # `model_fields_set` changes the order so use `model_fields.keys()`
+            field_names = getattr(rows[0], "model_fields").keys()
+            if headers == "keys":
+                headers = field_names
+            rows = [[getattr(row, f) for f in field_names] for row in rows]
+
         elif headers == "keys" and len(rows) > 0:
             # keys are column indices
             headers = list(map(str, range(len(rows[0]))))
