@@ -184,3 +184,27 @@ def test_wrap_datetime():
     ]
     expected = "\n".join(expected)
     assert_equal(expected, result)
+
+
+def test_wrap_none_value():
+    """TextWrapper: Show that None can be wrapped without crashing"""
+    data = [
+        ["First Entry", None],
+        ["Second Entry", None]
+    ]
+    headers = ["Title", "Value"]
+    result = tabulate(data, headers=headers, tablefmt="grid", maxcolwidths=[7, 5])
+
+    expected = [
+        "+---------+---------+",
+        "| Title   | Value   |",
+        "+=========+=========+",
+        "| First   |         |",
+        "| Entry   |         |",
+        "+---------+---------+",
+        "| Second  |         |",
+        "| Entry   |         |",
+        "+---------+---------+",
+    ]
+    expected = "\n".join(expected)
+    assert_equal(expected, result)
