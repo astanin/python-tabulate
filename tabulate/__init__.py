@@ -1529,7 +1529,7 @@ def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True):
                 # Any future custom formatting of types (such as datetimes)
                 # may need to be more explicit than just `str` of the object
                 casted_cell = (
-                    str(cell) if _isnumber(cell) else _type(cell, numparse)(cell)
+                    '' if cell is None else str(cell) if _isnumber(cell) else _type(cell, numparse)(cell)
                 )
                 wrapped = [
                     "\n".join(wrapper.wrap(line))
