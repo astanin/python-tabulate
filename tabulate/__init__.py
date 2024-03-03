@@ -331,6 +331,10 @@ _table_formats = {
         with_header_hide=["lineabove", "linebelow"],
     ),
     "plain": TableFormat(),
+    "flow": TableFormat(
+        align_columns=False,
+        elide_empty_columns=True,
+    ),
     "grid": TableFormat(
         lineabove=Line("+", "-", "+", "+"),
         linebelowheader=Line("+", "=", "+", "+"),
@@ -1638,6 +1642,14 @@ def tabulate(
     spam   41.9999
     eggs  451
     ----  --------
+
+    "flow" applies no formatting and outputs each column stripped of
+    leading and trailing whitespace only putting whitespace between
+    non-empty columns.
+
+    >>> print(tabulate([["spam", "  ", 41.9999], ["eggs", "a", "451.0"]], tablefmt="flow"))
+    spam 41.9999
+    eggs a 451
 
     "grid" is similar to tables produced by Emacs table.el package or
     Pandoc grid_tables:
