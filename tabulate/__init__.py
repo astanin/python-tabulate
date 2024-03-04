@@ -98,6 +98,7 @@ TableFormat = namedtuple(
         "datarow",
         "padding",
         "align_columns",
+        "elide_empty_columns",
         "with_header_hide",
     ], defaults = (
         None,
@@ -108,6 +109,7 @@ TableFormat = namedtuple(
         DataRow("", "  ", ""),
         0,
         True,
+        False,
         None,
     ),
 )
@@ -2318,6 +2320,14 @@ def _format_table(fmt, headers, headersaligns, rows, colwidths, colaligns, is_mu
     hidden = fmt.with_header_hide if (headers and fmt.with_header_hide) else []
     pad = fmt.padding
     headerrow = fmt.headerrow
+
+    if fmt.elide_empty_columns:
+        def elim_zero_len(row):
+            return list(zip(*filter(lambda x: x[0], zip(colwidths, row))))[1]
+
+        if len(headers):
+            headers = elim_zero_len(headers)
+        rows = [elim_zero_len(row) for row in rows]
 
     padded_widths = [(w + 2 * pad) for w in colwidths]
     if is_multiline:
