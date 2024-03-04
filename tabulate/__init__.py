@@ -97,6 +97,7 @@ TableFormat = namedtuple(
         "headerrow",
         "datarow",
         "padding",
+        "align_columns",
         "with_header_hide",
     ], defaults = (
         None,
@@ -106,6 +107,7 @@ TableFormat = namedtuple(
         DataRow("", "  ", ""),
         DataRow("", "  ", ""),
         0,
+        True,
         None,
     ),
 )
@@ -532,6 +534,7 @@ _table_formats = {
         headerrow=partial(_html_row_with_attrs, "th", False),
         datarow=partial(_html_row_with_attrs, "td", False),
         with_header_hide=["lineabove"],
+        align_columns=False,
     ),
     "unsafehtml": TableFormat(
         lineabove=_html_begin_table_without_header,
@@ -540,6 +543,7 @@ _table_formats = {
         headerrow=partial(_html_row_with_attrs, "th", True),
         datarow=partial(_html_row_with_attrs, "td", True),
         with_header_hide=["lineabove"],
+        align_columns=False,
     ),
     "latex": TableFormat(
         lineabove=_latex_line_begin_tabular,
@@ -2076,6 +2080,9 @@ def tabulate(
         is_multiline = False
     width_fn = _choose_width_fn(has_invisible, enable_widechars, is_multiline)
 
+    if not isinstance(tablefmt, TableFormat):
+        tablefmt = _table_formats.get(tablefmt, _table_formats["simple"])
+
     # format rows and columns, convert numeric values to strings
     cols = list(izip_longest(*list_of_lists))
     numparses = _expand_numparse(disable_numparse, len(cols))
@@ -2128,10 +2135,11 @@ def tabulate(
     minwidths = (
         [width_fn(h) + min_padding for h in headers] if headers else [0] * len(cols)
     )
-    cols = [
-        _align_column(c, a, minw, has_invisible, enable_widechars, is_multiline)
-        for c, a, minw in zip(cols, aligns, minwidths)
-    ]
+    if tablefmt.align_columns:
+        cols = [
+            _align_column(c, a, minw, has_invisible, enable_widechars, is_multiline)
+            for c, a, minw in zip(cols, aligns, minwidths)
+        ]
 
     aligns_headers = None
     if headers:
@@ -2167,9 +2175,6 @@ def tabulate(
     else:
         minwidths = [max(width_fn(cl) for cl in c) for c in cols]
         rows = list(zip(*cols))
-
-    if not isinstance(tablefmt, TableFormat):
-        tablefmt = _table_formats.get(tablefmt, _table_formats["simple"])
 
     ra_default = rowalign if isinstance(rowalign, str) else None
     rowaligns = _expand_iterable(rowalign, len(rows), ra_default)
