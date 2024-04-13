@@ -1229,6 +1229,8 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
     if valtype is str:
         return f"{val}"
     elif valtype is int:
+        if isinstance(val, str):
+            intfmt = ""
         return format(val, intfmt)
     elif valtype is bytes:
         try:
