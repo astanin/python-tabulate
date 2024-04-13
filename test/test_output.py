@@ -2657,20 +2657,20 @@ def test_intfmt_with_string_with_floats():
 def test_intfmt_with_colors():
     "Regression: Align ANSI-colored values as if they were colorless."
     colortable = [
-        ("abcd", 42, "\x1b[31m42\x1b[0m"),
-        ("elfy", 1010, "\x1b[32m1010\x1b[0m"),
+        ("\x1b[33mabc\x1b[0m", 42, "\x1b[31m42\x1b[0m"),
+        ("\x1b[35mdef\x1b[0m", 987654321, "\x1b[32m987654321\x1b[0m"),
     ]
     colorheaders = ("test", "\x1b[34mtest\x1b[0m", "test")
     formatted = tabulate(colortable, colorheaders, "grid", intfmt=",")
     expected = "\n".join(
         [
-            "+--------+--------+--------+",
-            "| test   |   \x1b[34mtest\x1b[0m |   test |",
-            "+========+========+========+",
-            "| abcd   |     42 |     \x1b[31m42\x1b[0m |",
-            "+--------+--------+--------+",
-            "| elfy   |  1,010 |   \x1b[32m1010\x1b[0m |",
-            "+--------+--------+--------+",
+            "+--------+-------------+-------------+",
+            "| test   |        \x1b[34mtest\x1b[0m |        test |",
+            "+========+=============+=============+",
+            "| \x1b[33mabc\x1b[0m    |          42 |          \x1b[31m42\x1b[0m |",
+            "+--------+-------------+-------------+",
+            "| \x1b[35mdef\x1b[0m    | 987,654,321 | \x1b[32m987,654,321\x1b[0m |",
+            "+--------+-------------+-------------+",
         ]
     )
     print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
