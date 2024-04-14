@@ -1,5 +1,5 @@
 """Test output of the various forms of tabular data."""
-import pytest
+from pytest import mark
 
 import tabulate as tabulate_module
 from common import assert_equal, raises, skip, check_warnings
@@ -2646,7 +2646,7 @@ def test_intfmt_with_string_as_integer():
     assert_equal(expected, result)
 
 
-@pytest.mark.skip(reason="It detects all values as floats but there are strings and integers.")
+@mark.skip(reason="It detects all values as floats but there are strings and integers.")
 def test_intfmt_with_string_with_floats():
     "Output: integer format"
     result = tabulate([[82000.38], ["1500.47"], ["2463"], [92165]], intfmt=",", tablefmt="plain")
