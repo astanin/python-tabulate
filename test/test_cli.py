@@ -77,15 +77,7 @@ def sample_input(sep=" ", with_headers=False):
 
 
 def run_and_capture_stdout(cmd, input=None):
-    x = subprocess.Popen(
-        cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
-    input_buf = input.encode() if input else None
-    out, err = x.communicate(input=input_buf)
-    out = out.decode("utf-8")
-    if x.returncode != 0:
-        raise OSError(err)
-    return out
+    return subprocess.run(cmd, input=input, check=True, capture_output=True, encoding='utf-8').stdout
 
 
 class TemporaryTextFile:
