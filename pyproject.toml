@@ -28,6 +28,12 @@ Homepage = "https://github.com/astanin/python-tabulate"
 
 [project.optional-dependencies]
 widechars = ["wcwidth"]
+test = [
+    "pytest",
+    "numpy",
+    "pandas",
+    "wcwidth",
+]
 
 [project.scripts]
 tabulate = "tabulate:_main"
@@ -37,3 +43,7 @@ packages = ["tabulate"]
 
 [tool.setuptools_scm]
 write_to = "tabulate/version.py"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["tests"]
