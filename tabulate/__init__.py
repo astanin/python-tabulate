@@ -99,6 +99,7 @@ class TableFormat:
                  numalign="decimal",
                  stralign="left",
                  multiline=True,
+                 escape_first_column=None,
                  ):
         # tuple fields
         self.lineabove = lineabove
@@ -116,6 +117,7 @@ class TableFormat:
         self.numalign = numalign
         self.stralign = stralign
         self.multiline = multiline
+        self.escape_first_column = escape_first_column
 
 
 def _is_separating_line(row):
@@ -306,10 +308,10 @@ def _latex_row(cell_values, colwidths, colaligns, escrules=LATEX_ESCAPE_RULES):
     return _build_simple_row(escaped_values, rowfmt)
 
 
-def _rst_escape_first_column(rows, headers):
+def _rst_escape_first_column(rows, headers, escape_value='..'):
     def escape_empty(val):
         if isinstance(val, (str, bytes)) and not val.strip():
-            return ".."
+            return escape_value
         else:
             return val
 
@@ -570,6 +572,7 @@ _table_formats = {
         datarow=DataRow("", "  ", ""),
         padding=0,
         with_header_hide=None,
+        escape_first_column='..',
     ),
     "mediawiki": TableFormat(
         lineabove=Line(
@@ -2157,8 +2160,8 @@ def tabulate(
 
     # empty values in the first column of RST tables should be escaped (issue #82)
     # "" should be escaped as "\\ " or ".."
-    if tablefmt == "rst":
-        list_of_lists, headers = _rst_escape_first_column(list_of_lists, headers)
+    if tablefmt.escape_first_column is not None:
+        list_of_lists, headers = _rst_escape_first_column(list_of_lists, headers, tablefmt.escape_first_column)
 
     disable_numparse = tablefmt.disable_numparse if tablefmt.disable_numparse is not None else disable_numparse
     numalign = tablefmt.numalign if numalign == _DEFAULT_ALIGN else numalign
