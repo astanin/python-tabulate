@@ -1,13 +1,9 @@
 """Test support of the various forms of tabular data."""
 
 from tabulate import tabulate
-from common import assert_in, raises, skip
+from common import raises, skip
 
-try:
-    from collections import UserDict
-except ImportError:
-    # Python2
-    from UserDict import UserDict
+from collections import UserDict
 
 
 def test_iterable_of_iterables():
@@ -103,8 +99,7 @@ def test_dict_like():
         ["  b    a", "---  ---", "101    0", "102    1", "103    2", "104"]
     )
     result = tabulate(dd, "keys")
-    print("Keys' order: %s" % dd.keys())
-    assert_in(result, [expected1, expected2])
+    assert result in [expected1, expected2]
 
 
 def test_numpy_2d():
@@ -377,7 +372,7 @@ def test_list_of_dicts():
     expected1 = "\n".join(["-  -", "1  2", "3  4", "-  -"])
     expected2 = "\n".join(["-  -", "2  1", "4  3", "-  -"])
     result = tabulate(lod)
-    assert_in(result, [expected1, expected2])
+    assert result in [expected1, expected2]
 
 
 def test_list_of_userdicts():
@@ -386,7 +381,7 @@ def test_list_of_userdicts():
     expected1 = "\n".join(["-  -", "1  2", "3  4", "-  -"])
     expected2 = "\n".join(["-  -", "2  1", "4  3", "-  -"])
     result = tabulate(lod)
-    assert_in(result, [expected1, expected2])
+    assert result in [expected1, expected2]
 
 
 def test_list_of_dicts_keys():
@@ -399,7 +394,7 @@ def test_list_of_dicts_keys():
         ["  bar    foo", "-----  -----", "    2      1", "    4      3"]
     )
     result = tabulate(lod, headers="keys")
-    assert_in(result, [expected1, expected2])
+    assert result in [expected1, expected2]
 
 
 def test_list_of_userdicts_keys():
@@ -412,7 +407,7 @@ def test_list_of_userdicts_keys():
         ["  bar    foo", "-----  -----", "    2      1", "    4      3"]
     )
     result = tabulate(lod, headers="keys")
-    assert_in(result, [expected1, expected2])
+    assert result in [expected1, expected2]
 
 
 def test_list_of_dicts_with_missing_keys():
@@ -442,7 +437,7 @@ def test_list_of_dicts_firstrow():
         ["  BAR    FOO    baz", "-----  -----  -----", "    4      3      5"]
     )
     result = tabulate(lod, headers="firstrow")
-    assert_in(result, [expected1, expected2])
+    assert result in [expected1, expected2]
 
 
 def test_list_of_dicts_with_dict_of_headers():
@@ -456,7 +451,7 @@ def test_list_of_dicts_with_dict_of_headers():
         ["LETTERS      DIGITS", "---------  --------", "ABCDE         12345"]
     )
     result = tabulate(table, headers=headers)
-    assert_in(result, [expected1, expected2])
+    assert result in [expected1, expected2]
 
 
 def test_list_of_dicts_with_list_of_headers():

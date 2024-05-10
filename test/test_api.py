@@ -14,9 +14,8 @@ except ImportError:
 
 
 def test_tabulate_formats():
-    "API: tabulate_formats is a list of strings" ""
+    "API: tabulate_formats is a list of strings"
     supported = tabulate_formats
-    print("tabulate_formats = %r" % supported)
     assert type(supported) is list
     for fmt in supported:
         assert type(fmt) is str  # noqa
@@ -26,7 +25,6 @@ def _check_signature(function, expected_sig):
     if not signature:
         skip("")
     actual_sig = signature(function)
-    print(f"expected: {expected_sig}\nactual: {str(actual_sig)}\n")
 
     assert len(actual_sig.parameters) == len(expected_sig)
 
