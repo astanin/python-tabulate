@@ -25,15 +25,12 @@ def _check_signature(function, expected_sig):
     if not signature:
         skip("")
     actual_sig = signature(function)
-
-    assert len(actual_sig.parameters) == len(expected_sig)
-
-    for (e, ev), (a, av) in zip(expected_sig, actual_sig.parameters.items()):
-        assert e == a and ev == av.default
+    actual_sig = [(k, v.default) for k, v in actual_sig.parameters.items()]
+    assert actual_sig == expected_sig
 
 
 def test_tabulate_signature():
-    "API: tabulate() type signature is unchanged" ""
+    "API: tabulate() type signature is unchanged"
     assert type(tabulate) is type(lambda: None)  # noqa
     expected_sig = [
         ("tabular_data", _empty),
@@ -58,7 +55,10 @@ def test_tabulate_signature():
 
 
 def test_simple_separated_format_signature():
-    "API: simple_separated_format() type signature is unchanged" ""
+    "API: simple_separated_format() type signature is unchanged"
     assert type(simple_separated_format) is type(lambda: None)  # noqa
-    expected_sig = [("separator", _empty)]
+    expected_sig = [
+        ("separator", _empty),
+        ("kwargs", _empty),
+    ]
     _check_signature(simple_separated_format, expected_sig)

@@ -813,7 +813,7 @@ _float_with_thousands_separators = re.compile(
 )
 
 
-def simple_separated_format(separator):
+def simple_separated_format(separator, **kwargs):
     """Construct a simple TableFormat with columns separated by a separator.
 
     >>> tsv = simple_separated_format("\\t") ; \
@@ -830,6 +830,7 @@ def simple_separated_format(separator):
         datarow=DataRow("", separator, ""),
         padding=0,
         with_header_hide=None,
+        **kwargs
     )
 
 

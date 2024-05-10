@@ -1,4 +1,5 @@
 """Test output of the various forms of tabular data."""
+import textwrap
 
 import tabulate as tabulate_module
 from common import raises, skip, check_warnings
@@ -240,6 +241,25 @@ def test_simple():
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="simple")
     assert expected == result
+
+
+def test_simple_with_zero_padding():
+    """ Output custom simple table built with a new column separator """
+    expected = textwrap.dedent("""\
+        strings numbers
+        eggs        451""")
+    result = tabulate([_test_table[-1]], _test_table_headers, tablefmt=simple_separated_format(" ", min_padding=0))
+    assert result == expected
+
+
+def test_simple_with_zero_padding_and_alignment():
+    """ Output custom simple table built with a new column separator """
+    expected = textwrap.dedent("""\
+        strings  numbers
+        spam     41.9999
+        eggs    451""")
+    result = tabulate(_test_table, _test_table_headers, tablefmt=simple_separated_format(" ", min_padding=0))
+    assert result == expected
 
 
 def test_simple_with_sep_line():
