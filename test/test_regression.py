@@ -1,7 +1,7 @@
 """Regression tests."""
 
 from tabulate import tabulate, TableFormat, Line, DataRow
-from common import assert_equal, skip
+from common import skip
 
 
 def test_ansi_color_in_table_cells():
@@ -17,7 +17,7 @@ def test_ansi_color_in_table_cells():
         ]
     )
     print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
-    assert_equal(expected, formatted)
+    assert expected == formatted
 
 
 def test_alignment_of_colored_cells():
@@ -40,7 +40,7 @@ def test_alignment_of_colored_cells():
         ]
     )
     print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
-    assert_equal(expected, formatted)
+    assert expected == formatted
 
 
 def test_alignment_of_link_cells():
@@ -63,7 +63,7 @@ def test_alignment_of_link_cells():
         ]
     )
     print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
-    assert_equal(expected, formatted)
+    assert expected == formatted
 
 
 def test_alignment_of_link_text_cells():
@@ -86,7 +86,7 @@ def test_alignment_of_link_text_cells():
         ]
     )
     print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
-    assert_equal(expected, formatted)
+    assert expected == formatted
 
 
 def test_iter_of_iters_with_headers():
@@ -113,7 +113,7 @@ def test_iter_of_iters_with_headers():
         ]
     )
     print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
-    assert_equal(expected, formatted)
+    assert expected == formatted
 
 
 def test_datetime_values():
@@ -132,7 +132,7 @@ def test_datetime_values():
         ]
     )
     print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
-    assert_equal(expected, formatted)
+    assert expected == formatted
 
 
 def test_simple_separated_format():
@@ -143,7 +143,7 @@ def test_simple_separated_format():
     expected = "spam!eggs"
     formatted = tabulate([["spam", "eggs"]], tablefmt=fmt)
     print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
-    assert_equal(expected, formatted)
+    assert expected == formatted
 
 
 def test_simple_separated_format_with_headers():
@@ -154,7 +154,7 @@ def test_simple_separated_format_with_headers():
     formatted = tabulate(
         [[1, 2]], headers=["a", "b"], tablefmt=simple_separated_format("|")
     )
-    assert_equal(expected, formatted)
+    assert expected == formatted
 
 
 def test_column_type_of_bytestring_columns():
@@ -163,14 +163,14 @@ def test_column_type_of_bytestring_columns():
 
     result = _column_type([b"foo", b"bar"])
     expected = bytes
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_numeric_column_headers():
     "Regression: numbers as column headers (issue #22)"
     result = tabulate([[1], [2]], [42])
     expected = "  42\n----\n   1\n   2"
-    assert_equal(expected, result)
+    assert expected == result
 
     lod = [{p: i for p in range(5)} for i in range(5)]
     result = tabulate(lod, "keys")
@@ -185,7 +185,7 @@ def test_numeric_column_headers():
             "  4    4    4    4    4",
         ]
     )
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_88_256_ANSI_color_codes():
@@ -201,7 +201,7 @@ def test_88_256_ANSI_color_codes():
         ]
     )
     print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
-    assert_equal(expected, formatted)
+    assert expected == formatted
 
 
 def test_column_with_mixed_value_types():
@@ -209,7 +209,7 @@ def test_column_with_mixed_value_types():
     expected = "\n".join(["-----", "", "a", "я", "0", "False", "-----"])
     data = [[None], ["a"], ["\u044f"], [0], [False]]
     table = tabulate(data)
-    assert_equal(table, expected)
+    assert table == expected
 
 
 def test_latex_escape_special_chars():
@@ -226,14 +226,14 @@ def test_latex_escape_special_chars():
         ]
     )
     result = tabulate([["&%^_$#{}<>~"]], ["foo^bar"], tablefmt="latex")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_isconvertible_on_set_values():
     "Regression: don't fail with TypeError on set values (issue #35)"
     expected = "\n".join(["a    b", "---  -----", "Foo  set()"])
     result = tabulate([["Foo", set()]], headers=["a", "b"])
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_ansi_color_for_decimal_numbers():
@@ -243,7 +243,7 @@ def test_ansi_color_for_decimal_numbers():
         ["-------  ---", "Magenta  \x1b[95m1.1\x1b[0m", "-------  ---"]
     )
     result = tabulate(table)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_alignment_of_decimal_numbers_with_ansi_color():
@@ -253,7 +253,7 @@ def test_alignment_of_decimal_numbers_with_ansi_color():
     table = [[v1], [v2]]
     expected = "\n".join(["\x1b[95m12.34\x1b[0m", " \x1b[95m1.23456\x1b[0m"])
     result = tabulate(table, tablefmt="plain")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_alignment_of_decimal_numbers_with_commas():
@@ -274,7 +274,7 @@ def test_long_integers():
     table = [[18446744073709551614]]
     result = tabulate(table, tablefmt="plain")
     expected = "18446744073709551614"
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_colorclass_colors():
@@ -285,7 +285,7 @@ def test_colorclass_colors():
         s = colorclass.Color("{magenta}3.14{/magenta}")
         result = tabulate([[s]], tablefmt="plain")
         expected = "\x1b[35m3.14\x1b[39m"
-        assert_equal(expected, result)
+        assert expected == result
     except ImportError:
 
         class textclass(str):
@@ -294,7 +294,7 @@ def test_colorclass_colors():
         s = textclass("\x1b[35m3.14\x1b[39m")
         result = tabulate([[s]], tablefmt="plain")
         expected = "\x1b[35m3.14\x1b[39m"
-        assert_equal(expected, result)
+        assert expected == result
 
 
 def test_mix_normal_and_wide_characters():
@@ -314,7 +314,7 @@ def test_mix_normal_and_wide_characters():
                 "+--------+",
             ]
         )
-        assert_equal(expected, result)
+        assert expected == result
     except ImportError:
         skip("test_mix_normal_and_wide_characters is skipped (requires wcwidth lib)")
 
@@ -334,7 +334,7 @@ def test_multiline_with_wide_characters():
                 "╘══════╧══════╧══════╛",
             ]
         )
-        assert_equal(expected, result)
+        assert expected == result
     except ImportError:
         skip("test_multiline_with_wide_characters is skipped (requires wcwidth lib)")
 
@@ -344,7 +344,7 @@ def test_align_long_integers():
     table = [[int(1)], [int(234)]]
     result = tabulate(table, tablefmt="plain")
     expected = "\n".join(["  1", "234"])
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_numpy_array_as_headers():
@@ -355,7 +355,7 @@ def test_numpy_array_as_headers():
         headers = np.array(["foo", "bar"])
         result = tabulate([], headers, tablefmt="plain")
         expected = "foo    bar"
-        assert_equal(expected, result)
+        assert expected == result
     except ImportError:
         raise skip("")
 
@@ -365,7 +365,7 @@ def test_boolean_columns():
     xortable = [[False, True], [True, False]]
     expected = "\n".join(["False  True", "True   False"])
     result = tabulate(xortable, tablefmt="plain")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_ansi_color_bold_and_fgcolor():
@@ -383,14 +383,14 @@ def test_ansi_color_bold_and_fgcolor():
             "+---+---+---+",
         ]
     )
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_empty_table_with_keys_as_header():
     "Regression: headers='keys' on an empty table (issue #81)"
     result = tabulate([], headers="keys")
     expected = ""
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_escape_empty_cell_in_first_column_in_rst():
@@ -409,7 +409,7 @@ def test_escape_empty_cell_in_first_column_in_rst():
         ]
     )
     result = tabulate(table, headers, tablefmt="rst")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_ragged_rows():
@@ -417,7 +417,7 @@ def test_ragged_rows():
     table = [[1, 2, 3], [1, 2], [1, 2, 3, 4]]
     expected = "\n".join(["-  -  -  -", "1  2  3", "1  2", "1  2  3  4", "-  -  -  -"])
     result = tabulate(table)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_empty_pipe_table_with_columns():
@@ -426,7 +426,7 @@ def test_empty_pipe_table_with_columns():
     headers = ["Col1", "Col2"]
     expected = "\n".join(["| Col1   | Col2   |", "|--------|--------|"])
     result = tabulate(table, headers, tablefmt="pipe")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_custom_tablefmt():
@@ -444,7 +444,7 @@ def test_custom_tablefmt():
     rows = [["foo", "bar"], ["baz", "qux"]]
     expected = "\n".join(["A    B", "---  ---", "foo  bar", "baz  qux"])
     result = tabulate(rows, headers=["A", "B"], tablefmt=tablefmt)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_string_with_comma_between_digits_without_floatfmt_grouping_option():
@@ -452,7 +452,7 @@ def test_string_with_comma_between_digits_without_floatfmt_grouping_option():
     table = [["126,000"]]
     expected = "126,000"
     result = tabulate(table, tablefmt="plain")
-    assert_equal(expected, result)  # no exception
+    assert expected == result
 
 
 def test_iterable_row_index():
@@ -469,7 +469,7 @@ def test_iterable_row_index():
 
     expected = "1  a\n2  b\n3  c"
     result = tabulate(table, showindex=count(1), tablefmt="plain")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_preserve_line_breaks_with_maxcolwidths():
@@ -485,13 +485,13 @@ def test_preserve_line_breaks_with_maxcolwidths():
         ]
     )
     result = tabulate(table, tablefmt="grid", maxcolwidths=10)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_exception_on_empty_data_with_maxcolwidths():
     "Regression: exception on empty data when using maxcolwidths (github issue #180)"
     result = tabulate([], maxcolwidths=5)
-    assert_equal(result, "")
+    assert result == ""
 
 
 def test_numpy_int64_as_integer():
@@ -509,6 +509,6 @@ def test_numpy_int64_as_integer():
                 "|     1 |    3.14 |",
             ]
         )
-        assert_equal(expected, result)
+        assert expected == result
     except ImportError:
         raise skip("")

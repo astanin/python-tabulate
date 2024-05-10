@@ -1,7 +1,7 @@
 """Test output of the various forms of tabular data."""
 
 import tabulate as tabulate_module
-from common import assert_equal, raises, skip, check_warnings
+from common import raises, skip, check_warnings
 from tabulate import tabulate, simple_separated_format, SEPARATING_LINE
 
 # _test_table shows
@@ -19,14 +19,14 @@ def test_plain():
         ["strings      numbers", "spam         41.9999", "eggs        451"]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="plain")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_plain_headerless():
     "Output: plain without headers"
     expected = "\n".join(["spam   41.9999", "eggs  451"])
     result = tabulate(_test_table, tablefmt="plain")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_plain_multiline_headerless():
@@ -36,7 +36,7 @@ def test_plain_multiline_headerless():
         ["foo bar    hello", "  baz", "  bau", "         multiline", "           world"]
     )
     result = tabulate(table, stralign="center", tablefmt="plain")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_plain_multiline():
@@ -52,7 +52,7 @@ def test_plain_multiline():
         ]
     )
     result = tabulate(table, headers, tablefmt="plain")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_plain_multiline_with_links():
@@ -68,7 +68,7 @@ def test_plain_multiline_with_links():
         ]
     )
     result = tabulate(table, headers, tablefmt="plain")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_plain_multiline_with_empty_cells():
@@ -87,7 +87,7 @@ def test_plain_multiline_with_empty_cells():
         ]
     )
     result = tabulate(table, headers="firstrow", tablefmt="plain")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_plain_multiline_with_empty_cells_headerless():
@@ -97,7 +97,7 @@ def test_plain_multiline_with_empty_cells_headerless():
         ["0", "1", "2  very long data  fold", "                   this"]
     )
     result = tabulate(table, tablefmt="plain")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_plain_maxcolwidth_autowraps():
@@ -107,7 +107,7 @@ def test_plain_maxcolwidth_autowraps():
     result = tabulate(
         table, headers="firstrow", tablefmt="plain", maxcolwidths=[10, 10]
     )
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_plain_maxcolwidth_autowraps_with_sep():
@@ -124,7 +124,7 @@ def test_plain_maxcolwidth_autowraps_with_sep():
     result = tabulate(
         table, headers="firstrow", tablefmt="plain", maxcolwidths=[10, 10]
     )
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_plain_maxcolwidth_autowraps_wide_chars():
@@ -149,7 +149,7 @@ def test_plain_maxcolwidth_autowraps_wide_chars():
     result = tabulate(
         table, headers="firstrow", tablefmt="plain", maxcolwidths=[10, 30]
     )
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_maxcolwidth_single_value():
@@ -168,7 +168,7 @@ def test_maxcolwidth_single_value():
         ]
     )
     result = tabulate(table, headers="firstrow", tablefmt="plain", maxcolwidths=6)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_maxcolwidth_pad_tailing_widths():
@@ -188,7 +188,7 @@ def test_maxcolwidth_pad_tailing_widths():
     result = tabulate(
         table, headers="firstrow", tablefmt="plain", maxcolwidths=[None, 6]
     )
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_maxcolwidth_honor_disable_parsenum():
@@ -211,7 +211,7 @@ def test_maxcolwidth_honor_disable_parsenum():
     )
     # Grid makes showing the alignment difference a little easier
     result = tabulate(table, tablefmt="grid", maxcolwidths=6, disable_numparse=[2])
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_plain_maxheadercolwidths_autowraps():
@@ -225,7 +225,7 @@ def test_plain_maxheadercolwidths_autowraps():
         maxcolwidths=[10, 10],
         maxheadercolwidths=[None, 2],
     )
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple():
@@ -239,7 +239,7 @@ def test_simple():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="simple")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_with_sep_line():
@@ -254,7 +254,7 @@ def test_simple_with_sep_line():
         ]
     )
     result = tabulate(_test_table_with_sep_line, _test_table_headers, tablefmt="simple")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_readme_example_with_sep():
@@ -270,7 +270,7 @@ def test_readme_example_with_sep():
         ]
     )
     result = tabulate(table, tablefmt="simple")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_multiline_2():
@@ -286,7 +286,7 @@ def test_simple_multiline_2():
     )
     table = [["key", "value"], ["foo", "bar"], ["spam", "multiline\nworld"]]
     result = tabulate(table, headers="firstrow", stralign="center", tablefmt="simple")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_multiline_2_with_sep_line():
@@ -308,7 +308,7 @@ def test_simple_multiline_2_with_sep_line():
         ["spam", "multiline\nworld"],
     ]
     result = tabulate(table, headers="firstrow", stralign="center", tablefmt="simple")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_headerless():
@@ -317,7 +317,7 @@ def test_simple_headerless():
         ["----  --------", "spam   41.9999", "eggs  451", "----  --------"]
     )
     result = tabulate(_test_table, tablefmt="simple")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_headerless_with_sep_line():
@@ -332,7 +332,7 @@ def test_simple_headerless_with_sep_line():
         ]
     )
     result = tabulate(_test_table_with_sep_line, tablefmt="simple")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_multiline_headerless():
@@ -350,7 +350,7 @@ def test_simple_multiline_headerless():
         ]
     )
     result = tabulate(table, stralign="center", tablefmt="simple")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_multiline():
@@ -367,7 +367,7 @@ def test_simple_multiline():
         ]
     )
     result = tabulate(table, headers, tablefmt="simple")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_multiline_with_links():
@@ -384,7 +384,7 @@ def test_simple_multiline_with_links():
         ]
     )
     result = tabulate(table, headers, tablefmt="simple")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_multiline_with_empty_cells():
@@ -404,7 +404,7 @@ def test_simple_multiline_with_empty_cells():
         ]
     )
     result = tabulate(table, headers="firstrow", tablefmt="simple")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_multiline_with_empty_cells_headerless():
@@ -421,7 +421,7 @@ def test_simple_multiline_with_empty_cells_headerless():
         ]
     )
     result = tabulate(table, tablefmt="simple")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_github():
@@ -435,7 +435,7 @@ def test_github():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="github")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_grid():
@@ -452,7 +452,7 @@ def test_grid():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_grid_wide_characters():
@@ -475,7 +475,7 @@ def test_grid_wide_characters():
         ]
     )
     result = tabulate(_test_table, headers, tablefmt="grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_grid_headerless():
@@ -490,7 +490,7 @@ def test_grid_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_grid_multiline_headerless():
@@ -509,7 +509,7 @@ def test_grid_multiline_headerless():
         ]
     )
     result = tabulate(table, stralign="center", tablefmt="grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_grid_multiline():
@@ -528,7 +528,7 @@ def test_grid_multiline():
         ]
     )
     result = tabulate(table, headers, tablefmt="grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_grid_multiline_with_empty_cells():
@@ -551,7 +551,7 @@ def test_grid_multiline_with_empty_cells():
         ]
     )
     result = tabulate(table, headers="firstrow", tablefmt="grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_grid_multiline_with_empty_cells_headerless():
@@ -570,7 +570,7 @@ def test_grid_multiline_with_empty_cells_headerless():
         ]
     )
     result = tabulate(table, tablefmt="grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_grid():
@@ -587,7 +587,7 @@ def test_simple_grid():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="simple_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_grid_wide_characters():
@@ -610,7 +610,7 @@ def test_simple_grid_wide_characters():
         ]
     )
     result = tabulate(_test_table, headers, tablefmt="simple_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_grid_headerless():
@@ -625,7 +625,7 @@ def test_simple_grid_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="simple_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_grid_multiline_headerless():
@@ -644,7 +644,7 @@ def test_simple_grid_multiline_headerless():
         ]
     )
     result = tabulate(table, stralign="center", tablefmt="simple_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_grid_multiline():
@@ -663,7 +663,7 @@ def test_simple_grid_multiline():
         ]
     )
     result = tabulate(table, headers, tablefmt="simple_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_grid_multiline_with_empty_cells():
@@ -686,7 +686,7 @@ def test_simple_grid_multiline_with_empty_cells():
         ]
     )
     result = tabulate(table, headers="firstrow", tablefmt="simple_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_grid_multiline_with_empty_cells_headerless():
@@ -705,7 +705,7 @@ def test_simple_grid_multiline_with_empty_cells_headerless():
         ]
     )
     result = tabulate(table, tablefmt="simple_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_rounded_grid():
@@ -722,7 +722,7 @@ def test_rounded_grid():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="rounded_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_rounded_grid_wide_characters():
@@ -745,7 +745,7 @@ def test_rounded_grid_wide_characters():
         ]
     )
     result = tabulate(_test_table, headers, tablefmt="rounded_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_rounded_grid_headerless():
@@ -760,7 +760,7 @@ def test_rounded_grid_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="rounded_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_rounded_grid_multiline_headerless():
@@ -779,7 +779,7 @@ def test_rounded_grid_multiline_headerless():
         ]
     )
     result = tabulate(table, stralign="center", tablefmt="rounded_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_rounded_grid_multiline():
@@ -798,7 +798,7 @@ def test_rounded_grid_multiline():
         ]
     )
     result = tabulate(table, headers, tablefmt="rounded_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_rounded_grid_multiline_with_empty_cells():
@@ -821,7 +821,7 @@ def test_rounded_grid_multiline_with_empty_cells():
         ]
     )
     result = tabulate(table, headers="firstrow", tablefmt="rounded_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_rounded_grid_multiline_with_empty_cells_headerless():
@@ -840,7 +840,7 @@ def test_rounded_grid_multiline_with_empty_cells_headerless():
         ]
     )
     result = tabulate(table, tablefmt="rounded_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_heavy_grid():
@@ -857,7 +857,7 @@ def test_heavy_grid():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="heavy_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_heavy_grid_wide_characters():
@@ -880,7 +880,7 @@ def test_heavy_grid_wide_characters():
         ]
     )
     result = tabulate(_test_table, headers, tablefmt="heavy_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_heavy_grid_headerless():
@@ -895,7 +895,7 @@ def test_heavy_grid_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="heavy_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_heavy_grid_multiline_headerless():
@@ -914,7 +914,7 @@ def test_heavy_grid_multiline_headerless():
         ]
     )
     result = tabulate(table, stralign="center", tablefmt="heavy_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_heavy_grid_multiline():
@@ -933,7 +933,7 @@ def test_heavy_grid_multiline():
         ]
     )
     result = tabulate(table, headers, tablefmt="heavy_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_heavy_grid_multiline_with_empty_cells():
@@ -956,7 +956,7 @@ def test_heavy_grid_multiline_with_empty_cells():
         ]
     )
     result = tabulate(table, headers="firstrow", tablefmt="heavy_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_heavy_grid_multiline_with_empty_cells_headerless():
@@ -975,7 +975,7 @@ def test_heavy_grid_multiline_with_empty_cells_headerless():
         ]
     )
     result = tabulate(table, tablefmt="heavy_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_mixed_grid():
@@ -992,7 +992,7 @@ def test_mixed_grid():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="mixed_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_mixed_grid_wide_characters():
@@ -1015,7 +1015,7 @@ def test_mixed_grid_wide_characters():
         ]
     )
     result = tabulate(_test_table, headers, tablefmt="mixed_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_mixed_grid_headerless():
@@ -1030,7 +1030,7 @@ def test_mixed_grid_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="mixed_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_mixed_grid_multiline_headerless():
@@ -1049,7 +1049,7 @@ def test_mixed_grid_multiline_headerless():
         ]
     )
     result = tabulate(table, stralign="center", tablefmt="mixed_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_mixed_grid_multiline():
@@ -1068,7 +1068,7 @@ def test_mixed_grid_multiline():
         ]
     )
     result = tabulate(table, headers, tablefmt="mixed_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_mixed_grid_multiline_with_empty_cells():
@@ -1091,7 +1091,7 @@ def test_mixed_grid_multiline_with_empty_cells():
         ]
     )
     result = tabulate(table, headers="firstrow", tablefmt="mixed_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_mixed_grid_multiline_with_empty_cells_headerless():
@@ -1110,7 +1110,7 @@ def test_mixed_grid_multiline_with_empty_cells_headerless():
         ]
     )
     result = tabulate(table, tablefmt="mixed_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_double_grid():
@@ -1127,7 +1127,7 @@ def test_double_grid():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="double_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_double_grid_wide_characters():
@@ -1150,7 +1150,7 @@ def test_double_grid_wide_characters():
         ]
     )
     result = tabulate(_test_table, headers, tablefmt="double_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_double_grid_headerless():
@@ -1165,7 +1165,7 @@ def test_double_grid_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="double_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_double_grid_multiline_headerless():
@@ -1184,7 +1184,7 @@ def test_double_grid_multiline_headerless():
         ]
     )
     result = tabulate(table, stralign="center", tablefmt="double_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_double_grid_multiline():
@@ -1203,7 +1203,7 @@ def test_double_grid_multiline():
         ]
     )
     result = tabulate(table, headers, tablefmt="double_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_double_grid_multiline_with_empty_cells():
@@ -1226,7 +1226,7 @@ def test_double_grid_multiline_with_empty_cells():
         ]
     )
     result = tabulate(table, headers="firstrow", tablefmt="double_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_double_grid_multiline_with_empty_cells_headerless():
@@ -1245,7 +1245,7 @@ def test_double_grid_multiline_with_empty_cells_headerless():
         ]
     )
     result = tabulate(table, tablefmt="double_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_fancy_grid():
@@ -1262,7 +1262,7 @@ def test_fancy_grid():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="fancy_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_fancy_grid_wide_characters():
@@ -1285,7 +1285,7 @@ def test_fancy_grid_wide_characters():
         ]
     )
     result = tabulate(_test_table, headers, tablefmt="fancy_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_fancy_grid_headerless():
@@ -1300,7 +1300,7 @@ def test_fancy_grid_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="fancy_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_fancy_grid_multiline_headerless():
@@ -1319,7 +1319,7 @@ def test_fancy_grid_multiline_headerless():
         ]
     )
     result = tabulate(table, stralign="center", tablefmt="fancy_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_fancy_grid_multiline():
@@ -1338,7 +1338,7 @@ def test_fancy_grid_multiline():
         ]
     )
     result = tabulate(table, headers, tablefmt="fancy_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_fancy_grid_multiline_with_empty_cells():
@@ -1361,7 +1361,7 @@ def test_fancy_grid_multiline_with_empty_cells():
         ]
     )
     result = tabulate(table, headers="firstrow", tablefmt="fancy_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_fancy_grid_multiline_with_empty_cells_headerless():
@@ -1380,7 +1380,7 @@ def test_fancy_grid_multiline_with_empty_cells_headerless():
         ]
     )
     result = tabulate(table, tablefmt="fancy_grid")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_fancy_grid_multiline_row_align():
@@ -1411,7 +1411,7 @@ def test_fancy_grid_multiline_row_align():
         ]
     )
     result = tabulate(table, tablefmt="fancy_grid", rowalign=[None, "center", "bottom"])
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_outline():
@@ -1427,7 +1427,7 @@ def test_outline():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_outline_wide_characters():
@@ -1449,7 +1449,7 @@ def test_outline_wide_characters():
         ]
     )
     result = tabulate(_test_table, headers, tablefmt="outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_outline_headerless():
@@ -1463,7 +1463,7 @@ def test_outline_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_outline():
@@ -1479,7 +1479,7 @@ def test_simple_outline():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="simple_outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_outline_wide_characters():
@@ -1501,7 +1501,7 @@ def test_simple_outline_wide_characters():
         ]
     )
     result = tabulate(_test_table, headers, tablefmt="simple_outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_simple_outline_headerless():
@@ -1515,7 +1515,7 @@ def test_simple_outline_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="simple_outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_rounded_outline():
@@ -1531,7 +1531,7 @@ def test_rounded_outline():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="rounded_outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_rounded_outline_wide_characters():
@@ -1553,7 +1553,7 @@ def test_rounded_outline_wide_characters():
         ]
     )
     result = tabulate(_test_table, headers, tablefmt="rounded_outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_rounded_outline_headerless():
@@ -1567,7 +1567,7 @@ def test_rounded_outline_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="rounded_outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_heavy_outline():
@@ -1583,7 +1583,7 @@ def test_heavy_outline():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="heavy_outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_heavy_outline_wide_characters():
@@ -1605,7 +1605,7 @@ def test_heavy_outline_wide_characters():
         ]
     )
     result = tabulate(_test_table, headers, tablefmt="heavy_outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_heavy_outline_headerless():
@@ -1619,7 +1619,7 @@ def test_heavy_outline_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="heavy_outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_mixed_outline():
@@ -1635,7 +1635,7 @@ def test_mixed_outline():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="mixed_outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_mixed_outline_wide_characters():
@@ -1657,7 +1657,7 @@ def test_mixed_outline_wide_characters():
         ]
     )
     result = tabulate(_test_table, headers, tablefmt="mixed_outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_mixed_outline_headerless():
@@ -1671,7 +1671,7 @@ def test_mixed_outline_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="mixed_outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_double_outline():
@@ -1687,7 +1687,7 @@ def test_double_outline():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="double_outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_double_outline_wide_characters():
@@ -1709,7 +1709,7 @@ def test_double_outline_wide_characters():
         ]
     )
     result = tabulate(_test_table, headers, tablefmt="double_outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_double_outline_headerless():
@@ -1723,7 +1723,7 @@ def test_double_outline_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="double_outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_fancy_outline():
@@ -1739,7 +1739,7 @@ def test_fancy_outline():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="fancy_outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_fancy_outline_wide_characters():
@@ -1761,7 +1761,7 @@ def test_fancy_outline_wide_characters():
         ]
     )
     result = tabulate(_test_table, headers, tablefmt="fancy_outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_fancy_outline_headerless():
@@ -1775,7 +1775,7 @@ def test_fancy_outline_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="fancy_outline")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_pipe():
@@ -1789,7 +1789,7 @@ def test_pipe():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="pipe")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_pipe_headerless():
@@ -1798,7 +1798,7 @@ def test_pipe_headerless():
         ["|:-----|---------:|", "| spam |  41.9999 |", "| eggs | 451      |"]
     )
     result = tabulate(_test_table, tablefmt="pipe")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_presto():
@@ -1812,14 +1812,14 @@ def test_presto():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="presto")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_presto_headerless():
     "Output: presto without headers"
     expected = "\n".join([" spam |  41.9999", " eggs | 451"])
     result = tabulate(_test_table, tablefmt="presto")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_presto_multiline_headerless():
@@ -1835,7 +1835,7 @@ def test_presto_multiline_headerless():
         ]
     )
     result = tabulate(table, stralign="center", tablefmt="presto")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_presto_multiline():
@@ -1852,7 +1852,7 @@ def test_presto_multiline():
         ]
     )
     result = tabulate(table, headers, tablefmt="presto")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_presto_multiline_with_empty_cells():
@@ -1872,7 +1872,7 @@ def test_presto_multiline_with_empty_cells():
         ]
     )
     result = tabulate(table, headers="firstrow", tablefmt="presto")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_presto_multiline_with_empty_cells_headerless():
@@ -1887,7 +1887,7 @@ def test_presto_multiline_with_empty_cells_headerless():
         ]
     )
     result = tabulate(table, tablefmt="presto")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_orgtbl():
@@ -1901,14 +1901,14 @@ def test_orgtbl():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="orgtbl")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_orgtbl_headerless():
     "Output: orgtbl without headers"
     expected = "\n".join(["| spam |  41.9999 |", "| eggs | 451      |"])
     result = tabulate(_test_table, tablefmt="orgtbl")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_asciidoc():
@@ -1924,7 +1924,7 @@ def test_asciidoc():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="asciidoc")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_asciidoc_headerless():
@@ -1939,7 +1939,7 @@ def test_asciidoc_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="asciidoc")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_psql():
@@ -1955,7 +1955,7 @@ def test_psql():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="psql")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_psql_headerless():
@@ -1969,7 +1969,7 @@ def test_psql_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="psql")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_psql_multiline_headerless():
@@ -1987,7 +1987,7 @@ def test_psql_multiline_headerless():
         ]
     )
     result = tabulate(table, stralign="center", tablefmt="psql")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_psql_multiline():
@@ -2006,7 +2006,7 @@ def test_psql_multiline():
         ]
     )
     result = tabulate(table, headers, tablefmt="psql")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_psql_multiline_with_empty_cells():
@@ -2028,7 +2028,7 @@ def test_psql_multiline_with_empty_cells():
         ]
     )
     result = tabulate(table, headers="firstrow", tablefmt="psql")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_psql_multiline_with_empty_cells_headerless():
@@ -2045,7 +2045,7 @@ def test_psql_multiline_with_empty_cells_headerless():
         ]
     )
     result = tabulate(table, tablefmt="psql")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_pretty():
@@ -2061,7 +2061,7 @@ def test_pretty():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="pretty")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_pretty_headerless():
@@ -2075,7 +2075,7 @@ def test_pretty_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="pretty")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_pretty_multiline_headerless():
@@ -2093,7 +2093,7 @@ def test_pretty_multiline_headerless():
         ]
     )
     result = tabulate(table, tablefmt="pretty")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_pretty_multiline():
@@ -2112,7 +2112,7 @@ def test_pretty_multiline():
         ]
     )
     result = tabulate(table, headers, tablefmt="pretty")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_pretty_multiline_with_links():
@@ -2131,7 +2131,7 @@ def test_pretty_multiline_with_links():
         ]
     )
     result = tabulate(table, headers, tablefmt="pretty")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_pretty_multiline_with_empty_cells():
@@ -2153,7 +2153,7 @@ def test_pretty_multiline_with_empty_cells():
         ]
     )
     result = tabulate(table, headers="firstrow", tablefmt="pretty")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_pretty_multiline_with_empty_cells_headerless():
@@ -2170,7 +2170,7 @@ def test_pretty_multiline_with_empty_cells_headerless():
         ]
     )
     result = tabulate(table, tablefmt="pretty")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_jira():
@@ -2184,7 +2184,7 @@ def test_jira():
     )
 
     result = tabulate(_test_table, _test_table_headers, tablefmt="jira")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_jira_headerless():
@@ -2192,7 +2192,7 @@ def test_jira_headerless():
     expected = "\n".join(["| spam |  41.9999 |", "| eggs | 451      |"])
 
     result = tabulate(_test_table, tablefmt="jira")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_rst():
@@ -2208,7 +2208,7 @@ def test_rst():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="rst")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_rst_with_empty_values_in_first_column():
@@ -2226,7 +2226,7 @@ def test_rst_with_empty_values_in_first_column():
         ]
     )
     result = tabulate(test_data, test_headers, tablefmt="rst")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_rst_headerless():
@@ -2235,7 +2235,7 @@ def test_rst_headerless():
         ["====  ========", "spam   41.9999", "eggs  451", "====  ========"]
     )
     result = tabulate(_test_table, tablefmt="rst")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_rst_multiline():
@@ -2254,7 +2254,7 @@ def test_rst_multiline():
         ]
     )
     result = tabulate(table, headers, tablefmt="rst")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_rst_multiline_with_links():
@@ -2273,7 +2273,7 @@ def test_rst_multiline_with_links():
         ]
     )
     result = tabulate(table, headers, tablefmt="rst")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_rst_multiline_with_empty_cells():
@@ -2295,7 +2295,7 @@ def test_rst_multiline_with_empty_cells():
         ]
     )
     result = tabulate(table, headers="firstrow", tablefmt="rst")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_rst_multiline_with_empty_cells_headerless():
@@ -2312,7 +2312,7 @@ def test_rst_multiline_with_empty_cells_headerless():
         ]
     )
     result = tabulate(table, tablefmt="rst")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_mediawiki():
@@ -2331,7 +2331,7 @@ def test_mediawiki():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="mediawiki")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_mediawiki_headerless():
@@ -2348,7 +2348,7 @@ def test_mediawiki_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="mediawiki")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_moinmoin():
@@ -2361,7 +2361,7 @@ def test_moinmoin():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="moinmoin")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_youtrack():
@@ -2374,7 +2374,7 @@ def test_youtrack():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="youtrack")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_moinmoin_headerless():
@@ -2386,7 +2386,7 @@ def test_moinmoin_headerless():
         ]
     )
     result = tabulate(_test_table, tablefmt="moinmoin")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 _test_table_html_headers = ["<strings>", "<&numbers&>"]
@@ -2414,7 +2414,7 @@ def test_html():
         ]
     )
     result = tabulate(_test_table_html, _test_table_html_headers, tablefmt="html")
-    assert_equal(expected, result)
+    assert expected == result
     assert hasattr(result, "_repr_html_")
     assert result._repr_html_() == result.str
 
@@ -2437,7 +2437,7 @@ def test_unsafehtml():
     result = tabulate(
         _test_table_unsafehtml, _test_table_unsafehtml_headers, tablefmt="unsafehtml"
     )
-    assert_equal(expected, result)
+    assert expected == result
     assert hasattr(result, "_repr_html_")
     assert result._repr_html_() == result.str
 
@@ -2455,7 +2455,7 @@ def test_html_headerless():
         ]
     )
     result = tabulate(_test_table_html, tablefmt="html")
-    assert_equal(expected, result)
+    assert expected == result
     assert hasattr(result, "_repr_html_")
     assert result._repr_html_() == result.str
 
@@ -2473,7 +2473,7 @@ def test_unsafehtml_headerless():
         ]
     )
     result = tabulate(_test_table_unsafehtml, tablefmt="unsafehtml")
-    assert_equal(expected, result)
+    assert expected == result
     assert hasattr(result, "_repr_html_")
     assert result._repr_html_() == result.str
 
@@ -2495,7 +2495,7 @@ def test_latex():
             r"\end{tabular}",
         ]
     )
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_latex_raw():
@@ -2519,7 +2519,7 @@ def test_latex_raw():
             r"\end{tabular}",
         ]
     )
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_latex_headerless():
@@ -2535,7 +2535,7 @@ def test_latex_headerless():
             r"\end{tabular}",
         ]
     )
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_latex_booktabs():
@@ -2553,7 +2553,7 @@ def test_latex_booktabs():
             r"\end{tabular}",
         ]
     )
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_latex_booktabs_headerless():
@@ -2569,7 +2569,7 @@ def test_latex_booktabs_headerless():
             r"\end{tabular}",
         ]
     )
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_textile():
@@ -2579,7 +2579,7 @@ def test_textile():
 |<. spam  |>.  41.9999 |
 |<. eggs  |>. 451      |"""
 
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_textile_with_header():
@@ -2590,7 +2590,7 @@ def test_textile_with_header():
 |<. spam       |>.   41.9999 |
 |<. eggs       |>.  451      |"""
 
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_textile_with_center_align():
@@ -2600,56 +2600,56 @@ def test_textile_with_center_align():
 |=. spam  |>.  41.9999 |
 |=. eggs  |>. 451      |"""
 
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_no_data():
     "Output: table with no data"
     expected = "\n".join(["strings    numbers", "---------  ---------"])
     result = tabulate(None, _test_table_headers, tablefmt="simple")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_empty_data():
     "Output: table with empty data"
     expected = "\n".join(["strings    numbers", "---------  ---------"])
     result = tabulate([], _test_table_headers, tablefmt="simple")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_no_data_without_headers():
     "Output: table with no data and no headers"
     expected = ""
     result = tabulate(None, tablefmt="simple")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_empty_data_without_headers():
     "Output: table with empty data and no headers"
     expected = ""
     result = tabulate([], tablefmt="simple")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_intfmt():
     "Output: integer format"
     result = tabulate([[10000], [10]], intfmt=",", tablefmt="plain")
     expected = "10,000\n    10"
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_empty_data_with_headers():
     "Output: table with empty data and headers as firstrow"
     expected = ""
     result = tabulate([], headers="firstrow")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_floatfmt():
     "Output: floating point format"
     result = tabulate([["1.23456789"], [1.0]], floatfmt=".3f", tablefmt="plain")
     expected = "1.235\n1.000"
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_floatfmt_multi():
@@ -2658,7 +2658,7 @@ def test_floatfmt_multi():
         [[0.12345, 0.12345, 0.12345]], floatfmt=(".1f", ".3f"), tablefmt="plain"
     )
     expected = "0.1  0.123  0.12345"
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_colalign_multi():
@@ -2667,7 +2667,7 @@ def test_colalign_multi():
         [["one", "two"], ["three", "four"]], colalign=("right",), tablefmt="plain"
     )
     expected = "  one  two\nthree  four"
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_colalign_multi_with_sep_line():
@@ -2678,7 +2678,7 @@ def test_colalign_multi_with_sep_line():
         tablefmt="plain",
     )
     expected = "  one  two\n\nthree  four"
-    assert_equal(expected, result)
+    assert expected == result
 
 def test_column_global_and_specific_alignment():
     """ Test `colglobalalign` and `"global"` parameter for `colalign`. """
@@ -2691,7 +2691,7 @@ def test_column_global_and_specific_alignment():
         " 1   2      3   4",
         "111  222  333  444",
         "---  ---  ---  ---"])
-    assert_equal(expected, result)
+    assert expected == result
 
 def test_headers_global_and_specific_alignment():
     """ Test `headersglobalalign` and `headersalign`. """
@@ -2707,7 +2707,7 @@ def test_headers_global_and_specific_alignment():
         "---  ---  ---  ---  ---  ---",
         "1     2    3    4    5    6",
         "111  222  333  444  555  666"])
-    assert_equal(expected, result)
+    assert expected == result
 
 def test_colalign_or_headersalign_too_long():
     """ Test `colalign` and `headersalign` too long. """
@@ -2721,7 +2721,7 @@ def test_colalign_or_headersalign_too_long():
         "---  ---",
         "  1  2",
         "111  222"])
-    assert_equal(expected, result)
+    assert expected == result
 
 def test_warning_when_colalign_or_headersalign_is_string():
     """ Test user warnings when `colalign` or `headersalign` is a string. """
@@ -2757,7 +2757,7 @@ def test_float_conversions():
             "+-------+-------------+--------------+------------+------------+-------------+",
         ]
     )
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_missingval():
@@ -2766,7 +2766,7 @@ def test_missingval():
         [["Alice", 10], ["Bob", None]], missingval="n/a", tablefmt="plain"
     )
     expected = "Alice   10\nBob    n/a"
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_missingval_multi():
@@ -2777,14 +2777,14 @@ def test_missingval_multi():
         tablefmt="plain",
     )
     expected = "Alice  Bob  Charlie\nn/a    ?"
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_column_alignment():
     "Output: custom alignment for text and numbers"
     expected = "\n".join(["-----  ---", "Alice   1", "  Bob  333", "-----  ---"])
     result = tabulate([["Alice", 1], ["Bob", 333]], stralign="right", numalign="center")
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_unaligned_separated():
@@ -2798,7 +2798,7 @@ def test_unaligned_separated():
         stralign=None,
         numalign=None,
     )
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_pandas_with_index():
@@ -2818,7 +2818,7 @@ def test_pandas_with_index():
             ]
         )
         result = tabulate(df, headers="keys")
-        assert_equal(expected, result)
+        assert expected == result
     except ImportError:
         skip("test_pandas_with_index is skipped")
 
@@ -2842,7 +2842,7 @@ def test_pandas_without_index():
             ]
         )
         result = tabulate(df, headers="keys", showindex=False)
-        assert_equal(expected, result)
+        assert expected == result
     except ImportError:
         skip("test_pandas_without_index is skipped")
 
@@ -2866,7 +2866,7 @@ def test_pandas_rst_with_index():
             ]
         )
         result = tabulate(df, tablefmt="rst", headers="keys")
-        assert_equal(expected, result)
+        assert expected == result
     except ImportError:
         skip("test_pandas_rst_with_index is skipped")
 
@@ -2891,7 +2891,7 @@ def test_pandas_rst_with_named_index():
             ]
         )
         result = tabulate(df, tablefmt="rst", headers="keys")
-        assert_equal(expected, result)
+        assert expected == result
     except ImportError:
         skip("test_pandas_rst_with_index is skipped")
 
@@ -2901,7 +2901,7 @@ def test_dict_like_with_index():
     dd = {"b": range(101, 104)}
     expected = "\n".join(["      b", "--  ---", " 0  101", " 1  102", " 2  103"])
     result = tabulate(dd, "keys", showindex=True)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_list_of_lists_with_index():
@@ -2913,7 +2913,7 @@ def test_list_of_lists_with_index():
         ["      a    b", "--  ---  ---", " 0    0  101", " 1    1  102", " 2    2  103"]
     )
     result = tabulate(dd, headers=["a", "b"], showindex=True)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_list_of_lists_with_index_with_sep_line():
@@ -2932,7 +2932,7 @@ def test_list_of_lists_with_index_with_sep_line():
         ]
     )
     result = tabulate(dd, headers=["a", "b"], showindex=True)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_list_of_lists_with_supplied_index():
@@ -2942,7 +2942,7 @@ def test_list_of_lists_with_supplied_index():
         ["      a    b", "--  ---  ---", " 1    0  101", " 2    1  102", " 3    2  103"]
     )
     result = tabulate(dd, headers=["a", "b"], showindex=[1, 2, 3])
-    assert_equal(expected, result)
+    assert expected == result
     # TODO: make it a separate test case
     # the index must be as long as the number of rows
     with raises(ValueError):
@@ -2956,7 +2956,7 @@ def test_list_of_lists_with_index_firstrow():
         ["      a    b", "--  ---  ---", " 0    0  101", " 1    1  102", " 2    2  103"]
     )
     result = tabulate(dd, headers="firstrow", showindex=True)
-    assert_equal(expected, result)
+    assert expected == result
     # TODO: make it a separate test case
     # the index must be as long as the number of rows
     with raises(ValueError):
@@ -2974,9 +2974,9 @@ def test_disable_numparse_default():
         ]
     )
     result = tabulate(_test_table, _test_table_headers)
-    assert_equal(expected, result)
+    assert expected == result
     result = tabulate(_test_table, _test_table_headers, disable_numparse=False)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_disable_numparse_true():
@@ -2990,7 +2990,7 @@ def test_disable_numparse_true():
         ]
     )
     result = tabulate(_test_table, _test_table_headers, disable_numparse=True)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_disable_numparse_list():
@@ -3001,13 +3001,13 @@ def test_disable_numparse_list():
         ["h1    h2    h3", "----  ----  -------", "foo   bar   42992e1"]
     )
     result = tabulate(test_table, table_headers, disable_numparse=[2])
-    assert_equal(expected, result)
+    assert expected == result
 
     expected = "\n".join(
         ["h1    h2        h3", "----  ----  ------", "foo   bar   429920"]
     )
     result = tabulate(test_table, table_headers, disable_numparse=[0, 1])
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_preserve_whitespace():
@@ -3019,11 +3019,11 @@ def test_preserve_whitespace():
         ["h1     h2       h3", "-----  -------  ----", "  foo   bar     foo"]
     )
     result = tabulate(test_table, table_headers)
-    assert_equal(expected, result)
+    assert expected == result
 
     tabulate_module.PRESERVE_WHITESPACE = False
     table_headers = ["h1", "h2", "h3"]
     test_table = [["  foo", " bar   ", "foo"]]
     expected = "\n".join(["h1    h2    h3", "----  ----  ----", "foo   bar   foo"])
     result = tabulate(test_table, table_headers)
-    assert_equal(expected, result)
+    assert expected == result

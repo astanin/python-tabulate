@@ -6,7 +6,7 @@ import datetime
 from tabulate import _CustomTextWrap as CTW, tabulate
 from textwrap import TextWrapper as OTW
 
-from common import skip, assert_equal
+from common import skip
 
 
 def test_wrap_multiword_non_wide():
@@ -58,7 +58,7 @@ def test_wrap_wide_char_multiword():
 
     wrapper = CTW(width=15)
     result = wrapper.wrap(data)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_wide_char_longword():
@@ -75,7 +75,7 @@ def test_wrap_wide_char_longword():
     # Explicit odd number to ensure the 2 width is taken into account
     wrapper = CTW(width=5)
     result = wrapper.wrap(data)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_mixed_string():
@@ -100,13 +100,13 @@ def test_wrap_mixed_string():
     ]
     wrapper = CTW(width=21)
     result = wrapper.wrap(data)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrapper_len_ignores_color_chars():
     data = "\033[31m\033[104mtenletters\033[0m"
     result = CTW._len(data)
-    assert_equal(10, result)
+    assert 10 == result
 
 
 def test_wrap_full_line_color():
@@ -123,7 +123,7 @@ def test_wrap_full_line_color():
     ]
     wrapper = CTW(width=20)
     result = wrapper.wrap(data)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_color_in_single_line():
@@ -139,7 +139,7 @@ def test_wrap_color_in_single_line():
     ]
     wrapper = CTW(width=25)
     result = wrapper.wrap(data)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_color_line_splillover():
@@ -155,7 +155,7 @@ def test_wrap_color_line_splillover():
     ]
     wrapper = CTW(width=25)
     result = wrapper.wrap(data)
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_datetime():
@@ -183,4 +183,4 @@ def test_wrap_datetime():
         "+---------+--------+",
     ]
     expected = "\n".join(expected)
-    assert_equal(expected, result)
+    assert expected == result

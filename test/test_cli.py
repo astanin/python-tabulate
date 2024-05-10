@@ -2,17 +2,10 @@
 
 """
 
-
 import os
 import sys
-
-
 import subprocess
 import tempfile
-
-
-from common import assert_equal
-
 
 SAMPLE_SIMPLE_FORMAT = "\n".join(
     [
@@ -116,9 +109,7 @@ def test_script_from_stdin_to_stdout():
     cmd = [sys.executable, "tabulate/__init__.py"]
     out = run_and_capture_stdout(cmd, input=sample_input())
     expected = SAMPLE_SIMPLE_FORMAT
-    print("got:     ", repr(out))
-    print("expected:", repr(expected))
-    assert_equal(out.splitlines(), expected.splitlines())
+    assert out.splitlines() == expected.splitlines()
 
 
 def test_script_from_file_to_stdout():
@@ -129,9 +120,7 @@ def test_script_from_file_to_stdout():
         cmd = [sys.executable, "tabulate/__init__.py", tmpfile.name]
         out = run_and_capture_stdout(cmd)
         expected = SAMPLE_SIMPLE_FORMAT
-        print("got:     ", repr(out))
-        print("expected:", repr(expected))
-        assert_equal(out.splitlines(), expected.splitlines())
+        assert out.splitlines() == expected.splitlines()
 
 
 def test_script_from_file_to_file():
@@ -150,16 +139,12 @@ def test_script_from_file_to_file():
             out = run_and_capture_stdout(cmd)
             # check that nothing is printed to stdout
             expected = ""
-            print("got:     ", repr(out))
-            print("expected:", repr(expected))
-            assert_equal(out.splitlines(), expected.splitlines())
+            assert out.splitlines() == expected.splitlines()
             # check that the output was written to file
             output_file.seek(0)
             out = output_file.file.read()
             expected = SAMPLE_SIMPLE_FORMAT
-            print("got:     ", repr(out))
-            print("expected:", repr(expected))
-            assert_equal(out.splitlines(), expected.splitlines())
+            assert out.splitlines() == expected.splitlines()
 
 
 def test_script_header_option():
@@ -169,10 +154,7 @@ def test_script_header_option():
         raw_table = sample_input(with_headers=True)
         out = run_and_capture_stdout(cmd, input=raw_table)
         expected = SAMPLE_SIMPLE_FORMAT_WITH_HEADERS
-        print(out)
-        print("got:     ", repr(out))
-        print("expected:", repr(expected))
-        assert_equal(out.splitlines(), expected.splitlines())
+        assert out.splitlines() == expected.splitlines()
 
 
 def test_script_sep_option():
@@ -182,9 +164,7 @@ def test_script_sep_option():
         raw_table = sample_input(sep=",")
         out = run_and_capture_stdout(cmd, input=raw_table)
         expected = SAMPLE_SIMPLE_FORMAT
-        print("got:     ", repr(out))
-        print("expected:", repr(expected))
-        assert_equal(out.splitlines(), expected.splitlines())
+        assert out.splitlines() == expected.splitlines()
 
 
 def test_script_floatfmt_option():
@@ -201,9 +181,7 @@ def test_script_floatfmt_option():
         raw_table = sample_input()
         out = run_and_capture_stdout(cmd, input=raw_table)
         expected = SAMPLE_GRID_FORMAT_WITH_DOT1E_FLOATS
-        print("got:     ", repr(out))
-        print("expected:", repr(expected))
-        assert_equal(out.splitlines(), expected.splitlines())
+        assert out.splitlines() == expected.splitlines()
 
 
 def test_script_format_option():
@@ -213,7 +191,4 @@ def test_script_format_option():
         raw_table = sample_input(with_headers=True)
         out = run_and_capture_stdout(cmd, input=raw_table)
         expected = SAMPLE_GRID_FORMAT_WITH_HEADERS
-        print(out)
-        print("got:     ", repr(out))
-        print("expected:", repr(expected))
-        assert_equal(out.splitlines(), expected.splitlines())
+        assert out.splitlines() == expected.splitlines()
