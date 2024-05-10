@@ -1171,7 +1171,7 @@ def _align_column(
     if is_multiline:
         if not enable_widechars and not has_invisible:
             padded_strings = [
-                "\n".join([padfn(maxwidth, s) for s in ms.splitlines()])
+                "\n".join([padfn(maxwidth, s) for s in (ms.splitlines() or [ms])])
                 for ms in strings
             ]
         else:
@@ -1184,7 +1184,7 @@ def _align_column(
             # wcswidth and _visible_width don't count invisible characters;
             # padfn doesn't need to apply another correction
             padded_strings = [
-                "\n".join([padfn(w, s) for s, w in zip((ms.splitlines() or ms), mw)])
+                "\n".join([padfn(w, s) for s, w in zip((ms.splitlines() or [ms]), mw)])
                 for ms, mw in zip(strings, visible_widths)
             ]
     else:  # single-line cell values
