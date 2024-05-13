@@ -92,15 +92,24 @@ class TableFormat:
       - or a list of elements not to be displayed if the table has column headers.
 
     """
-    def __init__(self,
-                 lineabove, linebelowheader, linebetweenrows, linebelow, headerrow, datarow, padding, with_header_hide,
-                 min_padding=MIN_PADDING,
-                 disable_numparse=None,
-                 numalign="decimal",
-                 stralign="left",
-                 multiline=True,
-                 escape_first_column=None,
-                 ):
+
+    def __init__(
+        self,
+        lineabove,
+        linebelowheader,
+        linebetweenrows,
+        linebelow,
+        headerrow,
+        datarow,
+        padding,
+        with_header_hide,
+        min_padding=MIN_PADDING,
+        disable_numparse=None,
+        numalign="decimal",
+        stralign="left",
+        multiline=True,
+        escape_first_column=None,
+    ):
         # tuple fields
         self.lineabove = lineabove
         self.linebelowheader = linebelowheader
@@ -308,7 +317,7 @@ def _latex_row(cell_values, colwidths, colaligns, escrules=LATEX_ESCAPE_RULES):
     return _build_simple_row(escaped_values, rowfmt)
 
 
-def _rst_escape_first_column(rows, headers, escape_value='..'):
+def _rst_escape_first_column(rows, headers, escape_value=".."):
     def escape_empty(val):
         if isinstance(val, (str, bytes)) and not val.strip():
             return escape_value
@@ -572,7 +581,7 @@ _table_formats = {
         datarow=DataRow("", "  ", ""),
         padding=0,
         with_header_hide=None,
-        escape_first_column='..',
+        escape_first_column="..",
     ),
     "mediawiki": TableFormat(
         lineabove=Line(
@@ -643,7 +652,7 @@ _table_formats = {
         datarow=_latex_row,
         padding=1,
         with_header_hide=None,
-        multiline=False
+        multiline=False,
     ),
     "latex_raw": TableFormat(
         lineabove=_latex_line_begin_tabular,
@@ -830,7 +839,7 @@ def simple_separated_format(separator, **kwargs):
         datarow=DataRow("", separator, ""),
         padding=0,
         with_header_hide=None,
-        **kwargs
+        **kwargs,
     )
 
 
@@ -1308,7 +1317,7 @@ def _align_header(
 
 
 def _remove_separating_lines(rows):
-    if type(rows) == list:
+    if isinstance(rows, list):
         separating_lines = []
         sans_rows = []
         for index, row in enumerate(rows):
@@ -1356,7 +1365,8 @@ def _bool(val):
 
 
 def _normalize_tabular_data(tabular_data, headers, showindex="default"):
-    """Transform a supported data type to a list of lists, and a list of headers, with headers padding.
+    """Transform a supported data type to a list of lists, and a list of headers, with headers
+    padding.
 
     Supported tabular data types:
 
@@ -2162,9 +2172,15 @@ def tabulate(
     # empty values in the first column of RST tables should be escaped (issue #82)
     # "" should be escaped as "\\ " or ".."
     if tablefmt.escape_first_column is not None:
-        list_of_lists, headers = _rst_escape_first_column(list_of_lists, headers, tablefmt.escape_first_column)
+        list_of_lists, headers = _rst_escape_first_column(
+            list_of_lists, headers, tablefmt.escape_first_column
+        )
 
-    disable_numparse = tablefmt.disable_numparse if tablefmt.disable_numparse is not None else disable_numparse
+    disable_numparse = (
+        tablefmt.disable_numparse
+        if tablefmt.disable_numparse is not None
+        else disable_numparse
+    )
     numalign = tablefmt.numalign if numalign == _DEFAULT_ALIGN else numalign
     stralign = tablefmt.stralign if stralign == _DEFAULT_ALIGN else stralign
 
@@ -2223,22 +2239,28 @@ def tabulate(
 
     # align columns
     # first set global alignment
-    if colglobalalign is not None: # if global alignment provided
+    if colglobalalign is not None:  # if global alignment provided
         aligns = [colglobalalign] * len(cols)
-    else: # default
+    else:  # default
         aligns = [numalign if ct in [int, float] else stralign for ct in coltypes]
     # then specific alignements
     if colalign is not None:
         assert isinstance(colalign, Iterable)
         if isinstance(colalign, str):
-            warnings.warn(f"As a string, `colalign` is interpreted as {[c for c in colalign]}. Did you mean `colglobalalign = \"{colalign}\"` or `colalign = (\"{colalign}\",)`?", stacklevel=2)
+            warnings.warn(
+                f"As a string, `colalign` is interpreted as {[c for c in colalign]}. "
+                f'Did you mean `colglobalalign = "{colalign}"` or `colalign = ("{colalign}",)`?',
+                stacklevel=2,
+            )
         for idx, align in enumerate(colalign):
             if not idx < len(aligns):
                 break
             elif align != "global":
                 aligns[idx] = align
     minwidths = (
-        [width_fn(h) + tablefmt.min_padding for h in headers] if headers else [0] * len(cols)
+        [width_fn(h) + tablefmt.min_padding for h in headers]
+        if headers
+        else [0] * len(cols)
     )
     cols = [
         _align_column(c, a, minw, has_invisible, enable_widechars, tablefmt.multiline)
@@ -2250,20 +2272,25 @@ def tabulate(
         # align headers and add headers
         t_cols = cols or [[""]] * len(headers)
         # first set global alignment
-        if headersglobalalign is not None: # if global alignment provided
+        if headersglobalalign is not None:  # if global alignment provided
             aligns_headers = [headersglobalalign] * len(t_cols)
-        else: # default
+        else:  # default
             aligns_headers = aligns or [stralign] * len(headers)
         # then specific header alignements
         if headersalign is not None:
             assert isinstance(headersalign, Iterable)
             if isinstance(headersalign, str):
-                warnings.warn(f"As a string, `headersalign` is interpreted as {[c for c in headersalign]}. Did you mean `headersglobalalign = \"{headersalign}\"` or `headersalign = (\"{headersalign}\",)`?", stacklevel=2)
+                warnings.warn(
+                    f"As a string, `headersalign` is interpreted as {[c for c in headersalign]}. "
+                    f'Did you mean `headersglobalalign = "{headersalign}"` '
+                    f'or `headersalign = ("{headersalign}",)`?',
+                    stacklevel=2,
+                )
             for idx, align in enumerate(headersalign):
                 hidx = headers_pad + idx
                 if not hidx < len(aligns_headers):
                     break
-                elif align == "same" and hidx < len(aligns): # same as column align
+                elif align == "same" and hidx < len(aligns):  # same as column align
                     aligns_headers[hidx] = aligns[hidx]
                 elif align != "global":
                     aligns_headers[hidx] = align
@@ -2285,7 +2312,14 @@ def tabulate(
     _reinsert_separating_lines(rows, separating_lines)
 
     return _format_table(
-        tablefmt, headers, aligns_headers, rows, minwidths, aligns, tablefmt.multiline, rowaligns=rowaligns
+        tablefmt,
+        headers,
+        aligns_headers,
+        rows,
+        minwidths,
+        aligns,
+        tablefmt.multiline,
+        rowaligns=rowaligns,
     )
 
 
@@ -2416,7 +2450,9 @@ class JupyterHTMLStr(str):
         return self
 
 
-def _format_table(fmt, headers, headersaligns, rows, colwidths, colaligns, is_multiline, rowaligns):
+def _format_table(
+    fmt, headers, headersaligns, rows, colwidths, colaligns, is_multiline, rowaligns
+):
     """Produce a plain-text representation of the table."""
     lines = []
     hidden = fmt.with_header_hide if (headers and fmt.with_header_hide) else []

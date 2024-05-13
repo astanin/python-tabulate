@@ -77,7 +77,10 @@ def sample_input(sep=" ", with_headers=False):
 
 
 def run_and_capture_stdout(cmd, input=None):
-    return subprocess.run(cmd, input=input, check=True, capture_output=True, encoding='utf-8').stdout
+    proc = subprocess.run(
+        cmd, input=input, check=True, capture_output=True, encoding="utf-8"
+    )
+    return proc.stdout
 
 
 class TemporaryTextFile:
