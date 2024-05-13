@@ -34,6 +34,11 @@ test = [
     "pandas",
     "wcwidth",
 ]
+dev = [
+    "tox",
+    "black",
+    "pre-commit",
+]
 
 [project.scripts]
 tabulate = "tabulate:_main"
