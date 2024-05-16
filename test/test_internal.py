@@ -2,15 +2,15 @@
 
 import tabulate as T
 
-from common import assert_equal, skip, rows_to_pipe_table_str, cols_to_pipe_str
+from common import skip, rows_to_pipe_table_str, cols_to_pipe_str
 
 
 def test_multiline_width():
     "Internal: _multiline_width()"
     multiline_string = "\n".join(["foo", "barbaz", "spam"])
-    assert_equal(T._multiline_width(multiline_string), 6)
+    assert T._multiline_width(multiline_string) == 6
     oneline_string = "12345"
-    assert_equal(T._multiline_width(oneline_string), len(oneline_string))
+    assert T._multiline_width(oneline_string) == len(oneline_string)
 
 
 def test_align_column_decimal():
@@ -25,7 +25,7 @@ def test_align_column_decimal():
         "    1e+234 ",
         "    1.0e234",
     ]
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_align_column_decimal_with_thousand_separators():
@@ -40,7 +40,7 @@ def test_align_column_decimal_with_thousand_separators():
         "    1e+234 ",
         "    1.0e234",
     ]
-    assert_equal(expected, output)
+    assert expected == output
 
 
 def test_align_column_decimal_with_incorrect_thousand_separators():
@@ -55,7 +55,7 @@ def test_align_column_decimal_with_incorrect_thousand_separators():
         "      1e+234 ",
         "      1.0e234",
     ]
-    assert_equal(expected, output)
+    assert expected == output
 
 
 def test_align_column_none():
@@ -63,7 +63,7 @@ def test_align_column_none():
     column = ["123.4", "56.7890"]
     output = T._align_column(column, None)
     expected = ["123.4", "56.7890"]
-    assert_equal(expected, output)
+    assert expected == output
 
 
 def test_align_column_multiline():
@@ -71,7 +71,7 @@ def test_align_column_multiline():
     column = ["1", "123", "12345\n6"]
     output = T._align_column(column, "center", is_multiline=True)
     expected = ["  1  ", " 123 ", "12345" + "\n" + "  6  "]
-    assert_equal(expected, output)
+    assert expected == output
 
 
 def test_align_cell_veritically_one_line_only():
@@ -94,7 +94,7 @@ def test_align_cell_veritically_top_single_text_multiple_pad():
 
     expected = ["one line", "        ", "        "]
 
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_align_cell_veritically_center_single_text_multiple_pad():
@@ -103,7 +103,7 @@ def test_align_cell_veritically_center_single_text_multiple_pad():
 
     expected = ["        ", "one line", "        "]
 
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_align_cell_veritically_bottom_single_text_multiple_pad():
@@ -112,7 +112,7 @@ def test_align_cell_veritically_bottom_single_text_multiple_pad():
 
     expected = ["        ", "        ", "one line"]
 
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_align_cell_veritically_top_multi_text_multiple_pad():
@@ -122,7 +122,7 @@ def test_align_cell_veritically_top_multi_text_multiple_pad():
 
     expected = ["just", "one ", "cell", "    ", "    ", "    "]
 
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_align_cell_veritically_center_multi_text_multiple_pad():
@@ -134,7 +134,7 @@ def test_align_cell_veritically_center_multi_text_multiple_pad():
     # at top when required to do make a judgement
     expected = ["    ", "just", "one ", "cell", "    ", "    "]
 
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_align_cell_veritically_bottom_multi_text_multiple_pad():
@@ -144,7 +144,7 @@ def test_align_cell_veritically_bottom_multi_text_multiple_pad():
 
     expected = ["    ", "    ", "    ", "just", "one ", "cell"]
 
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_text_to_colwidths():
@@ -170,7 +170,7 @@ def test_wrap_text_to_colwidths():
     ]
     result = T._wrap_text_to_colwidths(rows, widths)
 
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_text_wide_chars():
@@ -185,7 +185,7 @@ def test_wrap_text_wide_chars():
     expected = [["청자\n청자\n청자\n청자\n청자", "약간 감싸면 더 잘\n보일 수있는 다소 긴\n설명입니다"]]
     result = T._wrap_text_to_colwidths(rows, widths)
 
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_text_to_numbers():
@@ -202,7 +202,7 @@ def test_wrap_text_to_numbers():
     ]
 
     result = T._wrap_text_to_colwidths(rows, widths, numparses=[True, True, False])
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_text_to_colwidths_single_ansi_colors_full_cell():
@@ -229,7 +229,7 @@ def test_wrap_text_to_colwidths_single_ansi_colors_full_cell():
             )
         ]
     ]
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_text_to_colwidths_colors_wide_char():
@@ -253,7 +253,7 @@ def test_wrap_text_to_colwidths_colors_wide_char():
             )
         ]
     ]
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_text_to_colwidths_multi_ansi_colors_full_cell():
@@ -281,7 +281,7 @@ def test_wrap_text_to_colwidths_multi_ansi_colors_full_cell():
             )
         ]
     ]
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test_wrap_text_to_colwidths_multi_ansi_colors_in_subset():
@@ -308,7 +308,7 @@ def test_wrap_text_to_colwidths_multi_ansi_colors_in_subset():
             )
         ]
     ]
-    assert_equal(expected, result)
+    assert expected == result
 
 
 def test__remove_separating_lines():
@@ -324,8 +324,8 @@ def test__remove_separating_lines():
     result, sep_lines = T._remove_separating_lines(with_rows)
     expected = rows_to_pipe_table_str([[0, "a"], [1, "b"], [2, "c"], [3, "c"]])
 
-    assert_equal(expected, rows_to_pipe_table_str(result))
-    assert_equal("2|4|6", cols_to_pipe_str(sep_lines))
+    assert expected == rows_to_pipe_table_str(result)
+    assert "2|4|6" == cols_to_pipe_str(sep_lines)
 
 
 def test__reinsert_separating_lines():
@@ -342,4 +342,4 @@ def test__reinsert_separating_lines():
     T._reinsert_separating_lines(sans_rows, sep_lines)
     expected = rows_to_pipe_table_str(with_rows)
 
-    assert_equal(expected, rows_to_pipe_table_str(sans_rows))
+    assert expected == rows_to_pipe_table_str(sans_rows)
