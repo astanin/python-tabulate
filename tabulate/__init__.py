@@ -2304,6 +2304,8 @@ def _expand_iterable(original, num_desired, default):
 
 def _pad_row(cells, padding):
     if cells:
+        if cells == SEPARATING_LINE:
+            return SEPARATING_LINE
         pad = " " * padding
         padded_cells = [pad + cell + pad for cell in cells]
         return padded_cells
@@ -2427,9 +2429,10 @@ def _format_table(fmt, headers, headersaligns, rows, colwidths, colaligns, is_mu
     if padded_rows and fmt.linebetweenrows and "linebetweenrows" not in hidden:
         # initial rows with a line below
         for row, ralign in zip(padded_rows[:-1], rowaligns):
-            append_row(
-                lines, row, padded_widths, colaligns, fmt.datarow, rowalign=ralign
-            )
+            if row != SEPARATING_LINE:
+                append_row(
+                    lines, row, padded_widths, colaligns, fmt.datarow, rowalign=ralign
+                )
             _append_line(lines, padded_widths, colaligns, fmt.linebetweenrows)
         # the last row without a line below
         append_row(

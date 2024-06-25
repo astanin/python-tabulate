@@ -335,6 +335,36 @@ def test_simple_headerless_with_sep_line():
     assert_equal(expected, result)
 
 
+def test_simple_headerless_with_sep_line_with_padding_in_tablefmt():
+    "Output: simple without headers with sep line with padding in tablefmt"
+    expected = "\n".join(
+        [
+            "|------|----------|",
+            "| spam |  41.9999 |",
+            "|------|----------|",
+            "| eggs | 451      |",
+        ]
+    )
+    result = tabulate(_test_table_with_sep_line, tablefmt="github")
+    assert_equal(expected, result)
+
+
+def test_simple_headerless_with_sep_line_with_linebetweenrows_in_tablefmt():
+    "Output: simple without headers with sep line with linebetweenrows in tablefmt"
+    expected = "\n".join(
+        [
+            "+------+----------+",
+            "| spam |  41.9999 |",
+            "+------+----------+",
+            "+------+----------+",
+            "| eggs | 451      |",
+            "+------+----------+",
+        ]
+    )
+    result = tabulate(_test_table_with_sep_line, tablefmt="grid")
+    assert_equal(expected, result)
+
+
 def test_simple_multiline_headerless():
     "Output: simple with multiline cells without headers"
     table = [["foo bar\nbaz\nbau", "hello"], ["", "multiline\nworld"]]
