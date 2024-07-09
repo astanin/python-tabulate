@@ -2701,8 +2701,8 @@ def _main():
     try:
         opts, args = getopt.getopt(
             sys.argv[1:],
-            "h1o:s:F:A:f:",
-            ["help", "header", "output", "sep=", "float=", "int=", "align=", "format="],
+            "h1o:s:F:I:f:",
+            ["help", "header", "output=", "sep=", "float=", "int=", "colalign=", "format="],
         )
     except getopt.GetoptError as e:
         print(e)
