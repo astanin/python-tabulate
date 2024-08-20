@@ -1485,7 +1485,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
     # add or remove an index column
     showindex_is_a_str = type(showindex) in [str, bytes]
-    if showindex == "default" and index is not None:
+    if showindex_is_a_str and showindex == "default" and index is not None:
         rows = _prepend_row_index(rows, index)
     elif isinstance(showindex, Sized) and not showindex_is_a_str:
         rows = _prepend_row_index(rows, list(showindex))
