@@ -1413,6 +1413,19 @@ def test_fancy_grid_multiline_row_align():
     result = tabulate(table, tablefmt="fancy_grid", rowalign=[None, "center", "bottom"])
     assert_equal(expected, result)
 
+def test_colon_grid():
+    expected = "\n".join(
+        [
+            "+------+------+",
+            "| H1   | H2   |",
+            "+=====:+:====:+",
+            "| 3    | 4    |",
+            "+------+------+",
+        ]
+    )
+    result = tabulate([[3, 4]], headers=("H1", "H2"), tablefmt="colon_grid", colalign=["right", "center"])
+    assert_equal(expected, result)
+
 
 def test_outline():
     "Output: outline with headers"

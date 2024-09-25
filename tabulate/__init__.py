@@ -134,6 +134,30 @@ def _pipe_line_with_colons(colwidths, colaligns):
     return "|" + "|".join(segments) + "|"
 
 
+def _grid_segment_with_colons(colwidth, align):
+    """Return a segment of a horizontal line with optional colons which indicate
+    column's alignment in a grid table."""
+    width = colwidth
+    if align == "right":
+        return ("=" * (width - 1)) + ":"
+    elif align == "center":
+        return ":" + ("=" * (width - 2)) + ":"
+    elif align == "left":
+        return ":" + ("=" * (width - 1))
+    else:
+        return "=" * width
+
+
+def _grid_line_with_colons(colwidths, colaligns):
+    """Return a horizontal line with optional colons to indicate column's alignment
+    in a grid table."""
+    if not colaligns:
+        colaligns = [""] * len(colwidths)
+    segments = [_grid_segment_with_colons(w, a) for a, w in zip(colaligns, colwidths)]
+    return "+" + "+".join(segments) + "+"
+
+
+
 def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
     alignment = {
         "left": "",
@@ -397,6 +421,16 @@ _table_formats = {
         linebelow=Line("╘", "═", "╧", "╛"),
         headerrow=DataRow("│", "│", "│"),
         datarow=DataRow("│", "│", "│"),
+        padding=1,
+        with_header_hide=None,
+    ),
+    "colon_grid": TableFormat(
+        lineabove=Line("+", "-", "+", "+"),
+        linebelowheader=_grid_line_with_colons,
+        linebetweenrows=Line("+", "-", "+", "+"),
+        linebelow=Line("+", "-", "+", "+"),
+        headerrow=DataRow("|", "|", "|"),
+        datarow=DataRow("|", "|", "|"),
         padding=1,
         with_header_hide=None,
     ),
@@ -693,6 +727,7 @@ multiline_formats = {
     "mixed_grid": "mixed_grid",
     "double_grid": "double_grid",
     "fancy_grid": "fancy_grid",
+    "colon_grid": "colon_grid",
     "pipe": "pipe",
     "orgtbl": "orgtbl",
     "jira": "jira",
@@ -1822,6 +1857,32 @@ def tabulate(
     │ eggs      │  451      │
     ╘═══════════╧═══════════╛
 
+    "colon_grid" is similar to "grid" but uses colons only to define
+    columnwise content alignment, with no whitespace padding:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "colon_grid"))
+
+    +-----------+-----------+
+    | strings   |   numbers |
+    +:==========+:==========+
+    | spam      |   41.9999 |
+    +-----------+-----------+
+    | eggs      |  451      |
+    +-----------+-----------+
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "colon_grid",
+    ...                colalign=["right, left"]))
+
+    +-----------+-----------+
+    | strings   |   numbers |
+    +==========:+:==========+
+    | spam      |   41.9999 |
+    +-----------+-----------+
+    | eggs      |  451      |
+    +-----------+-----------+
+
     "outline" is the same as the "grid" format but doesn't draw lines between rows:
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
@@ -2138,6 +2199,10 @@ def tabulate(
         numalign = "decimal" if numalign == _DEFAULT_ALIGN else numalign
         stralign = "left" if stralign == _DEFAULT_ALIGN else stralign
 
+    if tablefmt == "colon_grid":
+        colglobalalign = "left"
+        headersglobalalign = "left"
+
     # optimization: look for ANSI control codes once,
     # enable smart width functions only if a control code is found
     #
@@ -2206,7 +2271,7 @@ def tabulate(
         aligns = [colglobalalign] * len(cols)
     else: # default
         aligns = [numalign if ct in [int, float] else stralign for ct in coltypes]
-    # then specific alignements
+    # then specific alignments
     if colalign is not None:
         assert isinstance(colalign, Iterable)
         if isinstance(colalign, str):
@@ -2219,9 +2284,12 @@ def tabulate(
     minwidths = (
         [width_fn(h) + min_padding for h in headers] if headers else [0] * len(cols)
     )
+    aligns_copy = aligns.copy()
+    if tablefmt == "colon_grid":
+        aligns_copy = ["left"] * len(cols)
     cols = [
         _align_column(c, a, minw, has_invisible, enable_widechars, is_multiline)
-        for c, a, minw in zip(cols, aligns, minwidths)
+        for c, a, minw in zip(cols, aligns_copy, minwidths)
     ]
 
     aligns_headers = None
@@ -2233,7 +2301,7 @@ def tabulate(
             aligns_headers = [headersglobalalign] * len(t_cols)
         else: # default
             aligns_headers = aligns or [stralign] * len(headers)
-        # then specific header alignements
+        # then specific header alignments
         if headersalign is not None:
             assert isinstance(headersalign, Iterable)
             if isinstance(headersalign, str):
