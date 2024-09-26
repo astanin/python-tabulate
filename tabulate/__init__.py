@@ -103,7 +103,7 @@ TableFormat = namedtuple(
 
 
 def _is_separating_line_value(value):
-    return type(value) == str and value.strip() == SEPARATING_LINE
+    return type(value) is str and value.strip() == SEPARATING_LINE
 
 
 def _is_separating_line(row):
