@@ -1464,7 +1464,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         elif (
             headers == "keys"
             and hasattr(tabular_data, "dtype")
-            and getattr(tabular_data.dtype, "names")
+            and tabular_data.dtype.names
         ):
             # numpy record array
             headers = tabular_data.dtype.names
