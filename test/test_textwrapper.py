@@ -1,6 +1,4 @@
 """Discretely test functionality of our custom TextWrapper"""
-from __future__ import unicode_literals
-
 import datetime
 
 from tabulate import _CustomTextWrap as CTW, tabulate
@@ -144,7 +142,8 @@ def test_wrap_color_in_single_line():
 
 def test_wrap_color_line_splillover():
     """TextWrapper: Wrap a line - preserve internal color tags and wrap them to
-    other lines when required, requires adding the colors tags to other lines as appropriate"""
+    other lines when required, requires adding the colors tags to other lines as appropriate
+    """
     # This has both a text color and a background color
     data = "This is a \033[31mtest string for testing TextWrap\033[0m with colors"
 
