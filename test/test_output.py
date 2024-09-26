@@ -1418,6 +1418,97 @@ def test_fancy_grid_multiline_row_align():
     assert_equal(expected, result)
 
 
+def test_colon_grid():
+    "Output: colon_grid with two columns aligned left and center"
+    expected = "\n".join(
+        [
+            "+------+------+",
+            "| H1   | H2   |",
+            "+=====:+:====:+",
+            "| 3    | 4    |",
+            "+------+------+",
+        ]
+    )
+    result = tabulate([[3, 4]], headers=("H1", "H2"), tablefmt="colon_grid", colalign=["right", "center"])
+    assert_equal(expected, result)
+
+
+def test_colon_grid_wide_characters():
+    "Output: colon_grid with wide chars in header"
+    try:
+        import wcwidth  # noqa
+    except ImportError:
+        skip("test_colon_grid_wide_characters is skipped")
+    headers = list(_test_table_headers)
+    headers[1] = "配列"
+    expected = "\n".join(
+        [
+            "+-----------+---------+",
+            "| strings   | 配列    |",
+            "+:==========+========:+",
+            "| spam      | 41.9999 |",
+            "+-----------+---------+",
+            "| eggs      | 451     |",
+            "+-----------+---------+",
+        ]
+    )
+    result = tabulate(_test_table, headers, tablefmt="colon_grid", colalign=["left", "right"])
+    assert_equal(expected, result)
+
+
+def test_colon_grid_headerless():
+    "Output: colon_grid without headers"
+    expected = "\n".join(
+        [
+            "+------+---------+",
+            "| spam | 41.9999 |",
+            "+------+---------+",
+            "| eggs | 451     |",
+            "+------+---------+",
+        ]
+    )
+    result = tabulate(_test_table, tablefmt="colon_grid")
+    assert_equal(expected, result)
+
+
+def test_colon_grid_multiline():
+    "Output: colon_grid with multiline cells"
+    table = [["Data\n5", "33\n3"]]
+    headers = ["H1\n1", "H2\n2"]
+    expected = "\n".join(
+        [
+            "+------+------+",
+            "| H1   | H2   |",
+            "| 1    | 2    |",
+            "+:=====+:=====+",
+            "| Data | 33   |",
+            "| 5    | 3    |",
+            "+------+------+",
+        ]
+    )
+    result = tabulate(table, headers, tablefmt="colon_grid")
+    assert_equal(expected, result)
+
+
+def test_colon_grid_with_empty_cells():
+    table = [["A", ""], ["", "B"]]
+    headers = ["H1", "H2"]
+    alignments = ["center", "right"]
+    expected = "\n".join(
+        [
+            "+------+------+",
+            "| H1   | H2   |",
+            "+:====:+=====:+",
+            "| A    |      |",
+            "+------+------+",
+            "|      | B    |",
+            "+------+------+",
+        ]
+    )
+    result = tabulate(table, headers, tablefmt="colon_grid", colalign=alignments)
+    assert_equal(expected, result)
+
+
 def test_outline():
     "Output: outline with headers"
     expected = "\n".join(
