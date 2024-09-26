@@ -2685,11 +2685,14 @@ class _CustomTextWrap(textwrap.TextWrapper):
             if _ansi_codes.search(chunk) is not None:
                 for group, _, _, _ in _ansi_codes.findall(chunk):
                     escape_len = len(group)
-                    if group in chunk[last_group: i + total_escape_len + escape_len - 1]:
+                    if (
+                        group
+                        in chunk[last_group : i + total_escape_len + escape_len - 1]
+                    ):
                         total_escape_len += escape_len
                         found = _ansi_codes.search(chunk[last_group:])
                         last_group += found.end()
-            cur_line.append(chunk[: i  + total_escape_len - 1])
+            cur_line.append(chunk[: i + total_escape_len - 1])
             reversed_chunks[-1] = chunk[i + total_escape_len - 1 :]
 
         # Otherwise, we have to preserve the long word intact.  Only add
