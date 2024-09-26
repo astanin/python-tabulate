@@ -53,7 +53,7 @@ pip install tabulate
 Build status
 ------------
 
-[![Build status](https://circleci.com/gh/astanin/python-tabulate.svg?style=svg)](https://circleci.com/gh/astanin/python-tabulate/tree/master) [![Build status](https://ci.appveyor.com/api/projects/status/8745yksvvol7h3d7/branch/master?svg=true)](https://ci.appveyor.com/project/astanin/python-tabulate/branch/master)
+[![python-tabulate](https://github.com/astanin/python-tabulate/actions/workflows/github-actions-tox.yml/badge.svg)](https://github.com/astanin/python-tabulate/actions/workflows/github-actions-tox.yml) [![Build status](https://ci.appveyor.com/api/projects/status/8745yksvvol7h3d7/branch/master?svg=true)](https://ci.appveyor.com/project/astanin/python-tabulate/branch/master)
 
 Library usage
 -------------
@@ -81,7 +81,7 @@ The following tabular data types are supported:
 -   list of lists or another iterable of iterables
 -   list or another iterable of dicts (keys as columns)
 -   dict of iterables (keys as columns)
--   list of dataclasses (Python 3.7+ only, field names as columns)
+-   list of dataclasses (field names as columns)
 -   two-dimensional NumPy array
 -   NumPy record arrays (names as columns)
 -   pandas.DataFrame
@@ -121,10 +121,22 @@ dictionaries or named tuples:
 ```pycon
 >>> print(tabulate({"Name": ["Alice", "Bob"],
 ...                 "Age": [24, 19]}, headers="keys"))
-  Age  Name
------  ------
-   24  Alice
-   19  Bob
+Name      Age
+------  -----
+Alice      24
+Bob        19
+```
+
+When data is a list of dictionaries, a dictionary can be passed as `headers`
+to replace the keys with other column labels:
+
+```pycon
+>>> print(tabulate([{1: "Alice", 2: 24}, {1: "Bob", 2: 19}], 
+...                headers={1: "Name", 2: "Age"}))
+Name      Age
+------  -----
+Alice      24
+Bob        19
 ```
 
 ### Row Indices
@@ -1074,14 +1086,14 @@ To run tests on all supported Python versions, make sure all Python
 interpreters, `pytest` and `tox` are installed, then run `tox` in the root
 of the project source tree.
 
-On Linux `tox` expects to find executables like `python3.7`, `python3.8` etc.
-On Windows it looks for `C:\Python37\python.exe`, `C:\Python38\python.exe` etc. respectively.
+On Linux `tox` expects to find executables like `python3.11`, `python3.12` etc.
+On Windows it looks for `C:\Python311\python.exe`, `C:\Python312\python.exe` etc. respectively.
 
 One way to install all the required versions of the Python interpreter is to use [pyenv](https://github.com/pyenv/pyenv).
 All versions can then be easily installed with something like:
 
-     pyenv install 3.7.12
-     pyenv install 3.8.12
+     pyenv install 3.11.7
+     pyenv install 3.12.1
      ...
 
 Don't forget to change your `PATH` so that `tox` knows how to find all the installed versions. Something like
@@ -1089,10 +1101,10 @@ Don't forget to change your `PATH` so that `tox` knows how to find all the insta
      export PATH="${PATH}:${HOME}/.pyenv/shims"
 
 To test only some Python environments, use `-e` option. For example, to
-test only against Python 3.7 and Python 3.10, run:
+test only against Python 3.11 and Python 3.12, run:
 
 ```shell
-tox -e py37,py310
+tox -e py311,py312
 ```
 
 in the root of the project source tree.
@@ -1100,7 +1112,7 @@ in the root of the project source tree.
 To enable NumPy and Pandas tests, run:
 
 ```shell
-tox -e py37-extra,py310-extra
+tox -e py311-extra,py312-extra
 ```
 
 (this may take a long time the first time, because NumPy and Pandas will

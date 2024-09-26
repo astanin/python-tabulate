@@ -11,6 +11,7 @@ import re
 import math
 import textwrap
 import dataclasses
+import sys
 
 try:
     import wcwidth  # optional wide-character (CJK) support
@@ -102,12 +103,17 @@ TableFormat = namedtuple(
 )
 
 
+def _is_separating_line_value(value):
+    return type(value) == str and value.strip() == SEPARATING_LINE
+
+
 def _is_separating_line(row):
     row_type = type(row)
     is_sl = (row_type == list or row_type == str) and (
-        (len(row) >= 1 and row[0] == SEPARATING_LINE)
-        or (len(row) >= 2 and row[1] == SEPARATING_LINE)
+        (len(row) >= 1 and _is_separating_line_value(row[0]))
+        or (len(row) >= 2 and _is_separating_line_value(row[1]))
     )
+
     return is_sl
 
 
@@ -224,7 +230,7 @@ def _asciidoc_row(is_header, *args):
             colwidths, [alignment[colalign] for colalign in colaligns]
         )
         asciidoc_column_specifiers = [
-            "{:d}{}".format(width, align) for width, align in asciidoc_alignments
+            f"{width:d}{align}" for width, align in asciidoc_alignments
         ]
         header_list = ['cols="' + (",".join(asciidoc_column_specifiers)) + '"']
 
@@ -1229,6 +1235,17 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
     if valtype is str:
         return f"{val}"
     elif valtype is int:
+        if isinstance(val, str):
+            val_striped = val.encode('unicode_escape').decode('utf-8')
+            colored = re.search(r'(\\[xX]+[0-9a-fA-F]+\[\d+[mM]+)([0-9.]+)(\\.*)$', val_striped)
+            if colored:
+                total_groups = len(colored.groups())
+                if total_groups == 3:
+                    digits = colored.group(2)
+                    if digits.isdigit():
+                        val_new = colored.group(1) + format(int(digits), intfmt) + colored.group(3)
+                        val = val_new.encode('utf-8').decode('unicode_escape')
+            intfmt = ""
         return format(val, intfmt)
     elif valtype is bytes:
         try:
@@ -1271,7 +1288,7 @@ def _align_header(
 
 
 def _remove_separating_lines(rows):
-    if type(rows) == list:
+    if isinstance(rows, list):
         separating_lines = []
         sans_rows = []
         for index, row in enumerate(rows):
@@ -1297,7 +1314,7 @@ def _prepend_row_index(rows, index):
     if isinstance(index, Sized) and len(index) != len(rows):
         raise ValueError(
             "index must be as long as the number of data rows: "
-            + "len(index)={} len(rows)={}".format(len(index), len(rows))
+            + f"len(index)={len(index)} len(rows)={len(rows)}"
         )
     sans_rows, separating_lines = _remove_separating_lines(rows)
     new_rows = []
@@ -1319,7 +1336,8 @@ def _bool(val):
 
 
 def _normalize_tabular_data(tabular_data, headers, showindex="default"):
-    """Transform a supported data type to a list of lists, and a list of headers, with headers padding.
+    """Transform a supported data type to a list of lists, and a list of headers,
+    with headers padding.
 
     Supported tabular data types:
 
@@ -1331,7 +1349,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
     * list of OrderedDicts (usually used with headers="keys")
 
-    * list of dataclasses (Python 3.7+ only, usually used with headers="keys")
+    * list of dataclasses (usually used with headers="keys")
 
     * 2D NumPy arrays
 
@@ -1353,9 +1371,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
     try:
         bool(headers)
-        is_headers2bool_broken = False  # noqa
     except ValueError:  # numpy.ndarray, pandas.core.index.Index, ...
-        is_headers2bool_broken = True  # noqa
         headers = list(headers)
 
     index = None
@@ -1457,7 +1473,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             and len(rows) > 0
             and dataclasses.is_dataclass(rows[0])
         ):
-            # Python 3.7+'s dataclass
+            # Python's dataclass
             field_names = [field.name for field in dataclasses.fields(rows[0])]
             if headers == "keys":
                 headers = field_names
@@ -1600,7 +1616,7 @@ def tabulate(
     The first required argument (`tabular_data`) can be a
     list-of-lists (or another iterable of iterables), a list of named
     tuples, a dictionary of iterables, an iterable of dictionaries,
-    an iterable of dataclasses (Python 3.7+), a two-dimensional NumPy array,
+    an iterable of dataclasses, a two-dimensional NumPy array,
     NumPy record array, or a Pandas' dataframe.
 
 
@@ -2202,15 +2218,19 @@ def tabulate(
 
     # align columns
     # first set global alignment
-    if colglobalalign is not None: # if global alignment provided
+    if colglobalalign is not None:  # if global alignment provided
         aligns = [colglobalalign] * len(cols)
-    else: # default
+    else:  # default
         aligns = [numalign if ct in [int, float] else stralign for ct in coltypes]
     # then specific alignements
     if colalign is not None:
         assert isinstance(colalign, Iterable)
         if isinstance(colalign, str):
-            warnings.warn(f"As a string, `colalign` is interpreted as {[c for c in colalign]}. Did you mean `colglobalalign = \"{colalign}\"` or `colalign = (\"{colalign}\",)`?", stacklevel=2)
+            warnings.warn(
+                f"As a string, `colalign` is interpreted as {[c for c in colalign]}. "
+                f'Did you mean `colglobalalign = "{colalign}"` or `colalign = ("{colalign}",)`?',
+                stacklevel=2,
+            )
         for idx, align in enumerate(colalign):
             if not idx < len(aligns):
                 break
@@ -2229,20 +2249,25 @@ def tabulate(
         # align headers and add headers
         t_cols = cols or [[""]] * len(headers)
         # first set global alignment
-        if headersglobalalign is not None: # if global alignment provided
+        if headersglobalalign is not None:  # if global alignment provided
             aligns_headers = [headersglobalalign] * len(t_cols)
-        else: # default
+        else:  # default
             aligns_headers = aligns or [stralign] * len(headers)
         # then specific header alignements
         if headersalign is not None:
             assert isinstance(headersalign, Iterable)
             if isinstance(headersalign, str):
-                warnings.warn(f"As a string, `headersalign` is interpreted as {[c for c in headersalign]}. Did you mean `headersglobalalign = \"{headersalign}\"` or `headersalign = (\"{headersalign}\",)`?", stacklevel=2)
+                warnings.warn(
+                    f"As a string, `headersalign` is interpreted as {[c for c in headersalign]}. "
+                    f'Did you mean `headersglobalalign = "{headersalign}"` '
+                    f'or `headersalign = ("{headersalign}",)`?',
+                    stacklevel=2,
+                )
             for idx, align in enumerate(headersalign):
                 hidx = headers_pad + idx
                 if not hidx < len(aligns_headers):
                     break
-                elif align == "same" and hidx < len(aligns): # same as column align
+                elif align == "same" and hidx < len(aligns):  # same as column align
                     aligns_headers[hidx] = aligns[hidx]
                 elif align != "global":
                     aligns_headers[hidx] = align
@@ -2267,7 +2292,14 @@ def tabulate(
     _reinsert_separating_lines(rows, separating_lines)
 
     return _format_table(
-        tablefmt, headers, aligns_headers, rows, minwidths, aligns, is_multiline, rowaligns=rowaligns
+        tablefmt,
+        headers,
+        aligns_headers,
+        rows,
+        minwidths,
+        aligns,
+        is_multiline,
+        rowaligns=rowaligns,
     )
 
 
@@ -2398,7 +2430,9 @@ class JupyterHTMLStr(str):
         return self
 
 
-def _format_table(fmt, headers, headersaligns, rows, colwidths, colaligns, is_multiline, rowaligns):
+def _format_table(
+    fmt, headers, headersaligns, rows, colwidths, colaligns, is_multiline, rowaligns
+):
     """Produce a plain-text representation of the table."""
     lines = []
     hidden = fmt.with_header_hide if (headers and fmt.with_header_hide) else []
@@ -2694,8 +2728,6 @@ def _main():
                               (default: simple)
     """
     import getopt
-    import sys
-    import textwrap
 
     usage = textwrap.dedent(_main.__doc__)
     try:
