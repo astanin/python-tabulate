@@ -1,4 +1,5 @@
 """Test output of the various forms of tabular data."""
+from pytest import mark
 
 import tabulate as tabulate_module
 from common import assert_equal, raises, skip, check_warnings
@@ -136,7 +137,10 @@ def test_plain_maxcolwidth_autowraps_wide_chars():
 
     table = [
         ["hdr", "fold"],
-        ["1", "약간 감싸면 더 잘 보일 수있는 다소 긴 설명입니다 설명입니다 설명입니다 설명입니다 설명"],
+        [
+            "1",
+            "약간 감싸면 더 잘 보일 수있는 다소 긴 설명입니다 설명입니다 설명입니다 설명입니다 설명",
+        ],
     ]
     expected = "\n".join(
         [
@@ -1414,6 +1418,97 @@ def test_fancy_grid_multiline_row_align():
     assert_equal(expected, result)
 
 
+def test_colon_grid():
+    "Output: colon_grid with two columns aligned left and center"
+    expected = "\n".join(
+        [
+            "+------+------+",
+            "| H1   | H2   |",
+            "+=====:+:====:+",
+            "| 3    | 4    |",
+            "+------+------+",
+        ]
+    )
+    result = tabulate([[3, 4]], headers=("H1", "H2"), tablefmt="colon_grid", colalign=["right", "center"])
+    assert_equal(expected, result)
+
+
+def test_colon_grid_wide_characters():
+    "Output: colon_grid with wide chars in header"
+    try:
+        import wcwidth  # noqa
+    except ImportError:
+        skip("test_colon_grid_wide_characters is skipped")
+    headers = list(_test_table_headers)
+    headers[1] = "配列"
+    expected = "\n".join(
+        [
+            "+-----------+---------+",
+            "| strings   | 配列    |",
+            "+:==========+========:+",
+            "| spam      | 41.9999 |",
+            "+-----------+---------+",
+            "| eggs      | 451     |",
+            "+-----------+---------+",
+        ]
+    )
+    result = tabulate(_test_table, headers, tablefmt="colon_grid", colalign=["left", "right"])
+    assert_equal(expected, result)
+
+
+def test_colon_grid_headerless():
+    "Output: colon_grid without headers"
+    expected = "\n".join(
+        [
+            "+------+---------+",
+            "| spam | 41.9999 |",
+            "+------+---------+",
+            "| eggs | 451     |",
+            "+------+---------+",
+        ]
+    )
+    result = tabulate(_test_table, tablefmt="colon_grid")
+    assert_equal(expected, result)
+
+
+def test_colon_grid_multiline():
+    "Output: colon_grid with multiline cells"
+    table = [["Data\n5", "33\n3"]]
+    headers = ["H1\n1", "H2\n2"]
+    expected = "\n".join(
+        [
+            "+------+------+",
+            "| H1   | H2   |",
+            "| 1    | 2    |",
+            "+:=====+:=====+",
+            "| Data | 33   |",
+            "| 5    | 3    |",
+            "+------+------+",
+        ]
+    )
+    result = tabulate(table, headers, tablefmt="colon_grid")
+    assert_equal(expected, result)
+
+
+def test_colon_grid_with_empty_cells():
+    table = [["A", ""], ["", "B"]]
+    headers = ["H1", "H2"]
+    alignments = ["center", "right"]
+    expected = "\n".join(
+        [
+            "+------+------+",
+            "| H1   | H2   |",
+            "+:====:+=====:+",
+            "| A    |      |",
+            "+------+------+",
+            "|      | B    |",
+            "+------+------+",
+        ]
+    )
+    result = tabulate(table, headers, tablefmt="colon_grid", colalign=alignments)
+    assert_equal(expected, result)
+
+
 def test_outline():
     "Output: outline with headers"
     expected = "\n".join(
@@ -2638,6 +2733,44 @@ def test_intfmt():
     assert_equal(expected, result)
 
 
+def test_intfmt_with_string_as_integer():
+    "Output: integer format"
+    result = tabulate([[82642], ["1500"], [2463]], intfmt=",", tablefmt="plain")
+    expected = "82,642\n  1500\n 2,463"
+    assert_equal(expected, result)
+
+
+@mark.skip(reason="It detects all values as floats but there are strings and integers.")
+def test_intfmt_with_string_with_floats():
+    "Output: integer format"
+    result = tabulate([[82000.38], ["1500.47"], ["2463"], [92165]], intfmt=",", tablefmt="plain")
+    expected = "82000.4\n 1500.47\n 2463\n92,165"
+    assert_equal(expected, result)
+
+
+def test_intfmt_with_colors():
+    "Regression: Align ANSI-colored values as if they were colorless."
+    colortable = [
+        ("\x1b[33mabc\x1b[0m", 42, "\x1b[31m42\x1b[0m"),
+        ("\x1b[35mdef\x1b[0m", 987654321, "\x1b[32m987654321\x1b[0m"),
+    ]
+    colorheaders = ("test", "\x1b[34mtest\x1b[0m", "test")
+    formatted = tabulate(colortable, colorheaders, "grid", intfmt=",")
+    expected = "\n".join(
+        [
+            "+--------+-------------+-------------+",
+            "| test   |        \x1b[34mtest\x1b[0m |        test |",
+            "+========+=============+=============+",
+            "| \x1b[33mabc\x1b[0m    |          42 |          \x1b[31m42\x1b[0m |",
+            "+--------+-------------+-------------+",
+            "| \x1b[35mdef\x1b[0m    | 987,654,321 | \x1b[32m987,654,321\x1b[0m |",
+            "+--------+-------------+-------------+",
+        ]
+    )
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
+    assert_equal(expected, formatted)
+
+
 def test_empty_data_with_headers():
     "Output: table with empty data and headers as firstrow"
     expected = ""
@@ -2680,60 +2813,72 @@ def test_colalign_multi_with_sep_line():
     expected = "  one  two\n\nthree  four"
     assert_equal(expected, result)
 
+
 def test_column_global_and_specific_alignment():
-    """ Test `colglobalalign` and `"global"` parameter for `colalign`. """
-    table = [[1,2,3,4],[111,222,333,444]]
-    colglobalalign = 'center'
-    colalign = ('global','left', 'right')
+    """Test `colglobalalign` and `"global"` parameter for `colalign`."""
+    table = [[1, 2, 3, 4], [111, 222, 333, 444]]
+    colglobalalign = "center"
+    colalign = ("global", "left", "right")
     result = tabulate(table, colglobalalign=colglobalalign, colalign=colalign)
-    expected = '\n'.join([
-        "---  ---  ---  ---",
-        " 1   2      3   4",
-        "111  222  333  444",
-        "---  ---  ---  ---"])
+    expected = "\n".join(
+        [
+            "---  ---  ---  ---",
+            " 1   2      3   4",
+            "111  222  333  444",
+            "---  ---  ---  ---",
+        ]
+    )
     assert_equal(expected, result)
+
 
 def test_headers_global_and_specific_alignment():
-    """ Test `headersglobalalign` and `headersalign`. """
-    table = [[1,2,3,4,5,6],[111,222,333,444,555,666]]
-    colglobalalign = 'center'
-    colalign = ('left',)
-    headers = ['h', 'e', 'a', 'd', 'e', 'r']
-    headersglobalalign = 'right'
-    headersalign = ('same', 'same', 'left', 'global', 'center')
-    result = tabulate(table, headers=headers, colglobalalign=colglobalalign, colalign=colalign, headersglobalalign=headersglobalalign, headersalign=headersalign)
-    expected = '\n'.join([
-        "h     e   a      d   e     r",
-        "---  ---  ---  ---  ---  ---",
-        "1     2    3    4    5    6",
-        "111  222  333  444  555  666"])
+    """Test `headersglobalalign` and `headersalign`."""
+    table = [[1, 2, 3, 4, 5, 6], [111, 222, 333, 444, 555, 666]]
+    colglobalalign = "center"
+    colalign = ("left",)
+    headers = ["h", "e", "a", "d", "e", "r"]
+    headersglobalalign = "right"
+    headersalign = ("same", "same", "left", "global", "center")
+    result = tabulate(
+        table,
+        headers=headers,
+        colglobalalign=colglobalalign,
+        colalign=colalign,
+        headersglobalalign=headersglobalalign,
+        headersalign=headersalign,
+    )
+    expected = "\n".join(
+        [
+            "h     e   a      d   e     r",
+            "---  ---  ---  ---  ---  ---",
+            "1     2    3    4    5    6",
+            "111  222  333  444  555  666",
+        ]
+    )
     assert_equal(expected, result)
+
 
 def test_colalign_or_headersalign_too_long():
-    """ Test `colalign` and `headersalign` too long. """
-    table = [[1,2],[111,222]]
-    colalign = ('global', 'left', 'center')
-    headers = ['h']
-    headersalign = ('center', 'right', 'same')
-    result = tabulate(table, headers=headers, colalign=colalign, headersalign=headersalign)
-    expected = '\n'.join([
-        "      h",
-        "---  ---",
-        "  1  2",
-        "111  222"])
+    """Test `colalign` and `headersalign` too long."""
+    table = [[1, 2], [111, 222]]
+    colalign = ("global", "left", "center")
+    headers = ["h"]
+    headersalign = ("center", "right", "same")
+    result = tabulate(
+        table, headers=headers, colalign=colalign, headersalign=headersalign
+    )
+    expected = "\n".join(["      h", "---  ---", "  1  2", "111  222"])
     assert_equal(expected, result)
 
+
 def test_warning_when_colalign_or_headersalign_is_string():
-    """ Test user warnings when `colalign` or `headersalign` is a string. """
-    table = [[1,"bar"]]
-    opt = {
-        'colalign': "center",
-        'headers': ['foo', '2'],
-        'headersalign': "center"}
-    check_warnings((tabulate, [table], opt),
-        num = 2,
-        category = UserWarning,
-        contain = "As a string")
+    """Test user warnings when `colalign` or `headersalign` is a string."""
+    table = [[1, "bar"]]
+    opt = {"colalign": "center", "headers": ["foo", "2"], "headersalign": "center"}
+    check_warnings(
+        (tabulate, [table], opt), num=2, category=UserWarning, contain="As a string"
+    )
+
 
 def test_float_conversions():
     "Output: float format parsed"
@@ -2932,6 +3077,27 @@ def test_list_of_lists_with_index_with_sep_line():
         ]
     )
     result = tabulate(dd, headers=["a", "b"], showindex=True)
+    assert_equal(expected, result)
+
+
+def test_with_padded_columns_with_sep_line():
+    table = [
+        ["1", "one"],  # "1" as a str on purpose
+        [1_000, "one K"],
+        SEPARATING_LINE,
+        [1_000_000, "one M"],
+    ]
+    expected = "\n".join(
+        [
+            "+---------+-------+",
+            "|       1 | one   |",
+            "|    1000 | one K |",
+            "|---------+-------|",
+            "| 1000000 | one M |",
+            "+---------+-------+",
+        ]
+    )
+    result = tabulate(table, tablefmt="psql")
     assert_equal(expected, result)
 
 

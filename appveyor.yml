@@ -8,14 +8,14 @@ environment:
     # The list here is complete (excluding Python 2.6, which
     # isn't covered by this document) at the time of writing.
 
-    - PYTHON: "C:\\Python37"
-    - PYTHON: "C:\\Python38"
-    - PYTHON: "C:\\Python39"
-    - PYTHON: "C:\\Python37-x64"
-    - PYTHON: "C:\\Python38-x64"
+    #- PYTHON: "C:\\Python39"
+    #- PYTHON: "C:\\Python310"
+    #- PYTHON: "C:\\Python311"
+    #- PYTHON: "C:\\Python312"
     - PYTHON: "C:\\Python39-x64"
     - PYTHON: "C:\\Python310-x64"
     - PYTHON: "C:\\Python311-x64"
+    - PYTHON: "C:\\Python312-x64"
 
 install:
   # Newer setuptools is needed for proper support of pyproject.toml
@@ -29,9 +29,6 @@ build: off
 
 test_script:
   # Put your test command here.
-  # If you don't need to build C extensions on 64-bit Python 3.3 or 3.4,
-  # you can remove "build.cmd" from the front of the command, as it's
-  # only needed to support those cases.
   # Note that you must use the environment variable %PYTHON% to refer to
   # the interpreter you're using - Appveyor does not do anything special
   # to put the Python version you want to use on PATH.
@@ -40,9 +37,7 @@ test_script:
 
 after_test:
   # This step builds your wheels.
-  # Again, you only need build.cmd if you're building C extensions for
-  # 64-bit Python 3.3/3.4. And you need to use %PYTHON% to get the correct
-  # interpreter
+  # Again, you need to use %PYTHON% to get the correct interpreter
   #- "build.cmd %PYTHON%\\python.exe setup.py bdist_wheel"
   - "%PYTHON%\\python.exe -m build -nswx ."
 
