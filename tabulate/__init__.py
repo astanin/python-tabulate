@@ -1421,7 +1421,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     index = None
     if hasattr(tabular_data, "keys") and hasattr(tabular_data, "values"):
         # dict-like and pandas.DataFrame?
-        if hasattr(tabular_data.values, "__call__"):
+        if callable(tabular_data.values):
             # likely a conventional dict
             keys = tabular_data.keys()
             try:
@@ -2453,7 +2453,7 @@ def _build_row(padded_cells, colwidths, colaligns, rowfmt):
     "Return a string which represents a row of data cells."
     if not rowfmt:
         return None
-    if hasattr(rowfmt, "__call__"):
+    if callable(rowfmt):
         return rowfmt(padded_cells, colwidths, colaligns)
     else:
         return _build_simple_row(padded_cells, rowfmt)
@@ -2504,7 +2504,7 @@ def _build_line(colwidths, colaligns, linefmt):
     "Return a string which represents a horizontal line."
     if not linefmt:
         return None
-    if hasattr(linefmt, "__call__"):
+    if callable(linefmt):
         return linefmt(colwidths, colaligns)
     else:
         begin, fill, sep, end = linefmt
