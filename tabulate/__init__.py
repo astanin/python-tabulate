@@ -33,9 +33,6 @@ except ImportError:
 # minimum extra space in headers
 MIN_PADDING = 2
 
-# Whether or not to preserve leading/trailing whitespace in data.
-PRESERVE_WHITESPACE = False
-
 _DEFAULT_FLOATFMT = "g"
 _DEFAULT_INTFMT = ""
 _DEFAULT_MISSINGVAL = ""
@@ -161,7 +158,6 @@ def _grid_line_with_colons(colwidths, colaligns):
         colaligns = [""] * len(colwidths)
     segments = [_grid_segment_with_colons(w, a) for a, w in zip(colaligns, colwidths)]
     return "+" + "+".join(segments) + "+"
-
 
 
 def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
@@ -1100,13 +1096,13 @@ def _choose_width_fn(has_invisible, enable_widechars, is_multiline):
     return width_fn
 
 
-def _align_column_choose_padfn(strings, alignment, has_invisible):
+def _align_column_choose_padfn(strings, alignment, has_invisible, preserve_whitespace):
     if alignment == "right":
-        if not PRESERVE_WHITESPACE:
+        if not preserve_whitespace:
             strings = [s.strip() for s in strings]
         padfn = _padleft
     elif alignment == "center":
-        if not PRESERVE_WHITESPACE:
+        if not preserve_whitespace:
             strings = [s.strip() for s in strings]
         padfn = _padboth
     elif alignment == "decimal":
@@ -1120,7 +1116,7 @@ def _align_column_choose_padfn(strings, alignment, has_invisible):
     elif not alignment:
         padfn = _padnone
     else:
-        if not PRESERVE_WHITESPACE:
+        if not preserve_whitespace:
             strings = [s.strip() for s in strings]
         padfn = _padright
     return strings, padfn
@@ -1163,9 +1159,12 @@ def _align_column(
     has_invisible=True,
     enable_widechars=False,
     is_multiline=False,
+    preserve_whitespace=False,
 ):
     """[string] -> [padded_string]"""
-    strings, padfn = _align_column_choose_padfn(strings, alignment, has_invisible)
+    strings, padfn = _align_column_choose_padfn(
+        strings, alignment, has_invisible, preserve_whitespace
+    )
     width_fn = _align_column_choose_width_fn(
         has_invisible, enable_widechars, is_multiline
     )
@@ -1271,15 +1270,21 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
         return f"{val}"
     elif valtype is int:
         if isinstance(val, str):
-            val_striped = val.encode('unicode_escape').decode('utf-8')
-            colored = re.search(r'(\\[xX]+[0-9a-fA-F]+\[\d+[mM]+)([0-9.]+)(\\.*)$', val_striped)
+            val_striped = val.encode("unicode_escape").decode("utf-8")
+            colored = re.search(
+                r"(\\[xX]+[0-9a-fA-F]+\[\d+[mM]+)([0-9.]+)(\\.*)$", val_striped
+            )
             if colored:
                 total_groups = len(colored.groups())
                 if total_groups == 3:
                     digits = colored.group(2)
                     if digits.isdigit():
-                        val_new = colored.group(1) + format(int(digits), intfmt) + colored.group(3)
-                        val = val_new.encode('utf-8').decode('unicode_escape')
+                        val_new = (
+                            colored.group(1)
+                            + format(int(digits), intfmt)
+                            + colored.group(3)
+                        )
+                        val = val_new.encode("utf-8").decode("unicode_escape")
             intfmt = ""
         return format(val, intfmt)
     elif valtype is bytes:
@@ -1645,6 +1650,7 @@ def tabulate(
     disable_numparse=False,
     colglobalalign=None,
     colalign=None,
+    preserve_whitespace=False,
     maxcolwidths=None,
     headersglobalalign=None,
     headersalign=None,
@@ -2323,7 +2329,15 @@ def tabulate(
     if tablefmt == "colon_grid":
         aligns_copy = ["left"] * len(cols)
     cols = [
-        _align_column(c, a, minw, has_invisible, enable_widechars, is_multiline)
+        _align_column(
+            c,
+            a,
+            minw,
+            has_invisible,
+            enable_widechars,
+            is_multiline,
+            preserve_whitespace,
+        )
         for c, a, minw in zip(cols, aligns_copy, minwidths)
     ]
 
@@ -2820,7 +2834,16 @@ def _main():
         opts, args = getopt.getopt(
             sys.argv[1:],
             "h1o:s:F:I:f:",
-            ["help", "header", "output=", "sep=", "float=", "int=", "colalign=", "format="],
+            [
+                "help",
+                "header",
+                "output=",
+                "sep=",
+                "float=",
+                "int=",
+                "colalign=",
+                "format=",
+            ],
         )
     except getopt.GetoptError as e:
         print(e)

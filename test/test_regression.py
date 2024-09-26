@@ -513,6 +513,7 @@ def test_numpy_int64_as_integer():
     except ImportError:
         raise skip("")
 
+
 def test_empty_table_with_colalign():
     "Regression: empty table with colalign kwarg"
     table = tabulate([], ["a", "b", "c"], colalign=("center", "left", "left", "center"))
