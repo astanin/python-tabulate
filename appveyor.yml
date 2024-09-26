@@ -8,9 +8,10 @@ environment:
     # The list here is complete (excluding Python 2.6, which
     # isn't covered by this document) at the time of writing.
 
-    - PYTHON: "C:\\Python38"
     - PYTHON: "C:\\Python39"
-    - PYTHON: "C:\\Python38-x64"
+    - PYTHON: "C:\\Python310"
+    - PYTHON: "C:\\Python311"
+    - PYTHON: "C:\\Python312"
     - PYTHON: "C:\\Python39-x64"
     - PYTHON: "C:\\Python310-x64"
     - PYTHON: "C:\\Python311-x64"
