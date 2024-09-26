@@ -55,6 +55,8 @@ def test_tabulate_signature():
         ("headersalign", None),
         ("rowalign", None),
         ("maxheadercolwidths", None),
+        ("break_long_words", True),
+        ("break_on_hyphens", True),
     ]
     _check_signature(tabulate, expected_sig)
 
