@@ -1108,8 +1108,7 @@ def _flat_list(nested_list):
     ret = []
     for item in nested_list:
         if isinstance(item, list):
-            for subitem in item:
-                ret.append(subitem)
+            ret.extend(item)
         else:
             ret.append(item)
     return ret
