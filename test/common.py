@@ -40,6 +40,6 @@ def check_warnings(func_args_kwargs, *, num=None, category=None, contain=None):
         if num is not None:
             assert len(W) == num
         if category is not None:
-            assert all([issubclass(w.category, category) for w in W])
+            assert all(issubclass(w.category, category) for w in W)
         if contain is not None:
-            assert all([contain in str(w.message) for w in W])
+            assert all(contain in str(w.message) for w in W)
