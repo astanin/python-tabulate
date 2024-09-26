@@ -714,7 +714,7 @@ _table_formats = {
 }
 
 
-tabulate_formats = list(sorted(_table_formats.keys()))
+tabulate_formats = sorted(_table_formats.keys())
 
 # The table formats for which multiline cells will be folded into subsequent
 # table rows. The key is the original format specified at the API. The value is
