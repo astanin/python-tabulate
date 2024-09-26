@@ -1,4 +1,5 @@
 """Discretely test functionality of our custom TextWrapper"""
+
 import datetime
 
 from tabulate import _CustomTextWrap as CTW, tabulate

@@ -1,4 +1,5 @@
 """Test output of the various forms of tabular data."""
+
 from pytest import mark
 
 from common import assert_equal, raises, skip, check_warnings
