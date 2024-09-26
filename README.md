@@ -131,7 +131,7 @@ When data is a list of dictionaries, a dictionary can be passed as `headers`
 to replace the keys with other column labels:
 
 ```pycon
->>> print(tabulate([{1: "Alice", 2: 24}, {1: "Bob", 2: 19}], 
+>>> print(tabulate([{1: "Alice", 2: 24}, {1: "Bob", 2: 19}],
 ...                headers={1: "Name", 2: "Age"}))
 Name      Age
 ------  -----

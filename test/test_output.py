@@ -1,7 +1,6 @@
 """Test output of the various forms of tabular data."""
 from pytest import mark
 
-import tabulate as tabulate_module
 from common import assert_equal, raises, skip, check_warnings
 from tabulate import tabulate, simple_separated_format, SEPARATING_LINE
 
@@ -1459,7 +1458,12 @@ def test_colon_grid():
             "+------+------+",
         ]
     )
-    result = tabulate([[3, 4]], headers=("H1", "H2"), tablefmt="colon_grid", colalign=["right", "center"])
+    result = tabulate(
+        [[3, 4]],
+        headers=("H1", "H2"),
+        tablefmt="colon_grid",
+        colalign=["right", "center"],
+    )
     assert_equal(expected, result)
 
 
@@ -1482,7 +1486,9 @@ def test_colon_grid_wide_characters():
             "+-----------+---------+",
         ]
     )
-    result = tabulate(_test_table, headers, tablefmt="colon_grid", colalign=["left", "right"])
+    result = tabulate(
+        _test_table, headers, tablefmt="colon_grid", colalign=["left", "right"]
+    )
     assert_equal(expected, result)
 
 
@@ -2773,7 +2779,9 @@ def test_intfmt_with_string_as_integer():
 @mark.skip(reason="It detects all values as floats but there are strings and integers.")
 def test_intfmt_with_string_with_floats():
     "Output: integer format"
-    result = tabulate([[82000.38], ["1500.47"], ["2463"], [92165]], intfmt=",", tablefmt="plain")
+    result = tabulate(
+        [[82000.38], ["1500.47"], ["2463"], [92165]], intfmt=",", tablefmt="plain"
+    )
     expected = "82000.4\n 1500.47\n 2463\n92,165"
     assert_equal(expected, result)
 
