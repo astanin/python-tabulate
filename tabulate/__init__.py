@@ -1864,11 +1864,11 @@ def tabulate(
     ...                ["strings", "numbers"], "colon_grid"))
 
     +-----------+-----------+
-    | strings   |   numbers |
+    | strings   | numbers   |
     +:==========+:==========+
-    | spam      |   41.9999 |
+    | spam      | 41.9999   |
     +-----------+-----------+
-    | eggs      |  451      |
+    | eggs      | 451       |
     +-----------+-----------+
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
@@ -1876,11 +1876,11 @@ def tabulate(
     ...                colalign=["right, left"]))
 
     +-----------+-----------+
-    | strings   |   numbers |
+    | strings   | numbers   |
     +==========:+:==========+
-    | spam      |   41.9999 |
+    | spam      | 41.9999   |
     +-----------+-----------+
-    | eggs      |  451      |
+    | eggs      | 451       |
     +-----------+-----------+
 
     "outline" is the same as the "grid" format but doesn't draw lines between rows:
