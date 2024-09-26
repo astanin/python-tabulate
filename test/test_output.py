@@ -136,7 +136,10 @@ def test_plain_maxcolwidth_autowraps_wide_chars():
 
     table = [
         ["hdr", "fold"],
-        ["1", "약간 감싸면 더 잘 보일 수있는 다소 긴 설명입니다 설명입니다 설명입니다 설명입니다 설명"],
+        [
+            "1",
+            "약간 감싸면 더 잘 보일 수있는 다소 긴 설명입니다 설명입니다 설명입니다 설명입니다 설명",
+        ],
     ]
     expected = "\n".join(
         [

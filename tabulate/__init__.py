@@ -2762,7 +2762,7 @@ def _main():
             print(usage)
             sys.exit(0)
     files = [sys.stdin] if not args else args
-    with (sys.stdout if outfile == "-" else open(outfile, "w")) as out:
+    with sys.stdout if outfile == "-" else open(outfile, "w") as out:
         for f in files:
             if f == "-":
                 f = sys.stdin
