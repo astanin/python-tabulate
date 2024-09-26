@@ -182,7 +182,12 @@ def test_wrap_text_wide_chars():
 
     rows = [["청자청자청자청자청자", "약간 감싸면 더 잘 보일 수있는 다소 긴 설명입니다"]]
     widths = [5, 20]
-    expected = [["청자\n청자\n청자\n청자\n청자", "약간 감싸면 더 잘\n보일 수있는 다소 긴\n설명입니다"]]
+    expected = [
+        [
+            "청자\n청자\n청자\n청자\n청자",
+            "약간 감싸면 더 잘\n보일 수있는 다소 긴\n설명입니다",
+        ]
+    ]
     result = T._wrap_text_to_colwidths(rows, widths)
 
     assert_equal(expected, result)

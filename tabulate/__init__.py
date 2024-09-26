@@ -104,7 +104,7 @@ TableFormat = namedtuple(
 
 
 def _is_separating_line_value(value):
-    return type(value) == str and value.strip() == SEPARATING_LINE
+    return type(value) is str and value.strip() == SEPARATING_LINE
 
 
 def _is_separating_line(row):
@@ -2770,7 +2770,7 @@ def _main():
             print(usage)
             sys.exit(0)
     files = [sys.stdin] if not args else args
-    with (sys.stdout if outfile == "-" else open(outfile, "w")) as out:
+    with sys.stdout if outfile == "-" else open(outfile, "w") as out:
         for f in files:
             if f == "-":
                 f = sys.stdin
