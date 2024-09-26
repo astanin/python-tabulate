@@ -1548,7 +1548,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
     headers = list(map(str, headers))
     #    rows = list(map(list, rows))
-    rows = list(map(lambda r: r if _is_separating_line(r) else list(r), rows))
+    rows = [r if _is_separating_line(r) else list(r) for r in rows]
 
     # add or remove an index column
     showindex_is_a_str = type(showindex) in [str, bytes]
