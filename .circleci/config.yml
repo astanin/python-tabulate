@@ -1,9 +1,16 @@
-# Python CircleCI 2.0 configuration file
+# Python CircleCI 2.1 configuration file
 #
-# Check https://circleci.com/docs/2.0/language-python/ for more details
+# Check https://circleci.com/docs/language-python/ for more details
 #
-version: 2
+version: 2.1
 jobs:
+  # https://circleci.com/docs/github-integration/#create-additional-github-ssh-keys
+  deploy-job:
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:f54rX6EuLbjtby+J672u/YhJ4iyTgAqOejxdcvVQf64"
+
   build:
     docker:
       # specify the version you desire here
