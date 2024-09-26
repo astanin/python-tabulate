@@ -1,4 +1,5 @@
 """Test output of the various forms of tabular data."""
+from pytest import mark
 
 import tabulate as tabulate_module
 from common import assert_equal, raises, skip, check_warnings
@@ -2636,6 +2637,44 @@ def test_intfmt():
     result = tabulate([[10000], [10]], intfmt=",", tablefmt="plain")
     expected = "10,000\n    10"
     assert_equal(expected, result)
+
+
+def test_intfmt_with_string_as_integer():
+    "Output: integer format"
+    result = tabulate([[82642], ["1500"], [2463]], intfmt=",", tablefmt="plain")
+    expected = "82,642\n  1500\n 2,463"
+    assert_equal(expected, result)
+
+
+@mark.skip(reason="It detects all values as floats but there are strings and integers.")
+def test_intfmt_with_string_with_floats():
+    "Output: integer format"
+    result = tabulate([[82000.38], ["1500.47"], ["2463"], [92165]], intfmt=",", tablefmt="plain")
+    expected = "82000.4\n 1500.47\n 2463\n92,165"
+    assert_equal(expected, result)
+
+
+def test_intfmt_with_colors():
+    "Regression: Align ANSI-colored values as if they were colorless."
+    colortable = [
+        ("\x1b[33mabc\x1b[0m", 42, "\x1b[31m42\x1b[0m"),
+        ("\x1b[35mdef\x1b[0m", 987654321, "\x1b[32m987654321\x1b[0m"),
+    ]
+    colorheaders = ("test", "\x1b[34mtest\x1b[0m", "test")
+    formatted = tabulate(colortable, colorheaders, "grid", intfmt=",")
+    expected = "\n".join(
+        [
+            "+--------+-------------+-------------+",
+            "| test   |        \x1b[34mtest\x1b[0m |        test |",
+            "+========+=============+=============+",
+            "| \x1b[33mabc\x1b[0m    |          42 |          \x1b[31m42\x1b[0m |",
+            "+--------+-------------+-------------+",
+            "| \x1b[35mdef\x1b[0m    | 987,654,321 | \x1b[32m987,654,321\x1b[0m |",
+            "+--------+-------------+-------------+",
+        ]
+    )
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
+    assert_equal(expected, formatted)
 
 
 def test_empty_data_with_headers():

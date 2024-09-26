@@ -1235,6 +1235,17 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
     if valtype is str:
         return f"{val}"
     elif valtype is int:
+        if isinstance(val, str):
+            val_striped = val.encode('unicode_escape').decode('utf-8')
+            colored = re.search(r'(\\[xX]+[0-9a-fA-F]+\[\d+[mM]+)([0-9.]+)(\\.*)$', val_striped)
+            if colored:
+                total_groups = len(colored.groups())
+                if total_groups == 3:
+                    digits = colored.group(2)
+                    if digits.isdigit():
+                        val_new = colored.group(1) + format(int(digits), intfmt) + colored.group(3)
+                        val = val_new.encode('utf-8').decode('unicode_escape')
+            intfmt = ""
         return format(val, intfmt)
     elif valtype is bytes:
         try:
