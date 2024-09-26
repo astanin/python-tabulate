@@ -1862,7 +1862,6 @@ def tabulate(
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
     ...                ["strings", "numbers"], "colon_grid"))
-
     +-----------+-----------+
     | strings   | numbers   |
     +:==========+:==========+
@@ -1873,8 +1872,7 @@ def tabulate(
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
     ...                ["strings", "numbers"], "colon_grid",
-    ...                colalign=["right, left"]))
-
+    ...                colalign=["right", "left"]))
     +-----------+-----------+
     | strings   | numbers   |
     +==========:+:==========+
