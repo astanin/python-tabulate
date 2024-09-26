@@ -286,8 +286,8 @@ def _asciidoc_row(is_header, *args):
 
     else:
         raise ValueError(
-            " _asciidoc_row() requires two (colwidths, colaligns) "
-            + "or three (cell_values, colwidths, colaligns) arguments) "
+            "_asciidoc_row() requires two (colwidths, colaligns) "
+            "or three (cell_values, colwidths, colaligns) arguments)"
         )
 
 
@@ -1353,7 +1353,7 @@ def _prepend_row_index(rows, index):
     if isinstance(index, Sized) and len(index) != len(rows):
         raise ValueError(
             "index must be as long as the number of data rows: "
-            + f"len(index)={len(index)} len(rows)={len(rows)}"
+            f"len(index)={len(index)} len(rows)={len(rows)}"
         )
     sans_rows, separating_lines = _remove_separating_lines(rows)
     new_rows = []
