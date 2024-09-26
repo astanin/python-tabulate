@@ -2199,6 +2199,9 @@ def tabulate(
         numalign = "decimal" if numalign == _DEFAULT_ALIGN else numalign
         stralign = "left" if stralign == _DEFAULT_ALIGN else stralign
 
+    # 'colon_grid' uses colons in the line beneath the header to represent a column's
+    # alignment instead of literally aligning the text differently. Hence,
+    # left alignment of the data in the text output is enforced.
     if tablefmt == "colon_grid":
         colglobalalign = "left"
         headersglobalalign = "left"
@@ -2285,6 +2288,8 @@ def tabulate(
         [width_fn(h) + min_padding for h in headers] if headers else [0] * len(cols)
     )
     aligns_copy = aligns.copy()
+    # Reset alignments in copy of alignments list to "left" for 'colon_grid' format,
+    # which enforces left alignment in the text output of the data.
     if tablefmt == "colon_grid":
         aligns_copy = ["left"] * len(cols)
     cols = [
