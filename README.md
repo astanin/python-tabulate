@@ -739,13 +739,8 @@ column, in which case every column may have different number formatting:
 ### Text formatting
 
 By default, `tabulate` removes leading and trailing whitespace from text
-columns. To disable whitespace removal, set the global module-level flag
-`PRESERVE_WHITESPACE`:
-
-```python
-import tabulate
-tabulate.PRESERVE_WHITESPACE = True
-```
+columns. To disable whitespace removal, pass `preserve_whitespace=True`.
+Older versions of the library used a global module-level flag PRESERVE_WHITESPACE.
 
 ### Wide (fullwidth CJK) symbols
 
