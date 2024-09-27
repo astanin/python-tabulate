@@ -10,5 +10,6 @@ python benchmark/benchmark.py  # then update README
 python -m build -s # update tabulate/version.py
 python -m build -nswx .
 git push # wait for all CI builds to succeed 
+git push --tags # if CI builds succeed
 twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 twine upload dist/*
