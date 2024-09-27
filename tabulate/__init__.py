@@ -2888,7 +2888,7 @@ def _main():
         elif opt in ["-h", "--help"]:
             print(usage)
             sys.exit(0)
-    files = [sys.stdin] if not args else args
+    files = args or [sys.stdin]
     with sys.stdout if outfile == "-" else open(outfile, "w") as out:
         for f in files:
             if f == "-":
