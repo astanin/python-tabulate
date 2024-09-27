@@ -131,7 +131,7 @@ def test_plain_maxcolwidth_autowraps_with_sep():
 def test_plain_maxcolwidth_autowraps_wide_chars():
     "Output: maxcolwidth and autowrapping functions with wide characters"
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_wrap_text_wide_chars is skipped")
 
@@ -492,7 +492,7 @@ def test_grid():
 def test_grid_wide_characters():
     "Output: grid with wide characters in headers"
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_grid_wide_characters is skipped")
     headers = list(_test_table_headers)
@@ -627,7 +627,7 @@ def test_simple_grid():
 def test_simple_grid_wide_characters():
     "Output: simple_grid with wide characters in headers"
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_simple_grid_wide_characters is skipped")
     headers = list(_test_table_headers)
@@ -762,7 +762,7 @@ def test_rounded_grid():
 def test_rounded_grid_wide_characters():
     "Output: rounded_grid with wide characters in headers"
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_rounded_grid_wide_characters is skipped")
     headers = list(_test_table_headers)
@@ -897,7 +897,7 @@ def test_heavy_grid():
 def test_heavy_grid_wide_characters():
     "Output: heavy_grid with wide characters in headers"
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_heavy_grid_wide_characters is skipped")
     headers = list(_test_table_headers)
@@ -1032,7 +1032,7 @@ def test_mixed_grid():
 def test_mixed_grid_wide_characters():
     "Output: mixed_grid with wide characters in headers"
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_mixed_grid_wide_characters is skipped")
     headers = list(_test_table_headers)
@@ -1167,7 +1167,7 @@ def test_double_grid():
 def test_double_grid_wide_characters():
     "Output: double_grid with wide characters in headers"
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_double_grid_wide_characters is skipped")
     headers = list(_test_table_headers)
@@ -1302,7 +1302,7 @@ def test_fancy_grid():
 def test_fancy_grid_wide_characters():
     "Output: fancy_grid with wide characters in headers"
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_fancy_grid_wide_characters is skipped")
     headers = list(_test_table_headers)
@@ -1471,7 +1471,7 @@ def test_colon_grid():
 def test_colon_grid_wide_characters():
     "Output: colon_grid with wide chars in header"
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_colon_grid_wide_characters is skipped")
     headers = list(_test_table_headers)
@@ -1565,7 +1565,7 @@ def test_outline():
 def test_outline_wide_characters():
     "Output: outline with wide characters in headers"
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_outline_wide_characters is skipped")
     headers = list(_test_table_headers)
@@ -1617,7 +1617,7 @@ def test_simple_outline():
 def test_simple_outline_wide_characters():
     "Output: simple_outline with wide characters in headers"
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_simple_outline_wide_characters is skipped")
     headers = list(_test_table_headers)
@@ -1669,7 +1669,7 @@ def test_rounded_outline():
 def test_rounded_outline_wide_characters():
     "Output: rounded_outline with wide characters in headers"
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_rounded_outline_wide_characters is skipped")
     headers = list(_test_table_headers)
@@ -1721,7 +1721,7 @@ def test_heavy_outline():
 def test_heavy_outline_wide_characters():
     "Output: heavy_outline with wide characters in headers"
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_heavy_outline_wide_characters is skipped")
     headers = list(_test_table_headers)
@@ -1773,7 +1773,7 @@ def test_mixed_outline():
 def test_mixed_outline_wide_characters():
     "Output: mixed_outline with wide characters in headers"
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_mixed_outline_wide_characters is skipped")
     headers = list(_test_table_headers)
@@ -1825,7 +1825,7 @@ def test_double_outline():
 def test_double_outline_wide_characters():
     "Output: double_outline with wide characters in headers"
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_double_outline_wide_characters is skipped")
     headers = list(_test_table_headers)
@@ -1877,7 +1877,7 @@ def test_fancy_outline():
 def test_fancy_outline_wide_characters():
     "Output: fancy_outline with wide characters in headers"
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_fancy_outline_wide_characters is skipped")
     headers = list(_test_table_headers)
@@ -2536,7 +2536,7 @@ def test_html():
         [
             "<table>",
             "<thead>",
-            '<tr><th>&lt;strings&gt;  </th><th style="text-align: right;">  &lt;&amp;numbers&amp;&gt;</th></tr>',  # noqa
+            '<tr><th>&lt;strings&gt;  </th><th style="text-align: right;">  &lt;&amp;numbers&amp;&gt;</th></tr>',
             "</thead>",
             "<tbody>",
             '<tr><td>spam &gt;     </td><td style="text-align: right;">      41.9999</td></tr>',
@@ -2557,7 +2557,7 @@ def test_unsafehtml():
         [
             "<table>",
             "<thead>",
-            "<tr><th>strings  </th><th>numbers                         </th></tr>",  # noqa
+            "<tr><th>strings  </th><th>numbers                         </th></tr>",
             "</thead>",
             "<tbody>",
             '<tr><td>spam     </td><td><font color="red">41.9999</font></td></tr>',

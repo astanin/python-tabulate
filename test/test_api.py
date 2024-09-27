@@ -19,7 +19,7 @@ def test_tabulate_formats():
     print("tabulate_formats = %r" % supported)
     assert type(supported) is list
     for fmt in supported:
-        assert type(fmt) is str  # noqa
+        assert type(fmt) is str
 
 
 def _check_signature(function, expected_sig):
@@ -36,7 +36,7 @@ def _check_signature(function, expected_sig):
 
 def test_tabulate_signature():
     "API: tabulate() type signature is unchanged" ""
-    assert type(tabulate) is type(lambda: None)  # noqa
+    assert type(tabulate) is type(lambda: None)
     expected_sig = [
         ("tabular_data", _empty),
         ("headers", ()),
@@ -62,6 +62,6 @@ def test_tabulate_signature():
 
 def test_simple_separated_format_signature():
     "API: simple_separated_format() type signature is unchanged" ""
-    assert type(simple_separated_format) is type(lambda: None)  # noqa
+    assert type(simple_separated_format) is type(lambda: None)
     expected_sig = [("separator", _empty)]
     _check_signature(simple_separated_format, expected_sig)

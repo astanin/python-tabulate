@@ -176,7 +176,7 @@ def test_wrap_text_to_colwidths():
 def test_wrap_text_wide_chars():
     "Internal: Wrap wide characters based on column width"
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_wrap_text_wide_chars is skipped")
 
@@ -242,7 +242,7 @@ def test_wrap_text_to_colwidths_single_ansi_colors_full_cell():
 def test_wrap_text_to_colwidths_colors_wide_char():
     """Internal: autowrapped text can retain a ANSI colors with wide chars"""
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_wrap_text_to_colwidths_colors_wide_char is skipped")
 

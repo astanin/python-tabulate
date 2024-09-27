@@ -300,7 +300,7 @@ def test_colorclass_colors():
 def test_mix_normal_and_wide_characters():
     "Regression: wide characters in a grid format (issue #51)"
     try:
-        import wcwidth  # noqa
+        import wcwidth
 
         ru_text = "\u043f\u0440\u0438\u0432\u0435\u0442"
         cn_text = "\u4f60\u597d"
@@ -322,7 +322,7 @@ def test_mix_normal_and_wide_characters():
 def test_multiline_with_wide_characters():
     "Regression: multiline tables with varying number of wide characters (github issue #28)"
     try:
-        import wcwidth  # noqa
+        import wcwidth
 
         table = [["가나\n가ab", "가나", "가나"]]
         result = tabulate(table, tablefmt="fancy_grid")

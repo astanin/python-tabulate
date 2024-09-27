@@ -25,7 +25,7 @@ def _is_file(f):
 
 __all__ = ["simple_separated_format", "tabulate", "tabulate_formats"]
 try:
-    from .version import version as __version__  # noqa: F401
+    from .version import version as __version__
 except ImportError:
     pass  # running __init__.py as a script, AppVeyor pytests
 
@@ -1090,7 +1090,7 @@ def _choose_width_fn(has_invisible, enable_widechars, is_multiline):
     else:
         line_width_fn = len
     if is_multiline:
-        width_fn = lambda s: _multiline_width(s, line_width_fn)  # noqa
+        width_fn = lambda s: _multiline_width(s, line_width_fn)
     else:
         width_fn = line_width_fn
     return width_fn
@@ -1130,7 +1130,7 @@ def _align_column_choose_width_fn(has_invisible, enable_widechars, is_multiline)
     else:
         line_width_fn = len
     if is_multiline:
-        width_fn = lambda s: _align_column_multiline_width(s, line_width_fn)  # noqa
+        width_fn = lambda s: _align_column_multiline_width(s, line_width_fn)
     else:
         width_fn = line_width_fn
     return width_fn
@@ -1261,7 +1261,7 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
         tabulate(tbl, headers=hrow) == good_result
     True
 
-    """  # noqa
+    """
     if val is None:
         return missingval
 
@@ -2542,7 +2542,7 @@ def _format_table(
 
     padded_widths = [(w + 2 * pad) for w in colwidths]
     if is_multiline:
-        pad_row = lambda row, _: row  # noqa do it later, in _append_multiline_row
+        pad_row = lambda row, _: row
         append_row = partial(_append_multiline_row, pad=pad)
     else:
         pad_row = _pad_row

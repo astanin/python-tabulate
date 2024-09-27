@@ -1,5 +1,5 @@
-import pytest  # noqa
-from pytest import skip, raises  # noqa
+import pytest
+from pytest import skip, raises
 import warnings
 
 
