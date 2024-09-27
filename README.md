@@ -53,7 +53,7 @@ pip install tabulate
 Build status
 ------------
 
-[![Build status](https://circleci.com/gh/astanin/python-tabulate.svg?style=svg)](https://circleci.com/gh/astanin/python-tabulate/tree/master) [![Build status](https://ci.appveyor.com/api/projects/status/8745yksvvol7h3d7/branch/master?svg=true)](https://ci.appveyor.com/project/astanin/python-tabulate/branch/master)
+[![python-tabulate](https://github.com/astanin/python-tabulate/actions/workflows/tabulate.yml/badge.svg)](https://github.com/astanin/python-tabulate/actions/workflows/tabulate.yml) [![Build status](https://ci.appveyor.com/api/projects/status/8745yksvvol7h3d7/branch/master?svg=true)](https://ci.appveyor.com/project/astanin/python-tabulate/branch/master)
 
 Library usage
 -------------
@@ -81,7 +81,7 @@ The following tabular data types are supported:
 -   list of lists or another iterable of iterables
 -   list or another iterable of dicts (keys as columns)
 -   dict of iterables (keys as columns)
--   list of dataclasses (Python 3.7+ only, field names as columns)
+-   list of dataclasses (field names as columns)
 -   two-dimensional NumPy array
 -   NumPy record arrays (names as columns)
 -   pandas.DataFrame
@@ -121,10 +121,22 @@ dictionaries or named tuples:
 ```pycon
 >>> print(tabulate({"Name": ["Alice", "Bob"],
 ...                 "Age": [24, 19]}, headers="keys"))
-  Age  Name
------  ------
-   24  Alice
-   19  Bob
+Name      Age
+------  -----
+Alice      24
+Bob        19
+```
+
+When data is a list of dictionaries, a dictionary can be passed as `headers`
+to replace the keys with other column labels:
+
+```pycon
+>>> print(tabulate([{1: "Alice", 2: 24}, {1: "Bob", 2: 19}],
+...                headers={1: "Name", 2: "Age"}))
+Name      Age
+------  -----
+Alice      24
+Bob        19
 ```
 
 ### Row Indices
@@ -322,6 +334,22 @@ corresponds to the `pipe` format without alignment colons:
 │ bacon  │     0 │
 ╘════════╧═══════╛
 ```
+
+`colon_grid` is similar to `grid` but uses colons only to define
+columnwise content alignment , without whitespace padding,
+similar the alignment specification of Pandoc `grid_tables`:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "colon_grid",
+    ...                colalign=["right", "left"]))
+    +-----------+-----------+
+    | strings   | numbers   |
+    +==========:+:==========+
+    | spam      | 41.9999   |
+    +-----------+-----------+
+    | eggs      | 451       |
+    +-----------+-----------+
+
 
 `outline` is the same as the `grid` format but doesn't draw lines between rows:
 
@@ -727,13 +755,8 @@ column, in which case every column may have different number formatting:
 ### Text formatting
 
 By default, `tabulate` removes leading and trailing whitespace from text
-columns. To disable whitespace removal, set the global module-level flag
-`PRESERVE_WHITESPACE`:
-
-```python
-import tabulate
-tabulate.PRESERVE_WHITESPACE = True
-```
+columns. To disable whitespace removal, pass `preserve_whitespace=True`.
+Older versions of the library used a global module-level flag PRESERVE_WHITESPACE.
 
 ### Wide (fullwidth CJK) symbols
 
@@ -1036,21 +1059,19 @@ simply joining lists of values with a tab, comma, or other separator.
 
 At the same time, `tabulate` is comparable to other table
 pretty-printers. Given a 10x10 table (a list of lists) of mixed text and
-numeric data, `tabulate` appears to be slower than `asciitable`, and
-faster than `PrettyTable` and `texttable` The following mini-benchmark
-was run in Python 3.9.13 on Windows 10:
+numeric data, `tabulate` appears to be faster than `PrettyTable` and `texttable`.
+The following mini-benchmark was run in Python 3.11.9 on Windows 11 (x64):
 
-    =================================  ==========  ===========
-    Table formatter                      time, μs    rel. time
-    =================================  ==========  ===========
-    csv to StringIO                          12.5          1.0
-    join with tabs and newlines              14.6          1.2
-    asciitable (0.8.0)                      192.0         15.4
-    tabulate (0.9.0)                        483.5         38.7
-    tabulate (0.9.0, WIDE_CHARS_MODE)       637.6         51.1
-    PrettyTable (3.4.1)                    1080.6         86.6
-    texttable (1.6.4)                      1390.3        111.4
-    =================================  ==========  ===========
+    ==================================  ==========  ===========
+    Table formatter                       time, μs    rel. time
+    ==================================  ==========  ===========
+    join with tabs and newlines                6.3          1.0
+    csv to StringIO                            6.6          1.0
+    tabulate (0.10.0)                        249.2         39.3
+    tabulate (0.10.0, WIDE_CHARS_MODE)       325.6         51.4
+    texttable (1.7.0)                        579.3         91.5
+    PrettyTable (3.11.0)                     605.5         95.6
+    ==================================  ==========  ===========
 
 
 Version history
@@ -1074,14 +1095,14 @@ To run tests on all supported Python versions, make sure all Python
 interpreters, `pytest` and `tox` are installed, then run `tox` in the root
 of the project source tree.
 
-On Linux `tox` expects to find executables like `python3.7`, `python3.8` etc.
-On Windows it looks for `C:\Python37\python.exe`, `C:\Python38\python.exe` etc. respectively.
+On Linux `tox` expects to find executables like `python3.11`, `python3.12` etc.
+On Windows it looks for `C:\Python311\python.exe`, `C:\Python312\python.exe` etc. respectively.
 
 One way to install all the required versions of the Python interpreter is to use [pyenv](https://github.com/pyenv/pyenv).
 All versions can then be easily installed with something like:
 
-     pyenv install 3.7.12
-     pyenv install 3.8.12
+     pyenv install 3.11.7
+     pyenv install 3.12.1
      ...
 
 Don't forget to change your `PATH` so that `tox` knows how to find all the installed versions. Something like
@@ -1089,10 +1110,10 @@ Don't forget to change your `PATH` so that `tox` knows how to find all the insta
      export PATH="${PATH}:${HOME}/.pyenv/shims"
 
 To test only some Python environments, use `-e` option. For example, to
-test only against Python 3.7 and Python 3.10, run:
+test only against Python 3.11 and Python 3.12, run:
 
 ```shell
-tox -e py37,py310
+tox -e py311,py312
 ```
 
 in the root of the project source tree.
@@ -1100,7 +1121,7 @@ in the root of the project source tree.
 To enable NumPy and Pandas tests, run:
 
 ```shell
-tox -e py37-extra,py310-extra
+tox -e py311-extra,py312-extra
 ```
 
 (this may take a long time the first time, because NumPy and Pandas will
@@ -1133,8 +1154,9 @@ endolith, Dominic Davis-Foster, pavlocat, Daniel Aslau, paulc,
 Felix Yan, Shane Loretz, Frank Busse, Harsh Singh, Derek Weitzel,
 Vladimir Vrzić, 서승우 (chrd5273), Georgy Frolov, Christian Cwienk,
 Bart Broere, Vilhelm Prytz, Alexander Gažo, Hugo van Kemenade,
-jamescooke, Matt Warner, Jérôme Provensal, Kevin Deldycke,
+jamescooke, Matt Warner, Jérôme Provensal, Michał Górny, Kevin Deldycke,
 Kian-Meng Ang, Kevin Patterson, Shodhan Save, cleoold, KOLANICH,
 Vijaya Krishna Kasula, Furcy Pin, Christian Fibich, Shaun Duncan,
-Dimitri Papadopoulos, Élie Goudout.
-
+Dimitri Papadopoulos, Élie Goudout, Racerroar888, Phill Zarfos,
+Keyacom, Andrew Coffey, Arpit Jain, Israel Roldan, ilya112358,
+Dan Nicholson, Frederik Scheerer, cdar07 (cdar), Racerroar888.

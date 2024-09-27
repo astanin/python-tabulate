@@ -488,6 +488,27 @@ def test_preserve_line_breaks_with_maxcolwidths():
     assert_equal(expected, result)
 
 
+def test_maxcolwidths_accepts_list_or_tuple():
+    "Regression: maxcolwidths can accept a list or a tuple (github issue #214)"
+    table = [["lorem ipsum dolor sit amet"] * 3]
+    expected = "\n".join(
+        [
+            "+-------------+----------+----------------------------+",
+            "| lorem ipsum | lorem    | lorem ipsum dolor sit amet |",
+            "| dolor sit   | ipsum    |                            |",
+            "| amet        | dolor    |                            |",
+            "|             | sit amet |                            |",
+            "+-------------+----------+----------------------------+",
+        ]
+    )
+    # test with maxcolwidths as a list
+    result = tabulate(table, tablefmt="grid", maxcolwidths=[12, 8])
+    assert_equal(expected, result)
+    # test with maxcolwidths as a tuple
+    result = tabulate(table, tablefmt="grid", maxcolwidths=(12, 8))
+    assert_equal(expected, result)
+
+
 def test_exception_on_empty_data_with_maxcolwidths():
     "Regression: exception on empty data when using maxcolwidths (github issue #180)"
     result = tabulate([], maxcolwidths=5)
@@ -512,3 +533,15 @@ def test_numpy_int64_as_integer():
         assert_equal(expected, result)
     except ImportError:
         raise skip("")
+
+
+def test_empty_table_with_colalign():
+    "Regression: empty table with colalign kwarg"
+    table = tabulate([], ["a", "b", "c"], colalign=("center", "left", "left", "center"))
+    expected = "\n".join(
+        [
+            "a    b    c",
+            "---  ---  ---",
+        ]
+    )
+    assert_equal(expected, table)
