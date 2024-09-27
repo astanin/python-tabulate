@@ -26,7 +26,7 @@ def _check_signature(function, expected_sig):
     if not signature:
         skip("")
     actual_sig = signature(function)
-    print(f"expected: {expected_sig}\nactual: {str(actual_sig)}\n")
+    print(f"expected: {expected_sig}\nactual: {actual_sig}\n")
 
     assert len(actual_sig.parameters) == len(expected_sig)
 
