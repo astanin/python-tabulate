@@ -2783,12 +2783,16 @@ class _CustomTextWrap(textwrap.TextWrapper):
                     self.max_lines is None
                     or len(lines) + 1 < self.max_lines
                     or (
-                        not chunks
-                        or self.drop_whitespace
-                        and len(chunks) == 1
-                        and not chunks[0].strip()
+                        (
+                            not chunks
+                            or (
+                                self.drop_whitespace
+                                and len(chunks) == 1
+                                and not chunks[0].strip()
+                            )
+                        )
+                        and cur_len <= width
                     )
-                    and cur_len <= width
                 ):
                     # Convert current line back to a string and store it in
                     # list of all lines (return value).
