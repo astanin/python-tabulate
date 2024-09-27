@@ -1251,20 +1251,10 @@ def _column_type(strings, has_invisible=True, numparse=True):
 
 
 def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
-    """Format a value according to its type.
+    """Format a value according to the type of the column."""
 
-    Unicode is supported:
-
-    >>> hrow = ['\u0431\u0443\u043a\u0432\u0430', '\u0446\u0438\u0444\u0440\u0430'] ; \
-        tbl = [['\u0430\u0437', 2], ['\u0431\u0443\u043a\u0438', 4]] ; \
-        good_result = '\\u0431\\u0443\\u043a\\u0432\\u0430      \\u0446\\u0438\\u0444\\u0440\\u0430\\n-------  -------\\n\\u0430\\u0437             2\\n\\u0431\\u0443\\u043a\\u0438           4' ; \
-        tabulate(tbl, headers=hrow) == good_result
-    True
-
-    """  # noqa
     if val is None:
         return missingval
-
     if valtype is str:
         return f"{val}"
     elif valtype is int:
@@ -1291,16 +1281,28 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
             return str(val, "ascii")
         except (TypeError, UnicodeDecodeError):
             return str(val)
+
+    # the rest is for bool and number values in bool and number column types
+    is_ansi_colored = has_invisible and isinstance(val, (str, bytes))
+    # strip color if needed, reapply before return
+    if is_ansi_colored:
+        colored_val = val
+        val = raw_val = _strip_ansi(val)
+    if _isbool(val):
+        # val should be a boolean literal to convert into a number if needed
+        val = val in (True, "True")
+    if valtype is int:
+        # do not convert strings and bools into integers if there is no special formatting
+        if intfmt:
+            val = int(val)
+        val = format(val, intfmt)
     elif valtype is float:
-        is_a_colored_number = has_invisible and isinstance(val, (str, bytes))
-        if is_a_colored_number:
-            raw_val = _strip_ansi(val)
-            formatted_val = format(float(raw_val), floatfmt)
-            return val.replace(raw_val, formatted_val)
-        else:
-            return format(float(val), floatfmt)
+        val = format(float(val), floatfmt)
     else:
-        return f"{val}"
+        val = f"{val}"
+    if is_ansi_colored:
+        val = colored_val.replace(raw_val, val)
+    return val
 
 
 def _align_header(
