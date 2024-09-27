@@ -1483,7 +1483,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
                 uniq_keys.update(keys)
                 rows = rows[1:]
             for row in rows:
-                for k in row.keys():
+                for k in row:
                     # Save unique items in input order
                     if k not in uniq_keys:
                         keys.append(k)
