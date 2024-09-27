@@ -24,4 +24,4 @@ jobs:
         python -m pip install pytest numpy pandas
     - name: Run tests
       run: |
-        pytest -v --doctest-modules --ignore benchmark.py
+        pytest -v --doctest-modules --ignore benchmark/benchmark.py

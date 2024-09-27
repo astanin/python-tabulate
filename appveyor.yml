@@ -33,7 +33,7 @@ test_script:
   # the interpreter you're using - Appveyor does not do anything special
   # to put the Python version you want to use on PATH.
   #- "build.cmd %PYTHON%\\python.exe setup.py test"
-  - "%PYTHON%\\python.exe -m pytest -v --doctest-modules --ignore benchmark.py"
+  - "%PYTHON%\\python.exe -m pytest -v --doctest-modules --ignore benchmark\benchmark.py"
 
 after_test:
   # This step builds your wheels.
