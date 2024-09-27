@@ -24,6 +24,8 @@ install:
   - "%PYTHON%\\python.exe -m pip install wheel --upgrade"
   - "%PYTHON%\\python.exe -m pip install build setuptools_scm"
   - "%PYTHON%\\python.exe -m pip install pytest numpy pandas"
+  # We need prettytable installed to run benchmark
+  - "%PYTHON%\\python.exe -m pip install pytest numpy prettytable"
 
 build: off
 

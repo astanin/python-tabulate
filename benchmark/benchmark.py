@@ -75,7 +75,7 @@ def benchmark(n):
     results = [
         (desc, timeit(code, setup_code, number=n) / n * 1e6) for desc, code in methods
     ]
-    mintime = min(map(lambda x: x[1], results))
+    mintime = min((x[1] for x in results))
     results = [
         (desc, t, t / mintime) for desc, t in sorted(results, key=lambda x: x[1])
     ]

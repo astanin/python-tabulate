@@ -714,7 +714,7 @@ _table_formats = {
 }
 
 
-tabulate_formats = list(sorted(_table_formats.keys()))
+tabulate_formats = sorted(_table_formats.keys())
 
 # The table formats for which multiline cells will be folded into subsequent
 # table rows. The key is the original format specified at the API. The value is
@@ -1548,7 +1548,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
     headers = list(map(str, headers))
     #    rows = list(map(list, rows))
-    rows = list(map(lambda r: r if _is_separating_line(r) else list(r), rows))
+    rows = [r if _is_separating_line(r) else list(r) for r in rows]
 
     # add or remove an index column
     showindex_is_a_str = type(showindex) in [str, bytes]
@@ -2313,7 +2313,7 @@ def tabulate(
         assert isinstance(colalign, Iterable)
         if isinstance(colalign, str):
             warnings.warn(
-                f"As a string, `colalign` is interpreted as {[c for c in colalign]}. "
+                f"As a string, `colalign` is interpreted as {list(colalign)}. "
                 f'Did you mean `colglobalalign = "{colalign}"` or `colalign = ("{colalign}",)`?',
                 stacklevel=2,
             )
@@ -2357,7 +2357,7 @@ def tabulate(
             assert isinstance(headersalign, Iterable)
             if isinstance(headersalign, str):
                 warnings.warn(
-                    f"As a string, `headersalign` is interpreted as {[c for c in headersalign]}. "
+                    f"As a string, `headersalign` is interpreted as {list(headersalign)}. "
                     f'Did you mean `headersglobalalign = "{headersalign}"` '
                     f'or `headersalign = ("{headersalign}",)`?',
                     stacklevel=2,
@@ -2634,7 +2634,7 @@ class _CustomTextWrap(textwrap.TextWrapper):
         as add any colors from previous lines order to preserve the same formatting
         as a single unwrapped string.
         """
-        code_matches = [x for x in _ansi_codes.finditer(new_line)]
+        code_matches = list(_ansi_codes.finditer(new_line))
         color_codes = [
             code.string[code.span()[0] : code.span()[1]] for code in code_matches
         ]
@@ -2685,11 +2685,14 @@ class _CustomTextWrap(textwrap.TextWrapper):
             if _ansi_codes.search(chunk) is not None:
                 for group, _, _, _ in _ansi_codes.findall(chunk):
                     escape_len = len(group)
-                    if group in chunk[last_group: i + total_escape_len + escape_len - 1]:
+                    if (
+                        group
+                        in chunk[last_group : i + total_escape_len + escape_len - 1]
+                    ):
                         total_escape_len += escape_len
                         found = _ansi_codes.search(chunk[last_group:])
                         last_group += found.end()
-            cur_line.append(chunk[: i  + total_escape_len - 1])
+            cur_line.append(chunk[: i + total_escape_len - 1])
             reversed_chunks[-1] = chunk[i + total_escape_len - 1 :]
 
         # Otherwise, we have to preserve the long word intact.  Only add
