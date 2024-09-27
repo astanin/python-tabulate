@@ -14,7 +14,7 @@ except ImportError:
 
 
 def test_tabulate_formats():
-    "API: tabulate_formats is a list of strings" ""
+    "API: tabulate_formats is a list of strings"
     supported = tabulate_formats
     print("tabulate_formats = %r" % supported)
     assert type(supported) is list
@@ -35,7 +35,7 @@ def _check_signature(function, expected_sig):
 
 
 def test_tabulate_signature():
-    "API: tabulate() type signature is unchanged" ""
+    "API: tabulate() type signature is unchanged"
     assert type(tabulate) is type(lambda: None)  # noqa
     expected_sig = [
         ("tabular_data", _empty),
@@ -61,7 +61,7 @@ def test_tabulate_signature():
 
 
 def test_simple_separated_format_signature():
-    "API: simple_separated_format() type signature is unchanged" ""
+    "API: simple_separated_format() type signature is unchanged"
     assert type(simple_separated_format) is type(lambda: None)  # noqa
     expected_sig = [("separator", _empty)]
     _check_signature(simple_separated_format, expected_sig)
