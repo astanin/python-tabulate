@@ -105,13 +105,10 @@ def _is_separating_line_value(value):
 
 
 def _is_separating_line(row):
-    row_type = type(row)
-    is_sl = (row_type == list or row_type == str) and (
+    return isinstance(row, (list, str)) and (
         (len(row) >= 1 and _is_separating_line_value(row[0]))
         or (len(row) >= 2 and _is_separating_line_value(row[1]))
     )
-
-    return is_sl
 
 
 def _pipe_segment_with_colons(align, colwidth):
