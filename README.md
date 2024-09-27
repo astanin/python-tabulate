@@ -335,6 +335,22 @@ corresponds to the `pipe` format without alignment colons:
 ╘════════╧═══════╛
 ```
 
+`colon_grid` is similar to `grid` but uses colons only to define
+columnwise content alignment , without whitespace padding,
+similar the alignment specification of Pandoc `grid_tables`:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "colon_grid",
+    ...                colalign=["right", "left"]))
+    +-----------+-----------+
+    | strings   | numbers   |
+    +==========:+:==========+
+    | spam      | 41.9999   |
+    +-----------+-----------+
+    | eggs      | 451       |
+    +-----------+-----------+
+
+
 `outline` is the same as the `grid` format but doesn't draw lines between rows:
 
     >>> print(tabulate(table, headers, tablefmt="outline"))

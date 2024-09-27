@@ -1891,7 +1891,8 @@ def tabulate(
     ╘═══════════╧═══════════╛
 
     "colon_grid" is similar to "grid" but uses colons only to define
-    columnwise content alignment, with no whitespace padding:
+    columnwise content alignment, without whitespace padding,
+    similar to the alignment specification of Pandoc `grid_tables`:
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
     ...                ["strings", "numbers"], "colon_grid"))
