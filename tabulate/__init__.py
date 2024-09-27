@@ -105,13 +105,10 @@ def _is_separating_line_value(value):
 
 
 def _is_separating_line(row):
-    row_type = type(row)
-    is_sl = (row_type == list or row_type == str) and (
+    return isinstance(row, (list, str)) and (
         (len(row) >= 1 and _is_separating_line_value(row[0]))
         or (len(row) >= 2 and _is_separating_line_value(row[1]))
     )
-
-    return is_sl
 
 
 def _pipe_segment_with_colons(align, colwidth):
@@ -1486,7 +1483,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
                 uniq_keys.update(keys)
                 rows = rows[1:]
             for row in rows:
-                for k in row.keys():
+                for k in row:
                     # Save unique items in input order
                     if k not in uniq_keys:
                         keys.append(k)
@@ -2891,7 +2888,7 @@ def _main():
         elif opt in ["-h", "--help"]:
             print(usage)
             sys.exit(0)
-    files = [sys.stdin] if not args else args
+    files = args or [sys.stdin]
     with sys.stdout if outfile == "-" else open(outfile, "w") as out:
         for f in files:
             if f == "-":
