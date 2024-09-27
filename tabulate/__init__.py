@@ -23,7 +23,7 @@ def _is_file(f):
     return isinstance(f, io.IOBase)
 
 
-__all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
+__all__ = ["simple_separated_format", "tabulate", "tabulate_formats"]
 try:
     from .version import version as __version__  # noqa: F401
 except ImportError:
