@@ -4,8 +4,8 @@ import warnings
 
 
 def assert_equal(expected, result):
-    print("Expected:\n%s\n" % expected)
-    print("Got:\n%s\n" % result)
+    print("Expected:\n%r\n" % expected)
+    print("Got:\n%r\n" % result)
     assert expected == result
 
 
