@@ -1156,7 +1156,9 @@ endolith, Dominic Davis-Foster, pavlocat, Daniel Aslau, paulc,
 Felix Yan, Shane Loretz, Frank Busse, Harsh Singh, Derek Weitzel,
 Vladimir Vrzić, 서승우 (chrd5273), Georgy Frolov, Christian Cwienk,
 Bart Broere, Vilhelm Prytz, Alexander Gažo, Hugo van Kemenade,
-jamescooke, Matt Warner, Jérôme Provensal, Kevin Deldycke,
+jamescooke, Matt Warner, Jérôme Provensal, Michał Górny, Kevin Deldycke,
 Kian-Meng Ang, Kevin Patterson, Shodhan Save, cleoold, KOLANICH,
 Vijaya Krishna Kasula, Furcy Pin, Christian Fibich, Shaun Duncan,
-Dimitri Papadopoulos, Élie Goudout, Racerroar888, Phill Zarfos.
+Dimitri Papadopoulos, Élie Goudout, Racerroar888, Phill Zarfos,
+Keyacom, Andrew Coffey, Arpit Jain, Israel Roldan, ilya112358,
+Dan Nicholson, Frederik Scheerer, cdar07 (cdar), Racerroar888.
