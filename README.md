@@ -813,6 +813,20 @@ data in the column is used to infer the type:
 
 ```
 
+The deduced type (eg. str, float) influences the rendering of any types
+that have alternative representations.  For example, since `Fraction` has
+methods `__str__` and `__float__` defined (and hence is convertible to a
+`float` and also has a `str` representation), the appropriate
+representation is selected for the column's deduced type.  In order to not
+lose precision accidentally, types having both an `__int__` and
+`__float__` represention will be considered a `float`.
+
+Therefore, if your table contains types convertible to int/float but you'd
+*prefer* they be represented as strings, or your strings *might* all look
+like numbers such as "1e23": either convert them to the desired
+representation before you `tabulate`, or ensure that the column always
+contains at least one other `str`.
+
 ### Text formatting
 
 By default, `tabulate` removes leading and trailing whitespace from text

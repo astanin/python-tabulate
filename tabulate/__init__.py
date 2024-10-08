@@ -876,25 +876,55 @@ def _isconvertible(conv, string):
 
 
 def _isnumber(string):
-    """
+    """Detects if something *could* be considered a numeric value, vs. just a string.
+
+    This promotes types convertible to both int and float to be considered
+    a float.  Note that, iff *all* values appear to be some form of numeric
+    value such as eg. "1e2", they would be considered numbers!
+
+    The exception is things that appear to be numbers but overflow to
+    +/-inf, eg. "1e23456"; we'll have to exclude them explicitly.
+
+    >>> _isnumber(123)
+    True
+    >>> _isnumber(123.45)
+    True
     >>> _isnumber("123.45")
     True
     >>> _isnumber("123")
     True
     >>> _isnumber("spam")
     False
-    >>> _isnumber("123e45678")
+    >>> _isnumber("123e45")
+    True
+    >>> _isnumber("123e45678")  # evaluates equal to 'inf', but ... isn't
     False
     >>> _isnumber("inf")
     True
+    >>> from fractions import Fraction
+    >>> _isnumber(Fraction(1,3))
+    True
+
     """
-    if not _isconvertible(float, string):
-        return False
-    elif isinstance(string, (str, bytes)) and (
-        math.isinf(float(string)) or math.isnan(float(string))
-    ):
-        return string.lower() in ["inf", "-inf", "nan"]
-    return True
+    return (
+        # fast path
+        type(string) in (float, int)
+        # covers 'NaN', +/- 'inf', and eg. '1e2', as well as any type
+        # convertible to int/float.
+        or (
+            _isconvertible(float, string)
+            and (
+                # some other type convertible to float
+                not isinstance(string, (str, bytes))
+                # or, a numeric string eg. "1e1...", "NaN", ..., but isn't
+                # just an over/underflow
+                or (
+                    not (math.isinf(float(string)) or math.isnan(float(string)))
+                    or string.lower() in ["inf", "-inf", "nan"]
+                )
+            )
+        )
+    )
 
 
 def _isint(string, inttype=int):
