@@ -961,18 +961,17 @@ def _type(string, has_invisible=True, numparse=True):
     elif _isbool(string):
         return bool
     elif numparse and (
-        _isint(string) or (
+        _isint(string)
+        or (
             isinstance(string, str)
             and _isnumber_with_thousands_separator(string)
-            and '.' not in string 
+            and "." not in string
         )
     ):
         return int
     elif numparse and (
-        _isnumber(string) or (
-            isinstance(string, str)
-            and _isnumber_with_thousands_separator(string)
-        )
+        _isnumber(string)
+        or (isinstance(string, str) and _isnumber_with_thousands_separator(string))
     ):
         return float
     elif isinstance(string, bytes):
@@ -1316,8 +1315,8 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
             formatted_val = format(float(raw_val), floatfmt)
             return val.replace(raw_val, formatted_val)
         else:
-            if isinstance(val,str) and ',' in val:
-                val = val.replace(',', '')  # handle thousands-separators
+            if isinstance(val, str) and "," in val:
+                val = val.replace(",", "")  # handle thousands-separators
             return format(float(val), floatfmt)
     else:
         return f"{val}"
@@ -2584,7 +2583,12 @@ def _format_table(
         for row, ralign in zip(rows[:-1], rowaligns):
             if row != SEPARATING_LINE:
                 append_row(
-                    lines, pad_row(row, pad), padded_widths, colaligns, fmt.datarow, rowalign=ralign
+                    lines,
+                    pad_row(row, pad),
+                    padded_widths,
+                    colaligns,
+                    fmt.datarow,
+                    rowalign=ralign,
                 )
             _append_line(lines, padded_widths, colaligns, fmt.linebetweenrows)
         # the last row without a line below
@@ -2610,7 +2614,9 @@ def _format_table(
             if _is_separating_line(row):
                 _append_line(lines, padded_widths, colaligns, separating_line)
             else:
-                append_row(lines, pad_row(row, pad), padded_widths, colaligns, fmt.datarow)
+                append_row(
+                    lines, pad_row(row, pad), padded_widths, colaligns, fmt.datarow
+                )
 
     if fmt.linebelow and "linebelow" not in hidden:
         _append_line(lines, padded_widths, colaligns, fmt.linebelow)
@@ -2705,11 +2711,14 @@ class _CustomTextWrap(textwrap.TextWrapper):
             if _ansi_codes.search(chunk) is not None:
                 for group, _, _, _ in _ansi_codes.findall(chunk):
                     escape_len = len(group)
-                    if group in chunk[last_group: i + total_escape_len + escape_len - 1]:
+                    if (
+                        group
+                        in chunk[last_group : i + total_escape_len + escape_len - 1]
+                    ):
                         total_escape_len += escape_len
                         found = _ansi_codes.search(chunk[last_group:])
                         last_group += found.end()
-            cur_line.append(chunk[: i  + total_escape_len - 1])
+            cur_line.append(chunk[: i + total_escape_len - 1])
             reversed_chunks[-1] = chunk[i + total_escape_len - 1 :]
 
         # Otherwise, we have to preserve the long word intact.  Only add

@@ -2863,7 +2863,9 @@ def test_floatfmt():
 
 def test_floatfmt_thousands():
     "Output: floating point format"
-    result = tabulate([["1.23456789"], [1.0], ["1,234.56"]], floatfmt=".3f", tablefmt="plain")
+    result = tabulate(
+        [["1.23456789"], [1.0], ["1,234.56"]], floatfmt=".3f", tablefmt="plain"
+    )
     expected = "   1.235\n   1.000\n1234.560"
     assert_equal(expected, result)
 
