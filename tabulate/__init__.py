@@ -2561,9 +2561,10 @@ def _format_table(
     if rows and fmt.linebetweenrows and "linebetweenrows" not in hidden:
         # initial rows with a line below
         for row, ralign in zip(rows[:-1], rowaligns):
-            append_row(
-                lines, pad_row(row, pad), padded_widths, colaligns, fmt.datarow, rowalign=ralign
-            )
+            if row != SEPARATING_LINE:
+                append_row(
+                    lines, pad_row(row, pad), padded_widths, colaligns, fmt.datarow, rowalign=ralign
+                )
             _append_line(lines, padded_widths, colaligns, fmt.linebetweenrows)
         # the last row without a line below
         append_row(
