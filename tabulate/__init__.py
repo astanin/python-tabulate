@@ -23,9 +23,9 @@ def _is_file(f):
     return isinstance(f, io.IOBase)
 
 
-__all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
+__all__ = ["simple_separated_format", "tabulate", "tabulate_formats"]
 try:
-    from .version import version as __version__  # noqa: F401
+    from .version import version as __version__
 except ImportError:
     pass  # running __init__.py as a script, AppVeyor pytests
 
@@ -1135,7 +1135,7 @@ def _choose_width_fn(has_invisible, enable_widechars, is_multiline):
     else:
         line_width_fn = len
     if is_multiline:
-        width_fn = lambda s: _multiline_width(s, line_width_fn)  # noqa
+        width_fn = lambda s: _multiline_width(s, line_width_fn)
     else:
         width_fn = line_width_fn
     return width_fn
@@ -1175,7 +1175,7 @@ def _align_column_choose_width_fn(has_invisible, enable_widechars, is_multiline)
     else:
         line_width_fn = len
     if is_multiline:
-        width_fn = lambda s: _align_column_multiline_width(s, line_width_fn)  # noqa
+        width_fn = lambda s: _align_column_multiline_width(s, line_width_fn)
     else:
         width_fn = line_width_fn
     return width_fn
@@ -1306,7 +1306,7 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
         tabulate(tbl, headers=hrow) == good_result
     True
 
-    """  # noqa
+    """
     if val is None:
         return missingval
     if isinstance(val, (bytes, str)) and not val:
@@ -2592,7 +2592,7 @@ def _format_table(
 
     padded_widths = [(w + 2 * pad) for w in colwidths]
     if is_multiline:
-        pad_row = lambda row, _: row  # noqa do it later, in _append_multiline_row
+        pad_row = lambda row, _: row
         append_row = partial(_append_multiline_row, pad=pad)
     else:
         pad_row = _pad_row
@@ -2839,12 +2839,16 @@ class _CustomTextWrap(textwrap.TextWrapper):
                     self.max_lines is None
                     or len(lines) + 1 < self.max_lines
                     or (
-                        not chunks
-                        or self.drop_whitespace
-                        and len(chunks) == 1
-                        and not chunks[0].strip()
+                        (
+                            not chunks
+                            or (
+                                self.drop_whitespace
+                                and len(chunks) == 1
+                                and not chunks[0].strip()
+                            )
+                        )
+                        and cur_len <= width
                     )
-                    and cur_len <= width
                 ):
                     # Convert current line back to a string and store it in
                     # list of all lines (return value).

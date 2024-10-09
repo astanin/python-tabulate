@@ -47,7 +47,7 @@ def test_wrap_longword_non_wide():
 def test_wrap_wide_char_multiword():
     """TextWrapper: wrapping support for wide characters with multiple words"""
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_wrap_wide_char is skipped")
 
@@ -63,7 +63,7 @@ def test_wrap_wide_char_multiword():
 def test_wrap_wide_char_longword():
     """TextWrapper: wrapping wide char word that needs to be broken up"""
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_wrap_wide_char_longword is skipped")
 
@@ -80,7 +80,7 @@ def test_wrap_wide_char_longword():
 def test_wrap_mixed_string():
     """TextWrapper: wrapping string with mix of wide and non-wide chars"""
     try:
-        import wcwidth  # noqa
+        import wcwidth
     except ImportError:
         skip("test_wrap_wide_char is skipped")
 
