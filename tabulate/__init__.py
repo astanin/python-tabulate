@@ -1646,7 +1646,7 @@ def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True):
                 # explicit than just `str` of the object. Also doesn't work for
                 # custom floatfmt/intfmt, nor with any missing/blank cells.
                 casted_cell = (
-                    str(cell) if _isnumber(cell) else _type(cell, numparse)(cell)
+                    str(cell) if _isnumber(cell) else _type(cell, False, numparse)(cell)
                 )
                 wrapped = [
                     "\n".join(wrapper.wrap(line))
