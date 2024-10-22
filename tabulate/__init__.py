@@ -1623,7 +1623,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     return rows, headers, headers_pad
 
 
-def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True):
+def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True, missingval=_DEFAULT_MISSINGVAL):
     if len(list_of_lists):
         num_cols = len(list_of_lists[0])
     else:
@@ -1646,7 +1646,7 @@ def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True):
                 # explicit than just `str` of the object. Also doesn't work for
                 # custom floatfmt/intfmt, nor with any missing/blank cells.
                 casted_cell = (
-                    '' if cell is None else str(cell) if _isnumber(cell) else _type(cell, numparse)(cell)
+                    missingval if cell is None else str(cell) if _isnumber(cell) else _type(cell, numparse)(cell)
                 )
                 wrapped = [
                     "\n".join(wrapper.wrap(line))
@@ -2247,7 +2247,7 @@ def tabulate(
 
         numparses = _expand_numparse(disable_numparse, num_cols)
         list_of_lists = _wrap_text_to_colwidths(
-            list_of_lists, maxcolwidths, numparses=numparses
+            list_of_lists, maxcolwidths, numparses=numparses, missingval=missingval
         )
 
     if maxheadercolwidths is not None:
@@ -2261,7 +2261,7 @@ def tabulate(
 
         numparses = _expand_numparse(disable_numparse, num_cols)
         headers = _wrap_text_to_colwidths(
-            [headers], maxheadercolwidths, numparses=numparses
+            [headers], maxheadercolwidths, numparses=numparses, missingval=missingval
         )[0]
 
     # empty values in the first column of RST tables should be escaped (issue #82)
