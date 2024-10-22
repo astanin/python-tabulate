@@ -1,7 +1,8 @@
 """Discretely test functionality of our custom TextWrapper"""
+
 import datetime
 
-from tabulate import _CustomTextWrap as CTW, tabulate
+from tabulate import _CustomTextWrap as CTW, tabulate, _strip_ansi
 from textwrap import TextWrapper as OTW
 
 from common import skip, assert_equal
@@ -155,6 +156,42 @@ def test_wrap_color_line_splillover():
     wrapper = CTW(width=25)
     result = wrapper.wrap(data)
     assert_equal(expected, result)
+
+
+def test_wrap_color_line_longword():
+    """TextWrapper: Wrap a line - preserve internal color tags and wrap them to
+    other lines when required, requires adding the colors tags to other lines as appropriate
+    and avoiding splitting escape codes."""
+    data = "This_is_a_\033[31mtest_string_for_testing_TextWrap\033[0m_with_colors"
+
+    expected = [
+        "This_is_a_\033[31mte\033[0m",
+        "\033[31mst_string_fo\033[0m",
+        "\033[31mr_testing_Te\033[0m",
+        "\033[31mxtWrap\033[0m_with_",
+        "colors",
+    ]
+    wrapper = CTW(width=12)
+    result = wrapper.wrap(data)
+    assert_equal(expected, result)
+
+
+def test_wrap_color_line_multiple_escapes():
+    data = "012345(\x1b[32ma\x1b[0mbc\x1b[32mdefghij\x1b[0m)"
+    expected = [
+        "012345(\x1b[32ma\x1b[0mbc\x1b[32m\x1b[0m",
+        "\x1b[32mdefghij\x1b[0m)",
+    ]
+    wrapper = CTW(width=10)
+    result = wrapper.wrap(data)
+    assert_equal(expected, result)
+
+    clean_data = _strip_ansi(data)
+    for width in range(2, len(clean_data)):
+        wrapper = CTW(width=width)
+        result = wrapper.wrap(data)
+        # Comparing after stripping ANSI should be enough to catch broken escape codes
+        assert_equal(clean_data, _strip_ansi("".join(result)))
 
 
 def test_wrap_datetime():

@@ -1,7 +1,7 @@
 """Test output of the various forms of tabular data."""
+
 from pytest import mark
 
-import tabulate as tabulate_module
 from common import assert_equal, raises, skip, check_warnings
 from tabulate import tabulate, simple_separated_format, SEPARATING_LINE
 
@@ -261,6 +261,21 @@ def test_simple_with_sep_line():
     assert_equal(expected, result)
 
 
+def test_orgtbl_with_sep_line():
+    "Output: orgtbl with headers and separating line"
+    expected = "\n".join(
+        [
+            "| strings   |   numbers |",
+            "|-----------+-----------|",
+            "| spam      |   41.9999 |",
+            "|-----------+-----------|",
+            "| eggs      |  451      |",
+        ]
+    )
+    result = tabulate(_test_table_with_sep_line, _test_table_headers, tablefmt="orgtbl")
+    assert_equal(expected, result)
+
+
 def test_readme_example_with_sep():
     table = [["Earth", 6371], ["Mars", 3390], SEPARATING_LINE, ["Moon", 1737]]
     expected = "\n".join(
@@ -315,6 +330,28 @@ def test_simple_multiline_2_with_sep_line():
     assert_equal(expected, result)
 
 
+def test_orgtbl_multiline_2_with_sep_line():
+    "Output: simple with multiline cells"
+    expected = "\n".join(
+        [
+            "|  key  |   value   |",
+            "|-------+-----------|",
+            "|  foo  |    bar    |",
+            "|-------+-----------|",
+            "| spam  | multiline |",
+            "|       |   world   |",
+        ]
+    )
+    table = [
+        ["key", "value"],
+        ["foo", "bar"],
+        SEPARATING_LINE,
+        ["spam", "multiline\nworld"],
+    ]
+    result = tabulate(table, headers="firstrow", stralign="center", tablefmt="orgtbl")
+    assert_equal(expected, result)
+
+
 def test_simple_headerless():
     "Output: simple without headers"
     expected = "\n".join(
@@ -336,6 +373,36 @@ def test_simple_headerless_with_sep_line():
         ]
     )
     result = tabulate(_test_table_with_sep_line, tablefmt="simple")
+    assert_equal(expected, result)
+
+
+def test_simple_headerless_with_sep_line_with_padding_in_tablefmt():
+    "Output: simple without headers with sep line with padding in tablefmt"
+    expected = "\n".join(
+        [
+            "|------|----------|",
+            "| spam |  41.9999 |",
+            "|------|----------|",
+            "| eggs | 451      |",
+        ]
+    )
+    result = tabulate(_test_table_with_sep_line, tablefmt="github")
+    assert_equal(expected, result)
+
+
+def test_simple_headerless_with_sep_line_with_linebetweenrows_in_tablefmt():
+    "Output: simple without headers with sep line with linebetweenrows in tablefmt"
+    expected = "\n".join(
+        [
+            "+------+----------+",
+            "| spam |  41.9999 |",
+            "+------+----------+",
+            "+------+----------+",
+            "| eggs | 451      |",
+            "+------+----------+",
+        ]
+    )
+    result = tabulate(_test_table_with_sep_line, tablefmt="grid")
     assert_equal(expected, result)
 
 
@@ -1415,6 +1482,104 @@ def test_fancy_grid_multiline_row_align():
         ]
     )
     result = tabulate(table, tablefmt="fancy_grid", rowalign=[None, "center", "bottom"])
+    assert_equal(expected, result)
+
+
+def test_colon_grid():
+    "Output: colon_grid with two columns aligned left and center"
+    expected = "\n".join(
+        [
+            "+------+------+",
+            "| H1   | H2   |",
+            "+=====:+:====:+",
+            "| 3    | 4    |",
+            "+------+------+",
+        ]
+    )
+    result = tabulate(
+        [[3, 4]],
+        headers=("H1", "H2"),
+        tablefmt="colon_grid",
+        colalign=["right", "center"],
+    )
+    assert_equal(expected, result)
+
+
+def test_colon_grid_wide_characters():
+    "Output: colon_grid with wide chars in header"
+    try:
+        import wcwidth  # noqa
+    except ImportError:
+        skip("test_colon_grid_wide_characters is skipped")
+    headers = list(_test_table_headers)
+    headers[1] = "配列"
+    expected = "\n".join(
+        [
+            "+-----------+---------+",
+            "| strings   | 配列    |",
+            "+:==========+========:+",
+            "| spam      | 41.9999 |",
+            "+-----------+---------+",
+            "| eggs      | 451     |",
+            "+-----------+---------+",
+        ]
+    )
+    result = tabulate(
+        _test_table, headers, tablefmt="colon_grid", colalign=["left", "right"]
+    )
+    assert_equal(expected, result)
+
+
+def test_colon_grid_headerless():
+    "Output: colon_grid without headers"
+    expected = "\n".join(
+        [
+            "+------+---------+",
+            "| spam | 41.9999 |",
+            "+------+---------+",
+            "| eggs | 451     |",
+            "+------+---------+",
+        ]
+    )
+    result = tabulate(_test_table, tablefmt="colon_grid")
+    assert_equal(expected, result)
+
+
+def test_colon_grid_multiline():
+    "Output: colon_grid with multiline cells"
+    table = [["Data\n5", "33\n3"]]
+    headers = ["H1\n1", "H2\n2"]
+    expected = "\n".join(
+        [
+            "+------+------+",
+            "| H1   | H2   |",
+            "| 1    | 2    |",
+            "+:=====+:=====+",
+            "| Data | 33   |",
+            "| 5    | 3    |",
+            "+------+------+",
+        ]
+    )
+    result = tabulate(table, headers, tablefmt="colon_grid")
+    assert_equal(expected, result)
+
+
+def test_colon_grid_with_empty_cells():
+    table = [["A", ""], ["", "B"]]
+    headers = ["H1", "H2"]
+    alignments = ["center", "right"]
+    expected = "\n".join(
+        [
+            "+------+------+",
+            "| H1   | H2   |",
+            "+:====:+=====:+",
+            "| A    |      |",
+            "+------+------+",
+            "|      | B    |",
+            "+------+------+",
+        ]
+    )
+    result = tabulate(table, headers, tablefmt="colon_grid", colalign=alignments)
     assert_equal(expected, result)
 
 
@@ -2652,7 +2817,9 @@ def test_intfmt_with_string_as_integer():
 @mark.skip(reason="It detects all values as floats but there are strings and integers.")
 def test_intfmt_with_string_with_floats():
     "Output: integer format"
-    result = tabulate([[82000.38], ["1500.47"], ["2463"], [92165]], intfmt=",", tablefmt="plain")
+    result = tabulate(
+        [[82000.38], ["1500.47"], ["2463"], [92165]], intfmt=",", tablefmt="plain"
+    )
     expected = "82000.4\n 1500.47\n 2463\n92,165"
     assert_equal(expected, result)
 
@@ -2691,6 +2858,15 @@ def test_floatfmt():
     "Output: floating point format"
     result = tabulate([["1.23456789"], [1.0]], floatfmt=".3f", tablefmt="plain")
     expected = "1.235\n1.000"
+    assert_equal(expected, result)
+
+
+def test_floatfmt_thousands():
+    "Output: floating point format"
+    result = tabulate(
+        [["1.23456789"], [1.0], ["1,234.56"]], floatfmt=".3f", tablefmt="plain"
+    )
+    expected = "   1.235\n   1.000\n1234.560"
     assert_equal(expected, result)
 
 
@@ -2831,6 +3007,32 @@ def test_missingval_multi():
         tablefmt="plain",
     )
     expected = "Alice  Bob  Charlie\nn/a    ?"
+    assert_equal(expected, result)
+
+
+def test_column_emptymissing_deduction():
+    "Missing or empty/blank values shouldn't change type deduction of rest of column"
+    from fractions import Fraction
+
+    test_table = [
+        [None, "1.23423515351", Fraction(1, 3)],
+        [Fraction(56789, 1000000), 12345.1, b"abc"],
+        ["", b"", None],
+        [Fraction(10000, 3), None, ""],
+    ]
+    result = tabulate(
+        test_table,
+        floatfmt=",.5g",
+        missingval="?",
+    )
+    print(f"\n{result}")
+    expected = """\
+------------  -----------  ---
+    ?              1.2342  1/3
+    0.056789  12,345       abc
+                           ?
+3,333.3            ?
+------------  -----------  ---"""
     assert_equal(expected, result)
 
 
@@ -3087,18 +3289,16 @@ def test_disable_numparse_list():
 
 def test_preserve_whitespace():
     "Output: Default table output, but with preserved leading whitespace."
-    tabulate_module.PRESERVE_WHITESPACE = True
     table_headers = ["h1", "h2", "h3"]
     test_table = [["  foo", " bar   ", "foo"]]
     expected = "\n".join(
         ["h1     h2       h3", "-----  -------  ----", "  foo   bar     foo"]
     )
-    result = tabulate(test_table, table_headers)
+    result = tabulate(test_table, table_headers, preserve_whitespace=True)
     assert_equal(expected, result)
 
-    tabulate_module.PRESERVE_WHITESPACE = False
     table_headers = ["h1", "h2", "h3"]
     test_table = [["  foo", " bar   ", "foo"]]
     expected = "\n".join(["h1    h2    h3", "----  ----  ----", "foo   bar   foo"])
-    result = tabulate(test_table, table_headers)
+    result = tabulate(test_table, table_headers, preserve_whitespace=False)
     assert_equal(expected, result)

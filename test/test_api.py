@@ -50,6 +50,7 @@ def test_tabulate_signature():
         ("disable_numparse", False),
         ("colglobalalign", None),
         ("colalign", None),
+        ("preserve_whitespace", False),
         ("maxcolwidths", None),
         ("headersglobalalign", None),
         ("headersalign", None),

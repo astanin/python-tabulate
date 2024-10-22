@@ -1,4 +1,10 @@
-- 0.9.1: Future version.
+- 0.10.0: Add support for Python 3.11, 3.12, 3.13.
+  Drop support for Python 3.7, 3.8.
+  PRESERVE_STERILITY global is replaced with preserve_sterility function argument.
+  New formatting options: headersglobalalign, headersalign, colglobalalign.
+  New output format: ``colon_grid`` (Pandoc grid_tables with alignment)
+  Various bug fixes.
+  Improved error messages.
 - 0.9.0: Drop support for Python 2.7, 3.5, 3.6.
   Migrate to pyproject.toml project layout (PEP 621).
   New output formats: `asciidoc`, various `*grid` and `*outline` formats.
