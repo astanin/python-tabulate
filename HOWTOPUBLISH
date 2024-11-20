@@ -1,4 +1,5 @@
 # update contributors and CHANGELOG in README
+python -m pip install pre-commit
 python -m pre_commit run -a # and then commit changes
 tox -e py39-extra,py310-extra,py311-extra,py312-extra,py313-extra
 # tag version release
@@ -6,10 +7,9 @@ python -m build -s # this will update tabulate/version.py
 python -m pip install . # install tabulate in the current venv
 python -m pip install -r benchmark/requirements.txt
 python benchmark/benchmark.py  # then update README
-# move tag to the last commit
+# move tag to the last commit: eg.
+git tag v0.10.4
 python -m build -s # update tabulate/version.py
 python -m build -nswx .
 git push # wait for all CI builds to succeed
 git push --tags # if CI builds succeed
-twine upload --repository-url https://test.pypi.org/legacy/ dist/*
-twine upload dist/*

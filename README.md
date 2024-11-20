@@ -1,6 +1,12 @@
 python-tabulate
 ===============
 
+> This is a temporary upgrade shim for https://github.com/astanin/python-tabulate
+
+> Install `tabulate` via `python -m pip install tabulate-slip39`,
+> until the upstream https://pypi.org/project/tabulate is upgraded
+
+
 Pretty-print tabular data in Python, a library and a command-line
 utility.
 
@@ -503,10 +509,10 @@ format:
 >>> print(tabulate(table, headers, tablefmt="asciidoc"))
 [cols="8<,7>",options="header"]
 |====
-| item   |   qty 
-| spam   |    42 
-| eggs   |   451 
-| bacon  |     0 
+| item   |   qty
+| spam   |    42
+| eggs   |   451
+| bacon  |     0
 |====
 
 ```
