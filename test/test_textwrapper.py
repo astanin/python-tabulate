@@ -220,3 +220,27 @@ def test_wrap_datetime():
     ]
     expected = "\n".join(expected)
     assert_equal(expected, result)
+
+
+def test_wrap_optional_bool_strs():
+    """TextWrapper: Show that str bools and None can be wrapped without crashing"""
+    data = [
+        ["First Entry", "True"],
+        ["Second Entry", None],
+    ]
+    headers = ["Title", "When"]
+    result = tabulate(data, headers=headers, tablefmt="grid", maxcolwidths=[7, 5])
+
+    expected = [
+        "+---------+--------+",
+        "| Title   | When   |",
+        "+=========+========+",
+        "| First   | True   |",
+        "| Entry   |        |",
+        "+---------+--------+",
+        "| Second  | None   |",
+        "| Entry   |        |",
+        "+---------+--------+",
+    ]
+    expected = "\n".join(expected)
+    assert_equal(expected, result)
