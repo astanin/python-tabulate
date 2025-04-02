@@ -35,5 +35,5 @@ tabulate = "tabulate:_main"
 # [tool.setuptools]
 # packages = ["tabulate"]
 
-[tool.setuptools_scm]
-write_to = "tabulate/version.py"
+# [tool.setuptools_scm]
+# write_to = "tabulate/version.py"
