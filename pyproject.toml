@@ -1,6 +1,6 @@
-[build-system]
-requires = ["setuptools>=61.2.0", "setuptools_scm[toml]>=3.4.3"]
-build-backend = "setuptools.build_meta"
+# [build-system]
+# requires = ["setuptools>=61.2.0", "setuptools_scm[toml]>=3.4.3"]
+# build-backend = "setuptools.build_meta"
 
 [project]
 name = "tabulate"
@@ -32,8 +32,8 @@ widechars = ["wcwidth"]
 [project.scripts]
 tabulate = "tabulate:_main"
 
-[tool.setuptools]
-packages = ["tabulate"]
+# [tool.setuptools]
+# packages = ["tabulate"]
 
-[tool.setuptools_scm]
-write_to = "tabulate/version.py"
+# [tool.setuptools_scm]
+# write_to = "tabulate/version.py"
