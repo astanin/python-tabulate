@@ -509,6 +509,23 @@ def test_github():
     assert_equal(expected, result)
 
 
+def test_github_multiline():
+    "Output: github with multiline cells with headers"
+    table = [[2, "foo\nbar"]]
+    headers = ("more\nspam eggs", "more spam\n& eggs")
+    expected = "\n".join(
+        [
+            "|        more | more spam   |",
+            "|   spam eggs | & eggs      |",
+            "|-------------|-------------|",
+            "|           2 | foo         |",
+            "|             | bar         |",
+        ]
+    )
+    result = tabulate(table, headers, tablefmt="github")
+    assert_equal(expected, result)
+
+
 def test_grid():
     "Output: grid with headers"
     expected = "\n".join(

@@ -737,6 +737,7 @@ multiline_formats = {
     "pretty": "pretty",
     "psql": "psql",
     "rst": "rst",
+    "github": "github",
     "outline": "outline",
     "simple_outline": "simple_outline",
     "rounded_outline": "rounded_outline",
