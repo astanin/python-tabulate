@@ -3,7 +3,7 @@ requires = ["setuptools>=61.2.0", "setuptools_scm[toml]>=3.4.3"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "tabulate"
+name = "tabulate-slip39"
 authors = [{name = "Sergey Astanin", email = "s.astanin@gmail.com"}]
 license = {text = "MIT"}
 description = "Pretty-print tabular data"
