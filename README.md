@@ -1098,7 +1098,7 @@ table, however, ANSI escape sequences are not removed so the original styling is
 
 Some terminals support a special grouping of ANSI escape sequences that are intended to display hyperlinks
 much in the same way they are shown in browsers. These are handled just as mentioned before: non-printable
-ANSI escape sequences are removed prior to string length calculation. The only diifference with escaped
+ANSI escape sequences are removed prior to string length calculation. The only difference with escaped
 hyperlinks is that column width will be based on the length of the URL _text_ rather than the URL
 itself (terminals would show this text). For example:
 
