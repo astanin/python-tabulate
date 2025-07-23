@@ -1,6 +1,4 @@
-"""Command-line interface.
-
-"""
+"""Command-line interface."""
 
 import os
 import sys
