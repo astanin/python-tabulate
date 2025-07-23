@@ -180,7 +180,9 @@ def test_wrap_text_wide_chars():
     except ImportError:
         skip("test_wrap_text_wide_chars is skipped")
 
-    rows = [["청자청자청자청자청자", "약간 감싸면 더 잘 보일 수있는 다소 긴 설명입니다"]]
+    rows = [
+        ["청자청자청자청자청자", "약간 감싸면 더 잘 보일 수있는 다소 긴 설명입니다"]
+    ]
     widths = [5, 20]
     expected = [
         [
@@ -215,10 +217,8 @@ def test_wrap_text_to_colwidths_single_ansi_colors_full_cell():
     when it is at the beginning and end of full cell"""
     data = [
         [
-            (
-                "\033[31mThis is a rather long description that might"
-                " look better if it is wrapped a bit\033[0m"
-            )
+            "\033[31mThis is a rather long description that might"
+            " look better if it is wrapped a bit\033[0m"
         ]
     ]
     result = T._wrap_text_to_colwidths(data, [30])
@@ -244,7 +244,12 @@ def test_wrap_text_to_colwidths_colors_wide_char():
     except ImportError:
         skip("test_wrap_text_to_colwidths_colors_wide_char is skipped")
 
-    data = [[("\033[31m약간 감싸면 더 잘 보일 수있는 다소 긴" " 설명입니다 설명입니다 설명입니다 설명입니다 설명\033[0m")]]
+    data = [
+        [
+            "\033[31m약간 감싸면 더 잘 보일 수있는 다소 긴"
+            " 설명입니다 설명입니다 설명입니다 설명입니다 설명\033[0m"
+        ]
+    ]
     result = T._wrap_text_to_colwidths(data, [30])
 
     expected = [
@@ -267,10 +272,8 @@ def test_wrap_text_to_colwidths_multi_ansi_colors_full_cell():
     (e.g. text and background colors)"""
     data = [
         [
-            (
-                "\033[31m\033[43mThis is a rather long description that"
-                " might look better if it is wrapped a bit\033[0m"
-            )
+            "\033[31m\033[43mThis is a rather long description that"
+            " might look better if it is wrapped a bit\033[0m"
         ]
     ]
     result = T._wrap_text_to_colwidths(data, [30])
@@ -294,10 +297,8 @@ def test_wrap_text_to_colwidths_multi_ansi_colors_in_subset():
     when they are around subsets of the cell"""
     data = [
         [
-            (
-                "This is a rather \033[31mlong description\033[0m that"
-                " might look better \033[93mif it is wrapped\033[0m a bit"
-            )
+            "This is a rather \033[31mlong description\033[0m that"
+            " might look better \033[93mif it is wrapped\033[0m a bit"
         ]
     ]
     result = T._wrap_text_to_colwidths(data, [30])
