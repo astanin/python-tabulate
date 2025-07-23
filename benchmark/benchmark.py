@@ -1,6 +1,5 @@
 from timeit import timeit
 import tabulate
-import asciitable
 import prettytable
 import texttable
 import sys
@@ -9,7 +8,6 @@ setup_code = r"""
 from csv import writer
 from io import StringIO
 import tabulate
-import asciitable
 import prettytable
 import texttable
 
@@ -34,12 +32,6 @@ def run_prettytable(table):
     return str(pp)
 
 
-def run_asciitable(table):
-    buf = StringIO()
-    asciitable.write(table, output=buf, Writer=asciitable.FixedWidth)
-    return buf.getvalue()
-
-
 def run_texttable(table):
     pp = texttable.Texttable()
     pp.set_cols_align(["l"] + ["r"]*9)
@@ -61,7 +53,6 @@ def run_tabulate(table, widechars=False):
 methods = [
     ("join with tabs and newlines", "join_table(table)"),
     ("csv to StringIO", "csv_table(table)"),
-    ("asciitable (%s)" % asciitable.__version__, "run_asciitable(table)"),
     ("tabulate (%s)" % tabulate.__version__, "run_tabulate(table)"),
     (
         "tabulate (%s, WIDE_CHARS_MODE)" % tabulate.__version__,

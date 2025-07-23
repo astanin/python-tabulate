@@ -53,7 +53,7 @@ pip install tabulate
 Build status
 ------------
 
-[![Build status](https://circleci.com/gh/astanin/python-tabulate.svg?style=svg)](https://circleci.com/gh/astanin/python-tabulate/tree/master) [![Build status](https://ci.appveyor.com/api/projects/status/8745yksvvol7h3d7/branch/master?svg=true)](https://ci.appveyor.com/project/astanin/python-tabulate/branch/master)
+[![python-tabulate](https://github.com/astanin/python-tabulate/actions/workflows/tabulate.yml/badge.svg)](https://github.com/astanin/python-tabulate/actions/workflows/tabulate.yml)
 
 Library usage
 -------------
@@ -74,6 +74,7 @@ Earth    6371  5973.6
 Moon     1737    73.5
 Mars     3390   641.85
 -----  ------  -------------
+
 ```
 
 The following tabular data types are supported:
@@ -81,7 +82,7 @@ The following tabular data types are supported:
 -   list of lists or another iterable of iterables
 -   list or another iterable of dicts (keys as columns)
 -   dict of iterables (keys as columns)
--   list of dataclasses (Python 3.7+ only, field names as columns)
+-   list of dataclasses (field names as columns)
 -   two-dimensional NumPy array
 -   NumPy record arrays (names as columns)
 -   pandas.DataFrame
@@ -101,6 +102,7 @@ Sun         696000           1.9891e+09
 Earth         6371        5973.6
 Moon          1737          73.5
 Mars          3390         641.85
+
 ```
 
 If `headers="firstrow"`, then the first row of data is used:
@@ -112,6 +114,7 @@ Name      Age
 ------  -----
 Alice      24
 Bob        19
+
 ```
 
 If `headers="keys"`, then the keys of a dictionary/dataframe, or column
@@ -121,10 +124,24 @@ dictionaries or named tuples:
 ```pycon
 >>> print(tabulate({"Name": ["Alice", "Bob"],
 ...                 "Age": [24, 19]}, headers="keys"))
-  Age  Name
------  ------
-   24  Alice
-   19  Bob
+Name      Age
+------  -----
+Alice      24
+Bob        19
+
+```
+
+When data is a list of dictionaries, a dictionary can be passed as `headers`
+to replace the keys with other column labels:
+
+```pycon
+>>> print(tabulate([{1: "Alice", 2: 24}, {1: "Bob", 2: 19}],
+...                headers={1: "Name", 2: "Age"}))
+Name      Age
+------  -----
+Alice      24
+Bob        19
+
 ```
 
 ### Row Indices
@@ -142,6 +159,7 @@ or `showindex=False`. To add a custom row index column, pass
 0  F  24
 1  M  19
 -  -  --
+
 ```
 
 ### Table format
@@ -198,6 +216,7 @@ item      qty
 spam       42
 eggs      451
 bacon       0
+
 ```
 
 `simple` is the default format (the default may change in future
@@ -211,6 +230,7 @@ item      qty
 spam       42
 eggs      451
 bacon       0
+
 ```
 
 `github` follows the conventions of GitHub flavored Markdown. It
@@ -218,11 +238,12 @@ corresponds to the `pipe` format without alignment colons:
 
 ```pycon
 >>> print(tabulate(table, headers, tablefmt="github"))
-| item   | qty   |
+| item   |   qty |
 |--------|-------|
-| spam   | 42    |
-| eggs   | 451   |
-| bacon  | 0     |
+| spam   |    42 |
+| eggs   |   451 |
+| bacon  |     0 |
+
 ```
 
 `grid` is like tables formatted by Emacs'
@@ -240,6 +261,7 @@ corresponds to the `pipe` format without alignment colons:
 +--------+-------+
 | bacon  |     0 |
 +--------+-------+
+
 ```
 
 `simple_grid` draws a grid using single-line box-drawing characters:
@@ -321,7 +343,24 @@ corresponds to the `pipe` format without alignment colons:
 ├────────┼───────┤
 │ bacon  │     0 │
 ╘════════╧═══════╛
+
 ```
+
+`colon_grid` is similar to `grid` but uses colons only to define
+columnwise content alignment , without whitespace padding,
+similar the alignment specification of Pandoc `grid_tables`:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
+    ...                ["strings", "numbers"], "colon_grid",
+    ...                colalign=["right", "left"]))
+    +-----------+-----------+
+    | strings   | numbers   |
+    +==========:+:==========+
+    | spam      | 41.9999   |
+    +-----------+-----------+
+    | eggs      | 451       |
+    +-----------+-----------+
+
 
 `outline` is the same as the `grid` format but doesn't draw lines between rows:
 
@@ -409,6 +448,7 @@ corresponds to the `pipe` format without alignment colons:
  spam   |    42
  eggs   |   451
  bacon  |     0
+
 ```
 
 `pretty` attempts to be close to the format emitted by the PrettyTables
@@ -423,6 +463,7 @@ library:
 | eggs  | 451 |
 | bacon |  0  |
 +-------+-----+
+
 ```
 
 `psql` is like tables formatted by Postgres' psql cli:
@@ -436,6 +477,7 @@ library:
 | eggs   |   451 |
 | bacon  |     0 |
 +--------+-------+
+
 ```
 
 `pipe` follows the conventions of [PHP Markdown
@@ -450,6 +492,7 @@ indicate column alignment:
 | spam   |    42 |
 | eggs   |   451 |
 | bacon  |     0 |
+
 ```
 
 `asciidoc` formats data like a simple table of the
@@ -460,11 +503,12 @@ format:
 >>> print(tabulate(table, headers, tablefmt="asciidoc"))
 [cols="8<,7>",options="header"]
 |====
-| item   |   qty
-| spam   |    42
-| eggs   |   451
-| bacon  |     0
+| item   |   qty 
+| spam   |    42 
+| eggs   |   451 
+| bacon  |     0 
 |====
+
 ```
 
 `orgtbl` follows the conventions of Emacs
@@ -478,6 +522,7 @@ in the minor orgtbl-mode. Hence its name:
 | spam   |    42 |
 | eggs   |   451 |
 | bacon  |     0 |
+
 ```
 
 `jira` follows the conventions of Atlassian Jira markup language:
@@ -488,6 +533,7 @@ in the minor orgtbl-mode. Hence its name:
 | spam   |    42 |
 | eggs   |   451 |
 | bacon  |     0 |
+
 ```
 
 `rst` formats data like a simple table of the
@@ -503,6 +549,7 @@ spam       42
 eggs      451
 bacon       0
 ======  =====
+
 ```
 
 `mediawiki` format produces a table markup used in
@@ -522,6 +569,7 @@ MediaWiki-based sites:
 |-
 | bacon  || style="text-align: right;"|     0
 |}
+
 ```
 
 `moinmoin` format produces a table markup used in
@@ -529,20 +577,22 @@ MediaWiki-based sites:
 
 ```pycon
 >>> print(tabulate(table, headers, tablefmt="moinmoin"))
-|| ''' item   ''' || ''' quantity   ''' ||
-||  spam    ||  41.999      ||
-||  eggs    ||  451         ||
-||  bacon   ||              ||
+|| ''' item   ''' ||<style="text-align: right;"> '''   qty ''' ||
+||  spam    ||<style="text-align: right;">     42  ||
+||  eggs    ||<style="text-align: right;">    451  ||
+||  bacon   ||<style="text-align: right;">      0  ||
+
 ```
 
 `youtrack` format produces a table markup used in Youtrack tickets:
 
 ```pycon
 >>> print(tabulate(table, headers, tablefmt="youtrack"))
-||  item    ||  quantity   ||
-|   spam    |  41.999      |
-|   eggs    |  451         |
-|   bacon   |              |
+||  item    ||    qty  ||
+|  spam    |     42  |
+|  eggs    |    451  |
+|  bacon   |      0  |
+
 ```
 
 `textile` format produces a table markup used in
@@ -554,6 +604,7 @@ MediaWiki-based sites:
 |<. spam    |>.    42 |
 |<. eggs    |>.   451 |
 |<. bacon   |>.     0 |
+
 ```
 
 `html` produces standard HTML markup as an html.escape'd str
@@ -564,13 +615,16 @@ and a .str property so that the raw HTML remains accessible.
 ```pycon
 >>> print(tabulate(table, headers, tablefmt="html"))
 <table>
-<tbody>
+<thead>
 <tr><th>item  </th><th style="text-align: right;">  qty</th></tr>
+</thead>
+<tbody>
 <tr><td>spam  </td><td style="text-align: right;">   42</td></tr>
 <tr><td>eggs  </td><td style="text-align: right;">  451</td></tr>
 <tr><td>bacon </td><td style="text-align: right;">    0</td></tr>
 </tbody>
 </table>
+
 ```
 
 `latex` format creates a `tabular` environment for LaTeX markup,
@@ -588,6 +642,7 @@ correspondents:
  bacon  &     0 \\
 \hline
 \end{tabular}
+
 ```
 
 `latex_raw` behaves like `latex` but does not escape LaTeX commands and
@@ -622,6 +677,7 @@ at a glance:
 12345
  1234.5
 ----------
+
 ```
 
 Compare this with a more common right alignment:
@@ -635,6 +691,7 @@ Compare this with a more common right alignment:
  12345
 1234.5
 ------
+
 ```
 
 For `tabulate`, anything which can be parsed as a number is a number.
@@ -643,7 +700,7 @@ comes in handy when reading a mixed table of text and numbers from a
 file:
 
 ```pycon
->>> import csv ; from StringIO import StringIO
+>>> import csv; from io import StringIO
 >>> table = list(csv.reader(StringIO("spam, 42\neggs, 451\n")))
 >>> table
 [['spam', ' 42'], ['eggs', ' 451']]
@@ -652,32 +709,48 @@ file:
 spam    42
 eggs   451
 ----  ----
+
 ```
 
 To disable this feature use `disable_numparse=True`.
 
 ```pycon
->>> print(tabulate.tabulate([["Ver1", "18.0"], ["Ver2","19.2"]], tablefmt="simple", disable_numparse=True))
+>>> print(tabulate([["Ver1", "18.0"], ["Ver2","19.2"]], tablefmt="simple", disable_numparse=True))
 ----  ----
 Ver1  18.0
 Ver2  19.2
 ----  ----
+
 ```
 
 ### Custom column alignment
 
-`tabulate` allows a custom column alignment to override the above. The
-`colalign` argument can be a list or a tuple of `stralign` named
-arguments. Possible column alignments are: `right`, `center`, `left`,
-`decimal` (only for numbers), and `None` (to disable alignment).
-Omitting an alignment uses the default. For example:
+`tabulate` allows a custom column alignment to override the smart alignment described above.
+Use `colglobalalign` to define a global setting. Possible alignments are: `right`, `center`, `left`, `decimal` (only for numbers).
+Furthermore, you can define `colalign` for column-specific alignment as a list or a tuple. Possible values are `global` (keeps global setting), `right`, `center`, `left`, `decimal` (only for numbers), `None` (to disable alignment). Missing alignments are treated as `global`.
 
 ```pycon
->>> print(tabulate([["one", "two"], ["three", "four"]], colalign=("right",))
------  ----
-  one  two
-three  four
------  ----
+>>> print(tabulate([[1,2,3,4],[111,222,333,444]], colglobalalign='center', colalign = ('global','left','right')))
+---  ---  ---  ---
+ 1   2      3   4
+111  222  333  444
+---  ---  ---  ---
+
+```
+
+### Custom header alignment
+
+Headers' alignment can be defined separately from columns'. Like for columns, you can use:
+- `headersglobalalign` to define a header-specific global alignment setting. Possible values are `right`, `center`, `left`, `None` (to follow column alignment),
+- `headersalign` list or tuple to further specify header-wise alignment. Possible values are `global` (keeps global setting), `same` (follow column alignment), `right`, `center`, `left`, `None` (to disable alignment). Missing alignments are treated as `global`.
+
+```pycon
+>>> print(tabulate([[1,2,3,4,5,6],[111,222,333,444,555,666]], colglobalalign = 'center', colalign = ('left',), headers = ['h','e','a','d','e','r'], headersglobalalign = 'right', headersalign = ('same','same','left','global','center')))
+h     e   a      d   e     r
+---  ---  ---  ---  ---  ---
+1     2    3    4    5    6
+111  222  333  444  555  666
+
 ```
 
 ### Number formatting
@@ -691,6 +764,7 @@ columns of decimal numbers. Use `floatfmt` named argument:
 pi  3.1416
 e   2.7183
 --  ------
+
 ```
 
 `floatfmt` argument can be a list or a tuple of format strings, one per
@@ -701,6 +775,7 @@ column, in which case every column may have different number formatting:
 ---  -----  -------
 0.1  0.123  0.12345
 ---  -----  -------
+
 ```
 
 `intfmt` works similarly for integers
@@ -711,16 +786,52 @@ column, in which case every column may have different number formatting:
     b  90,000
     -  ------
 
+
+### Type Deduction and Missing Values
+
+When `tabulate` sees numerical data (with our without comma separators), it
+attempts to align the column on the decimal point.  However, if it observes
+non-numerical data in the column, it aligns it to the left by default.  If
+data is missing in a column (either None or empty values), the remaining
+data in the column is used to infer the type:
+
+```pycon
+>>> from fractions import Fraction
+>>> test_table = [
+...    [None, "1.23423515351", Fraction(1, 3)],
+...    [Fraction(56789, 1000000), 12345.1, b"abc"],
+...    ["", b"", None],
+...    [Fraction(10000, 3), None, ""],
+... ]
+>>> print(tabulate(test_table, floatfmt=",.5g", missingval="?"))
+------------  -----------  ---
+    ?              1.2342  1/3
+    0.056789  12,345       abc
+                           ?
+3,333.3            ?
+------------  -----------  ---
+
+```
+
+The deduced type (eg. str, float) influences the rendering of any types
+that have alternative representations.  For example, since `Fraction` has
+methods `__str__` and `__float__` defined (and hence is convertible to a
+`float` and also has a `str` representation), the appropriate
+representation is selected for the column's deduced type.  In order to not
+lose precision accidentally, types having both an `__int__` and
+`__float__` represention will be considered a `float`.
+
+Therefore, if your table contains types convertible to int/float but you'd
+*prefer* they be represented as strings, or your strings *might* all look
+like numbers such as "1e23": either convert them to the desired
+representation before you `tabulate`, or ensure that the column always
+contains at least one other `str`.
+
 ### Text formatting
 
 By default, `tabulate` removes leading and trailing whitespace from text
-columns. To disable whitespace removal, set the global module-level flag
-`PRESERVE_WHITESPACE`:
-
-```python
-import tabulate
-tabulate.PRESERVE_WHITESPACE = True
-```
+columns. To disable whitespace removal, pass `preserve_whitespace=True`.
+Older versions of the library used a global module-level flag PRESERVE_WHITESPACE.
 
 ### Wide (fullwidth CJK) symbols
 
@@ -766,6 +877,7 @@ a multiline cell, and headers with a multiline cell:
 ```pycon
 >>> table = [["eggs",451],["more\nspam",42]]
 >>> headers = ["item\nname", "qty"]
+
 ```
 
 `plain` tables:
@@ -777,6 +889,7 @@ name
 eggs      451
 more       42
 spam
+
 ```
 
 `simple` tables:
@@ -789,6 +902,7 @@ name
 eggs      451
 more       42
 spam
+
 ```
 
 `grid` tables:
@@ -804,6 +918,7 @@ spam
 | more   |    42 |
 | spam   |       |
 +--------+-------+
+
 ```
 
 `fancy_grid` tables:
@@ -819,6 +934,7 @@ spam
 │ more   │    42 │
 │ spam   │       │
 ╘════════╧═══════╛
+
 ```
 
 `pipe` tables:
@@ -831,6 +947,7 @@ spam
 | eggs   |   451 |
 | more   |    42 |
 | spam   |       |
+
 ```
 
 `orgtbl` tables:
@@ -843,18 +960,19 @@ spam
 | eggs   |   451 |
 | more   |    42 |
 | spam   |       |
+
 ```
 
 `jira` tables:
 
 ```pycon
 >>> print(tabulate(table, headers, tablefmt="jira"))
-| item   |   qty |
-| name   |       |
-|:-------|------:|
+|| item   ||   qty ||
+|| name   ||       ||
 | eggs   |   451 |
 | more   |    42 |
 | spam   |       |
+
 ```
 
 `presto` tables:
@@ -867,6 +985,7 @@ spam
  eggs   |   451
  more   |    42
  spam   |
+
 ```
 
 `pretty` tables:
@@ -881,6 +1000,7 @@ spam
 | more | 42  |
 | spam |     |
 +------+-----+
+
 ```
 
 `psql` tables:
@@ -895,6 +1015,7 @@ spam
 | more   |    42 |
 | spam   |       |
 +--------+-------+
+
 ```
 
 `rst` tables:
@@ -909,6 +1030,7 @@ eggs      451
 more       42
 spam
 ======  =====
+
 ```
 
 Multiline cells are not well-supported for the other table formats.
@@ -938,6 +1060,7 @@ the lines being wrapped would probably be significantly longer than this.
 | John Smith | Middle  |
 |            | Manager |
 +------------+---------+
+
 ```
 
 Text is preferably wrapped on whitespaces and right after the hyphens in hyphenated words.
@@ -1000,12 +1123,12 @@ table, however, ANSI escape sequences are not removed so the original styling is
 
 Some terminals support a special grouping of ANSI escape sequences that are intended to display hyperlinks
 much in the same way they are shown in browsers. These are handled just as mentioned before: non-printable
-ANSI escape sequences are removed prior to string length calculation. The only diifference with escaped
+ANSI escape sequences are removed prior to string length calculation. The only difference with escaped
 hyperlinks is that column width will be based on the length of the URL _text_ rather than the URL
 itself (terminals would show this text). For example:
 
     >>> len('\x1b]8;;https://example.com\x1b\\example\x1b]8;;\x1b\\')  # display length is 7, showing 'example'
-    45
+    40
 
 
 Usage of the command line utility
@@ -1048,21 +1171,19 @@ simply joining lists of values with a tab, comma, or other separator.
 
 At the same time, `tabulate` is comparable to other table
 pretty-printers. Given a 10x10 table (a list of lists) of mixed text and
-numeric data, `tabulate` appears to be slower than `asciitable`, and
-faster than `PrettyTable` and `texttable` The following mini-benchmark
-was run in Python 3.9.13 on Windows 10:
+numeric data, `tabulate` appears to be faster than `PrettyTable` and `texttable`.
+The following mini-benchmark was run in Python 3.11.9 on Windows 11 (x64):
 
-    =================================  ==========  ===========
-    Table formatter                      time, μs    rel. time
-    =================================  ==========  ===========
-    csv to StringIO                          12.5          1.0
-    join with tabs and newlines              14.6          1.2
-    asciitable (0.8.0)                      192.0         15.4
-    tabulate (0.9.0)                        483.5         38.7
-    tabulate (0.9.0, WIDE_CHARS_MODE)       637.6         51.1
-    PrettyTable (3.4.1)                    1080.6         86.6
-    texttable (1.6.4)                      1390.3        111.4
-    =================================  ==========  ===========
+    ==================================  ==========  ===========
+    Table formatter                       time, μs    rel. time
+    ==================================  ==========  ===========
+    join with tabs and newlines                6.3          1.0
+    csv to StringIO                            6.6          1.0
+    tabulate (0.10.0)                        249.2         39.3
+    tabulate (0.10.0, WIDE_CHARS_MODE)       325.6         51.4
+    texttable (1.7.0)                        579.3         91.5
+    PrettyTable (3.11.0)                     605.5         95.6
+    ==================================  ==========  ===========
 
 
 Version history
@@ -1086,14 +1207,14 @@ To run tests on all supported Python versions, make sure all Python
 interpreters, `pytest` and `tox` are installed, then run `tox` in the root
 of the project source tree.
 
-On Linux `tox` expects to find executables like `python3.7`, `python3.8` etc.
-On Windows it looks for `C:\Python37\python.exe`, `C:\Python38\python.exe` etc. respectively.
+On Linux `tox` expects to find executables like `python3.11`, `python3.12` etc.
+On Windows it looks for `C:\Python311\python.exe`, `C:\Python312\python.exe` etc. respectively.
 
 One way to install all the required versions of the Python interpreter is to use [pyenv](https://github.com/pyenv/pyenv).
 All versions can then be easily installed with something like:
 
-     pyenv install 3.7.12
-     pyenv install 3.8.12
+     pyenv install 3.11.7
+     pyenv install 3.12.1
      ...
 
 Don't forget to change your `PATH` so that `tox` knows how to find all the installed versions. Something like
@@ -1101,10 +1222,10 @@ Don't forget to change your `PATH` so that `tox` knows how to find all the insta
      export PATH="${PATH}:${HOME}/.pyenv/shims"
 
 To test only some Python environments, use `-e` option. For example, to
-test only against Python 3.7 and Python 3.10, run:
+test only against Python 3.11 and Python 3.12, run:
 
 ```shell
-tox -e py37,py310
+tox -e py311,py312
 ```
 
 in the root of the project source tree.
@@ -1112,7 +1233,7 @@ in the root of the project source tree.
 To enable NumPy and Pandas tests, run:
 
 ```shell
-tox -e py37-extra,py310-extra
+tox -e py311-extra,py312-extra
 ```
 
 (this may take a long time the first time, because NumPy and Pandas will
@@ -1126,6 +1247,13 @@ tox -e lint
 
 See `tox.ini` file to learn how to use to test
 individual Python versions.
+
+To test the "doctest" examples and their outputs in `README.md`:
+
+```shell
+python3 -m pip install pytest-doctestplus[md]
+python3 -m doctest README.md
+```
 
 Contributors
 ------------
@@ -1145,8 +1273,10 @@ endolith, Dominic Davis-Foster, pavlocat, Daniel Aslau, paulc,
 Felix Yan, Shane Loretz, Frank Busse, Harsh Singh, Derek Weitzel,
 Vladimir Vrzić, 서승우 (chrd5273), Georgy Frolov, Christian Cwienk,
 Bart Broere, Vilhelm Prytz, Alexander Gažo, Hugo van Kemenade,
-jamescooke, Matt Warner, Jérôme Provensal, Kevin Deldycke,
+jamescooke, Matt Warner, Jérôme Provensal, Michał Górny, Kevin Deldycke,
 Kian-Meng Ang, Kevin Patterson, Shodhan Save, cleoold, KOLANICH,
 Vijaya Krishna Kasula, Furcy Pin, Christian Fibich, Shaun Duncan,
-Dimitri Papadopoulos.
-
+Dimitri Papadopoulos, Élie Goudout, Racerroar888, Phill Zarfos,
+Keyacom, Andrew Coffey, Arpit Jain, Israel Roldan, ilya112358,
+Dan Nicholson, Frederik Scheerer, cdar07 (cdar), Racerroar888,
+Perry Kundert.
