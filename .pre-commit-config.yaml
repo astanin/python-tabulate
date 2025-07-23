@@ -1,6 +1,6 @@
 repos:
 -   repo: https://github.com/python/black
-    rev: 22.3.0
+    rev: 25.1.0
     hooks:
     -   id: black
         args: [--safe]
@@ -11,5 +11,7 @@ repos:
     -   id: trailing-whitespace
     -   id: check-yaml
     -   id: debug-statements
+-   repo: https://github.com/pycqa/flake8
+    rev: 7.3.0
+    hooks:
     -   id: flake8
-        language_version: python3
