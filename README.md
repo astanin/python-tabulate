@@ -819,7 +819,7 @@ methods `__str__` and `__float__` defined (and hence is convertible to a
 `float` and also has a `str` representation), the appropriate
 representation is selected for the column's deduced type.  In order to not
 lose precision accidentally, types having both an `__int__` and
-`__float__` represention will be considered a `float`.
+`__float__` representation will be considered a `float`.
 
 Therefore, if your table contains types convertible to int/float but you'd
 *prefer* they be represented as strings, or your strings *might* all look
