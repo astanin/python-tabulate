@@ -33,6 +33,15 @@ except ImportError:
 # minimum extra space in headers
 MIN_PADDING = 2
 
+# Whether or not to preserve leading/trailing whitespace in data.
+PRESERVE_WHITESPACE = False
+
+# TextWrapper breaks words longer than 'width'.
+_BREAK_LONG_WORDS = True
+# TextWrapper is breaking hyphenated words.
+_BREAK_ON_HYPHENS = True
+
+
 _DEFAULT_FLOATFMT = "g"
 _DEFAULT_INTFMT = ""
 _DEFAULT_MISSINGVAL = ""
@@ -1629,7 +1638,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     return rows, headers, headers_pad
 
 
-def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True):
+def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True, break_long_words=_BREAK_LONG_WORDS, break_on_hyphens=_BREAK_ON_HYPHENS):
     if len(list_of_lists):
         num_cols = len(list_of_lists[0])
     else:
@@ -1646,7 +1655,7 @@ def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True):
                 continue
 
             if width is not None:
-                wrapper = _CustomTextWrap(width=width)
+                wrapper = _CustomTextWrap(width=width, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens)
                 casted_cell = str(cell)
                 wrapped = [
                     "\n".join(wrapper.wrap(line))
@@ -1705,6 +1714,8 @@ def tabulate(
     headersalign=None,
     rowalign=None,
     maxheadercolwidths=None,
+    break_long_words=_BREAK_LONG_WORDS,
+    break_on_hyphens=_BREAK_ON_HYPHENS,
 ):
     """Format a fixed width table for pretty printing.
 
@@ -2247,7 +2258,7 @@ def tabulate(
 
         numparses = _expand_numparse(disable_numparse, num_cols)
         list_of_lists = _wrap_text_to_colwidths(
-            list_of_lists, maxcolwidths, numparses=numparses
+            list_of_lists, maxcolwidths, numparses=numparses, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens
         )
 
     if maxheadercolwidths is not None:
@@ -2261,7 +2272,7 @@ def tabulate(
 
         numparses = _expand_numparse(disable_numparse, num_cols)
         headers = _wrap_text_to_colwidths(
-            [headers], maxheadercolwidths, numparses=numparses
+            [headers], maxheadercolwidths, numparses=numparses, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens
         )[0]
 
     # empty values in the first column of RST tables should be escaped (issue #82)
