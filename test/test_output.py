@@ -2897,7 +2897,11 @@ def test_floatfmt_multi():
 
 
 def test_floatfmt_precision():
-    result = tabulate([["99999998999.999980", 1234.5, 1.2345678, "inf"]], floatfmt=".6f", tablefmt="plain")
+    result = tabulate(
+        [["99999998999.999980", 1234.5, 1.2345678, "inf"]],
+        floatfmt=".6f",
+        tablefmt="plain",
+    )
     expected = "99999998999.999980  1234.500000  1.234568  inf"
     assert_equal(expected, result)
 
@@ -3326,6 +3330,7 @@ def test_preserve_whitespace():
     result = tabulate(test_table, table_headers, preserve_whitespace=False)
     assert_equal(expected, result)
 
+
 def test_break_long_words():
     "Output: Default table output, with breakwords true."
     table_headers = ["h1", "h2", "h3"]
@@ -3340,6 +3345,7 @@ def test_break_long_words():
     expected = "h1    h2    h3\n----  ----  ----\nf     ba    foo\noo1   r2    3"
     result = tabulate(test_table, table_headers, maxcolwidths=3, break_long_words=True)
     assert_equal(expected, result)
+
 
 def test_break_on_hyphens():
     "Output: Default table output, with break on hyphens true."
