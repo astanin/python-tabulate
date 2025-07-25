@@ -1,10 +1,6 @@
-# -*- coding: utf-8 -*-
-
 """Test support of the various forms of tabular data."""
 
-from __future__ import print_function
-from __future__ import unicode_literals
-from tabulate import tabulate
+from tabulate import tabulate, SEPARATING_LINE
 from common import assert_equal, assert_in, raises, skip
 
 try:
@@ -15,7 +11,7 @@ except ImportError:
 
 
 def test_iterable_of_iterables():
-    "Input: an interable of iterables."
+    "Input: an iterable of iterables."
     ii = iter(map(lambda x: iter(x), [range(5), range(5, 0, -1)]))
     expected = "\n".join(
         ["-  -  -  -  -", "0  1  2  3  4", "5  4  3  2  1", "-  -  -  -  -"]
@@ -25,7 +21,7 @@ def test_iterable_of_iterables():
 
 
 def test_iterable_of_iterables_headers():
-    "Input: an interable of iterables with headers."
+    "Input: an iterable of iterables with headers."
     ii = iter(map(lambda x: iter(x), [range(5), range(5, 0, -1)]))
     expected = "\n".join(
         [
@@ -40,7 +36,7 @@ def test_iterable_of_iterables_headers():
 
 
 def test_iterable_of_iterables_firstrow():
-    "Input: an interable of iterables with the first row as headers"
+    "Input: an iterable of iterables with the first row as headers"
     ii = iter(map(lambda x: iter(x), ["abcde", range(5), range(5, 0, -1)]))
     expected = "\n".join(
         [
@@ -471,7 +467,7 @@ def test_list_of_dicts_with_list_of_headers():
         tabulate(table, headers=headers)
 
 
-def test_py27orlater_list_of_ordereddicts():
+def test_list_of_ordereddicts():
     "Input: a list of OrderedDicts."
     from collections import OrderedDict
 
@@ -479,4 +475,78 @@ def test_py27orlater_list_of_ordereddicts():
     lod = [od, od]
     expected = "\n".join(["  b    a", "---  ---", "  1    2", "  1    2"])
     result = tabulate(lod, headers="keys")
+    assert_equal(expected, result)
+
+
+def test_py37orlater_list_of_dataclasses_keys():
+    "Input: a list of dataclasses with first item's fields as keys and headers"
+    try:
+        from dataclasses import make_dataclass
+
+        Person = make_dataclass("Person", ["name", "age", "height"])
+        ld = [Person("Alice", 23, 169.5), Person("Bob", 27, 175.0)]
+        result = tabulate(ld, headers="keys")
+        expected = "\n".join(
+            [
+                "name      age    height",
+                "------  -----  --------",
+                "Alice      23     169.5",
+                "Bob        27     175",
+            ]
+        )
+        assert_equal(expected, result)
+    except ImportError:
+        skip("test_py37orlater_list_of_dataclasses_keys is skipped")
+
+
+def test_py37orlater_list_of_dataclasses_headers():
+    "Input: a list of dataclasses with user-supplied headers"
+    try:
+        from dataclasses import make_dataclass
+
+        Person = make_dataclass("Person", ["name", "age", "height"])
+        ld = [Person("Alice", 23, 169.5), Person("Bob", 27, 175.0)]
+        result = tabulate(ld, headers=["person", "years", "cm"])
+        expected = "\n".join(
+            [
+                "person      years     cm",
+                "--------  -------  -----",
+                "Alice          23  169.5",
+                "Bob            27  175",
+            ]
+        )
+        assert_equal(expected, result)
+    except ImportError:
+        skip("test_py37orlater_list_of_dataclasses_headers is skipped")
+
+
+def test_py37orlater_list_of_dataclasses_with_separating_line():
+    "Input: a list of dataclasses with a separating line"
+    try:
+        from dataclasses import make_dataclass
+
+        Person = make_dataclass("Person", ["name", "age", "height"])
+        ld = [Person("Alice", 23, 169.5), SEPARATING_LINE, Person("Bob", 27, 175.0)]
+        result = tabulate(ld, headers="keys")
+        expected = "\n".join(
+            [
+                "name      age    height",
+                "------  -----  --------",
+                "Alice      23     169.5",
+                "------  -----  --------",
+                "Bob        27     175",
+            ]
+        )
+        assert_equal(expected, result)
+    except ImportError:
+        skip("test_py37orlater_list_of_dataclasses_keys is skipped")
+
+
+def test_list_bytes():
+    "Input: a list of bytes. (issue #192)"
+    lb = [["你好".encode()], ["你好"]]
+    expected = "\n".join(
+        ["bytes", "---------------------------", r"b'\xe4\xbd\xa0\xe5\xa5\xbd'", "你好"]
+    )
+    result = tabulate(lb, headers=["bytes"])
     assert_equal(expected, result)
