@@ -3,6 +3,7 @@
 import warnings
 from collections import namedtuple
 from collections.abc import Iterable, Sized
+from decimal import Decimal
 from html import escape as htmlescape
 from itertools import chain, zip_longest as izip_longest
 from functools import reduce, partial
@@ -1357,6 +1358,8 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
         else:
             if isinstance(val, str) and "," in val:
                 val = val.replace(",", "")  # handle thousands-separators
+            if isinstance(val, Decimal):
+                return format(val, floatfmt)
             return format(float(val), floatfmt)
     else:
         return f"{val}"
@@ -1588,9 +1591,11 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             if headers == "keys":
                 headers = field_names
             rows = [
-                [getattr(row, f) for f in field_names]
-                if not _is_separating_line(row)
-                else row
+                (
+                    [getattr(row, f) for f in field_names]
+                    if not _is_separating_line(row)
+                    else row
+                )
                 for row in rows
             ]
 
@@ -1638,7 +1643,13 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     return rows, headers, headers_pad
 
 
-def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True, break_long_words=_BREAK_LONG_WORDS, break_on_hyphens=_BREAK_ON_HYPHENS):
+def _wrap_text_to_colwidths(
+    list_of_lists,
+    colwidths,
+    numparses=True,
+    break_long_words=_BREAK_LONG_WORDS,
+    break_on_hyphens=_BREAK_ON_HYPHENS,
+):
     if len(list_of_lists):
         num_cols = len(list_of_lists[0])
     else:
@@ -1655,7 +1666,11 @@ def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True, break_long
                 continue
 
             if width is not None:
-                wrapper = _CustomTextWrap(width=width, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens)
+                wrapper = _CustomTextWrap(
+                    width=width,
+                    break_long_words=break_long_words,
+                    break_on_hyphens=break_on_hyphens,
+                )
                 casted_cell = str(cell)
                 wrapped = [
                     "\n".join(wrapper.wrap(line))
@@ -2258,7 +2273,11 @@ def tabulate(
 
         numparses = _expand_numparse(disable_numparse, num_cols)
         list_of_lists = _wrap_text_to_colwidths(
-            list_of_lists, maxcolwidths, numparses=numparses, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens
+            list_of_lists,
+            maxcolwidths,
+            numparses=numparses,
+            break_long_words=break_long_words,
+            break_on_hyphens=break_on_hyphens,
         )
 
     if maxheadercolwidths is not None:
@@ -2272,7 +2291,11 @@ def tabulate(
 
         numparses = _expand_numparse(disable_numparse, num_cols)
         headers = _wrap_text_to_colwidths(
-            [headers], maxheadercolwidths, numparses=numparses, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens
+            [headers],
+            maxheadercolwidths,
+            numparses=numparses,
+            break_long_words=break_long_words,
+            break_on_hyphens=break_on_hyphens,
         )[0]
 
     # empty values in the first column of RST tables should be escaped (issue #82)
