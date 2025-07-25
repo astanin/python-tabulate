@@ -1358,14 +1358,9 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
         else:
             if isinstance(val, str) and "," in val:
                 val = val.replace(",", "")  # handle thousands-separators
-            try:
-                if "f" in floatfmt and float("-inf") < float(val) < float("inf"):
-                    val = Decimal(str(val))
-                else:
-                    val = float(val)
-            except (OverflowError, ValueError):
-                val = float(val)
-            return format(val, floatfmt)
+            if isinstance(val, Decimal):
+                return format(val, floatfmt)
+            return format(float(val), floatfmt)
     else:
         return f"{val}"
 
