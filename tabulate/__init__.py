@@ -2262,7 +2262,10 @@ def tabulate(
         )
 
     if maxheadercolwidths is not None:
-        num_cols = len(list_of_lists[0])
+        if len(list_of_lists):
+            num_cols = len(list_of_lists[0])
+        else:
+            num_cols = 0
         if isinstance(maxheadercolwidths, int):  # Expand scalar for all columns
             maxheadercolwidths = _expand_iterable(
                 maxheadercolwidths, num_cols, maxheadercolwidths

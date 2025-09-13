@@ -515,6 +515,12 @@ def test_exception_on_empty_data_with_maxcolwidths():
     assert_equal(result, "")
 
 
+def test_exception_on_empty_data_with_maxheadercolwidths():
+    "Regression: exception on empty data when using maxheadercolwidths (github issue #365)"
+    result = tabulate([], maxheadercolwidths=5)
+    assert_equal(result, "")
+
+
 def test_numpy_int64_as_integer():
     "Regression: format numpy.int64 as integer (github issue #18)"
     try:
