@@ -295,7 +295,7 @@ def _asciidoc_row(is_header, *args):
 
     else:
         raise ValueError(
-            " _asciidoc_row() requires two (colwidths, colaligns) "
+            "_asciidoc_row() requires two (colwidths, colaligns) "
             + "or three (cell_values, colwidths, colaligns) arguments) "
         )
 
