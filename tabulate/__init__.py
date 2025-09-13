@@ -142,8 +142,10 @@ def _pipe_line_with_colons(colwidths, colaligns):
     alignment (as in `pipe` output format)."""
     if not colaligns:  # e.g. printing an empty data frame (github issue #15)
         colaligns = [""] * len(colwidths)
-    segments = [_pipe_segment_with_colons(a, w) for a, w in zip(colaligns, colwidths)]
-    return "|" + "|".join(segments) + "|"
+    segments = "|".join(
+        _pipe_segment_with_colons(a, w) for a, w in zip(colaligns, colwidths)
+    )
+    return f"|{segments}|"
 
 
 def _grid_segment_with_colons(colwidth, align):
@@ -165,8 +167,10 @@ def _grid_line_with_colons(colwidths, colaligns):
     in a grid table."""
     if not colaligns:
         colaligns = [""] * len(colwidths)
-    segments = [_grid_segment_with_colons(w, a) for a, w in zip(colaligns, colwidths)]
-    return "+" + "+".join(segments) + "+"
+    segments = "+".join(
+        _grid_segment_with_colons(w, a) for a, w in zip(colaligns, colwidths)
+    )
+    return f"+{segments}+"
 
 
 def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
@@ -188,8 +192,8 @@ def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
 def _textile_row_with_attrs(cell_values, colwidths, colaligns):
     cell_values[0] += " "
     alignment = {"left": "<.", "right": ">.", "center": "=.", "decimal": ">."}
-    values = (alignment.get(a, "") + v for a, v in zip(colaligns, cell_values))
-    return "|" + "|".join(values) + "|"
+    values = "|".join(alignment.get(a, "") + v for a, v in zip(colaligns, cell_values))
+    return f"|{values}|"
 
 
 def _html_begin_table_without_header(colwidths_ignore, colaligns_ignore):
@@ -258,10 +262,10 @@ def _asciidoc_row(is_header, *args):
         asciidoc_alignments = zip(
             colwidths, [alignment[colalign] for colalign in colaligns]
         )
-        asciidoc_column_specifiers = [
+        asciidoc_column_specifiers = ",".join(
             f"{width:d}{align}" for width, align in asciidoc_alignments
-        ]
-        header_list = ['cols="' + (",".join(asciidoc_column_specifiers)) + '"']
+        )
+        header_list = [f'cols="{asciidoc_column_specifiers}"']
 
         # generate the list of options (currently only "header")
         options_list = []
@@ -270,7 +274,8 @@ def _asciidoc_row(is_header, *args):
             options_list.append("header")
 
         if options_list:
-            header_list += ['options="' + ",".join(options_list) + '"']
+            options_list = ",".join(options_list)
+            header_list.append(f'options="{options_list}"')
 
         # generate the list of entries in the table header field
 
