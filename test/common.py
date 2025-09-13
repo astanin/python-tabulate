@@ -1,5 +1,5 @@
-import pytest  # noqa
-from pytest import skip, raises  # noqa
+import pytest  # noqa: F401
+from pytest import skip, raises  # noqa: F401
 import warnings
 
 
