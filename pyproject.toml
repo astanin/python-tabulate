@@ -27,7 +27,7 @@ dynamic = ["version"]
 Homepage = "https://github.com/astanin/python-tabulate"
 
 [project.optional-dependencies]
-widechars = ["wcwidth"]
+widechars = ["wcwidth>=0.3.4"]
 
 [project.scripts]
 tabulate = "tabulate:_main"
