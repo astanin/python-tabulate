@@ -1111,24 +1111,20 @@ def _visible_width(s):
 
     >>> _visible_width('\x1b[31mhello\x1b[0m'), _visible_width("world")
     (5, 5)
+
     """
     # optional wide-character support
     if wcwidth is not None and WIDE_CHARS_MODE:
-        # when already a string, it could contain terminal sequences,
-        # wcwidth >= 0.3.0 handles ANSI codes internally,
+        len_fn = wcwidth.wcswidth
         if hasattr(wcwidth, "width"):
-            return wcwidth.width(str(s))
-        # while previous versions need them stripped first.
-        if isinstance(s, (str, bytes):
-            return wcwidth.wcswidth(_strip_ansi(str(s)))
-
-        # Otherwise, coerce to string, guaranteed to be without any control codes or funny business,
-        # we can use wcswidth() directly.
-        return wcwidth.wcswidth(str(s))
-    if isinstance(s, (str, bytes)):
-        return len(_strip_ansi(s))
+            # wcwidth >=0.3.0 handles ansi
+            return wcwidth.width(s)
     else:
-        return len(str(s))
+        len_fn = len
+    if isinstance(s, (str, bytes)):
+        return len_fn(_strip_ansi(s))
+    else:
+        return len_fn(str(s))
 
 
 def _is_multiline(s):
@@ -1233,7 +1229,6 @@ def _align_column(
     s_widths = list(map(width_fn, strings))
     maxwidth = max(max(_flat_list(s_widths)), minwidth)
     # TODO: refactor column alignment in single-line and multiline modes
-
     if is_multiline:
         if not enable_widechars and not has_invisible:
             padded_strings = [
@@ -1241,12 +1236,14 @@ def _align_column(
                 for ms in strings
             ]
         else:
-            # Width corrections for wide chars/ANSI codes
+            # enable wide-character width corrections
             s_lens = [[len(s) for s in re.split("[\r\n]", ms)] for ms in strings]
             visible_widths = [
                 [maxwidth - (w - l) for w, l in zip(mw, ml)]
                 for mw, ml in zip(s_widths, s_lens)
             ]
+            # wcswidth and _visible_width don't count invisible characters;
+            # padfn doesn't need to apply another correction
             padded_strings = [
                 "\n".join([padfn(w, s) for s, w in zip((ms.splitlines() or ms), mw)])
                 for ms, mw in zip(strings, visible_widths)
@@ -1255,9 +1252,11 @@ def _align_column(
         if not enable_widechars and not has_invisible:
             padded_strings = [padfn(maxwidth, s) for s in strings]
         else:
-            # Width corrections for wide chars/ANSI codes
+            # enable wide-character width corrections
             s_lens = list(map(len, strings))
             visible_widths = [maxwidth - (w - l) for w, l in zip(s_widths, s_lens)]
+            # wcswidth and _visible_width don't count invisible characters;
+            # padfn doesn't need to apply another correction
             padded_strings = [padfn(w, s) for s, w in zip(strings, visible_widths)]
     return padded_strings
 
@@ -1659,9 +1658,12 @@ def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True, break_long
                 continue
 
             if width is not None:
+                wrapper_wrap = functools.partial(_wrap_text, width=width,
+                                                 break_long_words=break_long_words,
+                                                 break_on_hyphens=break_on_hyphens)
                 casted_cell = str(cell)
                 wrapped = [
-                    "\n".join(_wrap_text(line, width, break_long_words, break_on_hyphens))
+                    "\n".join(wrapper_wrap(line))
                     for line in casted_cell.splitlines()
                     if line.strip() != ""
                 ]
@@ -2678,7 +2680,7 @@ def _format_table(
 def _propagate_ansi_codes(lines):
     """Propagate ANSI color codes across wrapped lines.
 
-    When text with ANSI codes is wrapped by wcwidth.width, adjust each line to:
+    When text with ANSI codes is wrapped by wcwidth.wrap, adjust each line to:
     - Start with any active color codes from previous lines
     - End with a reset if colors are active (to prevent bleeding into other cells)
 
@@ -2711,26 +2713,24 @@ def _propagate_ansi_codes(lines):
     return result
 
 
-def _wrap_text(text, width, break_long_words=True, break_on_hyphens=True):
+def _wrap_text(text, width, break_long_words, break_on_hyphens):
     """Wrap text to width with wide character and ANSI code support."""
+    # wcwidth >= 0.3.0 has wrap() with proper grapheme cluster support,
     if wcwidth is not None and hasattr(wcwidth, "wrap"):
-        # wcwidth >= 0.3.0 has wrap() with proper grapheme cluster support, but it doesn't break
-        # sequences the way this library requires, so _propagate_ansi_codes() is applied to the
-        # result to match.
-        wrapped_lines = wcwidth.wrap(
+        # but it doesn't break, reset, then continue sequences the way this library requires, so
+        # _propagate_ansi_codes() is applied afterwards to match the same result as the built-in
+        # non-wcwidth implementation below.
+        return _propagate_ansi_codes(wcwidth.wrap(
             text, width,
             break_long_words=break_long_words,
-            break_on_hyphens=break_on_hyphens
-        )
-        return _propagate_ansi_codes(wrapped_lines)
+            break_on_hyphens=break_on_hyphens))
     else:
         # Fallback for wcwidth < 0.3.0 or no wcwidth
-        wrapper = _CustomTextWrap(
+        return _CustomTextWrap(
             width=width,
             break_long_words=break_long_words,
             break_on_hyphens=break_on_hyphens
-        )
-        return wrapper.wrap(text)
+        ).wrap(text)
 
 
 class _CustomTextWrap(textwrap.TextWrapper):
@@ -2801,11 +2801,13 @@ class _CustomTextWrap(textwrap.TextWrapper):
         # of the next chunk onto the current line as will fit.
         if self.break_long_words:
             # Tabulate Custom: Build the string up piece-by-piece in order to
-            # take each charcter's width into account
+            # take each character's width into account
             chunk = reversed_chunks[-1]
             i = 1
             # Only count printable characters, so strip_ansi first, index later.
-            while len(_strip_ansi(chunk)[:i]) <= space_left:
+            # Use self._len() instead of len() to account for displayed width, eg.
+            # wide chars like CJK count as 2 when using wcwidth<0.3.0 without wrap()
+            while self._len(_strip_ansi(chunk)[:i]) <= space_left:
                 i = i + 1
             # Consider escape codes when breaking words up
             total_escape_len = 0

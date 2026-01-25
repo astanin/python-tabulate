@@ -1,11 +1,64 @@
 """Discretely test functionality of our custom TextWrapper"""
 
 import datetime
+from unittest.mock import patch, MagicMock
 
-from tabulate import _CustomTextWrap as CTW, tabulate, _strip_ansi
+import pytest
+
+from tabulate import _CustomTextWrap as CTW, _wrap_text, tabulate, _strip_ansi
 from textwrap import TextWrapper as OTW
 
 from common import skip, assert_equal
+
+try:
+    import wcwidth
+    HAS_WCWIDTH = True
+    HAS_WCWIDTH_WRAP = hasattr(wcwidth, 'wrap')
+except ImportError:
+    wcwidth = None
+    HAS_WCWIDTH = False
+    HAS_WCWIDTH_WRAP = False
+
+requires_wcwidth = pytest.mark.skipif(not HAS_WCWIDTH, reason="requires wcwidth")
+
+
+def _normalize_wrap_result(lines):
+    """Normalize wrapped lines for cross-version comparison.
+
+    CPython #140627: Older versions kept trailing whitespace when drop_whitespace=True.
+    Fixed in 3.13.11+, 3.14.2+, and 3.15+. Strip to normalize across versions.
+    """
+    return [line.rstrip() for line in lines]
+
+
+@pytest.fixture(params=['wcwidth_wrap', 'custom_textwrap'])
+def wrap_backend(request):
+    """Fixture to test both wrap backends: wcwidth.wrap and _CustomTextWrap fallback."""
+    # This ensures both code paths in _wrap_text() are tested:
+    #  def _wrap_text(text, width, ...):
+    #      if wcwidth is not None and hasattr(wcwidth, "wrap"):
+    #          # Path 1: wcwidth.wrap (tested by wcwidth_wrap)
+    #          return _propagate_ansi_codes(wcwidth.wrap(...))
+    #      else:
+    #          # Path 2: fallback (tested by custom_textwrap)
+    #          return _CustomTextWrap(...).wrap(text)
+    #
+    # and for tests that use it, eg. test_wrap_wide_char_multiword(wrap_backend), The tests assert
+    # the same expected output for both backends.  This is good - it verifies both produce identical
+    # results.
+    if request.param == 'wcwidth_wrap':
+        if not HAS_WCWIDTH_WRAP:
+            pytest.skip("wcwidth.wrap not available")
+        yield 'wcwidth_wrap'
+    else:
+        # Mock wcwidth to not have wrap attribute, forcing _CustomTextWrap fallback
+        if not HAS_WCWIDTH:
+            pytest.skip("wcwidth not available")
+        mock_wcwidth = MagicMock(spec=['wcswidth', 'wcwidth'])
+        mock_wcwidth.wcswidth = wcwidth.wcswidth
+        mock_wcwidth.wcwidth = wcwidth.wcwidth
+        with patch('tabulate.wcwidth', mock_wcwidth):
+            yield 'custom_textwrap'
 
 
 def test_wrap_multiword_non_wide():
@@ -15,9 +68,9 @@ def test_wrap_multiword_non_wide():
         orig = OTW(width=width)
         cust = CTW(width=width)
 
-        assert orig.wrap(data) == cust.wrap(
-            data
-        ), "Failure on non-wide char multiword regression check for width " + str(width)
+        assert _normalize_wrap_result(orig.wrap(data)) == _normalize_wrap_result(
+            cust.wrap(data)
+        )
 
 
 def test_wrap_multiword_non_wide_with_hypens():
@@ -27,9 +80,9 @@ def test_wrap_multiword_non_wide_with_hypens():
         orig = OTW(width=width)
         cust = CTW(width=width)
 
-        assert orig.wrap(data) == cust.wrap(
-            data
-        ), "Failure on non-wide char hyphen regression check for width " + str(width)
+        assert _normalize_wrap_result(orig.wrap(data)) == _normalize_wrap_result(
+            cust.wrap(data)
+        )
 
 
 def test_wrap_longword_non_wide():
@@ -39,51 +92,37 @@ def test_wrap_longword_non_wide():
         orig = OTW(width=width)
         cust = CTW(width=width)
 
-        assert orig.wrap(data) == cust.wrap(
-            data
-        ), "Failure on non-wide char longword regression check for width " + str(width)
+        assert _normalize_wrap_result(orig.wrap(data)) == _normalize_wrap_result(
+            cust.wrap(data)
+        )
 
 
-def test_wrap_wide_char_multiword():
+@requires_wcwidth
+def test_wrap_wide_char_multiword(wrap_backend):
     """TextWrapper: wrapping support for wide characters with multiple words"""
-    try:
-        import wcwidth  # noqa
-    except ImportError:
-        skip("test_wrap_wide_char is skipped")
-
     data = "약간 감싸면 더 잘 보일 수있는 다소 긴 설명입니다"
 
     expected = ["약간 감싸면 더", "잘 보일 수있는", "다소 긴", "설명입니다"]
 
-    wrapper = CTW(width=15)
-    result = wrapper.wrap(data)
-    assert_equal(expected, result)
+    result = _wrap_text(data, width=15)
+    assert result == expected
 
 
-def test_wrap_wide_char_longword():
+@requires_wcwidth
+def test_wrap_wide_char_longword(wrap_backend):
     """TextWrapper: wrapping wide char word that needs to be broken up"""
-    try:
-        import wcwidth  # noqa
-    except ImportError:
-        skip("test_wrap_wide_char_longword is skipped")
-
     data = "약간감싸면더잘보일수있"
 
     expected = ["약간", "감싸", "면더", "잘보", "일수", "있"]
 
     # Explicit odd number to ensure the 2 width is taken into account
-    wrapper = CTW(width=5)
-    result = wrapper.wrap(data)
-    assert_equal(expected, result)
+    result = _wrap_text(data, width=5)
+    assert result == expected
 
 
-def test_wrap_mixed_string():
+@requires_wcwidth
+def test_wrap_mixed_string(wrap_backend):
     """TextWrapper: wrapping string with mix of wide and non-wide chars"""
-    try:
-        import wcwidth  # noqa
-    except ImportError:
-        skip("test_wrap_wide_char is skipped")
-
     data = (
         "This content of this string (この文字列のこの内容) contains "
         "multiple character types (複数の文字タイプが含まれています)"
@@ -97,9 +136,8 @@ def test_wrap_mixed_string():
         "types (複数の文字タイ",
         "プが含まれています)",
     ]
-    wrapper = CTW(width=21)
-    result = wrapper.wrap(data)
-    assert_equal(expected, result)
+    result = _wrap_text(data, width=21)
+    assert result == expected
 
 
 def test_wrapper_len_ignores_color_chars():
