@@ -1,6 +1,4 @@
-"""Command-line interface.
-
-"""
+"""Command-line interface."""
 
 import os
 import sys
@@ -11,7 +9,6 @@ import tempfile
 
 
 from common import assert_equal
-
 
 SAMPLE_SIMPLE_FORMAT = "\n".join(
     [

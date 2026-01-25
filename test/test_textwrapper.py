@@ -8,12 +8,13 @@ import pytest
 from tabulate import _CustomTextWrap as CTW, _wrap_text, tabulate, _strip_ansi
 from textwrap import TextWrapper as OTW
 
-from common import skip, assert_equal
+from common import assert_equal
 
 try:
     import wcwidth
+
     HAS_WCWIDTH = True
-    HAS_WCWIDTH_WRAP = hasattr(wcwidth, 'wrap')
+    HAS_WCWIDTH_WRAP = hasattr(wcwidth, "wrap")
 except ImportError:
     wcwidth = None
     HAS_WCWIDTH = False
@@ -22,7 +23,7 @@ except ImportError:
 requires_wcwidth = pytest.mark.skipif(not HAS_WCWIDTH, reason="requires wcwidth")
 
 
-@pytest.fixture(params=['wcwidth_wrap', 'custom_textwrap'])
+@pytest.fixture(params=["wcwidth_wrap", "custom_textwrap"])
 def wrap_backend(request):
     """Fixture to test both wrap backends: wcwidth.wrap and _CustomTextWrap fallback."""
     # This ensures both code paths in _wrap_text() are tested:
@@ -34,22 +35,20 @@ def wrap_backend(request):
     #          # Path 2: fallback (tested by custom_textwrap)
     #          return _CustomTextWrap(...).wrap(text)
     #
-    # and for tests that use it, eg. test_wrap_wide_char_multiword(wrap_backend), The tests assert
-    # the same expected output for both backends.  This is good - it verifies both produce identical
-    # results.
-    if request.param == 'wcwidth_wrap':
+    # Tests using this fixture verify both backends produce identical results.
+    if request.param == "wcwidth_wrap":
         if not HAS_WCWIDTH_WRAP:
             pytest.skip("wcwidth.wrap not available")
-        yield 'wcwidth_wrap'
+        yield "wcwidth_wrap"
     else:
         # Mock wcwidth to not have wrap attribute, forcing _CustomTextWrap fallback
         if not HAS_WCWIDTH:
             pytest.skip("wcwidth not available")
-        mock_wcwidth = MagicMock(spec=['wcswidth', 'wcwidth'])
+        mock_wcwidth = MagicMock(spec=["wcswidth", "wcwidth"])
         mock_wcwidth.wcswidth = wcwidth.wcswidth
         mock_wcwidth.wcwidth = wcwidth.wcwidth
-        with patch('tabulate.wcwidth', mock_wcwidth):
-            yield 'custom_textwrap'
+        with patch("tabulate.wcwidth", mock_wcwidth):
+            yield "custom_textwrap"
 
 
 def _nwrap(lines):
