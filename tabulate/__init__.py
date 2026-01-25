@@ -1658,7 +1658,7 @@ def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True, break_long
                 continue
 
             if width is not None:
-                wrapper_wrap = functools.partial(_wrap_text, width=width,
+                wrapper_wrap = partial(_wrap_text, width=width,
                                                  break_long_words=break_long_words,
                                                  break_on_hyphens=break_on_hyphens)
                 casted_cell = str(cell)
@@ -2713,7 +2713,7 @@ def _propagate_ansi_codes(lines):
     return result
 
 
-def _wrap_text(text, width, break_long_words, break_on_hyphens):
+def _wrap_text(text, width, break_long_words=True, break_on_hyphens=True):
     """Wrap text to width with wide character and ANSI code support."""
     # wcwidth >= 0.3.0 has wrap() with proper grapheme cluster support,
     if wcwidth is not None and hasattr(wcwidth, "wrap"):

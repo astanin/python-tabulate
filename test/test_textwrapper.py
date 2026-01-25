@@ -22,15 +22,6 @@ except ImportError:
 requires_wcwidth = pytest.mark.skipif(not HAS_WCWIDTH, reason="requires wcwidth")
 
 
-def _normalize_wrap_result(lines):
-    """Normalize wrapped lines for cross-version comparison.
-
-    CPython #140627: Older versions kept trailing whitespace when drop_whitespace=True.
-    Fixed in 3.13.11+, 3.14.2+, and 3.15+. Strip to normalize across versions.
-    """
-    return [line.rstrip() for line in lines]
-
-
 @pytest.fixture(params=['wcwidth_wrap', 'custom_textwrap'])
 def wrap_backend(request):
     """Fixture to test both wrap backends: wcwidth.wrap and _CustomTextWrap fallback."""
@@ -61,6 +52,14 @@ def wrap_backend(request):
             yield 'custom_textwrap'
 
 
+def _nwrap(lines):
+    """Normalize wrapped lines for cross-version comparison.
+
+    https://github.com/python/cpython/issues/140627
+    """
+    return [line.rstrip() for line in lines]
+
+
 def test_wrap_multiword_non_wide():
     """TextWrapper: non-wide character regression tests"""
     data = "this is a test string for regression splitting"
@@ -68,9 +67,9 @@ def test_wrap_multiword_non_wide():
         orig = OTW(width=width)
         cust = CTW(width=width)
 
-        assert _normalize_wrap_result(orig.wrap(data)) == _normalize_wrap_result(
+        assert _nwrap(orig.wrap(data)) == _nwrap(
             cust.wrap(data)
-        )
+        ), "Failure on non-wide char multiword regression check for width " + str(width)
 
 
 def test_wrap_multiword_non_wide_with_hypens():
@@ -80,9 +79,9 @@ def test_wrap_multiword_non_wide_with_hypens():
         orig = OTW(width=width)
         cust = CTW(width=width)
 
-        assert _normalize_wrap_result(orig.wrap(data)) == _normalize_wrap_result(
+        assert _nwrap(orig.wrap(data)) == _nwrap(
             cust.wrap(data)
-        )
+        ), "Failure on non-wide char hyphen regression check for width " + str(width)
 
 
 def test_wrap_longword_non_wide():
@@ -92,9 +91,9 @@ def test_wrap_longword_non_wide():
         orig = OTW(width=width)
         cust = CTW(width=width)
 
-        assert _normalize_wrap_result(orig.wrap(data)) == _normalize_wrap_result(
+        assert _nwrap(orig.wrap(data)) == _nwrap(
             cust.wrap(data)
-        )
+        ), "Failure on non-wide char longword regression check for width " + str(width)
 
 
 @requires_wcwidth
