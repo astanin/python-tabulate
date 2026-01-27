@@ -2696,58 +2696,16 @@ def _format_table(
         return ""
 
 
-def _propagate_ansi_codes(lines):
-    """Propagate ANSI color codes across wrapped lines.
-
-    When text with ANSI codes is wrapped by wcwidth.wrap, adjust each line to:
-    - Start with any active color codes from previous lines
-    - End with a reset if colors are active (to prevent bleeding into other cells)
-
-    This function implements some amount of _CustomTextWrap's behavior as a post-processing step of
-    the 3rd-party wcwidth.wrap(), which also preserves and parses sequences, but adjusts them to
-    match the behavior of _CustomTextWrap, but to also benefit by its grapheme, emoji/flags, wide
-    characters.
-    """
-    result = []
-    active_codes = []
-
-    for line in lines:
-        code_matches = list(_ansi_codes.finditer(line))
-        color_codes = [
-            code.string[code.span()[0] : code.span()[1]] for code in code_matches
-        ]
-        next_line = "".join(active_codes) + line
-
-        # Track codes for subsequent lines
-        for code in color_codes:
-            if code == _ansi_color_reset_code:
-                active_codes = []
-                continue
-            active_codes.append(code)
-
-        # Append reset if any colors are active
-        if active_codes:
-            next_line += _ansi_color_reset_code
-
-        result.append(next_line)
-
-    return result
-
-
 def _wrap_text(text, width, break_long_words=True, break_on_hyphens=True):
     """Wrap text to width with wide character and ANSI code support."""
-    # wcwidth >= 0.3.0 has wrap() with proper grapheme cluster support,
+    # wcwidth >= 0.5.0 has wrap() with proper grapheme cluster support and
+    # propagate_sgr=True by default, which handles ANSI code propagation natively.
     if wcwidth is not None and hasattr(wcwidth, "wrap"):
-        # but it doesn't break, reset, then continue sequences the way this library requires, so
-        # _propagate_ansi_codes() is applied afterwards to match the same result as the built-in
-        # non-wcwidth implementation below.
-        return _propagate_ansi_codes(
-            wcwidth.wrap(
-                text,
-                width,
-                break_long_words=break_long_words,
-                break_on_hyphens=break_on_hyphens,
-            )
+        return wcwidth.wrap(
+            text,
+            width,
+            break_long_words=break_long_words,
+            break_on_hyphens=break_on_hyphens,
         )
     else:
         # Fallback for wcwidth < 0.3.0 or no wcwidth

@@ -284,13 +284,15 @@ def test_wrap_text_to_colwidths_multi_ansi_colors_full_cell():
     ]
     result = T._wrap_text_to_colwidths(data, [30])
 
+    # wcwidth.propagate_sgr combines separate SGR codes into single sequences
+    # (e.g., \x1b[31m\x1b[43m -> \x1b[31;43m), which is functionally equivalent
     expected = [
         [
             "\n".join(
                 [
                     "\033[31m\033[43mThis is a rather long\033[0m",
-                    "\033[31m\033[43mdescription that might look\033[0m",
-                    "\033[31m\033[43mbetter if it is wrapped a bit\033[0m",
+                    "\033[31;43mdescription that might look\033[0m",
+                    "\033[31;43mbetter if it is wrapped a bit\033[0m",
                 ]
             )
         ]

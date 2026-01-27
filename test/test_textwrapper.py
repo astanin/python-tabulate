@@ -30,7 +30,7 @@ def wrap_backend(request):
     #  def _wrap_text(text, width, ...):
     #      if wcwidth is not None and hasattr(wcwidth, "wrap"):
     #          # Path 1: wcwidth.wrap (tested by wcwidth_wrap)
-    #          return _propagate_ansi_codes(wcwidth.wrap(...))
+    #          return wcwidth.wrap(...)
     #      else:
     #          # Path 2: fallback (tested by custom_textwrap)
     #          return _CustomTextWrap(...).wrap(text)
