@@ -2262,18 +2262,24 @@ def tabulate(
         )
 
     if maxheadercolwidths is not None:
-        num_cols = len(list_of_lists[0])
-        if isinstance(maxheadercolwidths, int):  # Expand scalar for all columns
-            maxheadercolwidths = _expand_iterable(
-                maxheadercolwidths, num_cols, maxheadercolwidths
-            )
-        else:  # Ignore col width for any 'trailing' columns
-            maxheadercolwidths = _expand_iterable(maxheadercolwidths, num_cols, None)
+        if len(list_of_lists):
+            num_cols = len(list_of_lists[0])
+        elif len(headers):
+            num_cols = len(headers)
+        else:
+            num_cols = 0
+        if num_cols:
+            if isinstance(maxheadercolwidths, int):  # Expand scalar for all columns
+                maxheadercolwidths = _expand_iterable(
+                    maxheadercolwidths, num_cols, maxheadercolwidths
+                )
+            else:  # Ignore col width for any 'trailing' columns
+                maxheadercolwidths = _expand_iterable(maxheadercolwidths, num_cols, None)
 
-        numparses = _expand_numparse(disable_numparse, num_cols)
-        headers = _wrap_text_to_colwidths(
-            [headers], maxheadercolwidths, numparses=numparses, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens
-        )[0]
+            numparses = _expand_numparse(disable_numparse, num_cols)
+            headers = _wrap_text_to_colwidths(
+                [headers], maxheadercolwidths, numparses=numparses, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens
+            )[0]
 
     # empty values in the first column of RST tables should be escaped (issue #82)
     # "" should be escaped as "\\ " or ".."
