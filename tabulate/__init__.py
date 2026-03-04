@@ -2769,7 +2769,7 @@ class _CustomTextWrap(textwrap.TextWrapper):
 
         # If we're allowed to break long words, then do so: put as much
         # of the next chunk onto the current line as will fit.
-        if self.break_long_words:
+        if self.break_long_words and space_left > 0:
             # Tabulate Custom: Build the string up piece-by-piece in order to
             # take each charcter's width into account
             chunk = reversed_chunks[-1]
