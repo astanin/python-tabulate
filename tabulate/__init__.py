@@ -262,10 +262,10 @@ def _asciidoc_row(is_header, *args):
         asciidoc_alignments = zip(
             colwidths, [alignment[colalign] for colalign in colaligns]
         )
-        asciidoc_column_specifiers = ",".join(
-            f"{width:d}{align}" for width, align in asciidoc_alignments
-        )
-        header_list = [f'cols="{asciidoc_column_specifiers}"']
+        asciidoc_column_specifiers = [
+            f"{align}{width:d}" for width, align in asciidoc_alignments
+        ]
+        header_list = ['cols="' + (",".join(asciidoc_column_specifiers)) + '"']
 
         # generate the list of options (currently only "header")
         options_list = []

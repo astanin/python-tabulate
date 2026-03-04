@@ -2101,7 +2101,7 @@ def test_asciidoc():
     "Output: asciidoc with headers"
     expected = "\n".join(
         [
-            '[cols="11<,11>",options="header"]',
+            '[cols="<11,>11",options="header"]',
             "|====",
             "| strings   |   numbers ",
             "| spam      |   41.9999 ",
@@ -2117,7 +2117,7 @@ def test_asciidoc_headerless():
     "Output: asciidoc without headers"
     expected = "\n".join(
         [
-            '[cols="6<,10>"]',
+            '[cols="<6,>10"]',
             "|====",
             "| spam |  41.9999 ",
             "| eggs | 451      ",
