@@ -12,7 +12,7 @@ except ImportError:
 
 def test_iterable_of_iterables():
     "Input: an iterable of iterables."
-    ii = iter(map(lambda x: iter(x), [range(5), range(5, 0, -1)]))
+    ii = iter(map(iter, [range(5), range(5, 0, -1)]))
     expected = "\n".join(["-  -  -  -  -", "0  1  2  3  4", "5  4  3  2  1", "-  -  -  -  -"])
     result = tabulate(ii)
     assert_equal(expected, result)
@@ -20,7 +20,7 @@ def test_iterable_of_iterables():
 
 def test_iterable_of_iterables_headers():
     "Input: an iterable of iterables with headers."
-    ii = iter(map(lambda x: iter(x), [range(5), range(5, 0, -1)]))
+    ii = iter(map(iter, [range(5), range(5, 0, -1)]))
     expected = "\n".join(
         [
             "  a    b    c    d    e",
@@ -35,7 +35,7 @@ def test_iterable_of_iterables_headers():
 
 def test_iterable_of_iterables_firstrow():
     "Input: an iterable of iterables with the first row as headers"
-    ii = iter(map(lambda x: iter(x), ["abcde", range(5), range(5, 0, -1)]))
+    ii = iter(map(iter, ["abcde", range(5), range(5, 0, -1)]))
     expected = "\n".join(
         [
             "  a    b    c    d    e",
