@@ -2530,19 +2530,6 @@ def test_moinmoin():
     assert_equal(expected, result)
 
 
-def test_youtrack():
-    "Output: youtrack with headers"
-    expected = "\n".join(
-        [
-            "||  strings    ||    numbers  ||",
-            "|  spam       |    41.9999  |",
-            "|  eggs       |   451       |",
-        ]
-    )
-    result = tabulate(_test_table, _test_table_headers, tablefmt="youtrack")
-    assert_equal(expected, result)
-
-
 def test_moinmoin_headerless():
     "Output: moinmoin without headers"
     expected = "\n".join(

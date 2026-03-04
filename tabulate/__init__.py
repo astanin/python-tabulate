@@ -627,16 +627,6 @@ _table_formats = {
         padding=1,
         with_header_hide=None,
     ),
-    "youtrack": TableFormat(
-        lineabove=None,
-        linebelowheader=None,
-        linebetweenrows=None,
-        linebelow=None,
-        headerrow=DataRow("|| ", " || ", " || "),
-        datarow=DataRow("| ", " | ", " |"),
-        padding=1,
-        with_header_hide=None,
-    ),
     "html": TableFormat(
         lineabove=_html_begin_table_without_header,
         linebelowheader="",
@@ -766,7 +756,6 @@ multiline_formats = {
 # TODO: Add multiline support for the remaining table formats:
 #       - mediawiki: Replace \n with <br>
 #       - moinmoin: TBD
-#       - youtrack: TBD
 #       - html: Replace \n with <br>
 #       - latex*: Use "makecell" package: In header, replace X\nY with
 #         \thead{X\\Y} and in data row, replace X\nY with \makecell{X\\Y}
