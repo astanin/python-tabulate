@@ -501,7 +501,7 @@ format:
 
 ```pycon
 >>> print(tabulate(table, headers, tablefmt="asciidoc"))
-[cols="8<,7>",options="header"]
+[cols="<8,>7",options="header"]
 |====
 | item   |   qty
 | spam   |    42

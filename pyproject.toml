@@ -13,14 +13,14 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dynamic = ["version"]
 
 [project.urls]
@@ -32,8 +32,7 @@ widechars = ["wcwidth"]
 [project.scripts]
 tabulate = "tabulate:_main"
 
-[tool.setuptools]
-packages = ["tabulate"]
+# [tool.setuptools]
+# packages = ["tabulate"]
 
 [tool.setuptools_scm]
-write_to = "tabulate/version.py"
