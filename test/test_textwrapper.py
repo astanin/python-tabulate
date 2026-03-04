@@ -17,7 +17,7 @@ def test_wrap_multiword_non_wide():
 
         assert [line.rstrip() for line in orig.wrap(data)] == [
             line.rstrip() for line in cust.wrap(data)
-        ], "Failure on non-wide char multiword regression check for width " + str(width)
+        ], f"Failure on non-wide char multiword regression check for width {width}"
 
 
 def test_wrap_multiword_non_wide_with_hypens():
@@ -29,7 +29,7 @@ def test_wrap_multiword_non_wide_with_hypens():
 
         assert [line.rstrip() for line in orig.wrap(data)] == [
             line.rstrip() for line in cust.wrap(data)
-        ], "Failure on non-wide char hyphen regression check for width " + str(width)
+        ], f"Failure on non-wide char hyphen regression check for width {width}"
 
 
 def test_wrap_longword_non_wide():
@@ -40,7 +40,7 @@ def test_wrap_longword_non_wide():
         cust = CTW(width=width)
 
         assert orig.wrap(data) == cust.wrap(data), (
-            "Failure on non-wide char longword regression check for width " + str(width)
+            f"Failure on non-wide char longword regression check for width {width}"
         )
 
 
