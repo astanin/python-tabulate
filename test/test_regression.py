@@ -560,3 +560,10 @@ def test_empty_table_with_maxheadercolwidths():
         ]
     )
     assert_equal(expected, result)
+
+
+def test_mixed_bool_strings_and_numeric_strings():
+    "Regression: column with bool-like strings and numeric strings should not crash (issue #209)"
+    result = tabulate([["False"], ["1."]])
+    expected = "\n".join(["-----", "False", "    1", "-----"])
+    assert_equal(expected, result)
