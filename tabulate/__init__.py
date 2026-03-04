@@ -1599,9 +1599,11 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             if headers == "keys":
                 headers = field_names
             rows = [
-                [getattr(row, f) for f in field_names]
-                if not _is_separating_line(row)
-                else row
+                (
+                    [getattr(row, f) for f in field_names]
+                    if not _is_separating_line(row)
+                    else row
+                )
                 for row in rows
             ]
 
@@ -1685,9 +1687,11 @@ def _wrap_text_to_colwidths(
                 casted_cell = (
                     missingval
                     if cell is None
-                    else str(cell)
-                    if cell == "" or _isnumber(cell)
-                    else str(_type(cell, numparse)(cell))
+                    else (
+                        str(cell)
+                        if cell == "" or _isnumber(cell)
+                        else str(_type(cell, numparse)(cell))
+                    )
                 )
                 wrapped = [
                     "\n".join(wrapper.wrap(line))

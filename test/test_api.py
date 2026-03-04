@@ -1,6 +1,4 @@
-"""API properties.
-
-"""
+"""API properties."""
 
 from tabulate import tabulate, tabulate_formats, simple_separated_format
 from common import skip
