@@ -1352,12 +1352,18 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
         is_a_colored_number = has_invisible and isinstance(val, (str, bytes))
         if is_a_colored_number:
             raw_val = _strip_ansi(val)
-            formatted_val = format(float(raw_val), floatfmt)
+            try:
+                formatted_val = format(float(raw_val), floatfmt)
+            except (ValueError, TypeError):
+                return f"{val}"
             return val.replace(raw_val, formatted_val)
         else:
             if isinstance(val, str) and "," in val:
                 val = val.replace(",", "")  # handle thousands-separators
-            return format(float(val), floatfmt)
+            try:
+                return format(float(val), floatfmt)
+            except (ValueError, TypeError):
+                return f"{val}"
     else:
         return f"{val}"
 
