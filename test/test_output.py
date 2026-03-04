@@ -131,7 +131,7 @@ def test_plain_maxcolwidth_autowraps_wide_chars():
         ["hdr", "fold"],
         [
             "1",
-            "약간 감싸면 더 잘 보일 수있는 다소 긴 설명입니다 설명입니다 설명입니다 설명입니다 설명",  # noqa: E501
+            "약간 감싸면 더 잘 보일 수있는 다소 긴 설명입니다 설명입니다 설명입니다 설명입니다 설명",
         ],
     ]
     expected = "\n".join(
@@ -2570,7 +2570,7 @@ def test_html():
         [
             "<table>",
             "<thead>",
-            '<tr><th>&lt;strings&gt;  </th><th style="text-align: right;">  &lt;&amp;numbers&amp;&gt;</th></tr>',  # noqa
+            '<tr><th>&lt;strings&gt;  </th><th style="text-align: right;">  &lt;&amp;numbers&amp;&gt;</th></tr>',
             "</thead>",
             "<tbody>",
             '<tr><td>spam &gt;     </td><td style="text-align: right;">      41.9999</td></tr>',
@@ -2591,7 +2591,7 @@ def test_unsafehtml():
         [
             "<table>",
             "<thead>",
-            "<tr><th>strings  </th><th>numbers                         </th></tr>",  # noqa
+            "<tr><th>strings  </th><th>numbers                         </th></tr>",
             "</thead>",
             "<tbody>",
             '<tr><td>spam     </td><td><font color="red">41.9999</font></td></tr>',
