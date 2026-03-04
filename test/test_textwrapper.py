@@ -39,9 +39,9 @@ def test_wrap_longword_non_wide():
         orig = OTW(width=width)
         cust = CTW(width=width)
 
-        assert orig.wrap(data) == cust.wrap(
-            data
-        ), "Failure on non-wide char longword regression check for width " + str(width)
+        assert orig.wrap(data) == cust.wrap(data), (
+            "Failure on non-wide char longword regression check for width " + str(width)
+        )
 
 
 def test_wrap_wide_char_multiword():
@@ -111,9 +111,7 @@ def test_wrapper_len_ignores_color_chars():
 def test_wrap_full_line_color():
     """TextWrapper: Wrap a line when the full thing is enclosed in color tags"""
     # This has both a text color and a background color
-    data = (
-        "\033[31m\033[104mThis is a test string for testing TextWrap with colors\033[0m"
-    )
+    data = "\033[31m\033[104mThis is a test string for testing TextWrap with colors\033[0m"
 
     expected = [
         "\033[31m\033[104mThis is a test\033[0m",

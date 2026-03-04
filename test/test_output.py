@@ -16,9 +16,7 @@ _test_table_headers = ["strings", "numbers"]
 
 def test_plain():
     "Output: plain with headers"
-    expected = "\n".join(
-        ["strings      numbers", "spam         41.9999", "eggs        451"]
-    )
+    expected = "\n".join(["strings      numbers", "spam         41.9999", "eggs        451"])
     result = tabulate(_test_table, _test_table_headers, tablefmt="plain")
     assert_equal(expected, result)
 
@@ -94,9 +92,7 @@ def test_plain_multiline_with_empty_cells():
 def test_plain_multiline_with_empty_cells_headerless():
     "Output: plain with multiline cells and empty cells without headers"
     table = [["0", "", ""], ["1", "", ""], ["2", "very long data", "fold\nthis"]]
-    expected = "\n".join(
-        ["0", "1", "2  very long data  fold", "                   this"]
-    )
+    expected = "\n".join(["0", "1", "2  very long data  fold", "                   this"])
     result = tabulate(table, tablefmt="plain")
     assert_equal(expected, result)
 
@@ -105,9 +101,7 @@ def test_plain_maxcolwidth_autowraps():
     "Output: maxcolwidth will result in autowrapping longer cells"
     table = [["hdr", "fold"], ["1", "very long data"]]
     expected = "\n".join(["  hdr  fold", "    1  very long", "       data"])
-    result = tabulate(
-        table, headers="firstrow", tablefmt="plain", maxcolwidths=[10, 10]
-    )
+    result = tabulate(table, headers="firstrow", tablefmt="plain", maxcolwidths=[10, 10])
     assert_equal(expected, result)
 
 
@@ -122,9 +116,7 @@ def test_plain_maxcolwidth_autowraps_with_sep():
     expected = "\n".join(
         ["  hdr  fold", "    1  very long", "       data", "", "    2  last line"]
     )
-    result = tabulate(
-        table, headers="firstrow", tablefmt="plain", maxcolwidths=[10, 10]
-    )
+    result = tabulate(table, headers="firstrow", tablefmt="plain", maxcolwidths=[10, 10])
     assert_equal(expected, result)
 
 
@@ -139,7 +131,7 @@ def test_plain_maxcolwidth_autowraps_wide_chars():
         ["hdr", "fold"],
         [
             "1",
-            "약간 감싸면 더 잘 보일 수있는 다소 긴 설명입니다 설명입니다 설명입니다 설명입니다 설명",
+            "약간 감싸면 더 잘 보일 수있는 다소 긴 설명입니다 설명입니다 설명입니다 설명입니다 설명",  # noqa: E501
         ],
     ]
     expected = "\n".join(
@@ -150,9 +142,7 @@ def test_plain_maxcolwidth_autowraps_wide_chars():
             "       설명입니다 설명입니다 설명",
         ]
     )
-    result = tabulate(
-        table, headers="firstrow", tablefmt="plain", maxcolwidths=[10, 30]
-    )
+    result = tabulate(table, headers="firstrow", tablefmt="plain", maxcolwidths=[10, 30])
     assert_equal(expected, result)
 
 
@@ -189,9 +179,7 @@ def test_maxcolwidth_pad_tailing_widths():
             "       short",
         ]
     )
-    result = tabulate(
-        table, headers="firstrow", tablefmt="plain", maxcolwidths=[None, 6]
-    )
+    result = tabulate(table, headers="firstrow", tablefmt="plain", maxcolwidths=[None, 6])
     assert_equal(expected, result)
 
 
@@ -354,9 +342,7 @@ def test_orgtbl_multiline_2_with_sep_line():
 
 def test_simple_headerless():
     "Output: simple without headers"
-    expected = "\n".join(
-        ["----  --------", "spam   41.9999", "eggs  451", "----  --------"]
-    )
+    expected = "\n".join(["----  --------", "spam   41.9999", "eggs  451", "----  --------"])
     result = tabulate(_test_table, tablefmt="simple")
     assert_equal(expected, result)
 
@@ -1541,9 +1527,7 @@ def test_colon_grid_wide_characters():
             "+-----------+---------+",
         ]
     )
-    result = tabulate(
-        _test_table, headers, tablefmt="colon_grid", colalign=["left", "right"]
-    )
+    result = tabulate(_test_table, headers, tablefmt="colon_grid", colalign=["left", "right"])
     assert_equal(expected, result)
 
 
@@ -1980,9 +1964,7 @@ def test_pipe():
 
 def test_pipe_headerless():
     "Output: pipe without headers"
-    expected = "\n".join(
-        ["|:-----|---------:|", "| spam |  41.9999 |", "| eggs | 451      |"]
-    )
+    expected = "\n".join(["|:-----|---------:|", "| spam |  41.9999 |", "| eggs | 451      |"])
     result = tabulate(_test_table, tablefmt="pipe")
     assert_equal(expected, result)
 
@@ -2417,9 +2399,7 @@ def test_rst_with_empty_values_in_first_column():
 
 def test_rst_headerless():
     "Output: rst without headers"
-    expected = "\n".join(
-        ["====  ========", "spam   41.9999", "eggs  451", "====  ========"]
-    )
+    expected = "\n".join(["====  ========", "spam   41.9999", "eggs  451", "====  ========"])
     result = tabulate(_test_table, tablefmt="rst")
     assert_equal(expected, result)
 
@@ -2834,9 +2814,7 @@ def test_intfmt_with_string_as_integer():
 @mark.skip(reason="It detects all values as floats but there are strings and integers.")
 def test_intfmt_with_string_with_floats():
     "Output: integer format"
-    result = tabulate(
-        [[82000.38], ["1500.47"], ["2463"], [92165]], intfmt=",", tablefmt="plain"
-    )
+    result = tabulate([[82000.38], ["1500.47"], ["2463"], [92165]], intfmt=",", tablefmt="plain")
     expected = "82000.4\n 1500.47\n 2463\n92,165"
     assert_equal(expected, result)
 
@@ -2880,27 +2858,21 @@ def test_floatfmt():
 
 def test_floatfmt_thousands():
     "Output: floating point format"
-    result = tabulate(
-        [["1.23456789"], [1.0], ["1,234.56"]], floatfmt=".3f", tablefmt="plain"
-    )
+    result = tabulate([["1.23456789"], [1.0], ["1,234.56"]], floatfmt=".3f", tablefmt="plain")
     expected = "   1.235\n   1.000\n1234.560"
     assert_equal(expected, result)
 
 
 def test_floatfmt_multi():
     "Output: floating point format different for each column"
-    result = tabulate(
-        [[0.12345, 0.12345, 0.12345]], floatfmt=(".1f", ".3f"), tablefmt="plain"
-    )
+    result = tabulate([[0.12345, 0.12345, 0.12345]], floatfmt=(".1f", ".3f"), tablefmt="plain")
     expected = "0.1  0.123  0.12345"
     assert_equal(expected, result)
 
 
 def test_colalign_multi():
     "Output: string columns with custom colalign"
-    result = tabulate(
-        [["one", "two"], ["three", "four"]], colalign=("right",), tablefmt="plain"
-    )
+    result = tabulate([["one", "two"], ["three", "four"]], colalign=("right",), tablefmt="plain")
     expected = "  one  two\nthree  four"
     assert_equal(expected, result)
 
@@ -2966,9 +2938,7 @@ def test_colalign_or_headersalign_too_long():
     colalign = ("global", "left", "center")
     headers = ["h"]
     headersalign = ("center", "right", "same")
-    result = tabulate(
-        table, headers=headers, colalign=colalign, headersalign=headersalign
-    )
+    result = tabulate(table, headers=headers, colalign=colalign, headersalign=headersalign)
     expected = "\n".join(["      h", "---  ---", "  1  2", "111  222"])
     assert_equal(expected, result)
 
@@ -2977,9 +2947,7 @@ def test_warning_when_colalign_or_headersalign_is_string():
     """Test user warnings when `colalign` or `headersalign` is a string."""
     table = [[1, "bar"]]
     opt = {"colalign": "center", "headers": ["foo", "2"], "headersalign": "center"}
-    check_warnings(
-        (tabulate, [table], opt), num=2, category=UserWarning, contain="As a string"
-    )
+    check_warnings((tabulate, [table], opt), num=2, category=UserWarning, contain="As a string")
 
 
 def test_float_conversions():
@@ -3009,9 +2977,7 @@ def test_float_conversions():
 
 def test_missingval():
     "Output: substitution of missing values"
-    result = tabulate(
-        [["Alice", 10], ["Bob", None]], missingval="n/a", tablefmt="plain"
-    )
+    result = tabulate([["Alice", 10], ["Bob", None]], missingval="n/a", tablefmt="plain")
     expected = "Alice   10\nBob    n/a"
     assert_equal(expected, result)
 
@@ -3291,15 +3257,11 @@ def test_disable_numparse_list():
     "Output: Default table output, but with number parsing selectively disabled"
     table_headers = ["h1", "h2", "h3"]
     test_table = [["foo", "bar", "42992e1"]]
-    expected = "\n".join(
-        ["h1    h2    h3", "----  ----  -------", "foo   bar   42992e1"]
-    )
+    expected = "\n".join(["h1    h2    h3", "----  ----  -------", "foo   bar   42992e1"])
     result = tabulate(test_table, table_headers, disable_numparse=[2])
     assert_equal(expected, result)
 
-    expected = "\n".join(
-        ["h1    h2        h3", "----  ----  ------", "foo   bar   429920"]
-    )
+    expected = "\n".join(["h1    h2        h3", "----  ----  ------", "foo   bar   429920"])
     result = tabulate(test_table, table_headers, disable_numparse=[0, 1])
     assert_equal(expected, result)
 
@@ -3308,9 +3270,7 @@ def test_preserve_whitespace():
     "Output: Default table output, but with preserved leading whitespace."
     table_headers = ["h1", "h2", "h3"]
     test_table = [["  foo", " bar   ", "foo"]]
-    expected = "\n".join(
-        ["h1     h2       h3", "-----  -------  ----", "  foo   bar     foo"]
-    )
+    expected = "\n".join(["h1     h2       h3", "-----  -------  ----", "  foo   bar     foo"])
     result = tabulate(test_table, table_headers, preserve_whitespace=True)
     assert_equal(expected, result)
 

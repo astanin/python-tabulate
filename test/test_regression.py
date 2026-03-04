@@ -151,9 +151,7 @@ def test_simple_separated_format_with_headers():
     from tabulate import simple_separated_format
 
     expected = "  a|  b\n  1|  2"
-    formatted = tabulate(
-        [[1, 2]], headers=["a", "b"], tablefmt=simple_separated_format("|")
-    )
+    formatted = tabulate([[1, 2]], headers=["a", "b"], tablefmt=simple_separated_format("|"))
     assert_equal(expected, formatted)
 
 
@@ -239,9 +237,7 @@ def test_isconvertible_on_set_values():
 def test_ansi_color_for_decimal_numbers():
     "Regression: ANSI colors for decimal numbers (issue #36)"
     table = [["Magenta", "\033[95m" + "1.1" + "\033[0m"]]
-    expected = "\n".join(
-        ["-------  ---", "Magenta  \x1b[95m1.1\x1b[0m", "-------  ---"]
-    )
+    expected = "\n".join(["-------  ---", "Magenta  \x1b[95m1.1\x1b[0m", "-------  ---"])
     result = tabulate(table)
     assert_equal(expected, result)
 

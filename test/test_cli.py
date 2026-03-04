@@ -97,9 +97,7 @@ class TemporaryTextFile:
         self.tmpfile = None
 
     def __enter__(self):
-        self.tmpfile = tempfile.NamedTemporaryFile(
-            "w+", prefix="tabulate-test-tmp-", delete=False
-        )
+        self.tmpfile = tempfile.NamedTemporaryFile("w+", prefix="tabulate-test-tmp-", delete=False)
         return self.tmpfile
 
     def __exit__(self, exc_type, exc_val, exc_tb):

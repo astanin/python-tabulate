@@ -180,9 +180,7 @@ def test_wrap_text_wide_chars():
     except ImportError:
         skip("test_wrap_text_wide_chars is skipped")
 
-    rows = [
-        ["청자청자청자청자청자", "약간 감싸면 더 잘 보일 수있는 다소 긴 설명입니다"]
-    ]
+    rows = [["청자청자청자청자청자", "약간 감싸면 더 잘 보일 수있는 다소 긴 설명입니다"]]
     widths = [5, 20]
     expected = [
         [
