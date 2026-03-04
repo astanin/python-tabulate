@@ -173,7 +173,7 @@ def test_numpy_record_array():
             [("Alice", 23, 169.5), ("Bob", 27, 175.0)],
             dtype={
                 "names": ["name", "age", "height"],
-                "formats": ["a32", "uint8", "float32"],
+                "formats": ["S32", "uint8", "float32"],
             },
         )
         expected = "\n".join(
@@ -199,7 +199,7 @@ def test_numpy_record_array_keys():
             [("Alice", 23, 169.5), ("Bob", 27, 175.0)],
             dtype={
                 "names": ["name", "age", "height"],
-                "formats": ["a32", "uint8", "float32"],
+                "formats": ["S32", "uint8", "float32"],
             },
         )
         expected = "\n".join(
@@ -225,7 +225,7 @@ def test_numpy_record_array_headers():
             [("Alice", 23, 169.5), ("Bob", 27, 175.0)],
             dtype={
                 "names": ["name", "age", "height"],
-                "formats": ["a32", "uint8", "float32"],
+                "formats": ["S32", "uint8", "float32"],
             },
         )
         expected = "\n".join(
