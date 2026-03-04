@@ -509,6 +509,23 @@ def test_github():
     assert_equal(expected, result)
 
 
+def test_github_multiline():
+    "Output: github with multiline cells with headers"
+    table = [[2, "foo\nbar"]]
+    headers = ("more\nspam eggs", "more spam\n& eggs")
+    expected = "\n".join(
+        [
+            "|        more | more spam   |",
+            "|   spam eggs | & eggs      |",
+            "|-------------|-------------|",
+            "|           2 | foo         |",
+            "|             | bar         |",
+        ]
+    )
+    result = tabulate(table, headers, tablefmt="github")
+    assert_equal(expected, result)
+
+
 def test_grid():
     "Output: grid with headers"
     expected = "\n".join(
@@ -3301,4 +3318,33 @@ def test_preserve_whitespace():
     test_table = [["  foo", " bar   ", "foo"]]
     expected = "\n".join(["h1    h2    h3", "----  ----  ----", "foo   bar   foo"])
     result = tabulate(test_table, table_headers, preserve_whitespace=False)
+    assert_equal(expected, result)
+
+def test_break_long_words():
+    "Output: Default table output, with breakwords true."
+    table_headers = ["h1", "h2", "h3"]
+    test_table = [["  foo1", " bar2   ", "foo3"]]
+
+    # Table is not wrapped on 3 letters due to long word
+    expected = "h1    h2    h3\n----  ----  ----\nfoo1  bar2  foo3"
+    result = tabulate(test_table, table_headers, maxcolwidths=3, break_long_words=False)
+    assert_equal(expected, result)
+
+    # Table max width is 3 letters
+    expected = "h1    h2    h3\n----  ----  ----\nf     ba    foo\noo1   r2    3"
+    result = tabulate(test_table, table_headers, maxcolwidths=3, break_long_words=True)
+    assert_equal(expected, result)
+
+def test_break_on_hyphens():
+    "Output: Default table output, with break on hyphens true."
+    table_headers = ["h1", "h2", "h3"]
+    test_table = [["  foo-bar", " bar-bar   ", "foo-foo"]]
+    # Table max width is 5, long lines breaks on hyphens
+    expected = "h1    h2    h3\n----  ----  -----\nfoo   bar-  foo-f\n-bar  bar   oo"
+    result = tabulate(test_table, table_headers, maxcolwidths=5, break_on_hyphens=False)
+    assert_equal(expected, result)
+
+    # Table data is no longer breaks on hyphens
+    expected = "h1    h2    h3\n----  ----  ----\nfoo-  bar-  foo-\nbar   bar   foo"
+    result = tabulate(test_table, table_headers, maxcolwidths=5, break_on_hyphens=True)
     assert_equal(expected, result)

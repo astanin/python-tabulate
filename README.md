@@ -819,7 +819,7 @@ methods `__str__` and `__float__` defined (and hence is convertible to a
 `float` and also has a `str` representation), the appropriate
 representation is selected for the column's deduced type.  In order to not
 lose precision accidentally, types having both an `__int__` and
-`__float__` represention will be considered a `float`.
+`__float__` representation will be considered a `float`.
 
 Therefore, if your table contains types convertible to int/float but you'd
 *prefer* they be represented as strings, or your strings *might* all look
@@ -1063,6 +1063,31 @@ the lines being wrapped would probably be significantly longer than this.
 
 ```
 
+Text is preferably wrapped on whitespaces and right after the hyphens in hyphenated words.
+
+break_long_words (default: True)  If true, then words longer than width will be broken in order to ensure that no lines are longer than width. 
+If it is false, long words will not be broken, and some lines may be longer than width.
+(Long words will be put on a line by themselves, in order to minimize the amount by which width is exceeded.)
+
+break_on_hyphens (default: True) If true, wrapping will occur preferably on whitespaces and right after hyphens in compound words, as it is customary in English. 
+If false, only whitespaces will be considered as potentially good places for line breaks.
+
+```pycon
+>>> print(tabulate([["John Smith", "Middle-Manager"]], headers=["Name", "Title"], tablefmt="grid", maxcolwidths=[None, 5], break_long_words=False))
++------------+---------+
+| Name       | Title   |
++============+=========+
+| John Smith | Middle- |
+|            | Manager |
++------------+---------+
+>>> print(tabulate([["John Smith", "Middle-Manager"]], headers=["Name", "Title"], tablefmt="grid", maxcolwidths=[None, 5], break_long_words=False, break_on_hyphens=False))
++------------+----------------+
+| Name       | Title          |
++============+================+
+| John Smith | Middle-Manager |
++------------+----------------+
+```
+
 ### Adding Separating lines
 One might want to add one or more separating lines to highlight different sections in a table.
 
@@ -1098,7 +1123,7 @@ table, however, ANSI escape sequences are not removed so the original styling is
 
 Some terminals support a special grouping of ANSI escape sequences that are intended to display hyperlinks
 much in the same way they are shown in browsers. These are handled just as mentioned before: non-printable
-ANSI escape sequences are removed prior to string length calculation. The only diifference with escaped
+ANSI escape sequences are removed prior to string length calculation. The only difference with escaped
 hyperlinks is that column width will be based on the length of the URL _text_ rather than the URL
 itself (terminals would show this text). For example:
 

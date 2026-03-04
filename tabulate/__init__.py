@@ -33,6 +33,15 @@ except ImportError:
 # minimum extra space in headers
 MIN_PADDING = 2
 
+# Whether or not to preserve leading/trailing whitespace in data.
+PRESERVE_WHITESPACE = False
+
+# TextWrapper breaks words longer than 'width'.
+_BREAK_LONG_WORDS = True
+# TextWrapper is breaking hyphenated words.
+_BREAK_ON_HYPHENS = True
+
+
 _DEFAULT_FLOATFMT = "g"
 _DEFAULT_INTFMT = ""
 _DEFAULT_MISSINGVAL = ""
@@ -737,6 +746,7 @@ multiline_formats = {
     "pretty": "pretty",
     "psql": "psql",
     "rst": "rst",
+    "github": "github",
     "outline": "outline",
     "simple_outline": "simple_outline",
     "rounded_outline": "rounded_outline",
@@ -1577,7 +1587,12 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             field_names = [field.name for field in dataclasses.fields(rows[0])]
             if headers == "keys":
                 headers = field_names
-            rows = [[getattr(row, f) for f in field_names] for row in rows]
+            rows = [
+                [getattr(row, f) for f in field_names]
+                if not _is_separating_line(row)
+                else row
+                for row in rows
+            ]
 
         elif headers == "keys" and len(rows) > 0:
             # keys are column indices
@@ -1623,7 +1638,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     return rows, headers, headers_pad
 
 
-def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True, missingval=_DEFAULT_MISSINGVAL):
+def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True, missingval=_DEFAULT_MISSINGVAL, break_long_words=_BREAK_LONG_WORDS, break_on_hyphens=_BREAK_ON_HYPHENS):
     if len(list_of_lists):
         num_cols = len(list_of_lists[0])
     else:
@@ -1640,7 +1655,7 @@ def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True, missingval
                 continue
 
             if width is not None:
-                wrapper = _CustomTextWrap(width=width)
+                wrapper = _CustomTextWrap(width=width, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens)
                 # Cast based on our internal type handling. Any future custom
                 # formatting of types (such as datetimes) may need to be more
                 # explicit than just `str` of the object. Also doesn't work for
@@ -1705,6 +1720,8 @@ def tabulate(
     headersalign=None,
     rowalign=None,
     maxheadercolwidths=None,
+    break_long_words=_BREAK_LONG_WORDS,
+    break_on_hyphens=_BREAK_ON_HYPHENS,
 ):
     """Format a fixed width table for pretty printing.
 
@@ -2247,7 +2264,7 @@ def tabulate(
 
         numparses = _expand_numparse(disable_numparse, num_cols)
         list_of_lists = _wrap_text_to_colwidths(
-            list_of_lists, maxcolwidths, numparses=numparses, missingval=missingval
+            list_of_lists, maxcolwidths, numparses=numparses, missingval=missingval, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens
         )
 
     if maxheadercolwidths is not None:
@@ -2261,7 +2278,7 @@ def tabulate(
 
         numparses = _expand_numparse(disable_numparse, num_cols)
         headers = _wrap_text_to_colwidths(
-            [headers], maxheadercolwidths, numparses=numparses, missingval=missingval
+            [headers], maxheadercolwidths, numparses=numparses, missingval=missingval, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens
         )[0]
 
     # empty values in the first column of RST tables should be escaped (issue #82)
