@@ -1190,7 +1190,9 @@ def _align_column_choose_width_fn(has_invisible, enable_widechars, is_multiline)
     else:
         line_width_fn = len
     if is_multiline:
-        width_fn = lambda s: _align_column_multiline_width(s, line_width_fn)  # noqa: E731
+        width_fn = lambda s: _align_column_multiline_width(
+            s, line_width_fn
+        )  # noqa: E731
     else:
         width_fn = line_width_fn
     return width_fn
@@ -2649,7 +2651,9 @@ def _format_table(
 
     padded_widths = [(w + 2 * pad) for w in colwidths]
     if is_multiline:
-        pad_row = lambda row, _: row  # noqa: E731 # do it later, in _append_multiline_row
+        pad_row = (
+            lambda row, _: row
+        )  # noqa: E731 # do it later, in _append_multiline_row
         append_row = partial(_append_multiline_row, pad=pad)
     else:
         pad_row = _pad_row
