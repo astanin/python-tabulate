@@ -2776,7 +2776,9 @@ class _CustomTextWrap(textwrap.TextWrapper):
             i = 1
             # Only count printable characters, so strip_ansi first, index later.
             stripped_chunk = _strip_ansi(chunk)
-            while i <= len(stripped_chunk) and self._len(stripped_chunk[:i]) <= space_left:
+            while (
+                i <= len(stripped_chunk) and self._len(stripped_chunk[:i]) <= space_left
+            ):
                 i = i + 1
             # Consider escape codes when breaking words up
             total_escape_len = 0
