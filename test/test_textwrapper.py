@@ -286,3 +286,41 @@ def test_wrap_optional_bool_strs():
     ]
     expected = "\n".join(expected)
     assert_equal(expected, result)
+
+
+def test_wrap_wide_char_no_column_overflow():
+    "TextWrapper: wide chars must not overflow the requested column width."
+    try:
+        import wcwidth
+    except ImportError:
+        skip("test_wrap_wide_char_no_column_overflow is skipped")
+
+    # Each Korean character occupies 2 display columns.
+    data = "\ud55c\uae00\ud14c\uc2a4\ud2b8"  # 한글테스트
+    for width in [2, 3, 4, 5, 6]:
+        wrapper = CTW(width=width)
+        lines = wrapper.wrap(data)
+        for line in lines:
+            display_width = wcwidth.wcswidth(line)
+            assert display_width <= width, (
+                f"Line {repr(line)} has display width {display_width} "
+                f"which exceeds requested column width {width}"
+            )
+
+
+def test_wrap_wide_char_narrower_than_char_width():
+    """TextWrapper: column width smaller than a single wide char must not hang (issue #399).
+
+    When the requested width is 1 but every character is 2 display columns
+    wide, _handle_long_word must still make progress (one character per line)
+    rather than looping forever.
+    """
+    try:
+        import wcwidth  # noqa: F401
+    except ImportError:
+        skip("test_wrap_wide_char_narrower_than_char_width is skipped")
+
+    data = "\ud55c\uae00"  # 한글 -- each char is 2 display cols wide
+    # width=1 is narrower than any character; each char should still get its own line
+    result = CTW(width=1).wrap(data)
+    assert result == ["\ud55c", "\uae00"]
