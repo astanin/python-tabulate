@@ -1318,7 +1318,7 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
         tabulate(tbl, headers=hrow) == good_result
     True
 
-    """  # noqa: E501
+    """
     if val is None:
         return missingval
     if isinstance(val, (bytes, str)) and not val:
