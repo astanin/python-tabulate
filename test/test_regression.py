@@ -548,3 +548,15 @@ def test_empty_table_with_colalign():
         ]
     )
     assert_equal(expected, table)
+
+
+def test_empty_table_with_maxheadercolwidths():
+    "Regression: empty table with maxheadercolwidths kwarg (issue #365)"
+    result = tabulate([], headers=["one", "two", "three"], maxheadercolwidths=5)
+    expected = "\n".join(
+        [
+            "one    two    three",
+            "-----  -----  -------",
+        ]
+    )
+    assert_equal(expected, result)
