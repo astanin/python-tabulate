@@ -173,7 +173,7 @@ def test_numpy_record_array():
             [("Alice", 23, 169.5), ("Bob", 27, 175.0)],
             dtype={
                 "names": ["name", "age", "height"],
-                "formats": ["a32", "uint8", "float32"],
+                "formats": ["S32", "uint8", "float32"],
             },
         )
         expected = "\n".join(
@@ -199,7 +199,7 @@ def test_numpy_record_array_keys():
             [("Alice", 23, 169.5), ("Bob", 27, 175.0)],
             dtype={
                 "names": ["name", "age", "height"],
-                "formats": ["a32", "uint8", "float32"],
+                "formats": ["S32", "uint8", "float32"],
             },
         )
         expected = "\n".join(
@@ -225,7 +225,7 @@ def test_numpy_record_array_headers():
             [("Alice", 23, 169.5), ("Bob", 27, 175.0)],
             dtype={
                 "names": ["name", "age", "height"],
-                "formats": ["a32", "uint8", "float32"],
+                "formats": ["S32", "uint8", "float32"],
             },
         )
         expected = "\n".join(
@@ -313,6 +313,7 @@ def test_sqlite3():
             cursor.execute("INSERT INTO people VALUES (?, ?, ?)", values)
         cursor.execute("SELECT name, age, height FROM people ORDER BY name")
         result = tabulate(cursor, headers=["whom", "how old", "how tall"])
+        conn.close()
         expected = """\
 whom      how old    how tall
 ------  ---------  ----------
@@ -337,6 +338,7 @@ def test_sqlite3_keys():
             'SELECT name "whom", age "how old", height "how tall" FROM people ORDER BY name'
         )
         result = tabulate(cursor, headers="keys")
+        conn.close()
         expected = """\
 whom      how old    how tall
 ------  ---------  ----------

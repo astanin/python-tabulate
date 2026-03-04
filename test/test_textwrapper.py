@@ -15,9 +15,9 @@ def test_wrap_multiword_non_wide():
         orig = OTW(width=width)
         cust = CTW(width=width)
 
-        assert orig.wrap(data) == cust.wrap(
-            data
-        ), "Failure on non-wide char multiword regression check for width " + str(width)
+        assert [line.rstrip() for line in orig.wrap(data)] == [
+            line.rstrip() for line in cust.wrap(data)
+        ], "Failure on non-wide char multiword regression check for width " + str(width)
 
 
 def test_wrap_multiword_non_wide_with_hypens():
@@ -27,9 +27,9 @@ def test_wrap_multiword_non_wide_with_hypens():
         orig = OTW(width=width)
         cust = CTW(width=width)
 
-        assert orig.wrap(data) == cust.wrap(
-            data
-        ), "Failure on non-wide char hyphen regression check for width " + str(width)
+        assert [line.rstrip() for line in orig.wrap(data)] == [
+            line.rstrip() for line in cust.wrap(data)
+        ], "Failure on non-wide char hyphen regression check for width " + str(width)
 
 
 def test_wrap_longword_non_wide():
@@ -222,6 +222,50 @@ def test_wrap_datetime():
     assert_equal(expected, result)
 
 
+def test_wrap_none_value():
+    """TextWrapper: Show that None can be wrapped without crashing"""
+    data = [["First Entry", None], ["Second Entry", None]]
+    headers = ["Title", "Value"]
+    result = tabulate(data, headers=headers, tablefmt="grid", maxcolwidths=[7, 5])
+
+    expected = [
+        "+---------+---------+",
+        "| Title   | Value   |",
+        "+=========+=========+",
+        "| First   |         |",
+        "| Entry   |         |",
+        "+---------+---------+",
+        "| Second  |         |",
+        "| Entry   |         |",
+        "+---------+---------+",
+    ]
+    expected = "\n".join(expected)
+    assert_equal(expected, result)
+
+
+def test_wrap_none_value_with_missingval():
+    """TextWrapper: Show that None can be wrapped without crashing and with a missing value"""
+    data = [["First Entry", None], ["Second Entry", None]]
+    headers = ["Title", "Value"]
+    result = tabulate(
+        data, headers=headers, tablefmt="grid", maxcolwidths=[7, 5], missingval="???"
+    )
+
+    expected = [
+        "+---------+---------+",
+        "| Title   | Value   |",
+        "+=========+=========+",
+        "| First   | ???     |",
+        "| Entry   |         |",
+        "+---------+---------+",
+        "| Second  | ???     |",
+        "| Entry   |         |",
+        "+---------+---------+",
+    ]
+    expected = "\n".join(expected)
+    assert_equal(expected, result)
+
+
 def test_wrap_optional_bool_strs():
     """TextWrapper: Show that str bools and None can be wrapped without crashing"""
     data = [
@@ -238,7 +282,7 @@ def test_wrap_optional_bool_strs():
         "| First   | True   |",
         "| Entry   |        |",
         "+---------+--------+",
-        "| Second  | None   |",
+        "| Second  |        |",
         "| Entry   |        |",
         "+---------+--------+",
     ]

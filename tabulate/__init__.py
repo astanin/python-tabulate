@@ -142,8 +142,10 @@ def _pipe_line_with_colons(colwidths, colaligns):
     alignment (as in `pipe` output format)."""
     if not colaligns:  # e.g. printing an empty data frame (github issue #15)
         colaligns = [""] * len(colwidths)
-    segments = [_pipe_segment_with_colons(a, w) for a, w in zip(colaligns, colwidths)]
-    return "|" + "|".join(segments) + "|"
+    segments = "|".join(
+        _pipe_segment_with_colons(a, w) for a, w in zip(colaligns, colwidths)
+    )
+    return f"|{segments}|"
 
 
 def _grid_segment_with_colons(colwidth, align):
@@ -165,8 +167,10 @@ def _grid_line_with_colons(colwidths, colaligns):
     in a grid table."""
     if not colaligns:
         colaligns = [""] * len(colwidths)
-    segments = [_grid_segment_with_colons(w, a) for a, w in zip(colaligns, colwidths)]
-    return "+" + "+".join(segments) + "+"
+    segments = "+".join(
+        _grid_segment_with_colons(w, a) for a, w in zip(colaligns, colwidths)
+    )
+    return f"+{segments}+"
 
 
 def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
@@ -188,8 +192,8 @@ def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
 def _textile_row_with_attrs(cell_values, colwidths, colaligns):
     cell_values[0] += " "
     alignment = {"left": "<.", "right": ">.", "center": "=.", "decimal": ">."}
-    values = (alignment.get(a, "") + v for a, v in zip(colaligns, cell_values))
-    return "|" + "|".join(values) + "|"
+    values = "|".join(alignment.get(a, "") + v for a, v in zip(colaligns, cell_values))
+    return f"|{values}|"
 
 
 def _html_begin_table_without_header(colwidths_ignore, colaligns_ignore):
@@ -270,7 +274,8 @@ def _asciidoc_row(is_header, *args):
             options_list.append("header")
 
         if options_list:
-            header_list += ['options="' + ",".join(options_list) + '"']
+            options_list = ",".join(options_list)
+            header_list.append(f'options="{options_list}"')
 
         # generate the list of entries in the table header field
 
@@ -1352,12 +1357,18 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
         is_a_colored_number = has_invisible and isinstance(val, (str, bytes))
         if is_a_colored_number:
             raw_val = _strip_ansi(val)
-            formatted_val = format(float(raw_val), floatfmt)
+            try:
+                formatted_val = format(float(raw_val), floatfmt)
+            except (ValueError, TypeError):
+                return f"{val}"
             return val.replace(raw_val, formatted_val)
         else:
             if isinstance(val, str) and "," in val:
                 val = val.replace(",", "")  # handle thousands-separators
-            return format(float(val), floatfmt)
+            try:
+                return format(float(val), floatfmt)
+            except (ValueError, TypeError):
+                return f"{val}"
     else:
         return f"{val}"
 
@@ -1638,7 +1649,14 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     return rows, headers, headers_pad
 
 
-def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True, break_long_words=_BREAK_LONG_WORDS, break_on_hyphens=_BREAK_ON_HYPHENS):
+def _wrap_text_to_colwidths(
+    list_of_lists,
+    colwidths,
+    numparses=True,
+    missingval=_DEFAULT_MISSINGVAL,
+    break_long_words=_BREAK_LONG_WORDS,
+    break_on_hyphens=_BREAK_ON_HYPHENS,
+):
     if len(list_of_lists):
         num_cols = len(list_of_lists[0])
     else:
@@ -1655,8 +1673,22 @@ def _wrap_text_to_colwidths(list_of_lists, colwidths, numparses=True, break_long
                 continue
 
             if width is not None:
-                wrapper = _CustomTextWrap(width=width, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens)
-                casted_cell = str(cell)
+                wrapper = _CustomTextWrap(
+                    width=width,
+                    break_long_words=break_long_words,
+                    break_on_hyphens=break_on_hyphens,
+                )
+                # Cast based on our internal type handling. Any future custom
+                # formatting of types (such as datetimes) may need to be more
+                # explicit than just `str` of the object. Also doesn't work for
+                # custom floatfmt/intfmt, nor with any missing/blank cells.
+                casted_cell = (
+                    missingval
+                    if cell is None
+                    else str(cell)
+                    if cell == "" or _isnumber(cell)
+                    else str(_type(cell, numparse)(cell))
+                )
                 wrapped = [
                     "\n".join(wrapper.wrap(line))
                     for line in casted_cell.splitlines()
@@ -2214,8 +2246,8 @@ def tabulate(
     Tabulate will, by default, set the width of each column to the length of the
     longest element in that column. However, in situations where fields are expected
     to reasonably be too long to look good as a single line, tabulate can help automate
-    word wrapping long fields for you. Use the parameter `maxcolwidth` to provide a
-    list of maximal column widths
+    word wrapping long fields for you. Use the parameter `maxcolwidths` to provide a
+    list of maximal column widths:
 
     >>> print(tabulate( \
           [('1', 'John Smith', \
@@ -2232,7 +2264,7 @@ def tabulate(
     |            |            | better if it is wrapped a bit |
     +------------+------------+-------------------------------+
 
-    Header column width can be specified in a similar way using `maxheadercolwidth`
+    Header column width can be specified in a similar way using `maxheadercolwidths`.
 
     """
 
@@ -2258,11 +2290,16 @@ def tabulate(
 
         numparses = _expand_numparse(disable_numparse, num_cols)
         list_of_lists = _wrap_text_to_colwidths(
-            list_of_lists, maxcolwidths, numparses=numparses, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens
+            list_of_lists,
+            maxcolwidths,
+            numparses=numparses,
+            missingval=missingval,
+            break_long_words=break_long_words,
+            break_on_hyphens=break_on_hyphens,
         )
 
     if maxheadercolwidths is not None:
-        num_cols = len(list_of_lists[0])
+        num_cols = len(list_of_lists[0]) if list_of_lists else len(headers)
         if isinstance(maxheadercolwidths, int):  # Expand scalar for all columns
             maxheadercolwidths = _expand_iterable(
                 maxheadercolwidths, num_cols, maxheadercolwidths
@@ -2272,7 +2309,12 @@ def tabulate(
 
         numparses = _expand_numparse(disable_numparse, num_cols)
         headers = _wrap_text_to_colwidths(
-            [headers], maxheadercolwidths, numparses=numparses, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens
+            [headers],
+            maxheadercolwidths,
+            numparses=numparses,
+            missingval=missingval,
+            break_long_words=break_long_words,
+            break_on_hyphens=break_on_hyphens,
         )[0]
 
     # empty values in the first column of RST tables should be escaped (issue #82)
@@ -2738,13 +2780,16 @@ class _CustomTextWrap(textwrap.TextWrapper):
 
         # If we're allowed to break long words, then do so: put as much
         # of the next chunk onto the current line as will fit.
-        if self.break_long_words:
+        if self.break_long_words and space_left > 0:
             # Tabulate Custom: Build the string up piece-by-piece in order to
             # take each charcter's width into account
             chunk = reversed_chunks[-1]
             i = 1
             # Only count printable characters, so strip_ansi first, index later.
-            while len(_strip_ansi(chunk)[:i]) <= space_left:
+            stripped_chunk = _strip_ansi(chunk)
+            while (
+                i <= len(stripped_chunk) and self._len(stripped_chunk[:i]) <= space_left
+            ):
                 i = i + 1
             # Consider escape codes when breaking words up
             total_escape_len = 0
