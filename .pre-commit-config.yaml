@@ -1,19 +1,14 @@
 repos:
--   repo: https://github.com/python/black
-    rev: 25.1.0
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.4
     hooks:
-    -   id: black
-        args: [--safe]
-        language_version: python3
+    -   id: ruff
+        args: [--fix]
+    -   id: ruff-format
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
     -   id: trailing-whitespace
     -   id: check-yaml
     -   id: debug-statements
-        language_version: python3
--   repo: https://github.com/pycqa/flake8
-    rev: 7.3.0
-    hooks:
-    -   id: flake8
         language_version: python3

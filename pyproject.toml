@@ -41,3 +41,13 @@ dev = [
     "tox>=4.47.3",
     "twine>=6.2.0",
 ]
+
+[tool.ruff]
+line-length = 99
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "C90"]
+ignore = ["E203", "E402", "E721", "C901"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 22
