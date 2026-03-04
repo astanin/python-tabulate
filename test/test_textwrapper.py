@@ -282,7 +282,7 @@ def test_wrap_optional_bool_strs():
         "| First   | True   |",
         "| Entry   |        |",
         "+---------+--------+",
-        "| Second  | None   |",
+        "| Second  |        |",
         "| Entry   |        |",
         "+---------+--------+",
     ]
