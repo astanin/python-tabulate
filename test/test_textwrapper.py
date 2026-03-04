@@ -263,9 +263,9 @@ def test_wrap_none_value_with_missingval():
         "+---------+---------+",
     ]
     expected = "\n".join(expected)
-    assert_equal(expected, result)      
+    assert_equal(expected, result)
 
-    
+
 def test_wrap_optional_bool_strs():
     """TextWrapper: Show that str bools and None can be wrapped without crashing"""
     data = [

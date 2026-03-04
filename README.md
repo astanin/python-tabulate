@@ -503,10 +503,10 @@ format:
 >>> print(tabulate(table, headers, tablefmt="asciidoc"))
 [cols="8<,7>",options="header"]
 |====
-| item   |   qty 
-| spam   |    42 
-| eggs   |   451 
-| bacon  |     0 
+| item   |   qty
+| spam   |    42
+| eggs   |   451
+| bacon  |     0
 |====
 
 ```
@@ -1065,11 +1065,11 @@ the lines being wrapped would probably be significantly longer than this.
 
 Text is preferably wrapped on whitespaces and right after the hyphens in hyphenated words.
 
-break_long_words (default: True)  If true, then words longer than width will be broken in order to ensure that no lines are longer than width. 
+break_long_words (default: True)  If true, then words longer than width will be broken in order to ensure that no lines are longer than width.
 If it is false, long words will not be broken, and some lines may be longer than width.
 (Long words will be put on a line by themselves, in order to minimize the amount by which width is exceeded.)
 
-break_on_hyphens (default: True) If true, wrapping will occur preferably on whitespaces and right after hyphens in compound words, as it is customary in English. 
+break_on_hyphens (default: True) If true, wrapping will occur preferably on whitespaces and right after hyphens in compound words, as it is customary in English.
 If false, only whitespaces will be considered as potentially good places for line breaks.
 
 ```pycon
