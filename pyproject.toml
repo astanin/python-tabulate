@@ -32,7 +32,12 @@ widechars = ["wcwidth"]
 [project.scripts]
 tabulate = "tabulate:_main"
 
-# [tool.setuptools]
-# packages = ["tabulate"]
-
 [tool.setuptools_scm]
+
+[dependency-groups]
+dev = [
+    "build>=1.4.0",
+    "ruff>=0.15.4",
+    "tox>=4.47.3",
+    "twine>=6.2.0",
+]
