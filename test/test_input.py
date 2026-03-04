@@ -313,6 +313,7 @@ def test_sqlite3():
             cursor.execute("INSERT INTO people VALUES (?, ?, ?)", values)
         cursor.execute("SELECT name, age, height FROM people ORDER BY name")
         result = tabulate(cursor, headers=["whom", "how old", "how tall"])
+        conn.close()
         expected = """\
 whom      how old    how tall
 ------  ---------  ----------
@@ -337,6 +338,7 @@ def test_sqlite3_keys():
             'SELECT name "whom", age "how old", height "how tall" FROM people ORDER BY name'
         )
         result = tabulate(cursor, headers="keys")
+        conn.close()
         expected = """\
 whom      how old    how tall
 ------  ---------  ----------
