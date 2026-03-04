@@ -1,6 +1,6 @@
 # update contributors and CHANGELOG in README
 python -m pre_commit run -a # and then commit changes
-tox -e py39-extra,py310-extra,py311-extra,py312-extra,py313-extra,py314-extra
+tox -e py310-extra,py311-extra,py312-extra,py313-extra,py314-extra
 # tag version release
 python -m build -s # this will update tabulate/version.py
 python -m pip install . # install tabulate in the current venv
