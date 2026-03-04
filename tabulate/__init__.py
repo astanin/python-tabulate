@@ -1,5 +1,15 @@
 """Pretty-print tabular data."""
 
+from importlib.metadata import (
+    version as _version,
+    PackageNotFoundError as _PackageNotFoundError,
+)
+
+try:
+    __version__ = _version("tabulate")
+except _PackageNotFoundError:
+    __version__ = "unknown"
+
 import warnings
 from collections import namedtuple
 from collections.abc import Iterable, Sized
