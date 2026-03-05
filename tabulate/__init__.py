@@ -7,10 +7,10 @@ from importlib.metadata import (
 from typing import Callable, Union
 
 try:
-    __version__ = _version("tabulate")
+    __version__ = _version("tabulate")  # installed package
 except _PackageNotFoundError:
     try:
-        from .version import version as __version__  # noqa: F401
+        from ._version import version as __version__  # editable / source checkout
     except ImportError:
         __version__ = "unknown"
 
