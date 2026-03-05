@@ -1,8 +1,10 @@
+import sys
 from timeit import timeit
-import tabulate
+
 import prettytable
 import texttable
-import sys
+
+import tabulate
 
 setup_code = r"""
 from csv import writer

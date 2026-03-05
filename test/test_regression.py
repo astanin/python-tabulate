@@ -1,6 +1,7 @@
 """Regression tests."""
 
-from tabulate import tabulate, TableFormat, Line, DataRow
+from tabulate import DataRow, Line, TableFormat, tabulate
+
 from common import assert_equal, skip
 
 

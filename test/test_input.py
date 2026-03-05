@@ -1,6 +1,7 @@
 """Test support of the various forms of tabular data."""
 
-from tabulate import tabulate, SEPARATING_LINE
+from tabulate import SEPARATING_LINE, tabulate
+
 from common import assert_equal, assert_in, raises, skip
 
 try:

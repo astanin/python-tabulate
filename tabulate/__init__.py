@@ -1,8 +1,8 @@
 """Pretty-print tabular data."""
 
 from importlib.metadata import (
-    version as _version,
     PackageNotFoundError as _PackageNotFoundError,
+    version as _version,
 )
 
 try:
@@ -10,19 +10,19 @@ try:
 except _PackageNotFoundError:
     __version__ = "unknown"
 
-import warnings
 from collections import namedtuple
 from collections.abc import Iterable, Sized
-from decimal import Decimal
-from html import escape as htmlescape
-from itertools import chain, zip_longest as izip_longest
-from functools import reduce, partial
-import io
-import re
-import math
-import textwrap
 import dataclasses
+from decimal import Decimal
+from functools import partial, reduce
+from html import escape as htmlescape
+import io
+from itertools import chain, zip_longest as izip_longest
+import math
+import re
 import sys
+import textwrap
+import warnings
 
 try:
     import wcwidth  # optional wide-character (CJK) support

@@ -1,11 +1,11 @@
 """API properties."""
 
-from tabulate import tabulate, tabulate_formats, simple_separated_format
+from tabulate import simple_separated_format, tabulate, tabulate_formats
+
 from common import skip
 
-
 try:
-    from inspect import signature, _empty
+    from inspect import _empty, signature
 except ImportError:
     signature = None
     _empty = None

@@ -1,11 +1,11 @@
 """Discretely test functionality of our custom TextWrapper"""
 
 import datetime
-
-from tabulate import _CustomTextWrap as CTW, tabulate, _strip_ansi
 from textwrap import TextWrapper as OTW
 
-from common import skip, assert_equal
+from tabulate import _CustomTextWrap as CTW, _strip_ansi, tabulate
+
+from common import assert_equal, skip
 
 
 def test_wrap_multiword_non_wide():
