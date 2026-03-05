@@ -171,7 +171,7 @@ def test_numeric_column_headers():
     expected = "  42\n----\n   1\n   2"
     assert_equal(expected, result)
 
-    lod = [{p: i for p in range(5)} for i in range(5)]
+    lod = [dict.fromkeys(range(5), i) for i in range(5)]
     result = tabulate(lod, "keys")
     expected = "\n".join(
         [
