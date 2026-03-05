@@ -2381,7 +2381,7 @@ def tabulate(
         assert isinstance(colalign, Iterable)
         if isinstance(colalign, str):
             warnings.warn(
-                f"As a string, `colalign` is interpreted as {[c for c in colalign]}. "
+                f"As a string, `colalign` is interpreted as {list(colalign)}. "
                 f'Did you mean `colglobalalign = "{colalign}"` or `colalign = ("{colalign}",)`?',
                 stacklevel=2,
             )
@@ -2423,7 +2423,7 @@ def tabulate(
             assert isinstance(headersalign, Iterable)
             if isinstance(headersalign, str):
                 warnings.warn(
-                    f"As a string, `headersalign` is interpreted as {[c for c in headersalign]}. "
+                    f"As a string, `headersalign` is interpreted as {list(headersalign)}. "
                     f'Did you mean `headersglobalalign = "{headersalign}"` '
                     f'or `headersalign = ("{headersalign}",)`?',
                     stacklevel=2,
@@ -2702,7 +2702,7 @@ class _CustomTextWrap(textwrap.TextWrapper):
         as add any colors from previous lines order to preserve the same formatting
         as a single unwrapped string.
         """
-        code_matches = [x for x in _ansi_codes.finditer(new_line)]
+        code_matches = list(_ansi_codes.finditer(new_line))
         color_codes = [code.string[code.span()[0] : code.span()[1]] for code in code_matches]
 
         # Add color codes from earlier in the unwrapped line, and then track any new ones we add.
