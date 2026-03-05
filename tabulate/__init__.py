@@ -4,6 +4,7 @@ from importlib.metadata import (
     PackageNotFoundError as _PackageNotFoundError,
     version as _version,
 )
+from typing import Callable, Union
 
 try:
     __version__ = _version("tabulate")
@@ -17,6 +18,7 @@ from collections import namedtuple
 from collections.abc import Iterable, Sized
 import dataclasses
 from decimal import Decimal
+from dataclasses import dataclass
 from functools import partial, reduce
 from html import escape as htmlescape
 import io
@@ -69,7 +71,12 @@ SEPARATING_LINE = "\001"
 Line = namedtuple("Line", ["begin", "hline", "sep", "end"])
 
 
-DataRow = namedtuple("DataRow", ["begin", "sep", "end"])
+@dataclass
+class DataRow:
+    begin: str
+    sep: str
+    end: str
+    escape_map: dict = None
 
 
 # A table structure is supposed to be:
@@ -323,13 +330,7 @@ LATEX_ESCAPE_RULES = {
 }
 
 
-def _latex_row(cell_values, colwidths, colaligns, escrules=LATEX_ESCAPE_RULES):
-    def escape_char(c):
-        return escrules.get(c, c)
-
-    escaped_values = ["".join(map(escape_char, cell)) for cell in cell_values]
-    rowfmt = DataRow("", "&", "\\\\")
-    return _build_simple_row(escaped_values, rowfmt)
+_latex_row = DataRow("", "&", "\\\\", LATEX_ESCAPE_RULES)
 
 
 def _rst_escape_first_column(rows, headers):
@@ -652,8 +653,8 @@ _table_formats = {
         linebelowheader=Line("\\hline", "", "", ""),
         linebetweenrows=None,
         linebelow=Line("\\hline\n\\end{tabular}", "", "", ""),
-        headerrow=partial(_latex_row, escrules={}),
-        datarow=partial(_latex_row, escrules={}),
+        headerrow=DataRow("", "&", "\\\\", {}),
+        datarow=DataRow("", "&", "\\\\", {}),
         padding=1,
         with_header_hide=None,
     ),
@@ -2506,13 +2507,24 @@ def _pad_row(cells, padding):
         return cells
 
 
-def _build_simple_row(padded_cells, rowfmt):
+def _build_simple_row(padded_cells: list[list], rowfmt: DataRow) -> str:
     "Format row according to DataRow format without padding."
-    begin, sep, end = rowfmt
-    return (begin + sep.join(padded_cells) + end).rstrip()
+    begin = rowfmt.begin
+    sep = rowfmt.sep
+    end = rowfmt.end
+    escape_map: dict = rowfmt.escape_map
+
+    if escape_map:
+        def escape_char(c):
+            return escape_map.get(c, c)
+        escaped_cells = ["".join(map(escape_char, cell)) for cell in padded_cells]
+    else:
+        escaped_cells = padded_cells
+
+    return (begin + sep.join(escaped_cells) + end).rstrip()
 
 
-def _build_row(padded_cells, colwidths, colaligns, rowfmt):
+def _build_row(padded_cells: list[list], colwidths: list[int], colaligns: list[str], rowfmt: Union[DataRow, Callable]) -> str:
     "Return a string which represents a row of data cells."
     if not rowfmt:
         return None
@@ -2571,7 +2583,8 @@ def _build_line(colwidths, colaligns, linefmt):
     else:
         begin, fill, sep, end = linefmt
         cells = [fill * w for w in colwidths]
-        return _build_simple_row(cells, (begin, sep, end))
+        rowfmt = DataRow(begin, sep, end)
+        return _build_simple_row(cells, rowfmt)
 
 
 def _append_line(lines, colwidths, colaligns, linefmt):
