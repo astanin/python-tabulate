@@ -1,6 +1,0 @@
-include LICENSE
-include README
-include README.md
-include CHANGELOG
-include test/common.py
-include benchmark.py

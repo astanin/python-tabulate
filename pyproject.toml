@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=77.0.3", "setuptools_scm[toml]>=3.4.3"]
-build-backend = "setuptools.build_meta"
+requires = ["flit>=3.12", "flit_scm"]
+build-backend = "flit_scm:buildapi"
 
 [project]
 name = "tabulate"
@@ -32,7 +32,12 @@ widechars = ["wcwidth>=0.6.0"]
 [project.scripts]
 tabulate = "tabulate:_main"
 
+[tool.flit.sdist]
+include = ["CHANGELOG", "test/", "tox.ini"]
+exclude = ["tabulate/_version.py"]
+
 [tool.setuptools_scm]
+write_to = "tabulate/_version.py"
 
 [dependency-groups]
 dev = [
@@ -45,6 +50,7 @@ dev = [
 
 [tool.ruff]
 line-length = 99
+exclude = ["tabulate/_version.py"]
 
 [tool.ruff.lint]
 extend-select = ["W", "ISC", "I", "C90"]
