@@ -14,7 +14,7 @@ except ImportError:
 def test_tabulate_formats():
     "API: tabulate_formats is a list of strings"
     supported = tabulate_formats
-    print("tabulate_formats = %r" % supported)
+    print(f"tabulate_formats = {supported!r}")
     assert type(supported) is list
     for fmt in supported:
         assert type(fmt) is str
