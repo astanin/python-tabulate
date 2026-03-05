@@ -11,8 +11,7 @@ def assert_equal(expected, result):
 
 
 def assert_in(result, expected_set):
-    nums = range(1, len(expected_set) + 1)
-    for i, expected in zip(nums, expected_set):
+    for i, expected in enumerate(expected_set, start=1):
         print("Expected %d:\n%s\n" % (i, expected))
     print("Got:\n%s\n" % result)
     assert result in expected_set
