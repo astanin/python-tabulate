@@ -19,3 +19,4 @@ website-build/
 ## Unit test / coverage reports
 .coverage
 .tox
+/tabulate/_version.py
