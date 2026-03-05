@@ -604,12 +604,12 @@ and a .str property so that the raw HTML remains accessible.
 >>> print(tabulate(table, headers, tablefmt="html"))
 <table>
 <thead>
-<tr><th>item  </th><th style="text-align: right;">  qty</th></tr>
+<tr><th style="text-align: left;">item  </th><th style="text-align: right;">  qty</th></tr>
 </thead>
 <tbody>
-<tr><td>spam  </td><td style="text-align: right;">   42</td></tr>
-<tr><td>eggs  </td><td style="text-align: right;">  451</td></tr>
-<tr><td>bacon </td><td style="text-align: right;">    0</td></tr>
+<tr><td style="text-align: left;">spam  </td><td style="text-align: right;">   42</td></tr>
+<tr><td style="text-align: left;">eggs  </td><td style="text-align: right;">  451</td></tr>
+<tr><td style="text-align: left;">bacon </td><td style="text-align: right;">    0</td></tr>
 </tbody>
 </table>
 
