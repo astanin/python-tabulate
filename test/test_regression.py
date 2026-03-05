@@ -580,3 +580,14 @@ def test_mixed_bool_strings_and_numeric_strings():
     result = tabulate([["False"], ["1."]])
     expected = "\n".join(["-----", "False", "    1", "-----"])
     assert_equal(expected, result)
+
+
+def test_asciidoc_without_trailing_whitespace():
+    "Regression: asciidoc format output must not generate trailing whitespace (issue #408)"
+    result = tabulate([["foo"]], headers=("longheader",), tablefmt="asciidoc")
+    expected = '[cols="<14",options="header"]\n|====\n| longheader\n| foo\n|===='
+    assert_equal(expected, result)
+
+    result = tabulate([["longtext"]], headers=("bar",), tablefmt="asciidoc")
+    expected = '[cols="<10",options="header"]\n|====\n| bar\n| longtext\n|===='
+    assert_equal(expected, result)

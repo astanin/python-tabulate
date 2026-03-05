@@ -278,12 +278,14 @@ def _asciidoc_row(is_header, *args):
 
         # generate the list of entries in the table header field
 
-        return "[{}]\n|====".format(",".join(header_list))
+        line = "[{}]\n|====".format(",".join(header_list))
+        return line.rstrip()
 
     if len(args) == 2:
         # two arguments are passed if called in the context of aboveline
         # print the table header with column widths and optional header tag
-        return make_header_line(False, *args)
+        line = make_header_line(False, *args)
+        return line.rstrip()
 
     elif len(args) == 3:
         # three arguments are passed if called in the context of dataline or headerline
@@ -293,9 +295,10 @@ def _asciidoc_row(is_header, *args):
         data_line = "|" + "|".join(cell_values)
 
         if is_header:
-            return make_header_line(True, colwidths, colaligns) + "\n" + data_line
+            line = make_header_line(True, colwidths, colaligns) + "\n" + data_line
+            return line.rstrip()
         else:
-            return data_line
+            return data_line.rstrip()
 
     else:
         raise ValueError(

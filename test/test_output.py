@@ -2088,9 +2088,9 @@ def test_asciidoc():
         [
             '[cols="<11,>11",options="header"]',
             "|====",
-            "| strings   |   numbers ",
-            "| spam      |   41.9999 ",
-            "| eggs      |  451      ",
+            "| strings   |   numbers",
+            "| spam      |   41.9999",
+            "| eggs      |  451",
             "|====",
         ]
     )
@@ -2104,8 +2104,8 @@ def test_asciidoc_headerless():
         [
             '[cols="<6,>10"]',
             "|====",
-            "| spam |  41.9999 ",
-            "| eggs | 451      ",
+            "| spam |  41.9999",
+            "| eggs | 451",
             "|====",
         ]
     )
