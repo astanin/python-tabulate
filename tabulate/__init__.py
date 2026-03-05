@@ -1111,13 +1111,21 @@ def _visible_width(s):
     """
     # optional wide-character support
     if wcwidth is not None and WIDE_CHARS_MODE:
-        len_fn = wcwidth.wcswidth
-    else:
-        len_fn = len
+        # when already a string, it could contain terminal sequences,
+        # wcwidth >= 0.3.0 handles ANSI codes internally,
+        if hasattr(wcwidth, "width"):
+            return wcwidth.width(str(s))
+        # while previous versions need them stripped first.
+        if isinstance(s, (str, bytes)):
+            return wcwidth.wcswidth(_strip_ansi(str(s)))
+
+        # Otherwise, coerce to string, guaranteed to be without any control codes,
+        # we can use wcswidth() directly.
+        return wcwidth.wcswidth(str(s))
     if isinstance(s, (str, bytes)):
-        return len_fn(_strip_ansi(s))
+        return len(_strip_ansi(s))
     else:
-        return len_fn(str(s))
+        return len(str(s))
 
 
 def _is_multiline(s):

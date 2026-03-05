@@ -1,5 +1,7 @@
 """Tests for Unicode grapheme cluster handling in tabulate."""
 
+import unittest.mock as mock
+
 import pytest
 
 from tabulate import tabulate
@@ -9,14 +11,20 @@ try:
 
     HAS_WCWIDTH = True
     HAS_WCWIDTH_030 = hasattr(wcwidth, "wrap")
+    HAS_WCWIDTH_WIDTH = hasattr(wcwidth, "width")
 except ImportError:
     wcwidth = None
     HAS_WCWIDTH = False
     HAS_WCWIDTH_030 = False
+    HAS_WCWIDTH_WIDTH = False
 
 requires_wcwidth = pytest.mark.skipif(not HAS_WCWIDTH, reason="requires wcwidth")
 
 requires_wcwidth_030 = pytest.mark.skipif(not HAS_WCWIDTH_030, reason="requires wcwidth >= 0.3.0")
+
+requires_wcwidth_width = pytest.mark.skipif(
+    not HAS_WCWIDTH_WIDTH, reason="requires wcwidth with width() API"
+)
 
 
 class TestGraphemeClusterWidth:
@@ -237,3 +245,38 @@ class TestAnsiWithGraphemeClusters:
         lines = [line.strip() for line in result.split("\n") if line.strip()]
         flag_parts_same_line = any("\U0001f1fa" in line and "\U0001f1f8" in line for line in lines)
         assert flag_parts_same_line
+
+
+class TestVisibleWidthFallback:
+    """Tests for _visible_width wcwidth version compatibility.
+
+    Covers both the modern wcwidth.width() path (>= 0.3.0) and the legacy
+    wcswidth() path used when width() is not available.
+    """
+
+    @requires_wcwidth_width
+    def test_visible_width_new_api_strips_ansi(self):
+        """_visible_width returns correct width via wcwidth.width() with ANSI codes."""
+        from tabulate import _visible_width
+
+        # Two Korean chars (each 2 cols wide) wrapped in ANSI color codes.
+        # wcwidth.width() handles ANSI internally, so no explicit stripping needed.
+        colored_wide = "\x1b[31m한글\x1b[0m"
+        assert _visible_width(colored_wide) == 4
+
+    @requires_wcwidth
+    def test_visible_width_legacy_api_strips_ansi(self):
+        """_visible_width strips ANSI before wcswidth() when width() is unavailable."""
+        import tabulate as tabulate_module
+        from tabulate import _visible_width
+
+        # Build a mock wcwidth that exposes only wcswidth(), not width().
+        # spec= limits auto-created attributes, so hasattr(mock, "width") is False.
+        legacy_wcwidth = mock.MagicMock(spec=["wcswidth"])
+        legacy_wcwidth.wcswidth.side_effect = wcwidth.wcswidth
+
+        colored_wide = "\x1b[31m한글\x1b[0m"
+        with mock.patch.object(tabulate_module, "wcwidth", legacy_wcwidth):
+            result = _visible_width(colored_wide)
+
+        assert result == 4
