@@ -8,6 +8,7 @@ jobs:
   build:
     strategy:
       matrix:
+        # Python 3.9 is not supported anymore, but it still works...
         python-version: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
         os: ["ubuntu-latest", "windows-latest", "macos-latest"]
     runs-on: ${{ matrix.os }}
@@ -25,4 +26,8 @@ jobs:
         python -m pip install pytest numpy pandas "wcwidth>=0.6.0"
     - name: Run tests
       run: |
-        pytest -v --doctest-modules --ignore benchmark
+        pytest -v --doctest-modules --ignore benchmark --cov=tabulate --cov-branch --cov-report=xml
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
