@@ -53,7 +53,7 @@ pip install tabulate
 Build status
 ------------
 
-[![python-tabulate](https://github.com/astanin/python-tabulate/actions/workflows/tabulate.yml/badge.svg)](https://github.com/astanin/python-tabulate/actions/workflows/tabulate.yml)
+[![python-tabulate](https://github.com/astanin/python-tabulate/actions/workflows/tabulate.yml/badge.svg)](https://github.com/astanin/python-tabulate/actions/workflows/tabulate.yml) [![codecov](https://codecov.io/github/astanin/python-tabulate/graph/badge.svg?token=Aa6wexP5wq)](https://codecov.io/github/astanin/python-tabulate)
 
 Library usage
 -------------
