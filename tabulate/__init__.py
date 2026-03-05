@@ -233,7 +233,7 @@ def _html_row_with_attrs(celltag, unsafe, cell_values, colwidths, colaligns):
 
 def _moin_row_with_attrs(celltag, cell_values, colwidths, colaligns, header=""):
     alignment = {
-        "left": ' style="text-align: left;"',
+        "left": '<style="text-align: left;">',
         "right": '<style="text-align: right;">',
         "center": '<style="text-align: center;">',
         "decimal": '<style="text-align: right;">',
@@ -2149,11 +2149,11 @@ def tabulate(
     ...                headers="firstrow", tablefmt="html"))
     <table>
     <thead>
-    <tr><th>strings  </th><th style="text-align: right;">  numbers</th></tr>
+    <tr><th style="text-align: left;">strings  </th><th style="text-align: right;">  numbers</th></tr>
     </thead>
     <tbody>
-    <tr><td>spam     </td><td style="text-align: right;">  41.9999</td></tr>
-    <tr><td>eggs     </td><td style="text-align: right;"> 451     </td></tr>
+    <tr><td style="text-align: left;">spam     </td><td style="text-align: right;">  41.9999</td></tr>
+    <tr><td style="text-align: left;">eggs     </td><td style="text-align: right;"> 451     </td></tr>
     </tbody>
     </table>
 

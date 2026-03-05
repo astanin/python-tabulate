@@ -2522,9 +2522,9 @@ def test_moinmoin():
     "Output: moinmoin with headers"
     expected = "\n".join(
         [
-            "|| ''' strings   ''' ||<style=\"text-align: right;\"> '''   numbers ''' ||",
-            '||  spam       ||<style="text-align: right;">    41.9999  ||',
-            '||  eggs       ||<style="text-align: right;">   451       ||',
+            "||<style=\"text-align: left;\"> ''' strings   ''' ||<style=\"text-align: right;\"> '''   numbers ''' ||",
+            '||<style="text-align: left;">  spam       ||<style="text-align: right;">    41.9999  ||',
+            '||<style="text-align: left;">  eggs       ||<style="text-align: right;">   451       ||',
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="moinmoin")
@@ -2535,8 +2535,8 @@ def test_moinmoin_headerless():
     "Output: moinmoin without headers"
     expected = "\n".join(
         [
-            '||  spam  ||<style="text-align: right;">   41.9999  ||',
-            '||  eggs  ||<style="text-align: right;">  451       ||',
+            '||<style="text-align: left;">  spam  ||<style="text-align: right;">   41.9999  ||',
+            '||<style="text-align: left;">  eggs  ||<style="text-align: right;">  451       ||',
         ]
     )
     result = tabulate(_test_table, tablefmt="moinmoin")
@@ -2558,11 +2558,11 @@ def test_html():
         [
             "<table>",
             "<thead>",
-            '<tr><th>&lt;strings&gt;  </th><th style="text-align: right;">  &lt;&amp;numbers&amp;&gt;</th></tr>',
+            '<tr><th style="text-align: left;">&lt;strings&gt;  </th><th style="text-align: right;">  &lt;&amp;numbers&amp;&gt;</th></tr>',
             "</thead>",
             "<tbody>",
-            '<tr><td>spam &gt;     </td><td style="text-align: right;">      41.9999</td></tr>',
-            '<tr><td>eggs &amp;     </td><td style="text-align: right;">     451     </td></tr>',
+            '<tr><td style="text-align: left;">spam &gt;     </td><td style="text-align: right;">      41.9999</td></tr>',
+            '<tr><td style="text-align: left;">eggs &amp;     </td><td style="text-align: right;">     451     </td></tr>',
             "</tbody>",
             "</table>",
         ]
@@ -2579,11 +2579,11 @@ def test_unsafehtml():
         [
             "<table>",
             "<thead>",
-            "<tr><th>strings  </th><th>numbers                         </th></tr>",
+            "<tr><th style=\"text-align: left;\">strings  </th><th style=\"text-align: left;\">numbers                         </th></tr>",
             "</thead>",
             "<tbody>",
-            '<tr><td>spam     </td><td><font color="red">41.9999</font></td></tr>',
-            '<tr><td>eggs     </td><td><font color="red">451.0</font>  </td></tr>',
+            '<tr><td style="text-align: left;">spam     </td><td style="text-align: left;"><font color="red">41.9999</font></td></tr>',
+            '<tr><td style="text-align: left;">eggs     </td><td style="text-align: left;"><font color="red">451.0</font>  </td></tr>',
             "</tbody>",
             "</table>",
         ]
@@ -2602,8 +2602,8 @@ def test_html_headerless():
         [
             "<table>",
             "<tbody>",
-            '<tr><td>spam &gt;</td><td style="text-align: right;"> 41.9999</td></tr>',
-            '<tr><td>eggs &amp;</td><td style="text-align: right;">451     </td></tr>',
+            '<tr><td style="text-align: left;">spam &gt;</td><td style="text-align: right;"> 41.9999</td></tr>',
+            '<tr><td style="text-align: left;">eggs &amp;</td><td style="text-align: right;">451     </td></tr>',
             "</tbody>",
             "</table>",
         ]
@@ -2620,8 +2620,8 @@ def test_unsafehtml_headerless():
         [
             "<table>",
             "<tbody>",
-            '<tr><td>spam</td><td><font color="red">41.9999</font></td></tr>',
-            '<tr><td>eggs</td><td><font color="red">451.0</font>  </td></tr>',
+            '<tr><td style="text-align: left;">spam</td><td style="text-align: left;"><font color="red">41.9999</font></td></tr>',
+            '<tr><td style="text-align: left;">eggs</td><td style="text-align: left;"><font color="red">451.0</font>  </td></tr>',
             "</tbody>",
             "</table>",
         ]
