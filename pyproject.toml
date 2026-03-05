@@ -1,39 +1,54 @@
 [build-system]
-requires = ["setuptools>=61.2.0", "setuptools_scm[toml]>=3.4.3"]
+requires = ["setuptools>=77.0.3", "setuptools_scm[toml]>=3.4.3"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "tabulate"
 authors = [{name = "Sergey Astanin", email = "s.astanin@gmail.com"}]
-license = {text = "MIT"}
+license = "MIT"
+license-files = ["LICENSE"]
 description = "Pretty-print tabular data"
 readme = "README.md"
 classifiers = [
     "Development Status :: 4 - Beta",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries",
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 dynamic = ["version"]
 
 [project.urls]
 Homepage = "https://github.com/astanin/python-tabulate"
 
 [project.optional-dependencies]
-widechars = ["wcwidth"]
+widechars = ["wcwidth>=0.6.0"]
 
 [project.scripts]
 tabulate = "tabulate:_main"
 
-[tool.setuptools]
-packages = ["tabulate"]
-
 [tool.setuptools_scm]
-write_to = "tabulate/version.py"
+
+[dependency-groups]
+dev = [
+    "build>=1.4.0",
+    "ruff>=0.15.4",
+    "tox>=4.47.3",
+    "tox-uv>=1.0",
+    "twine>=6.2.0",
+]
+
+[tool.ruff]
+line-length = 99
+
+[tool.ruff.lint]
+extend-select = ["W", "C90"]
+ignore = ["E721", "C901"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 22

@@ -1,7 +1,17 @@
 # update contributors and CHANGELOG in README
-# tag version release
-python3 benchmark.py  # then update README
-tox -e py37-extra,py38-extra,py39-extra,py310-extra
-python3 -m build -nswx .
+python -m pre_commit run -a # and then commit changes
+tox -e py310-extra,py311-extra,py312-extra,py313-extra,py314-extra
+# tag version release (vX.Y.Z)
+python -m pip install build twine
+python -m build -s # this will update tabulate/version.py
+python -m pip install . # install tabulate in the current venv
+python -m pip install -r benchmark/requirements.txt
+python benchmark/benchmark.py  # then update README
+# move tag to the last commit
+python -m build -s # update tabulate/version.py
+python -m build -nswx .
+git push # wait for all CI builds to succeed
+git push --tags # if CI builds succeed
 twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 twine upload dist/*
+# use __token__ as username andPyPI API token as password (generate at pypi.org → Account settings → API tokens)

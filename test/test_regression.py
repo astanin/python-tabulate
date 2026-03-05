@@ -151,9 +151,7 @@ def test_simple_separated_format_with_headers():
     from tabulate import simple_separated_format
 
     expected = "  a|  b\n  1|  2"
-    formatted = tabulate(
-        [[1, 2]], headers=["a", "b"], tablefmt=simple_separated_format("|")
-    )
+    formatted = tabulate([[1, 2]], headers=["a", "b"], tablefmt=simple_separated_format("|"))
     assert_equal(expected, formatted)
 
 
@@ -239,9 +237,7 @@ def test_isconvertible_on_set_values():
 def test_ansi_color_for_decimal_numbers():
     "Regression: ANSI colors for decimal numbers (issue #36)"
     table = [["Magenta", "\033[95m" + "1.1" + "\033[0m"]]
-    expected = "\n".join(
-        ["-------  ---", "Magenta  \x1b[95m1.1\x1b[0m", "-------  ---"]
-    )
+    expected = "\n".join(["-------  ---", "Magenta  \x1b[95m1.1\x1b[0m", "-------  ---"])
     result = tabulate(table)
     assert_equal(expected, result)
 
@@ -258,15 +254,18 @@ def test_alignment_of_decimal_numbers_with_ansi_color():
 
 def test_alignment_of_decimal_numbers_with_commas():
     "Regression: alignment for decimal numbers with comma separators"
-    skip("test is temporarily disable until the feature is reimplemented")
-    # table = [["c1r1", "14502.05"], ["c1r2", 105]]
-    # result = tabulate(table, tablefmt="grid", floatfmt=',.2f')
-    # expected = "\n".join(
-    #    ['+------+-----------+', '| c1r1 | 14,502.05 |',
-    #    '+------+-----------+', '| c1r2 |    105.00 |',
-    #    '+------+-----------+']
-    # )
-    # assert_equal(expected, result)
+    table = [["c1r1", "14502.05"], ["c1r2", 105]]
+    result = tabulate(table, tablefmt="grid", floatfmt=",.2f")
+    expected = "\n".join(
+        [
+            "+------+-----------+",
+            "| c1r1 | 14,502.05 |",
+            "+------+-----------+",
+            "| c1r2 |    105.00 |",
+            "+------+-----------+",
+        ]
+    )
+    assert_equal(expected, result)
 
 
 def test_long_integers():
@@ -300,7 +299,7 @@ def test_colorclass_colors():
 def test_mix_normal_and_wide_characters():
     "Regression: wide characters in a grid format (issue #51)"
     try:
-        import wcwidth  # noqa
+        import wcwidth  # noqa: F401
 
         ru_text = "\u043f\u0440\u0438\u0432\u0435\u0442"
         cn_text = "\u4f60\u597d"
@@ -322,7 +321,7 @@ def test_mix_normal_and_wide_characters():
 def test_multiline_with_wide_characters():
     "Regression: multiline tables with varying number of wide characters (github issue #28)"
     try:
-        import wcwidth  # noqa
+        import wcwidth  # noqa: F401
 
         table = [["가나\n가ab", "가나", "가나"]]
         result = tabulate(table, tablefmt="fancy_grid")
@@ -488,6 +487,27 @@ def test_preserve_line_breaks_with_maxcolwidths():
     assert_equal(expected, result)
 
 
+def test_maxcolwidths_accepts_list_or_tuple():
+    "Regression: maxcolwidths can accept a list or a tuple (github issue #214)"
+    table = [["lorem ipsum dolor sit amet"] * 3]
+    expected = "\n".join(
+        [
+            "+-------------+----------+----------------------------+",
+            "| lorem ipsum | lorem    | lorem ipsum dolor sit amet |",
+            "| dolor sit   | ipsum    |                            |",
+            "| amet        | dolor    |                            |",
+            "|             | sit amet |                            |",
+            "+-------------+----------+----------------------------+",
+        ]
+    )
+    # test with maxcolwidths as a list
+    result = tabulate(table, tablefmt="grid", maxcolwidths=[12, 8])
+    assert_equal(expected, result)
+    # test with maxcolwidths as a tuple
+    result = tabulate(table, tablefmt="grid", maxcolwidths=(12, 8))
+    assert_equal(expected, result)
+
+
 def test_exception_on_empty_data_with_maxcolwidths():
     "Regression: exception on empty data when using maxcolwidths (github issue #180)"
     result = tabulate([], maxcolwidths=5)
@@ -512,3 +532,34 @@ def test_numpy_int64_as_integer():
         assert_equal(expected, result)
     except ImportError:
         raise skip("")
+
+
+def test_empty_table_with_colalign():
+    "Regression: empty table with colalign kwarg"
+    table = tabulate([], ["a", "b", "c"], colalign=("center", "left", "left", "center"))
+    expected = "\n".join(
+        [
+            "a    b    c",
+            "---  ---  ---",
+        ]
+    )
+    assert_equal(expected, table)
+
+
+def test_empty_table_with_maxheadercolwidths():
+    "Regression: empty table with maxheadercolwidths kwarg (issue #365)"
+    result = tabulate([], headers=["one", "two", "three"], maxheadercolwidths=5)
+    expected = "\n".join(
+        [
+            "one    two    three",
+            "-----  -----  -------",
+        ]
+    )
+    assert_equal(expected, result)
+
+
+def test_mixed_bool_strings_and_numeric_strings():
+    "Regression: column with bool-like strings and numeric strings should not crash (issue #209)"
+    result = tabulate([["False"], ["1."]])
+    expected = "\n".join(["-----", "False", "    1", "-----"])
+    assert_equal(expected, result)
