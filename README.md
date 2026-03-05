@@ -502,10 +502,10 @@ format:
 >>> print(tabulate(table, headers, tablefmt="asciidoc"))
 [cols="<8,>7",options="header"]
 |====
-| item   |   qty
-| spam   |    42
-| eggs   |   451
-| bacon  |     0
+| item   |   qty 
+| spam   |    42 
+| eggs   |   451 
+| bacon  |     0 
 |====
 
 ```
@@ -576,10 +576,10 @@ MediaWiki-based sites:
 
 ```pycon
 >>> print(tabulate(table, headers, tablefmt="moinmoin"))
-|| ''' item   ''' ||<style="text-align: right;"> '''   qty ''' ||
-||  spam    ||<style="text-align: right;">     42  ||
-||  eggs    ||<style="text-align: right;">    451  ||
-||  bacon   ||<style="text-align: right;">      0  ||
+||<style="text-align: left;"> ''' item   ''' ||<style="text-align: right;"> '''   qty ''' ||
+||<style="text-align: left;">  spam    ||<style="text-align: right;">     42  ||
+||<style="text-align: left;">  eggs    ||<style="text-align: right;">    451  ||
+||<style="text-align: left;">  bacon   ||<style="text-align: right;">      0  ||
 
 ```
 
@@ -1068,12 +1068,17 @@ If false, only whitespaces will be considered as potentially good places for lin
 | John Smith | Middle- |
 |            | Manager |
 +------------+---------+
+
+```
+
+```pycon
 >>> print(tabulate([["John Smith", "Middle-Manager"]], headers=["Name", "Title"], tablefmt="grid", maxcolwidths=[None, 5], break_long_words=False, break_on_hyphens=False))
 +------------+----------------+
 | Name       | Title          |
 +============+================+
 | John Smith | Middle-Manager |
 +------------+----------------+
+
 ```
 
 ### Adding Separating lines
