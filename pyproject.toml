@@ -49,6 +49,9 @@ dev = [
     "twine>=6.2.0",
 ]
 
+[tool.pytest.ini_options]
+addopts = "-v --doctest-modules --ignore=benchmark --doctest-glob=README.md"
+
 [tool.ruff]
 line-length = 99
 exclude = ["tabulate/_version.py"]
