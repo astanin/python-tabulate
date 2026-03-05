@@ -26,7 +26,7 @@ jobs:
         python -m pip install pytest pytest-cov numpy pandas "wcwidth>=0.6.0"
     - name: Run tests
       run: |
-        pytest -v --doctest-modules --ignore benchmark --cov=tabulate --cov-branch --cov-report=xml
+        pytest -v --doctest-modules --ignore benchmark --doctest-glob="README.md" --cov=tabulate --cov-branch --cov-report=xml
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v5
       with:
