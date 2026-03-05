@@ -14,7 +14,7 @@ import math
 import re
 import sys
 import textwrap
-from typing import Callable, Union
+from typing import Callable
 import warnings
 
 try:
@@ -2529,7 +2529,7 @@ def _build_row(
     padded_cells: list[list],
     colwidths: list[int],
     colaligns: list[str],
-    rowfmt: Union[DataRow, Callable],
+    rowfmt: DataRow | Callable,
 ) -> str:
     "Return a string which represents a row of data cells."
     if not rowfmt:
