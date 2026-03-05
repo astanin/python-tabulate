@@ -13,6 +13,7 @@ except _PackageNotFoundError:
 import warnings
 from collections import namedtuple
 from collections.abc import Iterable, Sized
+from decimal import Decimal
 from html import escape as htmlescape
 from itertools import chain, zip_longest as izip_longest
 from functools import reduce, partial
@@ -1356,6 +1357,8 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
         else:
             if isinstance(val, str) and "," in val:
                 val = val.replace(",", "")  # handle thousands-separators
+            if isinstance(val, Decimal):
+                return format(val, floatfmt)
             try:
                 return format(float(val), floatfmt)
             except (ValueError, TypeError):

@@ -1,5 +1,6 @@
 """Test output of the various forms of tabular data."""
 
+from decimal import Decimal
 from pytest import mark
 
 from common import assert_equal, raises, skip, check_warnings
@@ -2854,6 +2855,16 @@ def test_floatfmt_multi():
     "Output: floating point format different for each column"
     result = tabulate([[0.12345, 0.12345, 0.12345]], floatfmt=(".1f", ".3f"), tablefmt="plain")
     expected = "0.1  0.123  0.12345"
+    assert_equal(expected, result)
+
+
+def test_floatfmt_decimal():
+    result = tabulate(
+        [[Decimal("99999998999.999980"), 1234.5, 1.2345678, "inf"]],
+        floatfmt=".6f",
+        tablefmt="plain",
+    )
+    expected = "99999998999.999980  1234.500000  1.234568  inf"
     assert_equal(expected, result)
 
 
