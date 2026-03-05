@@ -47,8 +47,13 @@ dev = [
 line-length = 99
 
 [tool.ruff.lint]
-extend-select = ["W", "C90"]
+extend-select = ["W", "I", "C90"]
 ignore = ["E721", "C901"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 22
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+force-sort-within-sections = true
+known-local-folder = ["common"]
