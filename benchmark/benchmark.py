@@ -72,13 +72,9 @@ def benchmark(n):
     if "--onlyself" in sys.argv[1:]:
         methods = [m for m in methods if m[0].startswith("tabulate")]
 
-    results = [
-        (desc, timeit(code, setup_code, number=n) / n * 1e6) for desc, code in methods
-    ]
+    results = [(desc, timeit(code, setup_code, number=n) / n * 1e6) for desc, code in methods]
     mintime = min(map(lambda x: x[1], results))
-    results = [
-        (desc, t, t / mintime) for desc, t in sorted(results, key=lambda x: x[1])
-    ]
+    results = [(desc, t, t / mintime) for desc, t in sorted(results, key=lambda x: x[1])]
     table = tabulate.tabulate(
         results, ["Table formatter", "time, μs", "rel. time"], "rst", floatfmt=".1f"
     )

@@ -176,7 +176,7 @@ def test_wrap_text_to_colwidths():
 def test_wrap_text_wide_chars():
     "Internal: Wrap wide characters based on column width"
     try:
-        import wcwidth  # noqa
+        import wcwidth  # noqa: F401
     except ImportError:
         skip("test_wrap_text_wide_chars is skipped")
 
@@ -240,11 +240,18 @@ def test_wrap_text_to_colwidths_single_ansi_colors_full_cell():
 def test_wrap_text_to_colwidths_colors_wide_char():
     """Internal: autowrapped text can retain a ANSI colors with wide chars"""
     try:
-        import wcwidth  # noqa
+        import wcwidth  # noqa: F401
     except ImportError:
         skip("test_wrap_text_to_colwidths_colors_wide_char is skipped")
 
-    data = [[("\033[31m약간 감싸면 더 잘 보일 수있는 다소 긴" " 설명입니다 설명입니다 설명입니다 설명입니다 설명\033[0m")]]
+    data = [
+        [
+            (
+                "\033[31m약간 감싸면 더 잘 보일 수있는 다소 긴"
+                " 설명입니다 설명입니다 설명입니다 설명입니다 설명\033[0m"
+            )
+        ]
+    ]
     result = T._wrap_text_to_colwidths(data, [30])
 
     expected = [

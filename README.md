@@ -501,7 +501,7 @@ format:
 
 ```pycon
 >>> print(tabulate(table, headers, tablefmt="asciidoc"))
-[cols="8<,7>",options="header"]
+[cols="<8,>7",options="header"]
 |====
 | item   |   qty
 | spam   |    42
@@ -1172,17 +1172,17 @@ simply joining lists of values with a tab, comma, or other separator.
 At the same time, `tabulate` is comparable to other table
 pretty-printers. Given a 10x10 table (a list of lists) of mixed text and
 numeric data, `tabulate` appears to be faster than `PrettyTable` and `texttable`.
-The following mini-benchmark was run in Python 3.11.9 on Windows 11 (x64):
+The following mini-benchmark was run in Python 3.13.7 on Windows 11 (x64):
 
     ==================================  ==========  ===========
     Table formatter                       time, μs    rel. time
     ==================================  ==========  ===========
-    join with tabs and newlines                6.3          1.0
-    csv to StringIO                            6.6          1.0
-    tabulate (0.10.0)                        249.2         39.3
-    tabulate (0.10.0, WIDE_CHARS_MODE)       325.6         51.4
-    texttable (1.7.0)                        579.3         91.5
-    PrettyTable (3.11.0)                     605.5         95.6
+    csv to StringIO                           11.9          1.0
+    join with tabs and newlines               12.1          1.0
+    PrettyTable (3.17.0)                     468.0         39.3
+    tabulate (0.10.0)                        553.4         46.5
+    tabulate (0.10.0, WIDE_CHARS_MODE)       612.2         51.4
+    texttable (1.7.0)                       1071.4         90.0
     ==================================  ==========  ===========
 
 
@@ -1279,4 +1279,5 @@ Vijaya Krishna Kasula, Furcy Pin, Christian Fibich, Shaun Duncan,
 Dimitri Papadopoulos, Élie Goudout, Racerroar888, Phill Zarfos,
 Keyacom, Andrew Coffey, Arpit Jain, Israel Roldan, ilya112358,
 Dan Nicholson, Frederik Scheerer, cdar07 (cdar), Racerroar888,
-Perry Kundert.
+Perry Kundert, Hnasar, Jun Koo, Jo2234, Bjorn Olsen, George Schizas,
+Kadir Can Ozden, Jeff Quast.

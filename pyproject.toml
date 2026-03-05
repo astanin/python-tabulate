@@ -13,27 +13,42 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dynamic = ["version"]
 
 [project.urls]
 Homepage = "https://github.com/astanin/python-tabulate"
 
 [project.optional-dependencies]
-widechars = ["wcwidth"]
+widechars = ["wcwidth>=0.6.0"]
 
 [project.scripts]
 tabulate = "tabulate:_main"
 
-[tool.setuptools]
-packages = ["tabulate"]
-
 [tool.setuptools_scm]
-write_to = "tabulate/version.py"
+
+[dependency-groups]
+dev = [
+    "build>=1.4.0",
+    "ruff>=0.15.4",
+    "tox>=4.47.3",
+    "tox-uv>=1.0",
+    "twine>=6.2.0",
+]
+
+[tool.ruff]
+line-length = 99
+
+[tool.ruff.lint]
+extend-select = ["W", "C90"]
+ignore = ["E721", "C901"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 22
