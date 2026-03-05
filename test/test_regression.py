@@ -596,5 +596,5 @@ def test_asciidoc_without_trailing_whitespace():
 def test_github_escape_pipe_character():
     "Regression: github format must escape pipe character with a backslash (issue #241)"
     result = tabulate([["foo|bar"]], headers=("spam|eggs",), tablefmt="github")
-    expected = '| spam\\|eggs   |\n|-------------|\n| foo\\|bar     |'
+    expected = "| spam\\|eggs   |\n|:------------|\n| foo\\|bar     |"
     assert_equal(expected, result)

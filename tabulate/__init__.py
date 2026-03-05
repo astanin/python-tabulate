@@ -17,8 +17,8 @@ except _PackageNotFoundError:
 from collections import namedtuple
 from collections.abc import Iterable, Sized
 import dataclasses
-from decimal import Decimal
 from dataclasses import dataclass
+from decimal import Decimal
 from functools import partial, reduce
 from html import escape as htmlescape
 import io
@@ -333,6 +333,9 @@ LATEX_ESCAPE_RULES = {
 _latex_row = DataRow("", "&", "\\\\", LATEX_ESCAPE_RULES)
 
 
+GITHUB_ESCAPE_RULES = {r"|": r"\|"}
+
+
 def _rst_escape_first_column(rows, headers):
     def escape_empty(val):
         if isinstance(val, (str, bytes)) and not val.strip():
@@ -528,8 +531,8 @@ _table_formats = {
         linebelowheader=_pipe_line_with_colons,
         linebetweenrows=None,
         linebelow=None,
-        headerrow=DataRow("|", "|", "|"),
-        datarow=DataRow("|", "|", "|"),
+        headerrow=DataRow("|", "|", "|", GITHUB_ESCAPE_RULES),
+        datarow=DataRow("|", "|", "|", GITHUB_ESCAPE_RULES),
         padding=1,
         with_header_hide=["lineabove"],
     ),
@@ -2515,8 +2518,10 @@ def _build_simple_row(padded_cells: list[list], rowfmt: DataRow) -> str:
     escape_map: dict = rowfmt.escape_map
 
     if escape_map:
+
         def escape_char(c):
             return escape_map.get(c, c)
+
         escaped_cells = ["".join(map(escape_char, cell)) for cell in padded_cells]
     else:
         escaped_cells = padded_cells
@@ -2524,7 +2529,12 @@ def _build_simple_row(padded_cells: list[list], rowfmt: DataRow) -> str:
     return (begin + sep.join(escaped_cells) + end).rstrip()
 
 
-def _build_row(padded_cells: list[list], colwidths: list[int], colaligns: list[str], rowfmt: Union[DataRow, Callable]) -> str:
+def _build_row(
+    padded_cells: list[list],
+    colwidths: list[int],
+    colaligns: list[str],
+    rowfmt: Union[DataRow, Callable],
+) -> str:
     "Return a string which represents a row of data cells."
     if not rowfmt:
         return None
