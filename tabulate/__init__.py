@@ -916,7 +916,7 @@ def _isnumber(string):
         # covers 'NaN', +/- 'inf', and eg. '1e2', as well as any type
         # convertible to int/float.
         or (
-            _isconvertible(float, string)
+            _isconvertible(float, str(string))
             and (
                 # some other type convertible to float
                 not isinstance(string, (str, bytes))
