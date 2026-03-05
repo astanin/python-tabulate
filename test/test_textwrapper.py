@@ -174,6 +174,44 @@ def test_wrap_color_line_longword():
     assert_equal(expected, result)
 
 
+def test_wrap_color_line_longword_zerowidth():
+    """Lines with zero-width symbols (accents) must include those symbols with the prior symbol.
+    Let's exercise the calculation where the available symbols never satisfy the available width,
+    and ensure chunk calculation succeeds and ANSI colors are maintained.
+
+    Most combining marks combine with the preceding character (even in right-to-left alphabets):
+      - "e\u0301" → "é" (e + combining acute accent)
+      - "a\u0308" → "ä" (a + combining diaeresis)
+      - "n\u0303" → "ñ" (n + combining tilde)
+    Enclosing Marks: Some combining marks enclose the base character:
+      - "A\u20dd" → Ⓐ  Combining enclosing circle
+    Multiple Combining Marks: You can stack multiple combining marks on a single base character:
+      - "e\u0301\u0308" → e with both acute accent and diaeresis
+    Zero width space → "ab" with a :
+      - "a\u200bb"
+
+    """
+    try:
+        import wcwidth  # noqa
+    except ImportError:
+        skip("test_wrap_wide_char is skipped")
+
+    # Exactly filled, with a green zero-width segment at the end.
+    data = (
+        "This_is_A\u20dd_\033[31mte\u0301st_string_\u200b"
+        "to_te\u0301\u0308st_a\u0308ccent\033[32m\u200b\033[0m"
+    )
+
+    expected = [
+        "This_is_A\u20dd_\033[31mte\u0301\033[0m",
+        "\033[31mst_string_\u200bto\033[0m",
+        "\033[31m_te\u0301\u0308st_a\u0308ccent\033[32m\u200b\033[0m",
+    ]
+    wrapper = CTW(width=12)
+    result = wrapper.wrap(data)
+    assert_equal(expected, result)
+
+
 def test_wrap_color_line_multiple_escapes():
     data = "012345(\x1b[32ma\x1b[0mbc\x1b[32mdefghij\x1b[0m)"
     expected = [
