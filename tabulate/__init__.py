@@ -8,7 +8,10 @@ from importlib.metadata import (
 try:
     __version__ = _version("tabulate")
 except _PackageNotFoundError:
-    __version__ = "unknown"
+    try:
+        from .version import version as __version__  # noqa: F401
+    except ImportError:
+        __version__ = "unknown"
 
 import warnings
 from collections import namedtuple
@@ -35,11 +38,6 @@ def _is_file(f):
 
 
 __all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
-try:
-    from .version import version as __version__  # noqa: F401
-except ImportError:
-    pass  # running __init__.py as a script, AppVeyor pytests
-
 
 # minimum extra space in headers
 MIN_PADDING = 2
