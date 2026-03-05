@@ -522,16 +522,6 @@ _table_formats = {
         padding=1,
         with_header_hide=None,
     ),
-    "github": TableFormat(
-        lineabove=Line("|", "-", "|", "|"),
-        linebelowheader=Line("|", "-", "|", "|"),
-        linebetweenrows=None,
-        linebelow=None,
-        headerrow=DataRow("|", "|", "|"),
-        datarow=DataRow("|", "|", "|"),
-        padding=1,
-        with_header_hide=["lineabove"],
-    ),
     "pipe": TableFormat(
         lineabove=_pipe_line_with_colons,
         linebelowheader=_pipe_line_with_colons,
@@ -718,6 +708,10 @@ _table_formats = {
         with_header_hide=["lineabove"],
     ),
 }
+
+# "github" is an alias for "pipe": both produce GitHub-flavored Markdown with
+# alignment colons in the separator row.
+_table_formats["github"] = _table_formats["pipe"]
 
 
 tabulate_formats = sorted(_table_formats.keys())

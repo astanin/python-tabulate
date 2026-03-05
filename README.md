@@ -233,12 +233,12 @@ bacon       0
 ```
 
 `github` follows the conventions of GitHub flavored Markdown. It
-corresponds to the `pipe` format without alignment colons:
+corresponds to the `pipe` format with the same alignment colons:
 
 ```pycon
 >>> print(tabulate(table, headers, tablefmt="github"))
 | item   |   qty |
-|--------|-------|
+|:-------|------:|
 | spam   |    42 |
 | eggs   |   451 |
 | bacon  |     0 |
