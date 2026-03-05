@@ -1,6 +1,7 @@
-import pytest  # noqa: F401
-from pytest import skip, raises  # noqa: F401
 import warnings
+
+import pytest  # noqa: F401
+from pytest import raises, skip  # noqa: F401
 
 
 def assert_equal(expected, result):

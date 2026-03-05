@@ -2,7 +2,7 @@
 
 import tabulate as T
 
-from common import assert_equal, skip, rows_to_pipe_table_str, cols_to_pipe_str
+from common import assert_equal, cols_to_pipe_str, rows_to_pipe_table_str, skip
 
 
 def test_multiline_width():

@@ -1,10 +1,12 @@
 """Test output of the various forms of tabular data."""
 
 from decimal import Decimal
+
 from pytest import mark
 
-from common import assert_equal, raises, skip, check_warnings
-from tabulate import tabulate, simple_separated_format, SEPARATING_LINE
+from tabulate import SEPARATING_LINE, simple_separated_format, tabulate
+
+from common import assert_equal, check_warnings, raises, skip
 
 # _test_table shows
 #  - coercion of a string to a number,
