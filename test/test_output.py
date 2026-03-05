@@ -2579,7 +2579,7 @@ def test_unsafehtml():
         [
             "<table>",
             "<thead>",
-            "<tr><th style=\"text-align: left;\">strings  </th><th style=\"text-align: left;\">numbers                         </th></tr>",
+            '<tr><th style="text-align: left;">strings  </th><th style="text-align: left;">numbers                         </th></tr>',
             "</thead>",
             "<tbody>",
             '<tr><td style="text-align: left;">spam     </td><td style="text-align: left;"><font color="red">41.9999</font></td></tr>',
