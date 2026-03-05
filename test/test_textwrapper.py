@@ -341,7 +341,7 @@ def test_wrap_wide_char_no_column_overflow():
         for line in lines:
             display_width = wcwidth.wcswidth(line)
             assert display_width <= width, (
-                f"Line {repr(line)} has display width {display_width} "
+                f"Line {line!r} has display width {display_width} "
                 f"which exceeds requested column width {width}"
             )
 
