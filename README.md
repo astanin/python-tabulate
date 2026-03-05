@@ -196,7 +196,6 @@ Supported table formats are:
 -   "rst"
 -   "mediawiki"
 -   "moinmoin"
--   "youtrack"
 -   "html"
 -   "unsafehtml"
 -   "latex"
@@ -581,17 +580,6 @@ MediaWiki-based sites:
 ||  spam    ||<style="text-align: right;">     42  ||
 ||  eggs    ||<style="text-align: right;">    451  ||
 ||  bacon   ||<style="text-align: right;">      0  ||
-
-```
-
-`youtrack` format produces a table markup used in Youtrack tickets:
-
-```pycon
->>> print(tabulate(table, headers, tablefmt="youtrack"))
-||  item    ||    qty  ||
-|  spam    |     42  |
-|  eggs    |    451  |
-|  bacon   |      0  |
 
 ```
 
