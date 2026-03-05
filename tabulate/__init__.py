@@ -1,19 +1,5 @@
 """Pretty-print tabular data."""
 
-from importlib.metadata import (
-    PackageNotFoundError as _PackageNotFoundError,
-    version as _version,
-)
-from typing import Callable, Union
-
-try:
-    __version__ = _version("tabulate")  # installed package
-except _PackageNotFoundError:
-    try:
-        from ._version import version as __version__  # editable / source checkout
-    except ImportError:
-        __version__ = "unknown"
-
 from collections import namedtuple
 from collections.abc import Iterable, Sized
 import dataclasses
@@ -21,12 +7,14 @@ from dataclasses import dataclass
 from decimal import Decimal
 from functools import partial, reduce
 from html import escape as htmlescape
+from importlib.metadata import PackageNotFoundError, version
 import io
 from itertools import chain, zip_longest as izip_longest
 import math
 import re
 import sys
 import textwrap
+from typing import Callable, Union
 import warnings
 
 try:
@@ -34,9 +22,13 @@ try:
 except ImportError:
     wcwidth = None
 
-
-def _is_file(f):
-    return isinstance(f, io.IOBase)
+try:
+    __version__ = version("tabulate")  # installed package
+except PackageNotFoundError:
+    try:
+        from ._version import version as __version__  # editable / source checkout
+    except ImportError:
+        __version__ = "unknown"
 
 
 __all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
@@ -123,6 +115,10 @@ TableFormat = namedtuple(
         "with_header_hide",
     ],
 )
+
+
+def _is_file(f):
+    return isinstance(f, io.IOBase)
 
 
 def _is_separating_line_value(value):
