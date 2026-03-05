@@ -1046,7 +1046,7 @@ def _padleft(width, s):
     True
 
     """
-    fmt = "{0:>%ds}" % width
+    fmt = f"{{0:>{width}s}}"
     return fmt.format(s)
 
 
@@ -1057,7 +1057,7 @@ def _padright(width, s):
     True
 
     """
-    fmt = "{0:<%ds}" % width
+    fmt = f"{{0:<{width}s}}"
     return fmt.format(s)
 
 
@@ -1068,7 +1068,7 @@ def _padboth(width, s):
     True
 
     """
-    fmt = "{0:^%ds}" % width
+    fmt = f"{{0:^{width}s}}"
     return fmt.format(s)
 
 
@@ -2805,7 +2805,7 @@ class _CustomTextWrap(textwrap.TextWrapper):
         """
         lines = []
         if self.width <= 0:
-            raise ValueError("invalid width %r (must be > 0)" % self.width)
+            raise ValueError(f"invalid width {self.width!r} (must be > 0)")
         if self.max_lines is not None:
             if self.max_lines > 1:
                 indent = self.subsequent_indent
@@ -2962,7 +2962,7 @@ def _main():
             colalign = value.split()
         elif opt in ["-f", "--format"]:
             if value not in tabulate_formats:
-                print("%s is not a supported table format" % value)
+                print(f"{value} is not a supported table format")
                 print(usage)
                 sys.exit(3)
             tablefmt = value

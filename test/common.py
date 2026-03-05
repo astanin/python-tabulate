@@ -5,15 +5,15 @@ from pytest import raises, skip  # noqa: F401
 
 
 def assert_equal(expected, result):
-    print("Expected:\n%r\n" % expected)
-    print("Got:\n%r\n" % result)
+    print(f"Expected:\n{expected!r}\n")
+    print(f"Got:\n{result!r}\n")
     assert expected == result
 
 
 def assert_in(result, expected_set):
     for i, expected in enumerate(expected_set, start=1):
-        print("Expected %d:\n%s\n" % (i, expected))
-    print("Got:\n%s\n" % result)
+        print(f"Expected {i}:\n{expected}\n")
+    print(f"Got:\n{result}\n")
     assert result in expected_set
 
 
