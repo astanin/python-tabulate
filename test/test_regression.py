@@ -341,7 +341,7 @@ def test_multiline_with_wide_characters():
 
 def test_align_long_integers():
     "Regression: long integers should be aligned as integers (issue #61)"
-    table = [[int(1)], [int(234)]]
+    table = [[1], [234]]
     result = tabulate(table, tablefmt="plain")
     expected = "\n".join(["  1", "234"])
     assert_equal(expected, result)
