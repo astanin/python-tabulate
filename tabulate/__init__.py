@@ -8,10 +8,7 @@ from importlib.metadata import (
 try:
     __version__ = _version("tabulate")
 except _PackageNotFoundError:
-    try:
-        from .version import version as __version__  # noqa: F401
-    except ImportError:
-        __version__ = "unknown"
+    __version__ = "unknown"
 
 from collections import namedtuple
 from collections.abc import Iterable, Sized
