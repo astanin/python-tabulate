@@ -367,9 +367,9 @@ def test_simple_headerless_with_sep_line_with_padding_in_tablefmt():
     "Output: simple without headers with sep line with padding in tablefmt"
     expected = "\n".join(
         [
-            "|------|----------|",
+            "|:-----|---------:|",
             "| spam |  41.9999 |",
-            "|------|----------|",
+            "|:-----|---------:|",
             "| eggs | 451      |",
         ]
     )
@@ -487,7 +487,7 @@ def test_github():
     expected = "\n".join(
         [
             "| strings   |   numbers |",
-            "|-----------|-----------|",
+            "|:----------|----------:|",
             "| spam      |   41.9999 |",
             "| eggs      |  451      |",
         ]
@@ -504,12 +504,51 @@ def test_github_multiline():
         [
             "|        more | more spam   |",
             "|   spam eggs | & eggs      |",
-            "|-------------|-------------|",
+            "|------------:|:------------|",
             "|           2 | foo         |",
             "|             | bar         |",
         ]
     )
     result = tabulate(table, headers, tablefmt="github")
+    assert_equal(expected, result)
+
+
+def test_github_with_colalign():
+    "Output: github with explicit column alignment"
+    expected = "\n".join(
+        [
+            "| Name   |   Age |",
+            "|:-------|------:|",
+            "| Alice  |    24 |",
+            "| Bob    |    19 |",
+        ]
+    )
+    result = tabulate(
+        [["Alice", 24], ["Bob", 19]],
+        ["Name", "Age"],
+        tablefmt="github",
+        colalign=("left", "right"),
+    )
+    assert_equal(expected, result)
+
+
+def test_github_no_alignment():
+    "Output: github without alignment hints when numalign/stralign are disabled"
+    expected = "\n".join(
+        [
+            "| strings | numbers |",
+            "|-----------|-----------|",
+            "| spam | 41.9999 |",
+            "| eggs | 451 |",
+        ]
+    )
+    result = tabulate(
+        _test_table,
+        _test_table_headers,
+        tablefmt="github",
+        numalign=None,
+        stralign=None,
+    )
     assert_equal(expected, result)
 
 
