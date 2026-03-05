@@ -1,4 +1,4 @@
-/tabulate/version.py
+/tabulate/_version.py
 
 build
 dist

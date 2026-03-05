@@ -1,5 +1,5 @@
 [build-system]
-requires = ["flit>=3.12", "flit_scm"]
+requires = ["flit_core>=3.12", "flit_scm"]
 build-backend = "flit_scm:buildapi"
 
 [project]
@@ -34,7 +34,6 @@ tabulate = "tabulate:_main"
 
 [tool.flit.sdist]
 include = ["CHANGELOG", "test/", "tox.ini"]
-exclude = ["tabulate/_version.py"]
 
 [tool.setuptools_scm]
 write_to = "tabulate/_version.py"
