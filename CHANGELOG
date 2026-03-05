@@ -1,6 +1,7 @@
 - 0.11.0:
   Drop support of the legacy `youtrack` format.
   Add support of the `Decimal` data type.
+  Improve output of `github` and `asciidoc` formats.
   Various bug fixes.
 - 0.10.0: Add support for Python 3.11, 3.12, 3.13, 3.14.
   Drop support for Python 3.7, 3.8, 3.9.
