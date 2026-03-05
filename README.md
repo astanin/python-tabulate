@@ -1280,4 +1280,5 @@ Dimitri Papadopoulos, Élie Goudout, Racerroar888, Phill Zarfos,
 Keyacom, Andrew Coffey, Arpit Jain, Israel Roldan, ilya112358,
 Dan Nicholson, Frederik Scheerer, cdar07 (cdar), Racerroar888,
 Perry Kundert, Hnasar, Jun Koo, Jo2234, Bjorn Olsen, George Schizas,
-Kadir Can Ozden, Jeff Quast, Mayukha Vadari, Rebecca Jean Herman.
+Kadir Can Ozden, Jeff Quast, Mayukha Vadari, Rebecca Jean Herman,
+Ján Jančár (J08nY).
