@@ -1,7 +1,7 @@
 """Pretty-print tabular data."""
 
 from collections import namedtuple
-from collections.abc import Iterable, Sized
+from collections.abc import Callable, Iterable, Sized
 import dataclasses
 from dataclasses import dataclass
 from decimal import Decimal
@@ -14,7 +14,6 @@ import math
 import re
 import sys
 import textwrap
-from typing import Callable
 import warnings
 
 try:
