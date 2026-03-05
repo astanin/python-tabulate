@@ -471,6 +471,22 @@ def test_iterable_row_index():
     assert_equal(expected, result)
 
 
+def test_numpy_array_as_showindex():
+    "Regression: numpy array as showindex must not raise ValueError on == comparison"
+    try:
+        import numpy as np
+    except ImportError:
+        raise skip("")
+
+    table = [["a"], ["b"], ["c"]]
+    # np.array([...]) == "default" returns an element-wise boolean array whose
+    # truth value is ambiguous; the fix short-circuits the comparison when
+    # showindex is not a string.
+    expected = "10  a\n20  b\n30  c"
+    result = tabulate(table, showindex=np.array([10, 20, 30]), tablefmt="plain")
+    assert_equal(expected, result)
+
+
 def test_preserve_line_breaks_with_maxcolwidths():
     "Regression: preserve line breaks when using maxcolwidths (github issue #190)"
     table = [["123456789 bbb\nccc"]]
