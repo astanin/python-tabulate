@@ -96,7 +96,7 @@ def test_dict_like():
     expected1 = "\n".join(["  a    b", "---  ---", "  0  101", "  1  102", "  2  103", "     104"])
     expected2 = "\n".join(["  b    a", "---  ---", "101    0", "102    1", "103    2", "104"])
     result = tabulate(dd, "keys")
-    print("Keys' order: %s" % dd.keys())
+    print(f"Keys' order: {dd.keys()}")
     assert_in(result, [expected1, expected2])
 
 
