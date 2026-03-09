@@ -1127,24 +1127,46 @@ itself (terminals would show this text). For example:
 Usage of the command line utility
 ---------------------------------
 
-    Usage: tabulate [options] [FILE ...]
+```
+Usage: tabulate [options] [FILE ...]
 
-    FILE                      a filename of the file with tabular data;
-                              if "-" or missing, read data from stdin.
+Pretty-print tabular data. Use Python module for more features.
 
-    Options:
+FILE                      a filename of the file with tabular data;
+                          if "-" or missing, read data from stdin.
 
-    -h, --help                show this message
-    -1, --header              use the first row of data as a table header
-    -o FILE, --output FILE    print table to FILE (default: stdout)
-    -s REGEXP, --sep REGEXP   use a custom column separator (default: whitespace)
-    -F FPFMT, --float FPFMT   floating point number format (default: g)
-    -I INTFMT, --int INTFMT   integer point number format (default: "")
-    -f FMT, --format FMT      set output table format; supported formats:
-                              plain, simple, github, grid, fancy_grid, pipe,
-                              orgtbl, rst, mediawiki, html, latex, latex_raw,
-                              latex_booktabs, latex_longtable, tsv
-                              (default: simple)
+Options:
+
+-h, --help                show this message
+
+INPUT:
+-r, --read FILEFORMAT     parse input FILEs as:
+                          rsv (REGEXP-separated values, default),
+                          csv (comma-separated valued, Excel dialect),
+                          jsonl (one JSON object per line)
+-s REGEXP, --sep REGEXP   column separator for rsv data (default: whitespace)
+
+FORMAT:
+--headers HEADERS         HEADERS can be one of:
+                          "firstrow" (for csv and rsv data),
+                          "keys" (for jsonl data),
+                          "HEADER1,HEADER2,..." (for csv and rsv data),
+                          "KEY1:HEADER1,KEY2:HEADER2,..." (for jsonl data)
+-1                        use the first row of input data as a table header
+                          (the same as --headers firstrow)
+-F FPFMT, --float FPFMT   floating point number format (default: g)
+-I INTFMT, --int INTFMT   integer point number format (default: "")
+-f FMT, --format FMT      set output table format (default: simple)
+
+Supported output formats: asciidoc, colon_grid, double_grid, double_outline,
+fancy_grid, fancy_outline, github, grid, heavy_grid, heavy_outline, html, jira,
+latex, latex_booktabs, latex_longtable, latex_raw, mediawiki, mixed_grid, mixed_outline,
+moinmoin, orgtbl, outline, pipe, plain, presto, pretty, psql, rounded_grid,
+rounded_outline, rst, simple, simple_grid, simple_outline, textile, tsv, unsafehtml.
+
+OUTPUT:
+-o FILE, --output FILE    print table to FILE (default: stdout)
+```
 
 Performance considerations
 --------------------------
