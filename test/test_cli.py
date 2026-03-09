@@ -104,7 +104,7 @@ class TemporaryTextFile:
 
 def test_script_from_stdin_to_stdout():
     """Command line utility: read from stdin, print to stdout"""
-    cmd = [sys.executable, "tabulate/__init__.py"]
+    cmd = [sys.executable, "tabulate/cli.py"]
     out = run_and_capture_stdout(cmd, input=sample_input())
     expected = SAMPLE_SIMPLE_FORMAT
     print("got:     ", repr(out))
@@ -117,7 +117,7 @@ def test_script_from_file_to_stdout():
     with TemporaryTextFile() as tmpfile:
         tmpfile.write(sample_input())
         tmpfile.seek(0)
-        cmd = [sys.executable, "tabulate/__init__.py", tmpfile.name]
+        cmd = [sys.executable, "tabulate/cli.py", tmpfile.name]
         out = run_and_capture_stdout(cmd)
         expected = SAMPLE_SIMPLE_FORMAT
         print("got:     ", repr(out))
@@ -133,7 +133,7 @@ def test_script_from_file_to_file():
             input_file.seek(0)
             cmd = [
                 sys.executable,
-                "tabulate/__init__.py",
+                "tabulate/cli.py",
                 "-o",
                 output_file.name,
                 input_file.name,
@@ -156,7 +156,7 @@ def test_script_from_file_to_file():
 def test_script_header_option():
     """Command line utility: -1, --header option"""
     for option in ["-1", "--header"]:
-        cmd = [sys.executable, "tabulate/__init__.py", option]
+        cmd = [sys.executable, "tabulate/cli.py", option]
         raw_table = sample_input(with_headers=True)
         out = run_and_capture_stdout(cmd, input=raw_table)
         expected = SAMPLE_SIMPLE_FORMAT_WITH_HEADERS
@@ -169,7 +169,7 @@ def test_script_header_option():
 def test_script_sep_option():
     """Command line utility: -s, --sep option"""
     for option in ["-s", "--sep"]:
-        cmd = [sys.executable, "tabulate/__init__.py", option, ","]
+        cmd = [sys.executable, "tabulate/cli.py", option, ","]
         raw_table = sample_input(sep=",")
         out = run_and_capture_stdout(cmd, input=raw_table)
         expected = SAMPLE_SIMPLE_FORMAT
@@ -183,7 +183,7 @@ def test_script_floatfmt_option():
     for option in ["-F", "--float"]:
         cmd = [
             sys.executable,
-            "tabulate/__init__.py",
+            "tabulate/cli.py",
             option,
             ".1e",
             "--format",
@@ -200,7 +200,7 @@ def test_script_floatfmt_option():
 def test_script_format_option():
     """Command line utility: -f, --format option"""
     for option in ["-f", "--format"]:
-        cmd = [sys.executable, "tabulate/__init__.py", "-1", option, "grid"]
+        cmd = [sys.executable, "tabulate/cli.py", "-1", option, "grid"]
         raw_table = sample_input(with_headers=True)
         out = run_and_capture_stdout(cmd, input=raw_table)
         expected = SAMPLE_GRID_FORMAT_WITH_HEADERS
