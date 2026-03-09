@@ -2256,6 +2256,14 @@ def tabulate(
         else:  # Ignore col width for any 'trailing' columns
             maxcolwidths = _expand_iterable(maxcolwidths, num_cols, None)
 
+        # For fancy_grid, reserve left/right cell padding space before wrapping so
+        # maxcolwidths caps the rendered column width (issue #354).
+        if tablefmt == "fancy_grid":
+            wrap_padding = _table_formats["fancy_grid"].padding * 2
+            maxcolwidths = [
+                None if w is None else max(1, w - wrap_padding) for w in maxcolwidths
+            ]
+
         numparses = _expand_numparse(disable_numparse, num_cols)
         list_of_lists = _wrap_text_to_colwidths(
             list_of_lists,

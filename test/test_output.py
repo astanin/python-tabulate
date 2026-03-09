@@ -223,6 +223,29 @@ def test_plain_maxheadercolwidths_autowraps():
     assert_equal(expected, result)
 
 
+def test_fancy_grid_maxcolwidth_includes_padding():
+    "Output: fancy_grid maxcolwidths caps rendered width including padding"
+    table = [["The files were concatenated and archived for posterity."]]
+    expected = "\n".join(
+        [
+            "╒══════════╕",
+            "│ col      │",
+            "╞══════════╡",
+            "│ The      │",
+            "│ files    │",
+            "│ were con │",
+            "│ catenate │",
+            "│ d and    │",
+            "│ archived │",
+            "│ for post │",
+            "│ erity.   │",
+            "╘══════════╛",
+        ]
+    )
+    result = tabulate(table, headers=["col"], tablefmt="fancy_grid", maxcolwidths=[10])
+    assert_equal(expected, result)
+
+
 def test_simple():
     "Output: simple with headers"
     expected = "\n".join(
