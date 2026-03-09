@@ -208,3 +208,87 @@ def test_script_format_option():
         print("got:     ", repr(out))
         print("expected:", repr(expected))
         assert_equal(out.splitlines(), expected.splitlines())
+
+
+SAMPLE_INPUT_JSONL = "\n".join(
+    [
+        '{"id": 1, "name": "Alice", "email": "alice@example.com"}',
+        '{"id": 2, "name": "Bob", "email": "bob@example.com"}',
+    ]
+)
+
+SAMPLE_GRID_FORMAT = "\n".join(
+    [
+        "+------+--------+-------------------+",
+        "|   id | name   | email             |",
+        "+======+========+===================+",
+        "|    1 | Alice  | alice@example.com |",
+        "+------+--------+-------------------+",
+        "|    2 | Bob    | bob@example.com   |",
+        "+------+--------+-------------------+",
+    ]
+)
+
+
+def test_module_jsonl_from_stdin():
+    """Command line utility: python -m tabulate with JSONL input from stdin"""
+    cmd = [sys.executable, "-m", "tabulate", "-r", "jsonl", "-f", "grid"]
+    out = run_and_capture_stdout(cmd, input=SAMPLE_INPUT_JSONL)
+    expected = SAMPLE_GRID_FORMAT
+    print("got:     ", repr(out))
+    print("expected:", repr(expected))
+    assert_equal(out.splitlines(), expected.splitlines())
+
+
+SAMPLE_REMAPPED_HEADERS = "\n".join(
+    [
+        "  ID  First Name    Email",
+        "----  ------------  -----------------",
+        "   1  Alice         alice@example.com",
+        "   2  Bob           bob@example.com",
+    ]
+)
+
+
+SAMPLE_INPUT_CSV = (
+    'id,name,email,"""favorite"" fruit"\n'
+    '1,Alice,alice@example.com,"apple, kiwi"\n'
+    '2,Bob,bob@example.com,"banana,\norange,\nlychee"\n'
+    "3,Carol,,pear\n"
+)
+
+SAMPLE_CSV_FORMAT = "\n".join(
+    [
+        "--  -----  -----------------  ----------------",
+        "id  name   email              \"favorite\" fruit",
+        "1   Alice  alice@example.com  apple, kiwi",
+        "2   Bob    bob@example.com    banana,",
+        "                              orange,",
+        "                              lychee",
+        "3   Carol                     pear",
+        "--  -----  -----------------  ----------------",
+    ]
+)
+
+def test_module_csv_from_stdin():
+    """Command line utility: python -m tabulate with CSV input from stdin"""
+    cmd = [sys.executable, "-m", "tabulate", "-r", "csv"]
+    out = run_and_capture_stdout(cmd, input=SAMPLE_INPUT_CSV)
+    expected = SAMPLE_CSV_FORMAT
+    print("got:     ", repr(out))
+    print("expected:", repr(expected))
+    assert_equal(out.splitlines(), expected.splitlines())
+
+
+def test_module_jsonl_remapped_headers():
+    """Command line utility: --headers with key:header remapping for JSONL input"""
+    cmd = [
+        sys.executable, "-m", "tabulate",
+        "-r", "jsonl",
+        "--headers", "id:ID,name:First Name,email:Email",
+    ]
+    out = run_and_capture_stdout(cmd, input=SAMPLE_INPUT_JSONL)
+    expected = SAMPLE_REMAPPED_HEADERS
+    print("got:     ", repr(out))
+    print("expected:", repr(expected))
+    assert_equal(out.splitlines(), expected.splitlines())
