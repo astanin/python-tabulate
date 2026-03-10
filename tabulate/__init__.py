@@ -1653,7 +1653,7 @@ def _wrap_text_to_colwidths(
                     else (
                         str(cell)
                         if cell == "" or _isnumber(cell)
-                        else str(_type(cell, numparse)(cell))
+                        else str(_type(cell, numparse=numparse)(cell))
                     )
                 )
                 wrapped = [
