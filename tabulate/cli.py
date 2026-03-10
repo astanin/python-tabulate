@@ -1,9 +1,9 @@
 """Command-line interface for tabulate."""
 
+from functools import partial
 import re
 import sys
 import textwrap
-from functools import partial
 
 try:
     from . import (
@@ -15,8 +15,9 @@ try:
     )
 except ImportError:  # pragma: no cover
     # running as a script: python tabulate/cli.py
-    import sys as _sys
     import os as _os
+    import sys as _sys
+
     _sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
     from tabulate import (
         _DEFAULT_FLOATFMT,
@@ -79,8 +80,8 @@ def _main():
             [
                 "help",
                 "header",  # deprecated in CLI > 0.10
-                "headers=", # CLI > 0.10
-                "read=",   # CLI > 0.10
+                "headers=",  # CLI > 0.10
+                "read=",  # CLI > 0.10
                 "output=",
                 "sep=",
                 "float=",
@@ -151,8 +152,8 @@ def _main():
         if type(headers) is str and headers not in special_headers_values:
             # "," and ":" in header titles are not supported in CLI
             try:
-                headers2 = dict(tuple(hh.split(":",2)) for hh in headers.split(","))
-            except:
+                headers2 = dict(tuple(hh.split(":", 2)) for hh in headers.split(","))
+            except Exception:
                 print(f"cannot parse headers parameter: {headers}", file=sys.stderr)
                 headers2 = []
             headers = headers2
@@ -165,14 +166,16 @@ def _main():
         for f in files:
             if f == "-":
                 f = sys.stdin
-            _open_and_pprint_file(reader, f,
-                    headers=headers,
-                    tablefmt=tablefmt,
-                    floatfmt=floatfmt,
-                    intfmt=intfmt,
-                    file=out,
-                    colalign=colalign,
-                )
+            _open_and_pprint_file(
+                reader,
+                f,
+                headers=headers,
+                tablefmt=tablefmt,
+                floatfmt=floatfmt,
+                intfmt=intfmt,
+                file=out,
+                colalign=colalign,
+            )
 
 
 def _read_rsv_file(fobject, sep):
@@ -183,13 +186,15 @@ def _read_rsv_file(fobject, sep):
 
 def _read_jsonl_file(fobject):
     import json
-    rows:list[str] = fobject.readlines()
+
+    rows: list[str] = fobject.readlines()
     table = [json.loads(row) for row in rows]
     return table
 
 
 def _read_csv_file(fobject):
     import csv
+
     reader = csv.reader(fobject, dialect="excel")
     table = [list(row) for row in reader]
     return table

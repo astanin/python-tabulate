@@ -8,12 +8,14 @@ import sys
 import tempfile
 from unittest.mock import patch
 
-from common import assert_equal
 from tabulate.cli import _main
+
+from common import assert_equal
 
 
 class _UnclosableStringIO(io.StringIO):
     """StringIO that ignores close() so getvalue() works after a 'with' block."""
+
     def close(self):
         pass  # _main does `with sys.stdout as out:`, which would close a plain StringIO
 
@@ -22,11 +24,14 @@ def run_main_in_process(args, input_text=None):
     """Call _main() in-process, capturing stdout. Returns the captured output."""
     stdin = io.StringIO(input_text) if input_text is not None else sys.stdin
     stdout = _UnclosableStringIO()
-    with patch("sys.argv", ["tabulate"] + args), \
-         patch("sys.stdin", stdin), \
-         contextlib.redirect_stdout(stdout):
+    with (
+        patch("sys.argv", ["tabulate"] + args),
+        patch("sys.stdin", stdin),
+        contextlib.redirect_stdout(stdout),
+    ):
         _main()
     return stdout.getvalue()
+
 
 SAMPLE_SIMPLE_FORMAT = "\n".join(
     [
@@ -281,7 +286,7 @@ SAMPLE_INPUT_CSV = (
 SAMPLE_CSV_FORMAT = "\n".join(
     [
         "--  -----  -----------------  ----------------",
-        "id  name   email              \"favorite\" fruit",
+        'id  name   email              "favorite" fruit',
         "1   Alice  alice@example.com  apple, kiwi",
         "2   Bob    bob@example.com    banana,",
         "                              orange,",
@@ -290,6 +295,7 @@ SAMPLE_CSV_FORMAT = "\n".join(
         "--  -----  -----------------  ----------------",
     ]
 )
+
 
 def test_module_csv_from_stdin():
     """Command line utility: python -m tabulate with CSV input from stdin"""
@@ -304,9 +310,13 @@ def test_module_csv_from_stdin():
 def test_module_jsonl_remapped_headers():
     """Command line utility: --headers with key:header remapping for JSONL input"""
     cmd = [
-        sys.executable, "-m", "tabulate",
-        "-r", "jsonl",
-        "--headers", "id:ID,name:First Name,email:Email",
+        sys.executable,
+        "-m",
+        "tabulate",
+        "-r",
+        "jsonl",
+        "--headers",
+        "id:ID,name:First Name,email:Email",
     ]
     out = run_and_capture_stdout(cmd, input=SAMPLE_INPUT_JSONL)
     expected = SAMPLE_REMAPPED_HEADERS
@@ -319,6 +329,7 @@ def test_module_jsonl_remapped_headers():
 # In-process tests: same scenarios as above but calling _main() directly so
 # that coverage.py can instrument the code in tabulate/cli.py.
 # ---------------------------------------------------------------------------
+
 
 def test_inprocess_stdin_to_stdout():
     """In-process: read RSV from stdin, print to stdout"""
@@ -390,6 +401,7 @@ def test_inprocess_csv_from_stdin():
 def test_inprocess_invalid_option():
     """In-process: unrecognised option exits with code 2"""
     import pytest
+
     with pytest.raises(SystemExit) as exc_info:
         run_main_in_process(["--no-such-option"], input_text="a b\n1 2\n")
     assert exc_info.value.code == 2
@@ -398,6 +410,7 @@ def test_inprocess_invalid_option():
 def test_inprocess_help_option():
     """In-process: --help / -h exits with code 0"""
     import pytest
+
     for opt in ["-h", "--help"]:
         with pytest.raises(SystemExit) as exc_info:
             run_main_in_process([opt], input_text="")
@@ -407,6 +420,7 @@ def test_inprocess_help_option():
 def test_inprocess_invalid_format():
     """In-process: unknown --format value exits with code 3"""
     import pytest
+
     with pytest.raises(SystemExit) as exc_info:
         run_main_in_process(["-f", "nosuchformat"], input_text="a b\n1 2\n")
     assert exc_info.value.code == 3
@@ -415,6 +429,7 @@ def test_inprocess_invalid_format():
 def test_inprocess_invalid_fileformat():
     """In-process: unknown --read value exits with code 3"""
     import pytest
+
     with pytest.raises(SystemExit) as exc_info:
         run_main_in_process(["-r", "xml"], input_text="")
     assert exc_info.value.code == 3
@@ -424,9 +439,7 @@ def test_inprocess_int_option():
     """In-process: -I / --int option"""
     jsonl_ints = '{"n": 1000000}\n{"n": 2000000}\n'
     for opt in ["-I", "--int"]:
-        out = run_main_in_process(
-            ["-r", "jsonl", opt, "_"], input_text=jsonl_ints
-        )
+        out = run_main_in_process(["-r", "jsonl", opt, "_"], input_text=jsonl_ints)
         assert "1_000_000" in out
 
 
@@ -441,9 +454,7 @@ def test_inprocess_colalign_option():
 
 def test_inprocess_rsv_custom_headers():
     """In-process: --headers with custom column names for RSV input"""
-    out = run_main_in_process(
-        ["--headers", "Planet,Radius,Mass"], input_text=sample_input()
-    )
+    out = run_main_in_process(["--headers", "Planet,Radius,Mass"], input_text=sample_input())
     assert_equal(out.splitlines(), SAMPLE_SIMPLE_FORMAT_WITH_HEADERS.splitlines())
 
 
