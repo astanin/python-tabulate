@@ -50,6 +50,7 @@ dev = [
 
 [tool.pytest.ini_options]
 addopts = "-v --doctest-modules --ignore=benchmark --doctest-glob=README.md"
+log_level = "INFO"
 testpaths = ["test"]
 
 [tool.ruff]
