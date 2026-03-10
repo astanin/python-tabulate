@@ -52,6 +52,7 @@ dev = [
 addopts = "-v --doctest-modules --ignore=benchmark --doctest-glob=README.md"
 log_level = "INFO"
 testpaths = ["test"]
+xfail_strict = true
 
 [tool.ruff]
 line-length = 99
