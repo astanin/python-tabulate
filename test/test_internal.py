@@ -340,6 +340,20 @@ def test__remove_separating_lines():
     assert_equal("2|4|6", cols_to_pipe_str(sep_lines))
 
 
+def test_pipe_segment_with_colons_center():
+    "Internal: _pipe_segment_with_colons() center branch returns ':' + dashes + ':'"
+    assert T._pipe_segment_with_colons("center", 6) == ":----:"
+    assert T._pipe_segment_with_colons("center", 4) == ":--:"
+    assert T._pipe_segment_with_colons("center", 3) == ":-:"
+
+
+def test_grid_segment_with_colons_else():
+    "Internal: _grid_segment_with_colons() else branch returns '=' * width for non-standard alignment"
+    assert T._grid_segment_with_colons(6, "decimal") == "======"
+    assert T._grid_segment_with_colons(5, "") == "====="
+    assert T._grid_segment_with_colons(4, "decimal") == "===="
+
+
 def test__reinsert_separating_lines():
     with_rows = [
         [0, "a"],

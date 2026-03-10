@@ -1626,6 +1626,23 @@ def test_colon_grid_with_empty_cells():
     assert_equal(expected, result)
 
 
+def test_colon_grid_with_decimal_colalign():
+    "Output: colon_grid with decimal alignment uses '======' separator segments (else branch)"
+    expected = "\n".join(
+        [
+            "+------+------+",
+            "| H1   | H2   |",
+            "+======+======+",
+            "| 3    | 4    |",
+            "+------+------+",
+        ]
+    )
+    result = tabulate(
+        [[3, 4]], headers=("H1", "H2"), tablefmt="colon_grid", colalign=["decimal", "decimal"]
+    )
+    assert_equal(expected, result)
+
+
 def test_outline():
     "Output: outline with headers"
     expected = "\n".join(
@@ -2008,6 +2025,21 @@ def test_pipe_headerless():
     "Output: pipe without headers"
     expected = "\n".join(["|:-----|---------:|", "| spam |  41.9999 |", "| eggs | 451      |"])
     result = tabulate(_test_table, tablefmt="pipe")
+    assert_equal(expected, result)
+
+
+def test_pipe_with_center_colalign():
+    "Output: pipe with center column alignment uses ':--:' separator segments"
+    expected = "\n".join(
+        [
+            "|  H1  |  H2  |",
+            "|:----:|:----:|",
+            "|  3   |  4   |",
+        ]
+    )
+    result = tabulate(
+        [[3, 4]], headers=("H1", "H2"), tablefmt="pipe", colalign=["center", "center"]
+    )
     assert_equal(expected, result)
 
 
