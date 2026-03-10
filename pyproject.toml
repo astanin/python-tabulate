@@ -49,7 +49,7 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-addopts = ["-v", "--strict-config", "--strict-markers", "--doctest-modules", "--ignore=benchmark", "--doctest-glob=README.md"]
+addopts = ["-v", "-ra", "--strict-config", "--strict-markers", "--doctest-modules", "--ignore=benchmark", "--doctest-glob=README.md"]
 log_level = "INFO"
 testpaths = ["test"]
 xfail_strict = true
