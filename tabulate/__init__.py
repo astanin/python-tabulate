@@ -1,7 +1,7 @@
 """Pretty-print tabular data."""
 
 from collections import namedtuple
-from collections.abc import Iterable, Sized
+from collections.abc import Callable, Iterable, Sized
 import dataclasses
 from dataclasses import dataclass
 from decimal import Decimal
@@ -13,7 +13,6 @@ from itertools import chain, zip_longest as izip_longest
 import math
 import re
 import textwrap
-from typing import Callable, Union
 import warnings
 
 try:
@@ -1045,7 +1044,7 @@ def _padleft(width, s):
     True
 
     """
-    fmt = "{0:>%ds}" % width
+    fmt = f"{{0:>{width}s}}"
     return fmt.format(s)
 
 
@@ -1056,7 +1055,7 @@ def _padright(width, s):
     True
 
     """
-    fmt = "{0:<%ds}" % width
+    fmt = f"{{0:<{width}s}}"
     return fmt.format(s)
 
 
@@ -1067,7 +1066,7 @@ def _padboth(width, s):
     True
 
     """
-    fmt = "{0:^%ds}" % width
+    fmt = f"{{0:^{width}s}}"
     return fmt.format(s)
 
 
@@ -2528,7 +2527,7 @@ def _build_row(
     padded_cells: list[list],
     colwidths: list[int],
     colaligns: list[str],
-    rowfmt: Union[DataRow, Callable],
+    rowfmt: DataRow | Callable,
 ) -> str:
     "Return a string which represents a row of data cells."
     if not rowfmt:
@@ -2804,7 +2803,7 @@ class _CustomTextWrap(textwrap.TextWrapper):
         """
         lines = []
         if self.width <= 0:
-            raise ValueError("invalid width %r (must be > 0)" % self.width)
+            raise ValueError(f"invalid width {self.width!r} (must be > 0)")
         if self.max_lines is not None:
             if self.max_lines > 1:
                 indent = self.subsequent_indent

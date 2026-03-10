@@ -55,13 +55,13 @@ def run_tabulate(table, widechars=False):
 methods = [
     ("join with tabs and newlines", "join_table(table)"),
     ("csv to StringIO", "csv_table(table)"),
-    ("tabulate (%s)" % tabulate.__version__, "run_tabulate(table)"),
+    (f"tabulate ({tabulate.__version__})", "run_tabulate(table)"),
     (
-        "tabulate (%s, WIDE_CHARS_MODE)" % tabulate.__version__,
+        f"tabulate ({tabulate.__version__}, WIDE_CHARS_MODE)",
         "run_tabulate(table, widechars=True)",
     ),
-    ("PrettyTable (%s)" % prettytable.__version__, "run_prettytable(table)"),
-    ("texttable (%s)" % texttable.__version__, "run_texttable(table)"),
+    (f"PrettyTable ({prettytable.__version__})", "run_prettytable(table)"),
+    (f"texttable ({texttable.__version__})", "run_texttable(table)"),
 ]
 
 
