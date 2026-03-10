@@ -13,7 +13,7 @@ try:
         tabulate,
         tabulate_formats,
     )
-except ImportError:
+except ImportError:  # pragma: no cover
     # running as a script: python tabulate/cli.py
     import sys as _sys
     import os as _os
@@ -218,5 +218,5 @@ def _pprint_file(reader, fobject, headers, tablefmt, floatfmt, intfmt, file, col
     )
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     _main()
