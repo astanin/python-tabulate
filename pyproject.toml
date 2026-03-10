@@ -50,6 +50,7 @@ dev = [
 
 [tool.pytest.ini_options]
 addopts = "-v --doctest-modules --ignore=benchmark --doctest-glob=README.md"
+testpaths = ["test"]
 
 [tool.ruff]
 line-length = 99
