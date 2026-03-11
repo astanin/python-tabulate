@@ -1,0 +1,6 @@
+id,name,email,"""favorite"" fruit"
+1,Alice,alice@example.com,"apple, kiwi"
+2,Bob,bob@example.com,"banana,
+orange,
+lychee"
+3,Carol,,pear
