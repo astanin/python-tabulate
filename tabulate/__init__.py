@@ -1477,8 +1477,8 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             keys = tabular_data.keys()
             try:
                 rows = list(izip_longest(*tabular_data.values()))  # columns have to be transposed
-            except TypeError:  # not iterable
-                raise TypeError(err_msg)
+            except TypeError as e:  # not iterable
+                raise TypeError(err_msg) from e
 
         elif hasattr(tabular_data, "index"):
             # values is a property, has .index => it's likely a pandas.DataFrame (pandas 0.11.0)
@@ -1501,8 +1501,8 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     else:  # it's a usual iterable of iterables, or a NumPy array, or an iterable of dataclasses
         try:
             rows = list(tabular_data)
-        except TypeError:  # not iterable
-            raise TypeError(err_msg)
+        except TypeError as e:  # not iterable
+            raise TypeError(err_msg) from e
 
         if headers == "keys" and not rows:
             # an empty table (issue #81)

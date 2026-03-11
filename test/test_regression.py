@@ -97,7 +97,7 @@ def test_iter_of_iters_with_headers():
         def mk_iter():
             yield from range(3)
 
-        for r in range(3):
+        for _ in range(3):
             yield mk_iter()
 
     def mk_headers():
@@ -357,7 +357,7 @@ def test_numpy_array_as_headers():
         expected = "foo    bar"
         assert_equal(expected, result)
     except ImportError:
-        raise skip("")
+        raise skip("") from None
 
 
 def test_boolean_columns():
@@ -477,7 +477,7 @@ def test_numpy_array_as_showindex():
     try:
         import numpy as np
     except ImportError:
-        raise skip("")
+        raise skip("") from None
 
     table = [["a"], ["b"], ["c"]]
     # np.array([...]) == "default" returns an element-wise boolean array whose
@@ -548,7 +548,7 @@ def test_numpy_int64_as_integer():
         )
         assert_equal(expected, result)
     except ImportError:
-        raise skip("")
+        raise skip("") from None
 
 
 def test_empty_table_with_colalign():
