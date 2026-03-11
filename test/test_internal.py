@@ -340,6 +340,14 @@ def test__remove_separating_lines():
     assert_equal("2|4|6", cols_to_pipe_str(sep_lines))
 
 
+def test_is_multiline_bytes():
+    "Internal: _is_multiline() bytes branch detects newlines in bytestrings"
+    assert T._is_multiline(b"foo\nbar") is True
+    assert T._is_multiline(b"foo\rbar") is True
+    assert T._is_multiline(b"foo\r\nbar") is True
+    assert T._is_multiline(b"foobar") is False
+
+
 def test_pipe_segment_with_colons_center():
     "Internal: _pipe_segment_with_colons() center branch returns ':' + dashes + ':'"
     assert T._pipe_segment_with_colons("center", 6) == ":----:"
