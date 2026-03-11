@@ -346,6 +346,41 @@ def test_wrap_wide_char_no_column_overflow():
             )
 
 
+def test_wrap_max_lines_placeholder_on_current_line():
+    """TextWrapper: max_lines truncation appends placeholder to current line after
+    popping trailing words that don't leave room for it (while-loop A.inner branch)"""
+    # Line 2 has "four five six" but "six" gets popped, then "five [...]" fits in 15
+    wrapper = CTW(width=15, max_lines=2)
+    result = wrapper.wrap("one two three four five six seven eight")
+    assert_equal(["one two three", "four five [...]"], result)
+
+
+def test_wrap_max_lines_placeholder_appended_to_previous_line():
+    """TextWrapper: max_lines truncation appends placeholder to the previous line
+    when the current line is entirely too long (while-loop else, B.1.a branch)"""
+    # "toolong" alone overflows with placeholder, but prev line "ab" has room for " [...]"
+    wrapper = CTW(width=8, max_lines=2)
+    result = wrapper.wrap("ab toolong extra")
+    assert_equal(["ab [...]"], result)
+
+
+def test_wrap_max_lines_placeholder_alone_no_previous_lines():
+    """TextWrapper: max_lines=1 with an unbreakable word emits placeholder alone
+    when there are no previous lines (while-loop else, B.2 branch)"""
+    wrapper = CTW(width=5, max_lines=1, break_long_words=False)
+    result = wrapper.wrap("toolong extra")
+    assert_equal(["[...]"], result)
+
+
+def test_wrap_max_lines_placeholder_alone_previous_line_too_full():
+    """TextWrapper: max_lines truncation emits placeholder as a new line when
+    the previous line has no room for it either (while-loop else, B.1.b branch)"""
+    # prev line "hello"(5) + " [...]"(6) = 11 > width(5), so placeholder becomes its own line
+    wrapper = CTW(width=5, max_lines=2, break_long_words=False)
+    result = wrapper.wrap("hello toolong extra")
+    assert_equal(["hello", "[...]"], result)
+
+
 def test_wrap_wide_char_narrower_than_char_width():
     """TextWrapper: column width smaller than a single wide char must not hang (issue #399).
 

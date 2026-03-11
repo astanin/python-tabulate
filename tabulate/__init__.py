@@ -17,12 +17,12 @@ import warnings
 
 try:
     import wcwidth  # optional wide-character (CJK) support
-except ImportError:
+except ImportError:  # pragma: no cover
     wcwidth = None
 
 try:
     __version__ = version("tabulate")  # installed package
-except PackageNotFoundError:
+except PackageNotFoundError:  # pragma: no cover
     try:
         from ._version import version as __version__  # editable / source checkout
     except ImportError:
@@ -2894,7 +2894,7 @@ class _CustomTextWrap(textwrap.TextWrapper):
         return lines
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     from .cli import _main
 
     _main()
