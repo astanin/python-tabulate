@@ -1,3 +1,3 @@
-from tabulate.cli import _main
+from tabulate.cli import _main  # pragma: no cover
 
-_main()
+_main()  # pragma: no cover
