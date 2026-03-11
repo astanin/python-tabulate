@@ -1,5 +1,7 @@
 """Tests of the internal tabulate functions."""
 
+import pytest
+
 import tabulate as T
 
 from common import assert_equal, cols_to_pipe_str, rows_to_pipe_table_str, skip
@@ -207,6 +209,31 @@ def test_wrap_text_to_numbers():
     ]
 
     result = T._wrap_text_to_colwidths(rows, widths, numparses=[True, True, False])
+    assert_equal(expected, result)
+
+
+def test_wrap_text_to_colwidths_numparses_disabled():
+    "Internal: Test _wrap_text_to_colwidths to show it will correctly pass along the numparses input"
+    rows = [
+        ["a", "b"],
+        [
+            "1,000,000",
+            "1,000,000.00",
+        ],
+    ]
+    widths = [20, 20]
+    numparses = [True, True]
+
+    # This will raise because _type identifies 1,000,000 as int and 1,000,000.00 as float.
+    # See _isnumber_with_thousands_separator
+    with pytest.raises(ValueError):
+        T._wrap_text_to_colwidths(rows, widths, numparses=numparses)
+
+    # Switch off number parsing
+    numparses = [False, False]
+    expected = [["a", "b"], ["1,000,000", "1,000,000.00"]]
+
+    result = T._wrap_text_to_colwidths(rows, widths, numparses=numparses)
     assert_equal(expected, result)
 
 
