@@ -2388,6 +2388,22 @@ def tabulate(
             elif align != "global":
                 aligns[idx] = align
     minwidths = [width_fn(h) + min_padding for h in headers] if headers else [0] * len(cols)
+    if headers and maxcolwidths is not None:
+        tablefmt_obj = (
+            tablefmt
+            if isinstance(tablefmt, TableFormat)
+            else _table_formats.get(tablefmt, _table_formats["simple"])
+        )
+        if tablefmt_obj.padding > 0:
+            # If a max content width is set for a padded format (for example,
+            # grid/fancy_grid), don't add the default extra header spacing
+            # beyond that width. Keep at least the visible header width so long
+            # headers still render correctly unless explicitly wrapped via
+            # maxheadercolwidths.
+            minwidths = [
+                min(minw, max(width_fn(h), maxw)) if maxw is not None else minw
+                for h, minw, maxw in zip(headers, minwidths, maxcolwidths)
+            ]
     aligns_copy = aligns.copy()
     # Reset alignments in copy of alignments list to "left" for 'colon_grid' format,
     # which enforces left alignment in the text output of the data.

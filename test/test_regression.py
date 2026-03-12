@@ -531,6 +531,22 @@ def test_exception_on_empty_data_with_maxcolwidths():
     assert_equal(result, "")
 
 
+def test_maxcolwidths_respects_requested_width_with_firstrow_header():
+    "Regression: avoid extra width inflation from firstrow headers (github issue #354)"
+    table = [["foo"], ["bar"]]
+    expected = "\n".join(
+        [
+            "+-----+",
+            "| foo |",
+            "+=====+",
+            "| bar |",
+            "+-----+",
+        ]
+    )
+    result = tabulate(table, headers="firstrow", tablefmt="grid", maxcolwidths=3)
+    assert_equal(expected, result)
+
+
 def test_numpy_int64_as_integer():
     "Regression: format numpy.int64 as integer (github issue #18)"
     try:
