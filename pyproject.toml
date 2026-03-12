@@ -49,7 +49,11 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "-v --doctest-modules --ignore=benchmark --doctest-glob=README.md"
+addopts = ["-v", "-ra", "--strict-config", "--strict-markers", "--doctest-modules", "--ignore=benchmark", "--doctest-glob=README.md"]
+filterwarnings = ["error"]
+log_level = "INFO"
+testpaths = ["test"]
+xfail_strict = true
 
 [tool.ruff]
 line-length = 99
