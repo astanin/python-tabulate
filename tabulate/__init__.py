@@ -2386,6 +2386,21 @@ def tabulate(
             elif align != "global":
                 aligns[idx] = align
     minwidths = [width_fn(h) + min_padding for h in headers] if headers else [0] * len(cols)
+    # When maxcolwidths is active and the header text is *at least as wide* as
+    # the requested column limit, min_padding would push the minimum width
+    # beyond the user's requested maximum, adding spurious trailing spaces.
+    # In that case the header width alone is sufficient — strip the extra
+    # padding so the column stays at the requested width.
+    # We only apply this correction when header_width >= maxcolwidth, because
+    # when the header is narrower than the limit the data cells (wrapped to
+    # maxcolwidth chars) determine the column width and min_padding is still
+    # needed for borderless table formats.
+    if maxcolwidths is not None and headers:
+        for i, (h, mw) in enumerate(zip(headers, maxcolwidths)):
+            if mw is not None and i < len(minwidths):
+                hw = width_fn(h)
+                if hw >= mw:
+                    minwidths[i] = hw  # drop the +min_padding
     aligns_copy = aligns.copy()
     # Reset alignments in copy of alignments list to "left" for 'colon_grid' format,
     # which enforces left alignment in the text output of the data.

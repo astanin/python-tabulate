@@ -259,44 +259,55 @@ def test_wrap_datetime():
 
 
 def test_wrap_none_value():
-    """TextWrapper: Show that None can be wrapped without crashing"""
+    """TextWrapper: Show that None can be wrapped without crashing.
+
+    When header width equals maxcolwidths, the column must not be inflated
+    by min_padding beyond the user-requested maximum (issue #354).
+    """
     data = [["First Entry", None], ["Second Entry", None]]
     headers = ["Title", "Value"]
     result = tabulate(data, headers=headers, tablefmt="grid", maxcolwidths=[7, 5])
 
+    # "Value" (5 chars) == maxcolwidth (5): column stays at 5, not 5+min_padding.
     expected = [
-        "+---------+---------+",
-        "| Title   | Value   |",
-        "+=========+=========+",
-        "| First   |         |",
-        "| Entry   |         |",
-        "+---------+---------+",
-        "| Second  |         |",
-        "| Entry   |         |",
-        "+---------+---------+",
+        "+---------+-------+",
+        "| Title   | Value |",
+        "+=========+=======+",
+        "| First   |       |",
+        "| Entry   |       |",
+        "+---------+-------+",
+        "| Second  |       |",
+        "| Entry   |       |",
+        "+---------+-------+",
     ]
     expected = "\n".join(expected)
     assert_equal(expected, result)
 
 
 def test_wrap_none_value_with_missingval():
-    """TextWrapper: Show that None can be wrapped without crashing and with a missing value"""
+    """TextWrapper: Show that None can be wrapped without crashing and with a missing value.
+
+    When header width equals maxcolwidths, the column must not be inflated
+    by min_padding beyond the user-requested maximum (issue #354).
+    """
     data = [["First Entry", None], ["Second Entry", None]]
     headers = ["Title", "Value"]
     result = tabulate(
         data, headers=headers, tablefmt="grid", maxcolwidths=[7, 5], missingval="???"
     )
 
+    # "Value" (5 chars) == maxcolwidth (5): column stays at 5.
+    # "???" (3 chars) < maxcolwidth (5): fits without wrapping.
     expected = [
-        "+---------+---------+",
-        "| Title   | Value   |",
-        "+=========+=========+",
-        "| First   | ???     |",
-        "| Entry   |         |",
-        "+---------+---------+",
-        "| Second  | ???     |",
-        "| Entry   |         |",
-        "+---------+---------+",
+        "+---------+-------+",
+        "| Title   | Value |",
+        "+=========+=======+",
+        "| First   | ???   |",
+        "| Entry   |       |",
+        "+---------+-------+",
+        "| Second  | ???   |",
+        "| Entry   |       |",
+        "+---------+-------+",
     ]
     expected = "\n".join(expected)
     assert_equal(expected, result)

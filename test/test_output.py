@@ -3349,3 +3349,49 @@ def test_break_on_hyphens():
     expected = "h1    h2    h3\n----  ----  ----\nfoo-  bar-  foo-\nbar   bar   foo"
     result = tabulate(test_table, table_headers, maxcolwidths=5, break_on_hyphens=True)
     assert_equal(expected, result)
+
+
+def test_maxcolwidth_no_extra_padding_when_header_equals_limit():
+    """Regression test for issue #354.
+
+    When the header text width exactly equals the maxcolwidths limit,
+    the column must not be widened by min_padding beyond the limit.
+
+    Previously, min_padding (2 spaces) was unconditionally added to the
+    minimum column width derived from the header, causing the column to be
+    2 chars wider than requested — enough to cause terminal overflow when
+    the user had calculated maxcolwidths from the terminal width.
+    """
+    headers = ["Header#1", "Header#2", "Header#3"]
+    data = [
+        [
+            "Alpha beta gama zeta omega",
+            "The weather was exceptionally good that day again",
+            "The files were concatenated and archived for posterity.",
+        ],
+    ]
+
+    result = tabulate(
+        data,
+        headers=headers,
+        tablefmt="fancy_grid",
+        maxcolwidths=[None, None, 8],
+    )
+
+    # Each cell in Header#3's column must be at most 10 chars wide
+    # (1 border-space + 8 content + 1 border-space) when using fancy_grid.
+    # Before the fix they were 12 chars (+ 2 extra spurious spaces).
+    lines = result.split("\n")
+    for line in lines:
+        if "│" not in line:
+            continue
+        col3_end = line.rfind("│")
+        col3_start = line.rfind("│", 0, col3_end)
+        if col3_start < 0:
+            continue
+        cell = line[col3_start + 1 : col3_end]
+        assert len(cell) <= 10, (
+            f"Column 'Header#3' cell is {len(cell)} chars wide (expected ≤10); "
+            f"got {cell!r}. maxcolwidths=8 should not add 2 extra spaces when "
+            f"header width equals the limit."
+        )
