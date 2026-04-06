@@ -131,26 +131,37 @@ def _is_separating_line(row):
     )
 
 
-def _pipe_segment_with_colons(align, colwidth):
+def _pipe_segment_with_colons(align, colwidth, padding=0):
     """Return a segment of a horizontal line with optional colons which
-    indicate column's alignment (as in `pipe` output format)."""
+    indicate column's alignment (as in `pipe` output format).
+
+    When ``padding`` is non-zero, the segment respects the format's padding by
+    placing spaces at the padding positions instead of filling the entire width
+    with dashes.  This makes separator rows consistent with data rows, which
+    already honour padding via ``_pad_row``.
+    """
     w = colwidth
+    pad = " " * padding
+    # Width available for dashes and alignment colons.
+    dw = w - 2 * padding
     if align in ["right", "decimal"]:
-        return ("-" * (w - 1)) + ":"
+        return pad + ("-" * (dw - 1)) + ":" + pad
     elif align == "center":
-        return ":" + ("-" * (w - 2)) + ":"
+        return pad + ":" + ("-" * (dw - 2)) + ":" + pad
     elif align == "left":
-        return ":" + ("-" * (w - 1))
+        return pad + ":" + ("-" * (dw - 1)) + pad
     else:
-        return "-" * w
+        return pad + ("-" * dw) + pad
 
 
-def _pipe_line_with_colons(colwidths, colaligns):
+def _pipe_line_with_colons(colwidths, colaligns, padding=0):
     """Return a horizontal line with optional colons to indicate column's
     alignment (as in `pipe` output format)."""
     if not colaligns:  # e.g. printing an empty data frame (github issue #15)
         colaligns = [""] * len(colwidths)
-    segments = "|".join(_pipe_segment_with_colons(a, w) for a, w in zip(colaligns, colwidths))
+    segments = "|".join(
+        _pipe_segment_with_colons(a, w, padding) for a, w in zip(colaligns, colwidths)
+    )
     return f"|{segments}|"
 
 
@@ -168,7 +179,7 @@ def _grid_segment_with_colons(colwidth, align):
         return "=" * width
 
 
-def _grid_line_with_colons(colwidths, colaligns):
+def _grid_line_with_colons(colwidths, colaligns, **kwargs):
     """Return a horizontal line with optional colons to indicate column's alignment
     in a grid table."""
     if not colaligns:
@@ -200,7 +211,7 @@ def _textile_row_with_attrs(cell_values, colwidths, colaligns):
     return f"|{values}|"
 
 
-def _html_begin_table_without_header(colwidths_ignore, colaligns_ignore):
+def _html_begin_table_without_header(colwidths_ignore, colaligns_ignore, **kwargs):
     # this table header will be suppressed if there is a header row
     return "<table>\n<tbody>"
 
@@ -242,7 +253,7 @@ def _moin_row_with_attrs(celltag, cell_values, colwidths, colaligns, header=""):
     return "".join(values_with_attrs) + "||"
 
 
-def _latex_line_begin_tabular(colwidths, colaligns, booktabs=False, longtable=False):
+def _latex_line_begin_tabular(colwidths, colaligns, booktabs=False, longtable=False, **kwargs):
     alignment = {"left": "l", "right": "r", "center": "c", "decimal": "r"}
     tabular_columns_fmt = "".join([alignment.get(a, "l") for a in colaligns])
     return "\n".join(
@@ -255,7 +266,7 @@ def _latex_line_begin_tabular(colwidths, colaligns, booktabs=False, longtable=Fa
     )
 
 
-def _asciidoc_row(is_header, *args):
+def _asciidoc_row(is_header, *args, **kwargs):
     """handle header and data rows for asciidoc format"""
 
     def make_header_line(is_header, colwidths, colaligns):
@@ -2063,7 +2074,7 @@ def tabulate(
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]],
     ...                ["strings", "numbers"], "pipe"))
     | strings   |   numbers |
-    |:----------|----------:|
+    | :-------- | --------: |
     | spam      |   41.9999 |
     | eggs      |  451      |
 
@@ -2077,7 +2088,7 @@ def tabulate(
      eggs      |  451
 
     >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], tablefmt="pipe"))
-    |:-----|---------:|
+    | :--- | -------: |
     | spam |  41.9999 |
     | eggs | 451      |
 
@@ -2578,12 +2589,12 @@ def _append_multiline_row(
     return lines
 
 
-def _build_line(colwidths, colaligns, linefmt):
+def _build_line(colwidths, colaligns, linefmt, padding=0):
     "Return a string which represents a horizontal line."
     if not linefmt:
         return None
     if callable(linefmt):
-        return linefmt(colwidths, colaligns)
+        return linefmt(colwidths, colaligns, padding=padding)
     else:
         begin, fill, sep, end = linefmt
         cells = [fill * w for w in colwidths]
@@ -2591,8 +2602,8 @@ def _build_line(colwidths, colaligns, linefmt):
         return _build_simple_row(cells, rowfmt)
 
 
-def _append_line(lines, colwidths, colaligns, linefmt):
-    lines.append(_build_line(colwidths, colaligns, linefmt))
+def _append_line(lines, colwidths, colaligns, linefmt, padding=0):
+    lines.append(_build_line(colwidths, colaligns, linefmt, padding=padding))
     return lines
 
 
@@ -2629,12 +2640,12 @@ def _format_table(
     padded_headers = pad_row(headers, pad)
 
     if fmt.lineabove and "lineabove" not in hidden:
-        _append_line(lines, padded_widths, colaligns, fmt.lineabove)
+        _append_line(lines, padded_widths, colaligns, fmt.lineabove, padding=pad)
 
     if padded_headers:
         append_row(lines, padded_headers, padded_widths, headersaligns, headerrow)
         if fmt.linebelowheader and "linebelowheader" not in hidden:
-            _append_line(lines, padded_widths, colaligns, fmt.linebelowheader)
+            _append_line(lines, padded_widths, colaligns, fmt.linebelowheader, padding=pad)
 
     if rows and fmt.linebetweenrows and "linebetweenrows" not in hidden:
         # initial rows with a line below
@@ -2648,7 +2659,7 @@ def _format_table(
                     fmt.datarow,
                     rowalign=ralign,
                 )
-            _append_line(lines, padded_widths, colaligns, fmt.linebetweenrows)
+            _append_line(lines, padded_widths, colaligns, fmt.linebetweenrows, padding=pad)
         # the last row without a line below
         append_row(
             lines,
@@ -2670,12 +2681,12 @@ def _format_table(
             # test to see if either the 1st column or the 2nd column (account for showindex) has
             # the SEPARATING_LINE flag
             if _is_separating_line(row):
-                _append_line(lines, padded_widths, colaligns, separating_line)
+                _append_line(lines, padded_widths, colaligns, separating_line, padding=pad)
             else:
                 append_row(lines, pad_row(row, pad), padded_widths, colaligns, fmt.datarow)
 
     if fmt.linebelow and "linebelow" not in hidden:
-        _append_line(lines, padded_widths, colaligns, fmt.linebelow)
+        _append_line(lines, padded_widths, colaligns, fmt.linebelow, padding=pad)
 
     if headers or rows:
         output = "\n".join(lines)

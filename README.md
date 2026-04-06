@@ -238,7 +238,7 @@ corresponds to the `pipe` format with the same alignment colons:
 ```pycon
 >>> print(tabulate(table, headers, tablefmt="github"))
 | item   |   qty |
-|:-------|------:|
+| :----- | ----: |
 | spam   |    42 |
 | eggs   |   451 |
 | bacon  |     0 |
@@ -487,7 +487,7 @@ indicate column alignment:
 ```pycon
 >>> print(tabulate(table, headers, tablefmt="pipe"))
 | item   |   qty |
-|:-------|------:|
+| :----- | ----: |
 | spam   |    42 |
 | eggs   |   451 |
 | bacon  |     0 |
@@ -931,7 +931,7 @@ spam
 >>> print(tabulate(table, headers, tablefmt="pipe"))
 | item   |   qty |
 | name   |       |
-|:-------|------:|
+| :----- | ----: |
 | eggs   |   451 |
 | more   |    42 |
 | spam   |       |

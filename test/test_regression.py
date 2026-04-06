@@ -13,7 +13,7 @@ def test_ansi_color_in_table_cells():
     expected = "\n".join(
         [
             "| test   | test   | test   |",
-            "|:-------|:-------|:-------|",
+            "| :----- | :----- | :----- |",
             "| test   | \x1b[31mtest\x1b[0m   | \x1b[32mtest\x1b[0m   |",
         ]
     )
@@ -195,7 +195,7 @@ def test_88_256_ANSI_color_codes():
     expected = "\n".join(
         [
             "| background   | foreground   |",
-            "|:-------------|:-------------|",
+            "| :----------- | :----------- |",
             "| \x1b[48;5;196mred\x1b[49m          | \x1b[38;5;196mred\x1b[39m          |",
         ]
     )
@@ -424,7 +424,7 @@ def test_empty_pipe_table_with_columns():
     "Regression: allow empty pipe tables with columns, like empty dataframes (github issue #15)"
     table = []
     headers = ["Col1", "Col2"]
-    expected = "\n".join(["| Col1   | Col2   |", "|--------|--------|"])
+    expected = "\n".join(["| Col1   | Col2   |", "| ------ | ------ |"])
     result = tabulate(table, headers, tablefmt="pipe")
     assert_equal(expected, result)
 
@@ -542,7 +542,7 @@ def test_numpy_int64_as_integer():
         expected = "\n".join(
             [
                 "|   int |   float |",
-                "|------:|--------:|",
+                "| ----: | ------: |",
                 "|     1 |    3.14 |",
             ]
         )
@@ -596,5 +596,5 @@ def test_asciidoc_without_trailing_whitespace():
 def test_github_escape_pipe_character():
     "Regression: github format must escape pipe character with a backslash (issue #241)"
     result = tabulate([["foo|bar"]], headers=("spam|eggs",), tablefmt="github")
-    expected = "| spam\\|eggs   |\n|:------------|\n| foo\\|bar     |"
+    expected = "| spam\\|eggs   |\n| :---------- |\n| foo\\|bar     |"
     assert_equal(expected, result)

@@ -369,9 +369,9 @@ def test_simple_headerless_with_sep_line_with_padding_in_tablefmt():
     "Output: simple without headers with sep line with padding in tablefmt"
     expected = "\n".join(
         [
-            "|:-----|---------:|",
+            "| :--- | -------: |",
             "| spam |  41.9999 |",
-            "|:-----|---------:|",
+            "| :--- | -------: |",
             "| eggs | 451      |",
         ]
     )
@@ -489,12 +489,13 @@ def test_github():
     expected = "\n".join(
         [
             "| strings   |   numbers |",
-            "|:----------|----------:|",
+            "| :-------- | --------: |",
             "| spam      |   41.9999 |",
             "| eggs      |  451      |",
         ]
     )
     result = tabulate(_test_table, _test_table_headers, tablefmt="github")
+
     assert_equal(expected, result)
 
 
@@ -506,7 +507,7 @@ def test_github_multiline():
         [
             "|        more | more spam   |",
             "|   spam eggs | & eggs      |",
-            "|------------:|:------------|",
+            "| ----------: | :---------- |",
             "|           2 | foo         |",
             "|             | bar         |",
         ]
@@ -520,7 +521,7 @@ def test_github_with_colalign():
     expected = "\n".join(
         [
             "| Name   |   Age |",
-            "|:-------|------:|",
+            "| :----- | ----: |",
             "| Alice  |    24 |",
             "| Bob    |    19 |",
         ]
@@ -539,7 +540,7 @@ def test_github_no_alignment():
     expected = "\n".join(
         [
             "| strings | numbers |",
-            "|-----------|-----------|",
+            "| --------- | --------- |",
             "| spam | 41.9999 |",
             "| eggs | 451 |",
         ]
@@ -1995,7 +1996,7 @@ def test_pipe():
     expected = "\n".join(
         [
             "| strings   |   numbers |",
-            "|:----------|----------:|",
+            "| :-------- | --------: |",
             "| spam      |   41.9999 |",
             "| eggs      |  451      |",
         ]
@@ -2006,7 +2007,7 @@ def test_pipe():
 
 def test_pipe_headerless():
     "Output: pipe without headers"
-    expected = "\n".join(["|:-----|---------:|", "| spam |  41.9999 |", "| eggs | 451      |"])
+    expected = "\n".join(["| :--- | -------: |", "| spam |  41.9999 |", "| eggs | 451      |"])
     result = tabulate(_test_table, tablefmt="pipe")
     assert_equal(expected, result)
 
