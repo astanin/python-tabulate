@@ -531,6 +531,16 @@ def test_exception_on_empty_data_with_maxcolwidths():
     assert_equal(result, "")
 
 
+def test_disable_numparse_honored_with_maxcolwidths():
+    "Regression: disable_numparse honored on the wrap path (github issue #428)"
+    # A number-ish but unparseable cell ('80,443') must not be parsed when
+    # disable_numparse=True, even when maxcolwidths triggers the wrap path.
+    table = [["ports", "str", "comma-separated port list", "80,443"]]
+    headers = ["name", "type", "desc", "default"]
+    result = tabulate(table, headers, tablefmt="grid", disable_numparse=True, maxcolwidths=40)
+    assert "80,443" in result
+
+
 def test_numpy_int64_as_integer():
     "Regression: format numpy.int64 as integer (github issue #18)"
     try:
