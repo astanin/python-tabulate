@@ -302,6 +302,36 @@ def test_wrap_none_value_with_missingval():
     assert_equal(expected, result)
 
 
+def test_wrap_pandas_na_value():
+    """TextWrapper: a pandas NA scalar must wrap without crashing (issue #429).
+
+    ``pd.NA == ""`` returns a non-bool ``NA`` whose truthiness raises
+    "boolean value of NA is ambiguous"; wrapping must guard against that.
+    """
+    try:
+        import pandas as pd
+    except ImportError:
+        skip("test_wrap_pandas_na_value is skipped")
+
+    data = [["First Entry", pd.NA], ["Second Entry", pd.NA]]
+    headers = ["Title", "Value"]
+    result = tabulate(data, headers=headers, tablefmt="grid", maxcolwidths=[7, 5])
+
+    expected = [
+        "+---------+---------+",
+        "| Title   | Value   |",
+        "+=========+=========+",
+        "| First   | <NA>    |",
+        "| Entry   |         |",
+        "+---------+---------+",
+        "| Second  | <NA>    |",
+        "| Entry   |         |",
+        "+---------+---------+",
+    ]
+    expected = "\n".join(expected)
+    assert_equal(expected, result)
+
+
 def test_wrap_optional_bool_strs():
     """TextWrapper: Show that str bools and None can be wrapped without crashing"""
     data = [
