@@ -1651,7 +1651,11 @@ def _wrap_text_to_colwidths(
                     if cell is None
                     else (
                         str(cell)
-                        if cell == "" or _isnumber(cell)
+                        # Guard the empty-string check with isinstance: comparing
+                        # a non-string scalar such as pandas' ``pd.NA`` to "" can
+                        # return a non-bool whose truthiness then raises (e.g.
+                        # "boolean value of NA is ambiguous") inside the ``or``.
+                        if (isinstance(cell, str) and cell == "") or _isnumber(cell)
                         else str(_type(cell, numparse)(cell))
                     )
                 )
