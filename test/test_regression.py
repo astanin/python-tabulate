@@ -205,7 +205,7 @@ def test_88_256_ANSI_color_codes():
 
 def test_column_with_mixed_value_types():
     "Regression: mixed value types in the same column (issue #31)"
-    expected = "\n".join(["-----", "", "a", "я", "0", "False", "-----"])
+    expected = "\n".join(["-----", "     ", "a", "я", "0", "False", "-----"])
     data = [[None], ["a"], ["\u044f"], [0], [False]]
     table = tabulate(data)
     assert_equal(table, expected)
@@ -415,7 +415,7 @@ def test_escape_empty_cell_in_first_column_in_rst():
 def test_ragged_rows():
     "Regression: allow rows with different number of columns (issue #85)"
     table = [[1, 2, 3], [1, 2], [1, 2, 3, 4]]
-    expected = "\n".join(["-  -  -  -", "1  2  3", "1  2", "1  2  3  4", "-  -  -  -"])
+    expected = "\n".join(["-  -  -  -", "1  2  3   ", "1  2      ", "1  2  3  4", "-  -  -  -"])
     result = tabulate(table)
     assert_equal(expected, result)
 

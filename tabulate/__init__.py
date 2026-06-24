@@ -2504,7 +2504,7 @@ def _pad_row(cells, padding):
         return cells
 
 
-def _build_simple_row(padded_cells: list[list], rowfmt: DataRow) -> str:
+def _build_simple_row(padded_cells: list[list], rowfmt: DataRow, preserve_trailing_empty: bool = False) -> str:
     "Format row according to DataRow format without padding."
     begin = rowfmt.begin
     sep = rowfmt.sep
@@ -2520,7 +2520,15 @@ def _build_simple_row(padded_cells: list[list], rowfmt: DataRow) -> str:
     else:
         escaped_cells = padded_cells
 
-    return (begin + sep.join(escaped_cells) + end).rstrip()
+    row = begin + sep.join(escaped_cells) + end
+    # When there is no closing delimiter and the last cell is purely whitespace
+    # (i.e. a missing/None value formatted as ""), rstrip() silently drops the
+    # trailing column separator and makes that column invisible.  Skip rstrip()
+    # only for primary data rows (preserve_trailing_empty=True) so that
+    # multiline continuation lines are still stripped as before.
+    if preserve_trailing_empty and not end and escaped_cells and not escaped_cells[-1].strip():
+        return row
+    return row.rstrip()
 
 
 def _build_row(
@@ -2528,6 +2536,7 @@ def _build_row(
     colwidths: list[int],
     colaligns: list[str],
     rowfmt: DataRow | Callable,
+    preserve_trailing_empty: bool = False,
 ) -> str:
     "Return a string which represents a row of data cells."
     if not rowfmt:
@@ -2535,12 +2544,12 @@ def _build_row(
     if callable(rowfmt):
         return rowfmt(padded_cells, colwidths, colaligns)
     else:
-        return _build_simple_row(padded_cells, rowfmt)
+        return _build_simple_row(padded_cells, rowfmt, preserve_trailing_empty)
 
 
-def _append_basic_row(lines, padded_cells, colwidths, colaligns, rowfmt, rowalign=None):
+def _append_basic_row(lines, padded_cells, colwidths, colaligns, rowfmt, rowalign=None, preserve_trailing_empty=False):
     # NOTE: rowalign is ignored and exists for api compatibility with _append_multiline_row
-    lines.append(_build_row(padded_cells, colwidths, colaligns, rowfmt))
+    lines.append(_build_row(padded_cells, colwidths, colaligns, rowfmt, preserve_trailing_empty))
     return lines
 
 
@@ -2624,7 +2633,9 @@ def _format_table(
         append_row = partial(_append_multiline_row, pad=pad)
     else:
         pad_row = _pad_row
-        append_row = _append_basic_row
+        # preserve_trailing_empty=True so that a trailing None/empty cell (which
+        # formats to "") is not silently rstripped away and the column disappears.
+        append_row = partial(_append_basic_row, preserve_trailing_empty=True)
 
     padded_headers = pad_row(headers, pad)
 

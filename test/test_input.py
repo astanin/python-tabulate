@@ -57,7 +57,7 @@ def test_list_of_lists():
             "    string      number",
             "--  --------  --------",
             "a   one              1",
-            "b   two",
+            "b   two               ",
         ]
     )
     result = tabulate(ll, headers=["string", "number"])
@@ -72,7 +72,7 @@ def test_list_of_lists_firstrow():
             "    string      number",
             "--  --------  --------",
             "a   one              1",
-            "b   two",
+            "b   two               ",
         ]
     )
     result = tabulate(ll, headers="firstrow")
@@ -82,7 +82,7 @@ def test_list_of_lists_firstrow():
 def test_list_of_lists_keys():
     "Input: a list of lists with column indices as headers."
     ll = [["a", "one", 1], ["b", "two", None]]
-    expected = "\n".join(["0    1      2", "---  ---  ---", "a    one    1", "b    two"])
+    expected = "\n".join(["0    1      2", "---  ---  ---", "a    one    1", "b    two     "])
     result = tabulate(ll, headers="keys")
     assert_equal(expected, result)
 
@@ -405,8 +405,8 @@ def test_list_of_dicts_with_missing_keys():
         [
             "  foo    bar    baz",
             "-----  -----  -----",
-            "    1",
-            "           2",
+            "    1              ",
+            "           2       ",
             "    4             3",
         ]
     )
