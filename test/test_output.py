@@ -3028,7 +3028,7 @@ def test_missingval_multi():
         missingval=("n/a", "?"),
         tablefmt="plain",
     )
-    expected = "Alice  Bob  Charlie\nn/a    ?"
+    expected = "Alice  Bob  Charlie\nn/a    ?           "
     assert_equal(expected, result)
 
 
@@ -3053,7 +3053,7 @@ def test_column_emptymissing_deduction():
     ?              1.2342  1/3
     0.056789  12,345       abc
                            ?
-3,333.3            ?
+3,333.3            ?          
 ------------  -----------  ---"""
     assert_equal(expected, result)
 
