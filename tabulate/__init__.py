@@ -862,7 +862,7 @@ def _isnumber_with_thousands_separator(string):
     except (UnicodeDecodeError, AttributeError):
         pass
 
-    return bool(re.match(_float_with_thousands_separators, string))
+    return bool(_float_with_thousands_separators.match(string))
 
 
 def _isconvertible(conv, string):
@@ -1220,7 +1220,7 @@ def _align_column(
     width_fn = _align_column_choose_width_fn(has_invisible, enable_widechars, is_multiline)
 
     s_widths = list(map(width_fn, strings))
-    maxwidth = max(max(_flat_list(s_widths)), minwidth)
+    maxwidth = max(max(_flat_list(s_widths) if is_multiline else s_widths), minwidth)
     # TODO: refactor column alignment in single-line and multiline modes
     if is_multiline:
         if not enable_widechars and not has_invisible:
