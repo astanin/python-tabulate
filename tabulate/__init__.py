@@ -2488,6 +2488,9 @@ def _expand_iterable(original, num_desired, default):
     length `num_desired` completely populated with `default will be returned
     """
     if isinstance(original, Iterable) and not isinstance(original, str):
+        # Coerce to list so non-list iterables (e.g. a tuple passed as
+        # `rowalign`/`maxcolwidths`) can be concatenated with the padding list.
+        original = list(original)
         return original + [default] * (num_desired - len(original))
     else:
         return [default] * num_desired
