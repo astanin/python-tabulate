@@ -204,6 +204,8 @@ def _html_begin_table_without_header(colwidths_ignore, colaligns_ignore):
     # this table header will be suppressed if there is a header row
     return "<table>\n<tbody>"
 
+def _html_separating_line(colwidths, colaligns):
+    return "<tr><td colspan=\"%d\"><hr></td></tr>" % len(colwidths)
 
 def _html_row_with_attrs(celltag, unsafe, cell_values, colwidths, colaligns):
     alignment = {
@@ -617,23 +619,23 @@ _table_formats = {
     ),
     "html": TableFormat(
         lineabove=_html_begin_table_without_header,
-        linebelowheader="",
+        linebelowheader=_html_separating_line,
         linebetweenrows=None,
         linebelow=Line("</tbody>\n</table>", "", "", ""),
         headerrow=partial(_html_row_with_attrs, "th", False),
         datarow=partial(_html_row_with_attrs, "td", False),
         padding=0,
-        with_header_hide=["lineabove"],
+        with_header_hide=["lineabove","linebelowheader"],
     ),
     "unsafehtml": TableFormat(
         lineabove=_html_begin_table_without_header,
-        linebelowheader="",
+        linebelowheader=_html_separating_line,
         linebetweenrows=None,
         linebelow=Line("</tbody>\n</table>", "", "", ""),
         headerrow=partial(_html_row_with_attrs, "th", True),
         datarow=partial(_html_row_with_attrs, "td", True),
         padding=0,
-        with_header_hide=["lineabove"],
+        with_header_hide=["lineabove","linebelowheader"],
     ),
     "latex": TableFormat(
         lineabove=_latex_line_begin_tabular,

@@ -2586,6 +2586,7 @@ def test_moinmoin_headerless():
 
 _test_table_html_headers = ["<strings>", "<&numbers&>"]
 _test_table_html = [["spam >", 41.9999], ["eggs &", 451.0]]
+_test_table_html_sepline = [["spam >", 41.9999], SEPARATING_LINE, ["eggs &", 451.0]]
 _test_table_unsafehtml_headers = ["strings", "numbers"]
 _test_table_unsafehtml = [
     ["spam", '<font color="red">41.9999</font>'],
@@ -2654,6 +2655,41 @@ def test_html_headerless():
     assert hasattr(result, "_repr_html_")
     assert result._repr_html_() == result.str
 
+
+def test_html_with_separating_line():
+    expected = "\n".join(
+        [
+            "<table>",
+            "<tbody>",
+            '<tr><td style="text-align: left;">spam &gt;</td><td style="text-align: right;"> 41.9999</td></tr>',
+            '<tr><td colspan="2"><hr></td></tr>',
+            '<tr><td style="text-align: left;">eggs &amp;</td><td style="text-align: right;">451     </td></tr>',
+            "</tbody>",
+            "</table>",
+        ]
+    )
+    result = tabulate(_test_table_html_sepline, tablefmt="html")
+    assert_equal(expected, result)
+
+
+def test_html_headers_no_extra_line():
+    # ensure that the extra hr isn't accidentally triggered
+    expected = "\n".join(
+        [
+            "<table>",
+            "<thead>",
+            '<tr><th style="text-align: left;">&lt;strings&gt;  </th><th style="text-align: right;">  &lt;&amp;numbers&amp;&gt;</th></tr>',
+            "</thead>",
+            "<tbody>",
+            '<tr><td style="text-align: left;">spam &gt;     </td><td style="text-align: right;">      41.9999</td></tr>',
+            '<tr><td colspan="2"><hr></td></tr>',
+            '<tr><td style="text-align: left;">eggs &amp;     </td><td style="text-align: right;">     451     </td></tr>',
+            "</tbody>",
+            "</table>",
+        ]
+    )
+    result = tabulate(_test_table_html_sepline,_test_table_html_headers, tablefmt="html")
+    assert_equal(expected, result)
 
 def test_unsafehtml_headerless():
     "Output: unsafe html without headers"
