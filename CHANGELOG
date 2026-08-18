@@ -1,6 +1,7 @@
 - 0.11.0:
   Drop support of the legacy `youtrack` format.
   Add support of the `Decimal` data type.
+  New output format: `typst`.
   Improve output of `github` and `asciidoc` formats.
   Add support of CSV and JSONL input data in CLI utility.
   Always add `text-align: left` in HTML output.

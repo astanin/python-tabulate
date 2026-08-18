@@ -327,6 +327,49 @@ LATEX_ESCAPE_RULES = {
 _latex_row = DataRow("", "&", "\\\\", LATEX_ESCAPE_RULES)
 
 
+# Characters that carry syntactic meaning in Typst markup (content mode) and
+# therefore have to be backslash-escaped so they are rendered literally.
+TYPST_ESCAPE_RULES = {
+    "\\": "\\\\",
+    "[": "\\[",
+    "]": "\\]",
+    "#": "\\#",
+    "$": "\\$",
+    "*": "\\*",
+    "_": "\\_",
+    "`": "\\`",
+    "<": "\\<",
+    ">": "\\>",
+    "@": "\\@",
+    "~": "\\~",
+}
+
+
+def _typst_escape(value):
+    return "".join(TYPST_ESCAPE_RULES.get(c, c) for c in value)
+
+
+def _typst_begin_table(colwidths, colaligns):
+    alignment = {"left": "left", "right": "right", "center": "center", "decimal": "right"}
+    aligns = ", ".join(alignment.get(a, "left") for a in colaligns)
+    return "\n".join(
+        [
+            "#table(",
+            f"  columns: {len(colwidths)},",
+            f"  align: ({aligns},),",
+        ]
+    )
+
+
+def _typst_row(cell_values, colwidths, colaligns, is_header=False):
+    # Alignment is carried by the table's `align:` argument, so drop the
+    # padding whitespace and wrap each value in a Typst content block.
+    cells = ", ".join(f"[{_typst_escape(c.strip())}]" for c in cell_values)
+    if is_header:
+        return f"  table.header({cells}),"
+    return f"  {cells},"
+
+
 GITHUB_ESCAPE_RULES = {r"|": r"\|"}
 
 
@@ -704,6 +747,16 @@ _table_formats = {
         datarow=partial(_asciidoc_row, False),
         padding=1,
         with_header_hide=["lineabove"],
+    ),
+    "typst": TableFormat(
+        lineabove=_typst_begin_table,
+        linebelowheader=None,
+        linebetweenrows=None,
+        linebelow=Line(")", "", "", ""),
+        headerrow=partial(_typst_row, is_header=True),
+        datarow=_typst_row,
+        padding=0,
+        with_header_hide=None,
     ),
 }
 
@@ -2191,6 +2244,18 @@ def tabulate(
      eggs & 451      \\\\
     \\hline
     \\end{longtable}
+
+    "typst" produces markup for a Typst `table`, with column alignment
+    taken from the computed alignment of each column:
+
+    >>> print(tabulate([["spam", 41.9999], ["eggs", "451.0"]], ["strings", "numbers"], tablefmt="typst"))
+    #table(
+      columns: 2,
+      align: (left, right,),
+      table.header([strings], [numbers]),
+      [spam], [41.9999],
+      [eggs], [451],
+    )
 
 
     Number parsing

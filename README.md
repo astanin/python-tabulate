@@ -204,6 +204,7 @@ Supported table formats are:
 -   "latex\_longtable"
 -   "textile"
 -   "tsv"
+-   "typst"
 
 `plain` tables do not use any pseudo-graphics to draw lines:
 
@@ -641,6 +642,23 @@ spacing and style from the `booktabs` package.
 
 `latex_longtable` creates a table that can stretch along multiple pages,
 using the `longtable` package.
+
+`typst` format creates markup for a [Typst](https://typst.app/) `table`,
+carrying the column alignment over to the table's `align` argument and
+escaping characters that are meaningful in Typst markup:
+
+```pycon
+>>> print(tabulate(table, headers, tablefmt="typst"))
+#table(
+  columns: 2,
+  align: (left, right,),
+  table.header([item], [qty]),
+  [spam], [42],
+  [eggs], [451],
+  [bacon], [0],
+)
+
+```
 
 ### Column alignment
 

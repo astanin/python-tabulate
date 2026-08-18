@@ -2767,6 +2767,57 @@ def test_latex_booktabs_headerless():
     assert_equal(expected, result)
 
 
+def test_typst():
+    "Output: typst with headers"
+    result = tabulate(_test_table, _test_table_headers, tablefmt="typst")
+    expected = "\n".join(
+        [
+            "#table(",
+            "  columns: 2,",
+            "  align: (left, right,),",
+            "  table.header([strings], [numbers]),",
+            "  [spam], [41.9999],",
+            "  [eggs], [451],",
+            ")",
+        ]
+    )
+    assert_equal(expected, result)
+
+
+def test_typst_headerless():
+    "Output: typst without headers"
+    result = tabulate(_test_table, tablefmt="typst")
+    expected = "\n".join(
+        [
+            "#table(",
+            "  columns: 2,",
+            "  align: (left, right,),",
+            "  [spam], [41.9999],",
+            "  [eggs], [451],",
+            ")",
+        ]
+    )
+    assert_equal(expected, result)
+
+
+def test_typst_escaping_and_alignment():
+    "Output: typst escapes markup characters and reflects column alignment"
+    table = [["a[1]", "x_y"], ["#tag", "$m$"]]
+    result = tabulate(table, ["h*1", "col"], tablefmt="typst", colalign=("center", "left"))
+    expected = "\n".join(
+        [
+            "#table(",
+            "  columns: 2,",
+            "  align: (center, left,),",
+            "  table.header([h\\*1], [col]),",
+            "  [a\\[1\\]], [x\\_y],",
+            "  [\\#tag], [\\$m\\$],",
+            ")",
+        ]
+    )
+    assert_equal(expected, result)
+
+
 def test_textile():
     "Output: textile without header"
     result = tabulate(_test_table, tablefmt="textile")
