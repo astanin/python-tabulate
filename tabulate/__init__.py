@@ -1658,7 +1658,6 @@ def _wrap_text_to_colwidths(
                 wrapped = [
                     "\n".join(wrapper.wrap(line))
                     for line in casted_cell.splitlines()
-                    if line.strip() != ""
                 ]
                 new_row.append("\n".join(wrapped))
             else:

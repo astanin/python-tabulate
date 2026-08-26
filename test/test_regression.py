@@ -504,6 +504,22 @@ def test_preserve_line_breaks_with_maxcolwidths():
     assert_equal(expected, result)
 
 
+def test_preserve_blank_lines_with_maxcolwidths():
+    "Regression: keep blank lines when wrapping cells (github issue #440)"
+    table = [["foo\n\nbar"]]
+    expected = "\n".join(
+        [
+            "+-----+",
+            "| foo |",
+            "|     |",
+            "| bar |",
+            "+-----+",
+        ]
+    )
+    result = tabulate(table, tablefmt="grid", maxcolwidths=10)
+    assert_equal(expected, result)
+
+
 def test_maxcolwidths_accepts_list_or_tuple():
     "Regression: maxcolwidths can accept a list or a tuple (github issue #214)"
     table = [["lorem ipsum dolor sit amet"] * 3]
