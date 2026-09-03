@@ -3,9 +3,27 @@
 import datetime
 from textwrap import TextWrapper as OTW
 
+from pytest import mark
+
 from tabulate import _CustomTextWrap as CTW, _strip_ansi, tabulate
 
 from common import assert_equal, skip
+
+
+@mark.parametrize("width", [4, 7])
+@mark.parametrize("colored", [False, True])
+def test_wrap_hyperlink_long_word(width, colored):
+    "Wrapping must not duplicate link text or split a hyperlink control sequence."
+    text = "longhyperlink"
+    link_text = "\x1b[31mlong\x1b[0mhyperlink" if colored else text
+    opening = "\x1b]8;;https://example.com\x1b\\"
+    closing = "\x1b]8;;\x1b\\"
+    link = opening + link_text + closing
+    result = CTW(width=width).wrap(link)
+    assert_equal([_strip_ansi(line) for line in result], OTW(width=width).wrap(text))
+    for line in result:
+        assert opening in line
+        assert line.rfind(closing) > line.rfind(opening)
 
 
 def test_wrap_multiword_non_wide():

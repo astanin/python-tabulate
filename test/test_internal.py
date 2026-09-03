@@ -1,8 +1,47 @@
 """Tests of the internal tabulate functions."""
 
+from pytest import mark
+
 import tabulate as T
 
 from common import assert_equal, cols_to_pipe_str, rows_to_pipe_table_str, skip
+
+
+@mark.parametrize("as_bytes", [False, True])
+@mark.parametrize(
+    "text, expected",
+    [
+        (
+            "\x1b]8;;https://example.com\x1b\\\x1b[31mred\x1b[0m link\x1b]8;;\x1b\\",
+            "red link",
+        ),
+        (
+            "\x1b]8;;https://example.com/one\x1b\\one"
+            "\x1b]8;;https://example.com/two\x1b\\two\x1b]8;;\x1b\\",
+            "onetwo",
+        ),
+        ("\x1b]8;;\x1b\\plain", "plain"),
+        ("\x1b]8;;https://example.com\x1b\\open", "open"),
+        ("\x1b]8;id=link-1:foo=bar;https://example.com\x1b\\text\x1b]8;;\x1b\\", "text"),
+    ],
+)
+def test_strip_ansi_hyperlink_sequences(text, expected, as_bytes):
+    "Hyperlink controls are independent of the text between them (issue #273)."
+    if as_bytes:
+        text = text.encode()
+        expected = expected.encode()
+    assert_equal(T._strip_ansi(text), expected)
+
+
+@mark.parametrize("wide_chars_mode", [False, True])
+def test_colored_hyperlink_alignment(monkeypatch, wide_chars_mode):
+    "Color controls inside link text must not change table column widths."
+    monkeypatch.setattr(T, "WIDE_CHARS_MODE", wide_chars_mode)
+    link = "\x1b]8;;https://example.com\x1b\\\x1b[31mred\x1b[0m link\x1b]8;;\x1b\\"
+    result = T.tabulate([[link, "x"], ["normal", "y"]], tablefmt="grid")
+    expected = T.tabulate([["red link", "x"], ["normal", "y"]], tablefmt="grid")
+    assert_equal(result.replace(link, "red link"), expected)
+    assert link in result
 
 
 def test_multiline_width():

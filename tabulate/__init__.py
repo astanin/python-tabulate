@@ -771,7 +771,9 @@ _multiline_codes_bytes = re.compile(b"\r|\n|\r\n")
 # Also include the terminal hyperlink sequences as described here:
 # https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
 #
-# OSC 8 ; params ; uri ST display_text OSC 8 ;; ST
+# OSC 8 ; params ; uri ST
+# Each sequence changes the active hyperlink; the URI is empty when closing it.
+# Link text may contain other escape sequences or switch directly to another URI.
 #
 # Example: \x1b]8;;https://example.com\x5ctext to show\x1b]8;;\x5c
 #
@@ -786,7 +788,7 @@ _osc = rf"{_esc}\]"
 _st = rf"{_esc}\\"
 
 _ansi_escape_pat = rf"""
-    (
+    (?:
         # terminal colors, etc
         {_csi}        # CSI
         [\x30-\x3f]*  # parameter bytes
@@ -795,12 +797,10 @@ _ansi_escape_pat = rf"""
     |
         # terminal hyperlinks
         {_osc}8;        # OSC opening
-        (\w+=\w+:?)*    # key=value params list (submatch 2)
+        [^;{_esc}]*     # optional params, up to the next delimiter
         ;               # delimiter
-        ([^{_esc}]+)    # URI - anything but ESC (submatch 3)
+        [^{_esc}]*      # URI, or empty when closing a hyperlink
         {_st}           # ST
-        ([^{_esc}]+)    # link text - anything but ESC (submatch 4)
-        {_osc}8;;{_st}  # "closing" OSC sequence
     )
 """
 _ansi_codes = re.compile(_ansi_escape_pat, re.VERBOSE)
@@ -1077,9 +1077,8 @@ def _padnone(ignore_width, s):
 def _strip_ansi(s):
     r"""Remove ANSI escape sequences, both CSI (color codes, etc) and OSC hyperlinks.
 
-    CSI sequences are simply removed from the output, while OSC hyperlinks are replaced
-    with the link text. Note: it may be desirable to show the URI instead but this is not
-    supported.
+    CSI and OSC hyperlink control sequences are removed individually, preserving link
+    text even when it contains other escape sequences. The URI is not included.
 
     >>> repr(_strip_ansi('\x1B]8;;https://example.com\x1B\\This is a link\x1B]8;;\x1B\\'))
     "'This is a link'"
@@ -1089,9 +1088,9 @@ def _strip_ansi(s):
 
     """
     if isinstance(s, str):
-        return _ansi_codes.sub(r"\4", s)
+        return _ansi_codes.sub("", s)
     else:  # a bytestring
-        return _ansi_codes_bytes.sub(r"\4", s)
+        return _ansi_codes_bytes.sub(b"", s)
 
 
 def _visible_width(s):
@@ -2697,6 +2696,7 @@ class _CustomTextWrap(textwrap.TextWrapper):
 
     def __init__(self, *args, **kwargs):
         self._active_codes = []
+        self._active_hyperlink = ""
         self.max_lines = None  # For python2 compatibility
         textwrap.TextWrapper.__init__(self, *args, **kwargs)
 
@@ -2712,18 +2712,21 @@ class _CustomTextWrap(textwrap.TextWrapper):
 
     def _update_lines(self, lines, new_line):
         """Adds a new line to the list of lines the text is being wrapped into
-        This function will also track any ANSI color codes in this string as well
-        as add any colors from previous lines order to preserve the same formatting
-        as a single unwrapped string.
+        Track ANSI color codes and hyperlinks so wrapped lines preserve the formatting
+        of a single unwrapped string without leaking it into adjacent cells.
         """
         code_matches = list(_ansi_codes.finditer(new_line))
-        color_codes = [code.string[code.span()[0] : code.span()[1]] for code in code_matches]
+        escape_codes = [code.group() for code in code_matches]
 
         # Add color codes from earlier in the unwrapped line, and then track any new ones we add.
-        new_line = "".join(self._active_codes) + new_line
+        new_line = "".join(self._active_codes) + self._active_hyperlink + new_line
 
-        for code in color_codes:
-            if code != _ansi_color_reset_code:
+        for code in escape_codes:
+            if code.startswith("\x1b]8;"):
+                # A color reset does not close a hyperlink, and a new URI replaces the old one.
+                uri = code[4:-2].partition(";")[2]
+                self._active_hyperlink = code if uri else ""
+            elif code != _ansi_color_reset_code:
                 self._active_codes.append(code)
             else:  # A single reset code resets everything
                 self._active_codes = []
@@ -2732,6 +2735,9 @@ class _CustomTextWrap(textwrap.TextWrapper):
         # still active, otherwise colors will bleed into other cells on the console
         if len(self._active_codes) > 0:
             new_line = new_line + _ansi_color_reset_code
+        if self._active_hyperlink:
+            # Close at the cell boundary and reopen on the next wrapped line.
+            new_line += "\x1b]8;;\x1b\\"
 
         lines.append(new_line)
 
@@ -2768,7 +2774,8 @@ class _CustomTextWrap(textwrap.TextWrapper):
             total_escape_len = 0
             last_group = 0
             if _ansi_codes.search(chunk) is not None:
-                for group, _, _, _ in _ansi_codes.findall(chunk):
+                for match in _ansi_codes.finditer(chunk):
+                    group = match.group()
                     escape_len = len(group)
                     if group in chunk[last_group : i + total_escape_len + escape_len - 1]:
                         total_escape_len += escape_len
