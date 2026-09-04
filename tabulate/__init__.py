@@ -1651,7 +1651,13 @@ def _wrap_text_to_colwidths(
                     if cell is None
                     else (
                         str(cell)
-                        if cell == "" or _isnumber(cell)
+                        if cell == ""
+                        or _isnumber(cell)
+                        or (isinstance(cell, str) and _ansi_codes.search(cell))
+                        or (
+                            isinstance(cell, bytes)
+                            and _ansi_codes_bytes.search(cell)
+                        )
                         else str(_type(cell, numparse)(cell))
                     )
                 )

@@ -531,6 +531,15 @@ def test_exception_on_empty_data_with_maxcolwidths():
     assert_equal(result, "")
 
 
+def test_colored_number_with_maxcolwidths():
+    "Regression: ANSI-colored numeric strings crash when wrapped by maxcolwidths (github issue #359)"
+    colored_three = "\033[31m3\033[0m"
+    result = tabulate([[colored_three]], maxcolwidths=10)
+    assert "3" in result
+    assert "\033[31m" in result
+    assert "\033[0m" in result
+
+
 def test_numpy_int64_as_integer():
     "Regression: format numpy.int64 as integer (github issue #18)"
     try:
