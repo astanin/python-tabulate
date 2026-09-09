@@ -1021,8 +1021,11 @@ def _afterpoint(string):
     2
     >>> _afterpoint("123,456.78")
     2
+    >>> _afterpoint("  123,456.78  ")
+    2
 
     """
+    string = string.strip()
     if _isnumber(string) or _isnumber_with_thousands_separator(string):
         if _isint(string):
             return -1

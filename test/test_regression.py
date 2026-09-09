@@ -211,6 +211,16 @@ def test_column_with_mixed_value_types():
     assert_equal(table, expected)
 
 
+def test_decimal_alignment_with_thousands_separator():
+    "Regression: decimal alignment must work for comma-grouped floats (issue #248)"
+    result = tabulate([[34454634.345], [3.0]], headers=["doesnt work"], floatfmt="17,.4f", tablefmt="simple")
+    rows = [row for row in result.splitlines() if "." in row and any(c.isdigit() for c in row)]
+    assert len(rows) == 2
+    # the decimal points of both rows must sit in the same column
+    dot_cols = {row.index(".") for row in rows}
+    assert len(dot_cols) == 1
+
+
 def test_latex_escape_special_chars():
     "Regression: escape special characters in LaTeX output (issue #32)"
     expected = "\n".join(
