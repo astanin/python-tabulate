@@ -2385,11 +2385,38 @@ def tabulate(
                 break
             elif align != "global":
                 aligns[idx] = align
+    # Formats that escape special characters (latex, github) used to escape at
+    # render time, i.e. after padding, so escaped cells were wider than the
+    # measured column widths and rows misaligned (issue #244). Escape before
+    # widths are measured, then drop the escape rules from the row formatters
+    # to avoid escaping twice.
+    _is_colon_grid = tablefmt == "colon_grid"
+    if not isinstance(tablefmt, TableFormat):
+        tablefmt = _table_formats.get(tablefmt, _table_formats["simple"])
+    escape_map = None
+    for _rowfmt in (tablefmt.headerrow, tablefmt.datarow):
+        if isinstance(_rowfmt, DataRow) and _rowfmt.escape_map:
+            escape_map = _rowfmt.escape_map
+            break
+    if escape_map:
+
+        def _escape_text(s):
+            return "".join(escape_map.get(c, c) for c in s) if isinstance(s, str) else s
+
+        cols = [[_escape_text(v) for v in c] for c in cols]
+        headers = [_escape_text(h) for h in headers]
+        _repl = {}
+        for _name in ("headerrow", "datarow"):
+            _rowfmt = getattr(tablefmt, _name)
+            if isinstance(_rowfmt, DataRow) and _rowfmt.escape_map:
+                _repl[_name] = DataRow(_rowfmt.begin, _rowfmt.sep, _rowfmt.end)
+        if _repl:
+            tablefmt = tablefmt._replace(**_repl)
     minwidths = [width_fn(h) + min_padding for h in headers] if headers else [0] * len(cols)
     aligns_copy = aligns.copy()
     # Reset alignments in copy of alignments list to "left" for 'colon_grid' format,
     # which enforces left alignment in the text output of the data.
-    if tablefmt == "colon_grid":
+    if _is_colon_grid:
         aligns_copy = ["left"] * len(cols)
     cols = [
         _align_column(

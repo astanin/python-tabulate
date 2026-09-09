@@ -211,13 +211,36 @@ def test_column_with_mixed_value_types():
     assert_equal(table, expected)
 
 
+def test_latex_escaped_cell_width():
+    "Regression: escaped chars widen cells; column widths must account for it (issue #244)"
+    data = {"col1": ["first", "a_long_second_row", "third_row"], "col2": [1, 2, 3]}
+    result = tabulate(data, tablefmt="latex", headers="keys")
+    expected = "\n".join(
+        [
+            r"\begin{tabular}{lr}",
+            r"\hline",
+            r" col1                 &   col2 \\",
+            r"\hline",
+            r" first                &      1 \\",
+            r" a\_long\_second\_row &      2 \\",
+            r" third\_row           &      3 \\",
+            r"\hline",
+            r"\end{tabular}",
+        ]
+    )
+    assert_equal(expected, result)
+    # the & separator must sit at the same column on every row
+    amp_cols = {line.index("&") for line in result.splitlines() if "&" in line}
+    assert len(amp_cols) == 1
+
+
 def test_latex_escape_special_chars():
     "Regression: escape special characters in LaTeX output (issue #32)"
     expected = "\n".join(
         [
             r"\begin{tabular}{l}",
             r"\hline",
-            r" foo\^{}bar     \\",
+            r" foo\^{}bar                                                      \\",
             r"\hline",
             r" \&\%\^{}\_\$\#\{\}\ensuremath{<}\ensuremath{>}\textasciitilde{} \\",
             r"\hline",
@@ -596,5 +619,5 @@ def test_asciidoc_without_trailing_whitespace():
 def test_github_escape_pipe_character():
     "Regression: github format must escape pipe character with a backslash (issue #241)"
     result = tabulate([["foo|bar"]], headers=("spam|eggs",), tablefmt="github")
-    expected = "| spam\\|eggs   |\n|:------------|\n| foo\\|bar     |"
+    expected = "| spam\\|eggs   |\n|:-------------|\n| foo\\|bar     |"
     assert_equal(expected, result)
