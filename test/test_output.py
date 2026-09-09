@@ -2684,8 +2684,8 @@ def test_latex():
             r"\hline",
             r" strings   &   numbers (\$N\_0\$) \\",
             r"\hline",
-            r" spam      &           41.9999 \\",
-            r" eggs      &          451      \\",
+            r" spam      &              41.9999 \\",
+            r" eggs      &             451      \\",
             r"\hline",
             r"\end{tabular}",
         ]
