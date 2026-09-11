@@ -2488,6 +2488,7 @@ def _expand_iterable(original, num_desired, default):
     length `num_desired` completely populated with `default will be returned
     """
     if isinstance(original, Iterable) and not isinstance(original, str):
+        original = list(original)
         return original + [default] * (num_desired - len(original))
     else:
         return [default] * num_desired
