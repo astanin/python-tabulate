@@ -598,3 +598,19 @@ def test_github_escape_pipe_character():
     result = tabulate([["foo|bar"]], headers=("spam|eggs",), tablefmt="github")
     expected = "| spam\\|eggs   |\n|:------------|\n| foo\\|bar     |"
     assert_equal(expected, result)
+
+
+def test_maxcolwidths_thousands_separator_with_disable_numparse():
+    "Regression: honor disable_numparse when wrapping '100,120' (github issue #448)"
+    table = [["100,120"]]
+    expected = "100,120"
+    result = tabulate(table, tablefmt="plain", disable_numparse=True, maxcolwidths=20)
+    assert_equal(expected, result)
+
+
+def test_maxcolwidths_thousands_separator_default_numparse():
+    "Regression: wrapping a thousands-separated number must not raise ValueError"
+    table = [["100,120"]]
+    expected = "100,120"
+    result = tabulate(table, tablefmt="plain", maxcolwidths=20)
+    assert_equal(expected, result)

@@ -1646,15 +1646,21 @@ def _wrap_text_to_colwidths(
                 # formatting of types (such as datetimes) may need to be more
                 # explicit than just `str` of the object. Also doesn't work for
                 # custom floatfmt/intfmt, nor with any missing/blank cells.
-                casted_cell = (
-                    missingval
-                    if cell is None
-                    else (
-                        str(cell)
-                        if cell == "" or _isnumber(cell)
-                        else str(_type(cell, numparse)(cell))
-                    )
-                )
+                #
+                # Pass numparse by keyword: `_type(cell, numparse)` bound it to
+                # has_invisible and ignored disable_numparse (github issue #448).
+                # Thousands-separated strings type as int/float but cannot be
+                # constructed with int()/float(); fall back to str(cell).
+                if cell is None:
+                    casted_cell = missingval
+                elif cell == "" or _isnumber(cell):
+                    casted_cell = str(cell)
+                else:
+                    cell_type = _type(cell, numparse=numparse)
+                    try:
+                        casted_cell = str(cell_type(cell))
+                    except (TypeError, ValueError):
+                        casted_cell = str(cell)
                 wrapped = [
                     "\n".join(wrapper.wrap(line))
                     for line in casted_cell.splitlines()
