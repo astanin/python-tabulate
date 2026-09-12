@@ -2666,13 +2666,21 @@ def _format_table(
             or fmt.lineabove
             or Line("", "", "", "")
         )
+        rowalign_iter = iter(rowaligns)
         for row in rows:
             # test to see if either the 1st column or the 2nd column (account for showindex) has
             # the SEPARATING_LINE flag
             if _is_separating_line(row):
                 _append_line(lines, padded_widths, colaligns, separating_line)
             else:
-                append_row(lines, pad_row(row, pad), padded_widths, colaligns, fmt.datarow)
+                append_row(
+                    lines,
+                    pad_row(row, pad),
+                    padded_widths,
+                    colaligns,
+                    fmt.datarow,
+                    rowalign=next(rowalign_iter),
+                )
 
     if fmt.linebelow and "linebelow" not in hidden:
         _append_line(lines, padded_widths, colaligns, fmt.linebelow)

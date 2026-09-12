@@ -3349,3 +3349,19 @@ def test_break_on_hyphens():
     expected = "h1    h2    h3\n----  ----  ----\nfoo-  bar-  foo-\nbar   bar   foo"
     result = tabulate(test_table, table_headers, maxcolwidths=5, break_on_hyphens=True)
     assert_equal(expected, result)
+
+
+@mark.parametrize("tablefmt", ["plain", "psql", "simple_outline"])
+@mark.parametrize("alignment, line", [("top", "a"), ("center", "b"), ("bottom", "c")])
+def test_rowalign_without_inter_row_lines(tablefmt, alignment, line):
+    result = tabulate([["a\nb\nc", "x"]], tablefmt=tablefmt, rowalign=alignment)
+    aligned_line = next(row for row in result.splitlines() if "x" in row)
+    assert line in aligned_line
+
+
+@mark.parametrize("tablefmt", ["plain", "psql", "simple_outline"])
+def test_rowalign_with_separating_line(tablefmt):
+    table = [["a\nb\nc", "x"], SEPARATING_LINE, ["d\ne\nf", "y"]]
+    result = tabulate(table, tablefmt=tablefmt, rowalign=["center", "bottom"])
+    assert "b" in next(row for row in result.splitlines() if "x" in row)
+    assert "f" in next(row for row in result.splitlines() if "y" in row)
