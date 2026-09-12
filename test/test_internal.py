@@ -355,3 +355,12 @@ def test__reinsert_separating_lines():
     expected = rows_to_pipe_table_str(with_rows)
 
     assert_equal(expected, rows_to_pipe_table_str(sans_rows))
+
+
+def test_strip_ansi_bytes():
+    for value, expected in [
+        (b"plain", b"plain"),
+        (b"\x1b[31mred\x1b[0m text", b"red text"),
+        (b"\x1b]8;;https://example.com\x1b\\link\x1b]8;;\x1b\\", b"link"),
+    ]:
+        assert_equal(T._strip_ansi(value), expected)

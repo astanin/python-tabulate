@@ -1091,7 +1091,7 @@ def _strip_ansi(s):
     if isinstance(s, str):
         return _ansi_codes.sub(r"\4", s)
     else:  # a bytestring
-        return _ansi_codes_bytes.sub(r"\4", s)
+        return _ansi_codes_bytes.sub(rb"\4", s)
 
 
 def _visible_width(s):
@@ -1339,6 +1339,7 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
     elif valtype is float:
         is_a_colored_number = has_invisible and isinstance(val, (str, bytes))
         if is_a_colored_number:
+            val = _to_str(val)
             raw_val = _strip_ansi(val)
             try:
                 formatted_val = format(float(raw_val), floatfmt)
