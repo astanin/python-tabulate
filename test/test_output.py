@@ -3349,3 +3349,18 @@ def test_break_on_hyphens():
     expected = "h1    h2    h3\n----  ----  ----\nfoo-  bar-  foo-\nbar   bar   foo"
     result = tabulate(test_table, table_headers, maxcolwidths=5, break_on_hyphens=True)
     assert_equal(expected, result)
+
+
+@mark.parametrize("text", ["1.25", "-1.25"])
+@mark.parametrize(
+    "prefix, suffix",
+    [
+        ("", ""),
+        ("\x1b[31m", "\x1b[0m"),
+        ("\x1b]8;;https://example.com/é\x1b\\", "\x1b]8;;\x1b\\"),
+    ],
+)
+def test_float_format_with_ansi_bytes(text, prefix, suffix):
+    value = prefix + text + suffix
+    expected = prefix + format(float(text), ".1f") + suffix
+    assert_equal(tabulate([[value.encode("utf8")]], tablefmt="plain", floatfmt=".1f"), expected)
