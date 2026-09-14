@@ -18,6 +18,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Topic :: Software Development :: Libraries",
 ]
 requires-python = ">=3.10"
@@ -41,7 +42,6 @@ write_to = "tabulate/_version.py"
 [dependency-groups]
 dev = [
     "build>=1.4.0",
-    "ruff>=0.15.4",
     "pre_commit>=4.5.1",
     "tox>=4.47.3",
     "tox-uv>=1.0",
@@ -56,8 +56,8 @@ line-length = 99
 exclude = ["tabulate/_version.py"]
 
 [tool.ruff.lint]
-extend-select = ["W", "B", "C4", "ISC", "I", "C90", "UP"]
-ignore = ["B905", "E721", "C901"]
+extend-select = ["ISC", "I", "C90", "W", "UP"]
+ignore = ["BLE001", "B905", "DTZ001", "FLY002", "C901"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 22
