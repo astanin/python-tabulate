@@ -55,7 +55,7 @@ line-length = 99
 exclude = ["tabulate/_version.py"]
 
 [tool.ruff.lint]
-extend-select = ["W", "ISC", "I", "C90", "UP"]
+extend-select = ["ISC", "I", "C90", "W", "UP"]
 ignore = ["BLE001", "B905", "DTZ001", "FLY002", "C901"]
 
 [tool.ruff.lint.mccabe]
