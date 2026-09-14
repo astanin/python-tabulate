@@ -690,7 +690,7 @@ file:
 
 ```pycon
 >>> import csv
-... from io import StringIO
+>>> from io import StringIO
 >>> table = list(csv.reader(StringIO("spam, 42\neggs, 451\n")))
 >>> table
 [['spam', ' 42'], ['eggs', ' 451']]
