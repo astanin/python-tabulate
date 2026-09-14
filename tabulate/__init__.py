@@ -29,7 +29,7 @@ except PackageNotFoundError:
         __version__ = "unknown"
 
 
-__all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
+__all__ = ["simple_separated_format", "tabulate", "tabulate_formats"]
 
 # minimum extra space in headers
 MIN_PADDING = 2
@@ -1141,7 +1141,7 @@ def _choose_width_fn(has_invisible, enable_widechars, is_multiline):
     else:
         line_width_fn = len
     if is_multiline:
-        width_fn = lambda s: _multiline_width(s, line_width_fn)  # noqa: E731
+        width_fn = lambda s: _multiline_width(s, line_width_fn)
     else:
         width_fn = line_width_fn
     return width_fn
@@ -1181,9 +1181,7 @@ def _align_column_choose_width_fn(has_invisible, enable_widechars, is_multiline)
     else:
         line_width_fn = len
     if is_multiline:
-        width_fn = lambda s: _align_column_multiline_width(  # noqa: E731
-            s, line_width_fn
-        )
+        width_fn = lambda s: _align_column_multiline_width(s, line_width_fn)
     else:
         width_fn = line_width_fn
     return width_fn
@@ -1528,7 +1526,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
                 uniq_keys.update(keys)
                 rows = rows[1:]
             for row in rows:
-                for k in row.keys():
+                for k in row:
                     # Save unique items in input order
                     if k not in uniq_keys:
                         keys.append(k)
@@ -2620,7 +2618,7 @@ def _format_table(
 
     padded_widths = [(w + 2 * pad) for w in colwidths]
     if is_multiline:
-        pad_row = lambda row, _: row  # noqa: E731 # do it later, in _append_multiline_row
+        pad_row = lambda row, _: row  # do it later, in _append_multiline_row
         append_row = partial(_append_multiline_row, pad=pad)
     else:
         pad_row = _pad_row

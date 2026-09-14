@@ -153,30 +153,29 @@ def test_script_from_file_to_stdout():
 
 def test_script_from_file_to_file():
     """Command line utility: read from file, write to file"""
-    with TemporaryTextFile() as input_file:
-        with TemporaryTextFile() as output_file:
-            input_file.write(sample_input())
-            input_file.seek(0)
-            cmd = [
-                sys.executable,
-                "tabulate/cli.py",
-                "-o",
-                output_file.name,
-                input_file.name,
-            ]
-            out = run_and_capture_stdout(cmd)
-            # check that nothing is printed to stdout
-            expected = ""
-            print("got:     ", repr(out))
-            print("expected:", repr(expected))
-            assert_equal(out.splitlines(), expected.splitlines())
-            # check that the output was written to file
-            output_file.seek(0)
-            out = output_file.file.read()
-            expected = SAMPLE_SIMPLE_FORMAT
-            print("got:     ", repr(out))
-            print("expected:", repr(expected))
-            assert_equal(out.splitlines(), expected.splitlines())
+    with TemporaryTextFile() as input_file, TemporaryTextFile() as output_file:
+        input_file.write(sample_input())
+        input_file.seek(0)
+        cmd = [
+            sys.executable,
+            "tabulate/cli.py",
+            "-o",
+            output_file.name,
+            input_file.name,
+        ]
+        out = run_and_capture_stdout(cmd)
+        # check that nothing is printed to stdout
+        expected = ""
+        print("got:     ", repr(out))
+        print("expected:", repr(expected))
+        assert_equal(out.splitlines(), expected.splitlines())
+        # check that the output was written to file
+        output_file.seek(0)
+        out = output_file.file.read()
+        expected = SAMPLE_SIMPLE_FORMAT
+        print("got:     ", repr(out))
+        print("expected:", repr(expected))
+        assert_equal(out.splitlines(), expected.splitlines())
 
 
 def test_script_header_option():
@@ -367,14 +366,13 @@ def test_inprocess_format_option():
 
 def test_inprocess_file_to_file():
     """In-process: read from file, write to file (-o)"""
-    with TemporaryTextFile() as input_file:
-        with TemporaryTextFile() as output_file:
-            input_file.write(sample_input())
-            input_file.flush()
-            run_main_in_process(["-o", output_file.name, input_file.name])
-            output_file.seek(0)
-            out = output_file.file.read()
-            assert_equal(out.splitlines(), SAMPLE_SIMPLE_FORMAT.splitlines())
+    with TemporaryTextFile() as input_file, TemporaryTextFile() as output_file:
+        input_file.write(sample_input())
+        input_file.flush()
+        run_main_in_process(["-o", output_file.name, input_file.name])
+        output_file.seek(0)
+        out = output_file.file.read()
+        assert_equal(out.splitlines(), SAMPLE_SIMPLE_FORMAT.splitlines())
 
 
 def test_inprocess_jsonl_from_stdin():

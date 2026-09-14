@@ -65,8 +65,12 @@ nicely formatted plain-text table:
 ```pycon
 >>> from tabulate import tabulate
 
->>> table = [["Sun",696000,1989100000],["Earth",6371,5973.6],
-...          ["Moon",1737,73.5],["Mars",3390,641.85]]
+>>> table = [
+...     ["Sun", 696000, 1989100000],
+...     ["Earth", 6371, 5973.6],
+...     ["Moon", 1737, 73.5],
+...     ["Mars", 3390, 641.85],
+... ]
 >>> print(tabulate(table))
 -----  ------  -------------
 Sun    696000     1.9891e+09
@@ -95,7 +99,7 @@ The second optional argument named `headers` defines a list of column
 headers to be used:
 
 ```pycon
->>> print(tabulate(table, headers=["Planet","R (km)", "mass (x 10^29 kg)"]))
+>>> print(tabulate(table, headers=["Planet", "R (km)", "mass (x 10^29 kg)"]))
 Planet      R (km)    mass (x 10^29 kg)
 --------  --------  -------------------
 Sun         696000           1.9891e+09
@@ -108,8 +112,7 @@ Mars          3390         641.85
 If `headers="firstrow"`, then the first row of data is used:
 
 ```pycon
->>> print(tabulate([["Name","Age"],["Alice",24],["Bob",19]],
-...                headers="firstrow"))
+>>> print(tabulate([["Name", "Age"], ["Alice", 24], ["Bob", 19]], headers="firstrow"))
 Name      Age
 ------  -----
 Alice      24
@@ -122,8 +125,7 @@ indices are used. It also works for NumPy record arrays and lists of
 dictionaries or named tuples:
 
 ```pycon
->>> print(tabulate({"Name": ["Alice", "Bob"],
-...                 "Age": [24, 19]}, headers="keys"))
+>>> print(tabulate({"Name": ["Alice", "Bob"], "Age": [24, 19]}, headers="keys"))
 Name      Age
 ------  -----
 Alice      24
@@ -135,8 +137,7 @@ When data is a list of dictionaries, a dictionary can be passed as `headers`
 to replace the keys with other column labels:
 
 ```pycon
->>> print(tabulate([{1: "Alice", 2: 24}, {1: "Bob", 2: 19}],
-...                headers={1: "Name", 2: "Age"}))
+>>> print(tabulate([{1: "Alice", 2: 24}, {1: "Bob", 2: 19}], headers={1: "Name", 2: "Age"}))
 Name      Age
 ------  -----
 Alice      24
@@ -154,7 +155,7 @@ or `showindex=False`. To add a custom row index column, pass
 `showindex=rowIDs`, where `rowIDs` is some iterable:
 
 ```pycon
->>> print(tabulate([["F",24],["M",19]], showindex="always"))
+>>> print(tabulate([["F", 24], ["M", 19]], showindex="always"))
 -  -  --
 0  F  24
 1  M  19
@@ -208,7 +209,7 @@ Supported table formats are:
 `plain` tables do not use any pseudo-graphics to draw lines:
 
 ```pycon
->>> table = [["spam",42],["eggs",451],["bacon",0]]
+>>> table = [["spam", 42], ["eggs", 451], ["bacon", 0]]
 >>> headers = ["item", "qty"]
 >>> print(tabulate(table, headers, tablefmt="plain"))
 item      qty
@@ -657,7 +658,7 @@ Aligning by a decimal point works best when you need to compare numbers
 at a glance:
 
 ```pycon
->>> print(tabulate([[1.2345],[123.45],[12.345],[12345],[1234.5]]))
+>>> print(tabulate([[1.2345], [123.45], [12.345], [12345], [1234.5]]))
 ----------
     1.2345
   123.45
@@ -671,7 +672,7 @@ at a glance:
 Compare this with a more common right alignment:
 
 ```pycon
->>> print(tabulate([[1.2345],[123.45],[12.345],[12345],[1234.5]], numalign="right"))
+>>> print(tabulate([[1.2345], [123.45], [12.345], [12345], [1234.5]], numalign="right"))
 ------
 1.2345
 123.45
@@ -688,7 +689,8 @@ comes in handy when reading a mixed table of text and numbers from a
 file:
 
 ```pycon
->>> import csv; from io import StringIO
+>>> import csv
+>>> from io import StringIO
 >>> table = list(csv.reader(StringIO("spam, 42\neggs, 451\n")))
 >>> table
 [['spam', ' 42'], ['eggs', ' 451']]
@@ -703,7 +705,7 @@ eggs   451
 To disable this feature use `disable_numparse=True`.
 
 ```pycon
->>> print(tabulate([["Ver1", "18.0"], ["Ver2","19.2"]], tablefmt="simple", disable_numparse=True))
+>>> print(tabulate([["Ver1", "18.0"], ["Ver2", "19.2"]], tablefmt="simple", disable_numparse=True))
 ----  ----
 Ver1  18.0
 Ver2  19.2
@@ -718,7 +720,13 @@ Use `colglobalalign` to define a global setting. Possible alignments are: `right
 Furthermore, you can define `colalign` for column-specific alignment as a list or a tuple. Possible values are `global` (keeps global setting), `right`, `center`, `left`, `decimal` (only for numbers), `None` (to disable alignment). Missing alignments are treated as `global`.
 
 ```pycon
->>> print(tabulate([[1,2,3,4],[111,222,333,444]], colglobalalign='center', colalign = ('global','left','right')))
+>>> print(
+...     tabulate(
+...         [[1, 2, 3, 4], [111, 222, 333, 444]],
+...         colglobalalign="center",
+...         colalign=("global", "left", "right"),
+...     )
+... )
 ---  ---  ---  ---
  1   2      3   4
 111  222  333  444
@@ -733,7 +741,16 @@ Headers' alignment can be defined separately from columns'. Like for columns, yo
 - `headersalign` list or tuple to further specify header-wise alignment. Possible values are `global` (keeps global setting), `same` (follow column alignment), `right`, `center`, `left`, `None` (to disable alignment). Missing alignments are treated as `global`.
 
 ```pycon
->>> print(tabulate([[1,2,3,4,5,6],[111,222,333,444,555,666]], colglobalalign = 'center', colalign = ('left',), headers = ['h','e','a','d','e','r'], headersglobalalign = 'right', headersalign = ('same','same','left','global','center')))
+>>> print(
+...     tabulate(
+...         [[1, 2, 3, 4, 5, 6], [111, 222, 333, 444, 555, 666]],
+...         colglobalalign="center",
+...         colalign=("left",),
+...         headers=["h", "e", "a", "d", "e", "r"],
+...         headersglobalalign="right",
+...         headersalign=("same", "same", "left", "global", "center"),
+...     )
+... )
 h     e   a      d   e     r
 ---  ---  ---  ---  ---  ---
 1     2    3    4    5    6
@@ -747,7 +764,7 @@ h     e   a      d   e     r
 columns of decimal numbers. Use `floatfmt` named argument:
 
 ```pycon
->>> print(tabulate([["pi",3.141593],["e",2.718282]], floatfmt=".4f"))
+>>> print(tabulate([["pi", 3.141593], ["e", 2.718282]], floatfmt=".4f"))
 --  ------
 pi  3.1416
 e   2.7183
@@ -786,10 +803,10 @@ data in the column is used to infer the type:
 ```pycon
 >>> from fractions import Fraction
 >>> test_table = [
-...    [None, "1.23423515351", Fraction(1, 3)],
-...    [Fraction(56789, 1000000), 12345.1, b"abc"],
-...    ["", b"", None],
-...    [Fraction(10000, 3), None, ""],
+...     [None, "1.23423515351", Fraction(1, 3)],
+...     [Fraction(56789, 1000000), 12345.1, b"abc"],
+...     ["", b"", None],
+...     [Fraction(10000, 3), None, ""],
 ... ]
 >>> print(tabulate(test_table, floatfmt=",.5g", missingval="?"))
 ------------  -----------  ---
@@ -839,6 +856,7 @@ uninstalling `wcwidth`, set the global module-level flag
 
 ```python
 import tabulate
+
 tabulate.WIDE_CHARS_MODE = False
 ```
 
@@ -863,7 +881,7 @@ The following examples of formatted output use the following table with
 a multiline cell, and headers with a multiline cell:
 
 ```pycon
->>> table = [["eggs",451],["more\nspam",42]]
+>>> table = [["eggs", 451], ["more\nspam", 42]]
 >>> headers = ["item\nname", "qty"]
 
 ```
@@ -1041,7 +1059,14 @@ This example demonstrates usage of automatic multiline wrapping, though typicall
 the lines being wrapped would probably be significantly longer than this.
 
 ```pycon
->>> print(tabulate([["John Smith", "Middle Manager"]], headers=["Name", "Title"], tablefmt="grid", maxcolwidths=[None, 8]))
+>>> print(
+...     tabulate(
+...         [["John Smith", "Middle Manager"]],
+...         headers=["Name", "Title"],
+...         tablefmt="grid",
+...         maxcolwidths=[None, 8],
+...     )
+... )
 +------------+---------+
 | Name       | Title   |
 +============+=========+
@@ -1061,7 +1086,15 @@ break_on_hyphens (default: True) If true, wrapping will occur preferably on whit
 If false, only whitespaces will be considered as potentially good places for line breaks.
 
 ```pycon
->>> print(tabulate([["John Smith", "Middle-Manager"]], headers=["Name", "Title"], tablefmt="grid", maxcolwidths=[None, 5], break_long_words=False))
+>>> print(
+...     tabulate(
+...         [["John Smith", "Middle-Manager"]],
+...         headers=["Name", "Title"],
+...         tablefmt="grid",
+...         maxcolwidths=[None, 5],
+...         break_long_words=False,
+...     )
+... )
 +------------+---------+
 | Name       | Title   |
 +============+=========+
@@ -1072,7 +1105,16 @@ If false, only whitespaces will be considered as potentially good places for lin
 ```
 
 ```pycon
->>> print(tabulate([["John Smith", "Middle-Manager"]], headers=["Name", "Title"], tablefmt="grid", maxcolwidths=[None, 5], break_long_words=False, break_on_hyphens=False))
+>>> print(
+...     tabulate(
+...         [["John Smith", "Middle-Manager"]],
+...         headers=["Name", "Title"],
+...         tablefmt="grid",
+...         maxcolwidths=[None, 5],
+...         break_long_words=False,
+...         break_on_hyphens=False,
+...     )
+... )
 +------------+----------------+
 | Name       | Title          |
 +============+================+
