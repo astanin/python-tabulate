@@ -41,7 +41,6 @@ write_to = "tabulate/_version.py"
 [dependency-groups]
 dev = [
     "build>=1.4.0",
-    "ruff>=0.15.4",
     "pre_commit>=4.5.1",
     "tox>=4.47.3",
     "tox-uv>=1.0",
