@@ -1181,9 +1181,7 @@ def _align_column_choose_width_fn(has_invisible, enable_widechars, is_multiline)
     else:
         line_width_fn = len
     if is_multiline:
-        width_fn = lambda s: _align_column_multiline_width(
-            s, line_width_fn
-        )
+        width_fn = lambda s: _align_column_multiline_width(s, line_width_fn)
     else:
         width_fn = line_width_fn
     return width_fn
