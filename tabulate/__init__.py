@@ -29,7 +29,7 @@ except PackageNotFoundError:
         __version__ = "unknown"
 
 
-__all__ = ["tabulate", "tabulate_formats", "simple_separated_format"]
+__all__ = ["simple_separated_format", "tabulate", "tabulate_formats"]
 
 # minimum extra space in headers
 MIN_PADDING = 2
