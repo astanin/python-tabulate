@@ -57,7 +57,7 @@ exclude = ["tabulate/_version.py"]
 
 [tool.ruff.lint]
 extend-select = ["W", "B", "C4", "ISC", "I", "C90", "UP"]
-ignore = ["B905", "E721", "C901"]
+ignore = ["BLE001", "B905", "DTZ001", "FLY002", "C901"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 22
