@@ -1613,6 +1613,25 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     return rows, headers, headers_pad
 
 
+def _validate_maxcolwidth(width):
+    """Return a positive int column width, or None to leave the column unbound.
+
+    ``bool`` is rejected (it is an ``int`` subclass): ``True`` previously wrapped
+    every character. Non-ints — including ``float('nan')`` — are rejected too;
+    ``nan`` bypassed ``width <= 0`` (comparisons with NaN are false) and hung
+    inside ``textwrap`` forever.
+    """
+    if width is None:
+        return None
+    if isinstance(width, bool) or not isinstance(width, int):
+        raise TypeError(
+            f"maxcolwidths values must be positive ints or None, got {width!r}"
+        )
+    if width <= 0:
+        raise ValueError(f"invalid width {width!r} (must be > 0)")
+    return width
+
+
 def _wrap_text_to_colwidths(
     list_of_lists,
     colwidths,
@@ -1636,6 +1655,7 @@ def _wrap_text_to_colwidths(
                 new_row.append(cell)
                 continue
 
+            width = _validate_maxcolwidth(width)
             if width is not None:
                 wrapper = _CustomTextWrap(
                     width=width,
