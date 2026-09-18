@@ -2,7 +2,7 @@
 
 from tabulate import DataRow, Line, TableFormat, tabulate
 
-from common import assert_equal, skip
+from common import assert_equal, raises, skip
 
 
 def test_ansi_color_in_table_cells():
@@ -598,3 +598,22 @@ def test_github_escape_pipe_character():
     result = tabulate([["foo|bar"]], headers=("spam|eggs",), tablefmt="github")
     expected = "| spam\\|eggs   |\n|:------------|\n| foo\\|bar     |"
     assert_equal(expected, result)
+
+def test_maxcolwidths_rejects_bool_float_nan():
+    "maxcolwidths: reject bool/float/nan (bool wrapped every char; nan hung)"
+    import math
+
+    for bad in (True, [True], [0.5], [float("nan")], [math.inf]):
+        try:
+            tabulate([["hello"]], maxcolwidths=bad)
+            raise AssertionError(f"expected TypeError for {bad!r}")
+        except TypeError:
+            pass
+    try:
+        tabulate([["hello"]], maxcolwidths=[-1])
+        raise AssertionError("expected ValueError for -1")
+    except ValueError:
+        pass
+    # None still means unbound
+    result = tabulate([["hello"]], maxcolwidths=[None], tablefmt="plain")
+    assert_equal("hello", result)
