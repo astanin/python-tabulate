@@ -1,6 +1,6 @@
 """API properties."""
 
-from tabulate import simple_separated_format, tabulate, tabulate_formats
+from tabulate import __version__, simple_separated_format, tabulate, tabulate_formats
 
 from common import skip
 
@@ -9,6 +9,12 @@ try:
 except ImportError:
     signature = None
     _empty = None
+
+
+def test_tabulate_version():
+    "API: __version__ is a non-empty string"
+    assert type(__version__) is str
+    assert len(__version__) > 0
 
 
 def test_tabulate_formats():
