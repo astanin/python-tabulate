@@ -1114,6 +1114,43 @@ To deal with this, string lengths are calculated after first removing all ANSI e
 that the actual printable length is used for column widths, rather than the byte length. In the final, printable
 table, however, ANSI escape sequences are not removed so the original styling is preserved.
 
+To color individual cells, add ANSI color codes to the input strings before calling `tabulate`.
+For example, this colors a status cell red only when its value is `FAILED`:
+
+```pycon
+>>> from tabulate import tabulate
+>>> def red(value):
+...     return f"\033[31m{value}\033[0m"
+>>> rows = [["Backup", "OK"], ["Import", "FAILED"]]
+>>> colored_rows = [[task, red(status) if status == "FAILED" else status] for task, status in rows]
+>>> result = tabulate(colored_rows, headers=["Task", "Status"], tablefmt="grid")
+>>> red("FAILED") in result
+True
+
+```
+
+Use `print(result)` in a terminal that supports ANSI colors to display the table. The reset code
+(`\033[0m`) ends the styling after each cell, so the table borders and other cells retain their
+normal appearance. Other ANSI codes can set a background color, bold, or underline instead.
+Color libraries that return strings containing ANSI codes can be used in the same way.
+
+To style an entire row, apply the color to each of its cells. This example colors both cells
+of the failed task:
+
+```pycon
+>>> colored_rows = [[red(value) for value in row] if row[1] == "FAILED" else row for row in rows]
+>>> result = tabulate(colored_rows, headers=["Task", "Status"], tablefmt="grid")
+>>> all(red(value) in result for value in rows[1])
+True
+
+```
+
+To style a column, apply the color to that column's value in every row. For example,
+`[[red(task), status] for task, status in rows]` colors the task names. With a NumPy array
+or pandas DataFrame, prepare string cells in an object-typed copy before adding color codes
+to numeric values. ANSI styling is intended for terminal output; it does not become CSS
+styling when using the `html` table format.
+
 Some terminals support a special grouping of ANSI escape sequences that are intended to display hyperlinks
 much in the same way they are shown in browsers. These are handled just as mentioned before: non-printable
 ANSI escape sequences are removed prior to string length calculation. The only difference with escaped
