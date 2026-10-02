@@ -240,19 +240,19 @@ def test_wrap_datetime():
     result = tabulate(data, headers=headers, tablefmt="grid", maxcolwidths=[7, 5])
 
     expected = [
-        "+---------+--------+",
-        "| Title   | When   |",
-        "+=========+========+",
-        "| First   | 2020-  |",
-        "| Entry   | 01-01  |",
-        "|         | 05:06  |",
-        "|         | :07    |",
-        "+---------+--------+",
-        "| Second  | 2021-  |",
-        "| Entry   | 02-02  |",
-        "|         | 00:00  |",
-        "|         | :00    |",
-        "+---------+--------+",
+        "+---------+-------+",
+        "| Title   | When  |",
+        "+=========+=======+",
+        "| First   | 2020- |",
+        "| Entry   | 01-01 |",
+        "|         | 05:06 |",
+        "|         | :07   |",
+        "+---------+-------+",
+        "| Second  | 2021- |",
+        "| Entry   | 02-02 |",
+        "|         | 00:00 |",
+        "|         | :00   |",
+        "+---------+-------+",
     ]
     expected = "\n".join(expected)
     assert_equal(expected, result)
@@ -265,15 +265,15 @@ def test_wrap_none_value():
     result = tabulate(data, headers=headers, tablefmt="grid", maxcolwidths=[7, 5])
 
     expected = [
-        "+---------+---------+",
-        "| Title   | Value   |",
-        "+=========+=========+",
-        "| First   |         |",
-        "| Entry   |         |",
-        "+---------+---------+",
-        "| Second  |         |",
-        "| Entry   |         |",
-        "+---------+---------+",
+        "+---------+-------+",
+        "| Title   | Value |",
+        "+=========+=======+",
+        "| First   |       |",
+        "| Entry   |       |",
+        "+---------+-------+",
+        "| Second  |       |",
+        "| Entry   |       |",
+        "+---------+-------+",
     ]
     expected = "\n".join(expected)
     assert_equal(expected, result)
@@ -288,15 +288,15 @@ def test_wrap_none_value_with_missingval():
     )
 
     expected = [
-        "+---------+---------+",
-        "| Title   | Value   |",
-        "+=========+=========+",
-        "| First   | ???     |",
-        "| Entry   |         |",
-        "+---------+---------+",
-        "| Second  | ???     |",
-        "| Entry   |         |",
-        "+---------+---------+",
+        "+---------+-------+",
+        "| Title   | Value |",
+        "+=========+=======+",
+        "| First   | ???   |",
+        "| Entry   |       |",
+        "+---------+-------+",
+        "| Second  | ???   |",
+        "| Entry   |       |",
+        "+---------+-------+",
     ]
     expected = "\n".join(expected)
     assert_equal(expected, result)
@@ -312,15 +312,15 @@ def test_wrap_optional_bool_strs():
     result = tabulate(data, headers=headers, tablefmt="grid", maxcolwidths=[7, 5])
 
     expected = [
-        "+---------+--------+",
-        "| Title   | When   |",
-        "+=========+========+",
-        "| First   | True   |",
-        "| Entry   |        |",
-        "+---------+--------+",
-        "| Second  |        |",
-        "| Entry   |        |",
-        "+---------+--------+",
+        "+---------+-------+",
+        "| Title   | When  |",
+        "+=========+=======+",
+        "| First   | True  |",
+        "| Entry   |       |",
+        "+---------+-------+",
+        "| Second  |       |",
+        "| Entry   |       |",
+        "+---------+-------+",
     ]
     expected = "\n".join(expected)
     assert_equal(expected, result)

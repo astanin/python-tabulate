@@ -149,6 +149,13 @@ def test_plain_maxcolwidth_autowraps_wide_chars():
     assert_equal(expected, result)
 
 
+def test_maxcolwidth_header_does_not_add_padding():
+    "Output: a header that fits inside maxcolwidths does not widen the column (#354)"
+    expected = "\n".join(["+-----+", "| foo |", "+=====+", "| bar |", "+-----+"])
+    result = tabulate([["foo"], ["bar"]], headers="firstrow", tablefmt="grid", maxcolwidths=3)
+    assert_equal(expected, result)
+
+
 def test_maxcolwidth_single_value():
     "Output: maxcolwidth can be specified as a single number that works for each column"
     table = [
@@ -157,11 +164,11 @@ def test_maxcolwidth_single_value():
     ]
     expected = "\n".join(
         [
-            "hdr    fold1    fold2",
-            "mini   this     this",
-            "       is       is a",
-            "       short    bit",
-            "                longer",
+            "hdr    fold1   fold2",
+            "mini   this    this",
+            "       is      is a",
+            "       short   bit",
+            "               longer",
         ]
     )
     result = tabulate(table, headers="firstrow", tablefmt="plain", maxcolwidths=6)
@@ -176,8 +183,8 @@ def test_maxcolwidth_pad_tailing_widths():
     ]
     expected = "\n".join(
         [
-            "hdr    fold1    fold2",
-            "mini   this     this is a bit longer",
+            "hdr    fold1   fold2",
+            "mini   this    this is a bit longer",
             "       is",
             "       short",
         ]
@@ -3325,13 +3332,14 @@ def test_break_long_words():
     table_headers = ["h1", "h2", "h3"]
     test_table = [["  foo1", " bar2   ", "foo3"]]
 
-    # Table is not wrapped on 3 letters due to long word
+    # Long words are not broken, so the column keeps the width of the word itself
     expected = "h1    h2    h3\n----  ----  ----\nfoo1  bar2  foo3"
     result = tabulate(test_table, table_headers, maxcolwidths=3, break_long_words=False)
     assert_equal(expected, result)
 
-    # Table max width is 3 letters
-    expected = "h1    h2    h3\n----  ----  ----\nf     ba    foo\noo1   r2    3"
+    # Table max width is 3 letters; the header is shorter than the limit, so it
+    # must not add its 2 spaces of padding on top of the limit (#354)
+    expected = "h1   h2   h3\n---  ---  ---\nf    ba   foo\noo1  r2   3"
     result = tabulate(test_table, table_headers, maxcolwidths=3, break_long_words=True)
     assert_equal(expected, result)
 
