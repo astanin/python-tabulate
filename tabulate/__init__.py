@@ -1489,6 +1489,13 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
                 else:
                     keys[:0] = [tabular_data.index.name]
             vals = tabular_data.values  # values matrix doesn't need to be transposed
+            if (
+                hasattr(tabular_data, "itertuples")
+                and vals.dtype.kind == "f"
+                and any(dtype.kind in "iu" for dtype in tabular_data.dtypes)
+            ):
+                # A common float dtype can round integers before formatting them.
+                vals = tabular_data.itertuples(index=False, name=None)
             # for DataFrames add an index per default
             index = list(tabular_data.index)
             rows = [list(row) for row in vals]

@@ -2,7 +2,7 @@
 
 from tabulate import SEPARATING_LINE, tabulate
 
-from common import assert_equal, assert_in, raises, skip
+from common import assert_equal, assert_in, pytest, raises, skip
 
 try:
     from collections import UserDict
@@ -290,6 +290,105 @@ def test_pandas_keys():
         assert_equal(expected, result)
     except ImportError:
         skip("test_pandas_keys is skipped")
+
+
+@pytest.mark.parametrize("integer", [123456789, 2**53 + 1, -(2**53 + 1), 2**63 - 1])
+@pytest.mark.parametrize(
+    "index_name, showindex", [(None, "default"), ("row", "default"), ("row", False)]
+)
+def test_pandas_preserves_integer_columns(integer, index_name, showindex):
+    "Integer columns retain their precision and formatting beside float columns."
+    pandas = pytest.importorskip("pandas")
+    df = pandas.DataFrame({"integer": [integer], "float": [1.23456789]})
+    df.index.name = index_name
+    rows = [[integer, 1.23456789]]
+    headers = ["integer", "float"]
+    if showindex == "default":
+        rows = [[0] + row for row in rows]
+        headers = [index_name or ""] + headers
+    options = {"intfmt": ",", "floatfmt": ".2f"}
+
+    result = tabulate(df, headers="keys", showindex=showindex, **options)
+
+    assert result == tabulate(rows, headers=headers, **options)
+    assert format(integer, ",") in result.split()
+    assert format(1.23456789, ".2f") in result.split()
+
+
+@pytest.mark.parametrize("columns", [["number", "number"], ["not an identifier", "_value"]])
+def test_pandas_numeric_column_labels(columns):
+    "Numeric columns keep their order even with duplicate or unusual labels."
+    pandas = pytest.importorskip("pandas")
+    rows = [[2**53 + 1, 1.25]]
+    df = pandas.DataFrame(rows, columns=columns)
+    options = {"showindex": False, "intfmt": ",", "floatfmt": ".2f"}
+    assert tabulate(df, headers="keys", **options) == tabulate(rows, headers=columns, **options)
+
+
+@pytest.mark.parametrize("dtype", ["int64", "Int64"])
+@pytest.mark.parametrize("with_text", [False, True])
+def test_pandas_integer_column_types(dtype, with_text):
+    "Integer-only and mixed object tables retain their existing formatting."
+    pandas = pytest.importorskip("pandas")
+    df = pandas.DataFrame({"integer": pandas.Series([2**63 - 1], dtype=dtype)})
+    rows = [[2**63 - 1]]
+    if with_text:
+        df["text"] = ["value"]
+        rows[0].append("value")
+    options = {"showindex": False, "intfmt": ",", "floatfmt": ".2f"}
+    assert tabulate(df, **options) == tabulate(rows, **options)
+
+
+@pytest.mark.parametrize("showindex", ["default", False])
+@pytest.mark.parametrize("columns", [[], ["integer", "float"]])
+def test_pandas_empty_dimensions(columns, showindex):
+    "Empty rows and columns retain headers and any requested index."
+    pandas = pytest.importorskip("pandas")
+    index = [] if columns else ["a", "b"]
+    df = pandas.DataFrame(index=index, columns=columns)
+    rows = [] if columns else ([["a"], ["b"]] if showindex == "default" else [[], []])
+    assert tabulate(df, headers="keys", showindex=showindex) == tabulate(rows, headers=columns)
+
+
+def test_pandas_signed_and_unsigned_integer_columns():
+    "Combining signed and unsigned integer columns must not round their values."
+    pandas = pytest.importorskip("pandas")
+    df = pandas.DataFrame(
+        {
+            "signed": pandas.Series([2**63 - 1], dtype="int64"),
+            "unsigned": pandas.Series([2**64 - 1], dtype="uint64"),
+        }
+    )
+    options = {"showindex": False, "intfmt": ","}
+    result = tabulate(df, **options)
+    assert result == tabulate([[2**63 - 1, 2**64 - 1]], **options)
+    assert format(2**64 - 1, ",") in result.split()
+
+
+@pytest.mark.parametrize("dtype", ["Int64", "UInt64"])
+def test_pandas_nullable_integer_and_float_columns(dtype):
+    "Nullable integer columns keep their precision beside floating point columns."
+    pandas = pytest.importorskip("pandas")
+    df = pandas.DataFrame({"integer": pandas.Series([2**63 - 1], dtype=dtype), "float": [1.25]})
+    options = {"showindex": False, "intfmt": ",", "floatfmt": ".2f"}
+    assert tabulate(df, **options) == tabulate([[2**63 - 1, 1.25]], **options)
+
+
+@pytest.mark.parametrize("with_text", [False, True])
+@pytest.mark.parametrize("kind", ["datetime", "timedelta", "timezone"])
+def test_pandas_preserves_temporal_rendering(kind, with_text):
+    "Numeric normalization does not change existing temporal scalar rendering."
+    pandas = pytest.importorskip("pandas")
+    if kind == "timedelta":
+        values = pandas.to_timedelta([1], unit="D")
+    else:
+        values = pandas.to_datetime(["2020-01-01"])
+        if kind == "timezone":
+            values = values.tz_localize("UTC")
+    df = pandas.DataFrame({"value": values})
+    if with_text:
+        df["text"] = ["value"]
+    assert tabulate(df, showindex=False) == tabulate(df.values, showindex=False)
 
 
 def test_sqlite3():

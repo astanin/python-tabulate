@@ -774,6 +774,10 @@ column, in which case every column may have different number formatting:
     b  90,000
     -  ------
 
+For pandas DataFrames with NumPy-backed numeric columns, integer columns
+retain their integer formatting and precision beside floating-point columns. For example,
+`intfmt=","` formats the integer `123456789` as `123,456,789`, while
+`floatfmt=".2f"` applies only to the floating-point columns.
 
 ### Type Deduction and Missing Values
 
