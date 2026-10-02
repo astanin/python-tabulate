@@ -1118,7 +1118,8 @@ Some terminals support a special grouping of ANSI escape sequences that are inte
 much in the same way they are shown in browsers. These are handled just as mentioned before: non-printable
 ANSI escape sequences are removed prior to string length calculation. The only difference with escaped
 hyperlinks is that column width will be based on the length of the URL _text_ rather than the URL
-itself (terminals would show this text). For example:
+itself (terminals would show this text). Both ST (`ESC \\`) and BEL (`\x07`) terminators
+are supported for OSC 8 hyperlinks. For example:
 
     >>> len('\x1b]8;;https://example.com\x1b\\example\x1b]8;;\x1b\\')  # display length is 7, showing 'example'
     40
