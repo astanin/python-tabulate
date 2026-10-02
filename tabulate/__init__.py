@@ -771,7 +771,7 @@ _multiline_codes_bytes = re.compile(b"\r|\n|\r\n")
 # Also include the terminal hyperlink sequences as described here:
 # https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda
 #
-# OSC 8 ; params ; uri ST display_text OSC 8 ;; ST
+# OSC 8 ; params ; uri (ST or BEL) display_text OSC 8 ;; (ST or BEL)
 #
 # Example: \x1b]8;;https://example.com\x5ctext to show\x1b]8;;\x5c
 #
@@ -780,10 +780,12 @@ _multiline_codes_bytes = re.compile(b"\r|\n|\r\n")
 # params: 0..n optional key value pairs separated by ':' (e.g. foo=bar:baz=qux:abc=123)
 # URI: the actual URI with protocol scheme (e.g. https://, file://, ftp://)
 # ST: ESC followed by the '\' character (0x5c)
+# BEL: the bell character (0x07), also accepted as an OSC terminator
 _esc = r"\x1b"
 _csi = rf"{_esc}\["
 _osc = rf"{_esc}\]"
 _st = rf"{_esc}\\"
+_osc_end = rf"(?:{_st}|\x07)"
 
 _ansi_escape_pat = rf"""
     (
@@ -797,10 +799,10 @@ _ansi_escape_pat = rf"""
         {_osc}8;        # OSC opening
         (\w+=\w+:?)*    # key=value params list (submatch 2)
         ;               # delimiter
-        ([^{_esc}]+)    # URI - anything but ESC (submatch 3)
-        {_st}           # ST
+        ([^{_esc}\x07]+) # URI - anything but ESC or BEL (submatch 3)
+        {_osc_end}      # ST or BEL
         ([^{_esc}]+)    # link text - anything but ESC (submatch 4)
-        {_osc}8;;{_st}  # "closing" OSC sequence
+        {_osc}8;;{_osc_end}  # "closing" OSC sequence
     )
 """
 _ansi_codes = re.compile(_ansi_escape_pat, re.VERBOSE)
@@ -1091,7 +1093,7 @@ def _strip_ansi(s):
     if isinstance(s, str):
         return _ansi_codes.sub(r"\4", s)
     else:  # a bytestring
-        return _ansi_codes_bytes.sub(r"\4", s)
+        return _ansi_codes_bytes.sub(rb"\4", s)
 
 
 def _visible_width(s):
