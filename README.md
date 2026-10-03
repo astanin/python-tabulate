@@ -1102,6 +1102,8 @@ linebetweenrows, linebelowheader, linebelow, lineabove or just a simple empty li
     Moon   1737
     -----  ----
 
+When using a custom `showindex`, supply one index per data row. Separating lines do not consume index values.
+
 ### ANSI support
 ANSI escape codes are non-printable byte sequences usually used for terminal operations like setting
 color output or modifying cursor positions. Because multi-byte ANSI sequences are inherently non-printable,

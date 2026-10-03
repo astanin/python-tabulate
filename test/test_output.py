@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from pytest import mark
+from pytest import importorskip, mark
 
 from tabulate import SEPARATING_LINE, simple_separated_format, tabulate
 
@@ -3246,6 +3246,62 @@ def test_list_of_lists_with_supplied_index():
     # the index must be as long as the number of rows
     with raises(ValueError):
         tabulate(dd, headers=["a", "b"], showindex=[1, 2])
+
+
+@mark.parametrize("index_factory", [list, tuple, iter])
+@mark.parametrize(
+    ("rows", "expected_lines"),
+    [
+        (
+            [["a"], SEPARATING_LINE, ["b"]],
+            ["+----+---+", "| 10 | a |", "|----+---|", "| 20 | b |", "+----+---+"],
+        ),
+        (
+            [["a"], [SEPARATING_LINE], SEPARATING_LINE, ["b"]],
+            [
+                "+----+---+",
+                "| 10 | a |",
+                "|----+---|",
+                "|----+---|",
+                "| 20 | b |",
+                "+----+---+",
+            ],
+        ),
+    ],
+)
+def test_supplied_index_with_separating_lines(index_factory, rows, expected_lines):
+    "A separator does not consume a custom row index."
+    result = tabulate(rows, showindex=index_factory([10, 20]), tablefmt="psql")
+    assert_equal("\n".join(expected_lines), result)
+
+
+@mark.parametrize("index", [[10], [10, 20, 30]])
+def test_supplied_index_length_with_separating_lines(index):
+    "Index length validation counts data rows rather than separators."
+    rows = [["a"], SEPARATING_LINE, ["b"]]
+    with raises(ValueError):
+        tabulate(rows, showindex=index)
+
+
+@mark.parametrize("showindex", ["default", "always", True])
+def test_dataframe_index_with_separating_line(showindex):
+    "A separator keeps the original labels of the remaining DataFrame rows."
+    pd = importorskip("pandas")
+    frame = pd.DataFrame(
+        [["a", 1], [SEPARATING_LINE, None], ["b", 2]],
+        index=["row-a", "separator", "row-b"],
+    )
+    expected = "\n".join(
+        [
+            "+-------+---+---+",
+            "| row-a | a | 1 |",
+            "+-------+---+---+",
+            "+-------+---+---+",
+            "| row-b | b | 2 |",
+            "+-------+---+---+",
+        ]
+    )
+    assert_equal(expected, tabulate(frame, showindex=showindex, tablefmt="grid"))
 
 
 def test_list_of_lists_with_index_firstrow():

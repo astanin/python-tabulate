@@ -1401,12 +1401,12 @@ def _prepend_row_index(rows, index):
     """Add a left-most index column."""
     if index is None or index is False:
         return rows
-    if isinstance(index, Sized) and len(index) != len(rows):
+    sans_rows, separating_lines = _remove_separating_lines(rows)
+    if isinstance(index, Sized) and len(index) != len(sans_rows):
         raise ValueError(
             "index must be as long as the number of data rows: "
-            f"len(index)={len(index)} len(rows)={len(rows)}"
+            f"len(index)={len(index)} len(rows)={len(sans_rows)}"
         )
-    sans_rows, separating_lines = _remove_separating_lines(rows)
     new_rows = []
     index_iter = iter(index)
     for row in sans_rows:
@@ -1589,6 +1589,10 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     #    rows = list(map(list, rows))
     rows = [r if _is_separating_line(r) else list(r) for r in rows]
 
+    # Keep DataFrame index labels aligned with data rows after removing separators.
+    if index is not None:
+        index = [value for row, value in zip(rows, index) if not _is_separating_line(row)]
+
     # add or remove an index column
     showindex_is_a_str = type(showindex) in [str, bytes]
     if showindex_is_a_str and showindex == "default" and index is not None:
@@ -1599,7 +1603,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         rows = _prepend_row_index(rows, showindex)
     elif showindex == "always" or (_bool(showindex) and not showindex_is_a_str):
         if index is None:
-            index = list(range(len(rows)))
+            index = list(range(len(_remove_separating_lines(rows)[0])))
         rows = _prepend_row_index(rows, index)
     elif showindex == "never" or (not _bool(showindex) and not showindex_is_a_str):
         pass
