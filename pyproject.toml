@@ -25,6 +25,7 @@ dynamic = ["version"]
 
 [project.urls]
 Homepage = "https://github.com/astanin/python-tabulate"
+Changelog = "https://github.com/astanin/python-tabulate/blob/master/CHANGELOG"
 
 [project.optional-dependencies]
 widechars = ["wcwidth>=0.6.0"]
