@@ -292,6 +292,33 @@ def test_pandas_keys():
         skip("test_pandas_keys is skipped")
 
 
+def test_pandas_columns_name_shown_when_index_unnamed():
+    "DataFrame columns.name fills the index header when index.name is unset."
+    try:
+        import pandas
+
+        df = pandas.DataFrame([[1, 2], [3, 4]], columns=["a", "b"])
+        df.columns.name = "some_name"
+        expected = """\
+|   some_name |   a |   b |
+|------------:|----:|----:|
+|           0 |   1 |   2 |
+|           1 |   3 |   4 |"""
+        result = tabulate(df, tablefmt="pipe", headers="keys", showindex=True)
+        assert_equal(expected, result)
+
+        df.index.name = "row_id"
+        named_index = tabulate(df, tablefmt="pipe", headers="keys", showindex=True)
+        assert_in("row_id", named_index.splitlines()[0])
+        assert "some_name" not in named_index.splitlines()[0]
+
+        hidden = tabulate(df, tablefmt="pipe", headers="keys", showindex=False)
+        assert "some_name" not in hidden
+        assert "row_id" not in hidden
+    except ImportError:
+        skip("test_pandas_columns_name_shown_when_index_unnamed is skipped")
+
+
 def test_sqlite3():
     "Input: an sqlite3 cursor"
     try:

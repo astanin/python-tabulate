@@ -1483,11 +1483,20 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         elif hasattr(tabular_data, "index"):
             # values is a property, has .index => it's likely a pandas.DataFrame (pandas 0.11.0)
             keys = list(tabular_data)
-            if showindex in ["default", "always", True] and tabular_data.index.name is not None:
-                if isinstance(tabular_data.index.name, list):
-                    keys[:0] = tabular_data.index.name
-                else:
-                    keys[:0] = [tabular_data.index.name]
+            if showindex in ["default", "always", True]:
+                # Pandas prints columns.name in the index header when the
+                # index itself has no name. Keep an explicit index.name.
+                index_header = tabular_data.index.name
+                if index_header is None:
+                    columns = getattr(tabular_data, "columns", None)
+                    column_axis_name = getattr(columns, "name", None)
+                    if column_axis_name is not None:
+                        index_header = column_axis_name
+                if index_header is not None:
+                    if isinstance(index_header, list):
+                        keys[:0] = index_header
+                    else:
+                        keys[:0] = [index_header]
             vals = tabular_data.values  # values matrix doesn't need to be transposed
             # for DataFrames add an index per default
             index = list(tabular_data.index)
