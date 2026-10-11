@@ -153,6 +153,8 @@ To suppress row indices for all types of data, pass `showindex="never"`
 or `showindex=False`. To add a custom row index column, pass
 `showindex=rowIDs`, where `rowIDs` is some iterable:
 
+Custom indices apply to data rows; separating lines do not consume index values.
+
 ```pycon
 >>> print(tabulate([["F",24],["M",19]], showindex="always"))
 -  -  --

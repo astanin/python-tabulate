@@ -1401,12 +1401,12 @@ def _prepend_row_index(rows, index):
     """Add a left-most index column."""
     if index is None or index is False:
         return rows
-    if isinstance(index, Sized) and len(index) != len(rows):
+    sans_rows, separating_lines = _remove_separating_lines(rows)
+    if isinstance(index, Sized) and len(index) != len(sans_rows):
         raise ValueError(
             "index must be as long as the number of data rows: "
-            f"len(index)={len(index)} len(rows)={len(rows)}"
+            f"len(index)={len(index)} len(rows)={len(sans_rows)}"
         )
-    sans_rows, separating_lines = _remove_separating_lines(rows)
     new_rows = []
     index_iter = iter(index)
     for row in sans_rows:
@@ -1599,7 +1599,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         rows = _prepend_row_index(rows, showindex)
     elif showindex == "always" or (_bool(showindex) and not showindex_is_a_str):
         if index is None:
-            index = list(range(len(rows)))
+            index = list(range(sum(not _is_separating_line(row) for row in rows)))
         rows = _prepend_row_index(rows, index)
     elif showindex == "never" or (not _bool(showindex) and not showindex_is_a_str):
         pass
