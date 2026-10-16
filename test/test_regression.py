@@ -598,3 +598,14 @@ def test_github_escape_pipe_character():
     result = tabulate([["foo|bar"]], headers=("spam|eggs",), tablefmt="github")
     expected = "| spam\\|eggs   |\n|:------------|\n| foo\\|bar     |"
     assert_equal(expected, result)
+
+def test_disable_numparse_with_maxcolwidths():
+    "Regression: disable_numparse is honored when wrapping columns (issue #428)"
+    result = tabulate(
+        [["ports", "str", "comma-separated port list", "80,443"]],
+        ["name", "type", "desc", "default"],
+        tablefmt="grid",
+        disable_numparse=True,
+        maxcolwidths=40,
+    )
+    assert "80,443" in result
