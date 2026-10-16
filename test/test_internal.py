@@ -355,3 +355,8 @@ def test__reinsert_separating_lines():
     expected = rows_to_pipe_table_str(with_rows)
 
     assert_equal(expected, rows_to_pipe_table_str(sans_rows))
+
+def test_expand_iterable_accepts_tuple():
+    "Internal: _expand_iterable pads tuples the same way as lists (issue #434)"
+    assert_equal(["top", "bottom"], T._expand_iterable(("top", "bottom"), 2, "top"))
+    assert_equal(["left", "left", "left"], T._expand_iterable(("left",), 3, "left"))

@@ -598,3 +598,9 @@ def test_github_escape_pipe_character():
     result = tabulate([["foo|bar"]], headers=("spam|eggs",), tablefmt="github")
     expected = "| spam\\|eggs   |\n|:------------|\n| foo\\|bar     |"
     assert_equal(expected, result)
+
+def test_rowalign_tuple():
+    "Regression: rowalign (and other sequence kwargs) accept tuples (issue #434)"
+    result = tabulate([[1, 2], [3, 4]], rowalign=("top", "bottom"))
+    expected = tabulate([[1, 2], [3, 4]], rowalign=["top", "bottom"])
+    assert_equal(expected, result)
