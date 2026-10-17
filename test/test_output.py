@@ -3292,6 +3292,18 @@ def test_disable_numparse_true():
     assert_equal(expected, result)
 
 
+def test_disable_numparse_maxcolwidths_keeps_thousands_separator():
+    "Wrapping must not parse a disabled numeric column such as 100,120"
+    result = tabulate(
+        [["100,120"]],
+        headers=["x"],
+        tablefmt="plain",
+        maxcolwidths=[20],
+        disable_numparse=True,
+    )
+    assert "100,120" in result
+
+
 def test_disable_numparse_list():
     "Output: Default table output, but with number parsing selectively disabled"
     table_headers = ["h1", "h2", "h3"]
