@@ -911,6 +911,12 @@ def _isnumber(string):
         # convertible to int/float.
         or (
             _isconvertible(float, string)
+            and not (
+                str(type(string)).startswith(
+                    ("<class 'numpy.datetime64", "<class 'numpy.timedelta64")
+                )
+                or getattr(getattr(string, "dtype", None), "kind", None) in ("M", "m")
+            )
             and (
                 # some other type convertible to float
                 not isinstance(string, (str, bytes))

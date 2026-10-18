@@ -598,3 +598,62 @@ def test_github_escape_pipe_character():
     result = tabulate([["foo|bar"]], headers=("spam|eggs",), tablefmt="github")
     expected = "| spam\\|eggs   |\n|:------------|\n| foo\\|bar     |"
     assert_equal(expected, result)
+
+
+def test_numpy_datetime64_not_formatted_as_float():
+    "Regression: format numpy.datetime64 as datetime string instead of float (issue #251)"
+    try:
+        from decimal import Decimal
+        from fractions import Fraction
+        import numpy as np
+
+        # Nanosecond resolution is convertible to float in NumPy, but should be formatted as text
+        table = [[np.datetime64("2022-10-05", "ns")]]
+        result = tabulate(table)
+        expected = "\n".join(
+            [
+                "-----------------------------",
+                "2022-10-05T00:00:00.000000000",
+                "-----------------------------",
+            ]
+        )
+        assert_equal(expected, result)
+
+        # 0D array wrapped in a table cell
+        table_0d = [[np.array(np.datetime64("2022-10-05", "ns"))]]
+        result_0d = tabulate(table_0d)
+        assert_equal(expected, result_0d)
+
+        # 2D NumPy array with datetime64 values
+        table_2d = np.array([[np.datetime64("2022-10-05", "ns")]])
+        result_2d = tabulate(table_2d)
+        assert_equal(expected, result_2d)
+
+        # Other resolutions such as seconds should also format as datetime strings
+        table_s = [[np.datetime64("2022-10-05", "s")]]
+        result_s = tabulate(table_s)
+        expected_s = "\n".join(
+            [
+                "-------------------",
+                "2022-10-05T00:00:00",
+                "-------------------",
+            ]
+        )
+        assert_equal(expected_s, result_s)
+
+        # Mixed table with numbers and datetime to ensure alignment and types are preserved
+        mixed = [
+            [np.datetime64("2022-10-05", "ns"), 42, 3.14, Decimal("10.5"), Fraction(1, 3)],
+        ]
+        headers = ["Date", "Int", "Float", "Decimal", "Fraction"]
+        result_mixed = tabulate(mixed, headers=headers, tablefmt="pipe")
+        expected_mixed = "\n".join(
+            [
+                "| Date                          |   Int |   Float |   Decimal |   Fraction |",
+                "|:------------------------------|------:|--------:|----------:|-----------:|",
+                "| 2022-10-05T00:00:00.000000000 |    42 |    3.14 |      10.5 |   0.333333 |",
+            ]
+        )
+        assert_equal(expected_mixed, result_mixed)
+    except ImportError:
+        raise skip("") from None
