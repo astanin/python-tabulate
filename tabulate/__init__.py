@@ -783,7 +783,8 @@ _multiline_codes_bytes = re.compile(b"\r|\n|\r\n")
 _esc = r"\x1b"
 _csi = rf"{_esc}\["
 _osc = rf"{_esc}\]"
-_st = rf"{_esc}\\"
+# ST: ESC followed by '\' (0x5c), or BEL (0x07) - both are valid OSC terminators
+_st = rf"(?:{_esc}\\|\x07)"
 
 _ansi_escape_pat = rf"""
     (

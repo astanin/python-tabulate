@@ -67,6 +67,29 @@ def test_alignment_of_link_cells():
     assert_equal(expected, formatted)
 
 
+def test_alignment_of_bel_terminated_links():
+    "Regression: BEL-terminated OSC 8 hyperlinks should not inflate column widths."
+    bel_table = [
+        ("test", "\x1b]8;;target\x07test\x1b]8;;\x07"),
+        ("test", "\x1b]8;;target\x07test\x1b]8;;\x07"),
+    ]
+    bel_headers = ("test", "\x1b]8;;target\x07test\x1b]8;;\x07")
+    formatted = tabulate(bel_table, bel_headers, "grid")
+    expected = "\n".join(
+        [
+            "+--------+--------+",
+            "| test   | \x1b]8;;target\x07test\x1b]8;;\x07   |",
+            "+========+========+",
+            "| test   | \x1b]8;;target\x07test\x1b]8;;\x07   |",
+            "+--------+--------+",
+            "| test   | \x1b]8;;target\x07test\x1b]8;;\x07   |",
+            "+--------+--------+",
+        ]
+    )
+    print(f"expected: {expected!r}\n\ngot:      {formatted!r}\n")
+    assert_equal(expected, formatted)
+
+
 def test_alignment_of_link_text_cells():
     "Regression: Align links as if they were colorless."
     linktable = [
