@@ -2412,7 +2412,7 @@ def tabulate(
         if headersglobalalign is not None:  # if global alignment provided
             aligns_headers = [headersglobalalign] * len(t_cols)
         else:  # default
-            aligns_headers = aligns or [stralign] * len(headers)
+            aligns_headers = aligns.copy() if aligns else [stralign] * len(headers)
         # then specific header alignments
         if headersalign is not None:
             assert isinstance(headersalign, Iterable)

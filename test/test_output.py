@@ -2971,6 +2971,28 @@ def test_headers_global_and_specific_alignment():
     assert_equal(expected, result)
 
 
+@mark.parametrize("tablefmt", ["html", "unsafehtml"])
+@mark.parametrize("headersalign", [("center", "left"), ("right", "center")])
+@mark.parametrize("colalign", [None, ("right", "center")])
+@mark.parametrize("headersglobalalign", [None, "center"])
+def test_header_alignment_does_not_change_html_body(
+    tablefmt, headersalign, colalign, headersglobalalign
+):
+    table = [["item", 42]]
+    options = {"headers": ["Label", "Value"], "tablefmt": tablefmt, "colalign": colalign}
+    ordinary = tabulate(table, **options)
+    aligned = tabulate(
+        table,
+        **options,
+        headersalign=headersalign,
+        headersglobalalign=headersglobalalign,
+    )
+    assert ordinary.split("<tbody>", 1)[1] == aligned.split("<tbody>", 1)[1]
+    header = aligned.split("</thead>", 1)[0]
+    assert f'<th style="text-align: {headersalign[0]};">' in header
+    assert f'<th style="text-align: {headersalign[1]};">' in header
+
+
 def test_colalign_or_headersalign_too_long():
     """Test `colalign` and `headersalign` too long."""
     table = [[1, 2], [111, 222]]
