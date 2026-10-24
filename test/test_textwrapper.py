@@ -362,3 +362,22 @@ def test_wrap_wide_char_narrower_than_char_width():
     # width=1 is narrower than any character; each char should still get its own line
     result = CTW(width=1).wrap(data)
     assert result == ["\ud55c", "\uae00"]
+
+
+def test_wrap_wide_char_does_not_squeeze_onto_nonempty_line():
+    """TextWrapper: do not force a wide char onto a non-empty line (issue #478).
+
+    After the #399 progress fix (`i = max(i, 2)`), wrapping ``"a "`` plus two
+    2-column Hangul syllables at width=3 put display width 4 on the first
+    line. Progress must only be forced when ``cur_line`` is empty; otherwise
+    the chunk moves to the next line so every line stays within ``width``.
+    """
+    try:
+        import wcwidth
+    except ImportError:
+        skip("test_wrap_wide_char_does_not_squeeze_onto_nonempty_line is skipped")
+
+    syllable = "글"  # Hangul syllable, 2 display columns
+    result = CTW(width=3).wrap("a " + syllable + syllable)
+    assert result == ["a ", syllable, syllable]
+    assert [wcwidth.wcswidth(line) for line in result] == [2, 2, 2]

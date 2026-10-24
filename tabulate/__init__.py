@@ -2760,10 +2760,14 @@ class _CustomTextWrap(textwrap.TextWrapper):
             stripped_chunk = _strip_ansi(chunk)
             while i <= len(stripped_chunk) and self._len(stripped_chunk[:i]) <= space_left:
                 i = i + 1
-            # Always consume at least one character so _wrap_chunks makes
-            # progress even when the first character is wider than space_left
-            # (e.g. a 2-column CJK char in a 1-column-wide slot).
-            i = max(i, 2)
+            # Consume at least one character only when the line is still empty,
+            # so _wrap_chunks makes progress when the first character is wider
+            # than space_left (e.g. a 2-column CJK char in a 1-column-wide
+            # slot). If cur_line already has content, leave the chunk for the
+            # next line instead of squeezing a wide character past width
+            # (issue #478).
+            if i == 1 and not cur_line and stripped_chunk:
+                i = 2
             # Consider escape codes when breaking words up
             total_escape_len = 0
             last_group = 0
