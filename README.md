@@ -1030,6 +1030,8 @@ it also provides some support to help manage this work internally.
 The `maxcolwidths` argument is a list where each entry specifies the max width for
 it's respective column. Any cell that will exceed this will automatically wrap the content.
 To assign the same max width for all columns, a singular int scaler can be used.
+Rows may have different numbers of cells; wrapping preserves columns that occur
+only in later rows.
 
 Use `None` for any columns where an explicit maximum does not need to be provided,
 and thus no automate multiline wrapping will take place.

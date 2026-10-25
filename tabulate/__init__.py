@@ -1621,10 +1621,7 @@ def _wrap_text_to_colwidths(
     break_long_words=_BREAK_LONG_WORDS,
     break_on_hyphens=_BREAK_ON_HYPHENS,
 ):
-    if len(list_of_lists):
-        num_cols = len(list_of_lists[0])
-    else:
-        num_cols = 0
+    num_cols = max(map(len, list_of_lists), default=0)
     numparses = _expand_iterable(numparses, num_cols, True)
 
     result = []
@@ -2245,10 +2242,7 @@ def tabulate(
     if maxcolwidths is not None:
         if type(maxcolwidths) is tuple:  # Check if tuple, convert to list if so
             maxcolwidths = list(maxcolwidths)
-        if len(list_of_lists):
-            num_cols = len(list_of_lists[0])
-        else:
-            num_cols = 0
+        num_cols = max(map(len, list_of_lists), default=0)
         if isinstance(maxcolwidths, int):  # Expand scalar for all columns
             maxcolwidths = _expand_iterable(maxcolwidths, num_cols, maxcolwidths)
         else:  # Ignore col width for any 'trailing' columns
