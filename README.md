@@ -37,18 +37,8 @@ In this case the command line utility will be installed to
 `~/.local/bin/tabulate` on Linux and to
 `%APPDATA%\Python\Scripts\tabulate.exe` on Windows.
 
-To install just the library on Unix-like operating systems:
-
-```shell
-TABULATE_INSTALL=lib-only pip install tabulate
-```
-
-On Windows:
-
-```shell
-set TABULATE_INSTALL=lib-only
-pip install tabulate
-```
+The `tabulate` console script is always installed with the package.
+There is no library-only install option.
 
 Build status
 ------------
