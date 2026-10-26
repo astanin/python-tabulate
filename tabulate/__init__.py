@@ -1451,6 +1451,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
     The first row can be used as headers if headers="firstrow",
     column indices can be used as headers if headers="keys".
+    Empty database cursors and structured arrays retain their column names.
 
     If showindex="default", show row indices of the pandas.DataFrame.
     If showindex="always", show row indices for all types of data.
@@ -1504,12 +1505,21 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         except TypeError as e:  # not iterable
             raise TypeError(err_msg) from e
 
-        if headers == "keys" and not rows:
-            # an empty table (issue #81)
-            headers = []
-        elif headers == "keys" and hasattr(tabular_data, "dtype") and tabular_data.dtype.names:
-            # numpy record array
+        if headers == "keys" and hasattr(tabular_data, "dtype") and tabular_data.dtype.names:
+            # numpy record array, including empty arrays with a known schema
             headers = tabular_data.dtype.names
+        elif (
+            headers == "keys"
+            and getattr(tabular_data, "description", None) is not None
+            and hasattr(tabular_data, "fetchone")
+            and hasattr(tabular_data, "rowcount")
+        ):
+            # Python Database API cursor object (PEP 0249)
+            # print tabulate(cursor, headers='keys')
+            headers = [column[0] for column in tabular_data.description]
+        elif headers == "keys" and not rows:
+            # an empty table without column metadata (issue #81)
+            headers = []
         elif (
             headers == "keys"
             and len(rows) > 0
@@ -1548,16 +1558,6 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             elif headers:
                 raise ValueError("headers for a list of dicts is not a dict or a keyword")
             rows = [[row.get(k) for k in keys] for row in rows]
-
-        elif (
-            headers == "keys"
-            and hasattr(tabular_data, "description")
-            and hasattr(tabular_data, "fetchone")
-            and hasattr(tabular_data, "rowcount")
-        ):
-            # Python Database API cursor object (PEP 0249)
-            # print tabulate(cursor, headers='keys')
-            headers = [column[0] for column in tabular_data.description]
 
         elif dataclasses is not None and len(rows) > 0 and dataclasses.is_dataclass(rows[0]):
             # Python's dataclass

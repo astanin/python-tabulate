@@ -525,3 +525,25 @@ def test_list_bytes():
     )
     result = tabulate(lb, headers=["bytes"])
     assert_equal(expected, result)
+
+
+def test_empty_sqlite3_keys():
+    "An empty query result retains its column names."
+    from contextlib import closing
+    import sqlite3
+
+    with closing(sqlite3.connect(":memory:")) as conn:
+        cursor = conn.execute("SELECT 1 AS first, 2 AS second WHERE 0")
+        result = tabulate(cursor, headers="keys", tablefmt="plain")
+    assert_equal("first    second", result)
+
+
+def test_empty_numpy_record_array_keys():
+    "An empty structured array retains its field names."
+    try:
+        import numpy as np
+    except ImportError:
+        skip("NumPy is not available")
+    rows = np.array([], dtype=[("first", int), ("second", float)])
+    result = tabulate(rows, headers="keys", tablefmt="plain")
+    assert_equal("first    second", result)
