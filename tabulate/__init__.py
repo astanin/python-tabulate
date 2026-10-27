@@ -1646,12 +1646,13 @@ def _wrap_text_to_colwidths(
                 # formatting of types (such as datetimes) may need to be more
                 # explicit than just `str` of the object. Also doesn't work for
                 # custom floatfmt/intfmt, nor with any missing/blank cells.
+                # Preserve boolean strings: bool("False") would change their value.
                 casted_cell = (
                     missingval
                     if cell is None
                     else (
                         str(cell)
-                        if cell == "" or _isnumber(cell)
+                        if cell == "" or _isnumber(cell) or _isbool(cell)
                         else str(_type(cell, numparse)(cell))
                     )
                 )

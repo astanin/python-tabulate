@@ -3,6 +3,8 @@
 import datetime
 from textwrap import TextWrapper as OTW
 
+import pytest
+
 from tabulate import _CustomTextWrap as CTW, _strip_ansi, tabulate
 
 from common import assert_equal, skip
@@ -323,6 +325,29 @@ def test_wrap_optional_bool_strs():
         "+---------+--------+",
     ]
     expected = "\n".join(expected)
+    assert_equal(expected, result)
+
+
+@pytest.mark.parametrize("value", ["True", "False", True, False])
+@pytest.mark.parametrize("width", [3, 5, 10])
+@pytest.mark.parametrize("options", [{}, {"disable_numparse": True}])
+def test_wrap_bool_values_preserves_text(value, width, options):
+    """Wrapping must not interpret nonempty boolean strings as truthy."""
+    expected = str(value)
+    if width == 3 and (isinstance(value, str) or options.get("disable_numparse")):
+        expected = expected[:3] + "\n" + expected[3:]
+    result = tabulate([[value]], tablefmt="plain", maxcolwidths=width, **options)
+    assert_equal(expected, result)
+
+
+@pytest.mark.parametrize("value", ["True", "False"])
+@pytest.mark.parametrize("width", [3, 5, 10])
+@pytest.mark.parametrize("options", [{}, {"disable_numparse": True}])
+def test_wrap_bool_headers_preserves_text(value, width, options):
+    expected = value
+    if width == 3:
+        expected = expected[:3] + "\n" + expected[3:]
+    result = tabulate([], headers=[value], tablefmt="plain", maxheadercolwidths=width, **options)
     assert_equal(expected, result)
 
 
