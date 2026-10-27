@@ -1626,12 +1626,18 @@ def _wrap_text_to_colwidths(
     else:
         num_cols = 0
     numparses = _expand_iterable(numparses, num_cols, True)
+    if isinstance(missingval, str):
+        missing_vals = [missingval] * num_cols
+    else:
+        missing_vals = list(missingval)
+        if len(missing_vals) < num_cols:
+            missing_vals.extend([_DEFAULT_MISSINGVAL] * (num_cols - len(missing_vals)))
 
     result = []
 
     for row in list_of_lists:
         new_row = []
-        for cell, width, numparse in zip(row, colwidths, numparses):
+        for cell, width, numparse, miss_v in zip(row, colwidths, numparses, missing_vals):
             if _isnumber(cell) and numparse:
                 new_row.append(cell)
                 continue
@@ -1647,7 +1653,7 @@ def _wrap_text_to_colwidths(
                 # explicit than just `str` of the object. Also doesn't work for
                 # custom floatfmt/intfmt, nor with any missing/blank cells.
                 casted_cell = (
-                    missingval
+                    miss_v
                     if cell is None
                     else (
                         str(cell)
@@ -2241,6 +2247,10 @@ def tabulate(
         tabular_data, headers, showindex=showindex
     )
     list_of_lists, separating_lines = _remove_separating_lines(list_of_lists)
+
+    # Reuse per-column markers across cell wrapping, header wrapping, and formatting.
+    if not isinstance(missingval, str):
+        missingval = list(missingval)
 
     if maxcolwidths is not None:
         if type(maxcolwidths) is tuple:  # Check if tuple, convert to list if so

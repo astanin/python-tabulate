@@ -3,6 +3,8 @@
 import datetime
 from textwrap import TextWrapper as OTW
 
+import pytest
+
 from tabulate import _CustomTextWrap as CTW, _strip_ansi, tabulate
 
 from common import assert_equal, skip
@@ -299,6 +301,70 @@ def test_wrap_none_value_with_missingval():
         "+---------+---------+",
     ]
     expected = "\n".join(expected)
+    assert_equal(expected, result)
+
+
+@pytest.mark.parametrize("container", [list, tuple, iter])
+@pytest.mark.parametrize(
+    "markers, widths, expected_data",
+    [
+        (["?", "N/A"], [10, 10], [["?", "N/A"], ["Alice", "N/A"]]),
+        (["?"], [10, 10], [["?", ""], ["Alice", ""]]),
+        ([], [10, 10], [["", ""], ["Alice", ""]]),
+        (
+            ["not available", "missing value"],
+            [7, 6],
+            [["not available", "missing value"], ["Alice", "missing value"]],
+        ),
+        (
+            ["not available", "missing value"],
+            [None, 6],
+            [["not available", "missing value"], ["Alice", "missing value"]],
+        ),
+    ],
+)
+def test_wrap_none_value_with_per_column_missingval(container, markers, widths, expected_data):
+    """Wrapping uses each column's marker, padding short sequences with empty strings."""
+    result = tabulate(
+        [[None, None], ["Alice", None]],
+        tablefmt="plain",
+        maxcolwidths=widths,
+        missingval=container(markers),
+    )
+    expected = tabulate(expected_data, tablefmt="plain", maxcolwidths=widths)
+    assert_equal(expected, result)
+
+
+@pytest.mark.parametrize(
+    "width_options",
+    [
+        {"maxcolwidths": [None, None]},
+        {"maxheadercolwidths": 5},
+        {"maxcolwidths": [5, 5], "maxheadercolwidths": 5},
+        {},
+    ],
+)
+def test_wrap_none_value_with_missingval_iterator(width_options):
+    """Column markers remain available after wrapping cells and/or headers."""
+    data = [[None, "present"]]
+    headers = ["First column", "Second column"]
+    result = tabulate(
+        data,
+        headers=headers,
+        tablefmt="plain",
+        missingval=iter(["?", "N/A"]),
+        **width_options,
+    )
+    expected = tabulate([["?", "present"]], headers=headers, tablefmt="plain", **width_options)
+    assert_equal(expected, result)
+
+
+@pytest.mark.parametrize("missingval", ["?", ["?", "N/A"], ("?", "N/A")])
+def test_wrap_per_column_missingval_without_missing_cells(missingval):
+    """Missing-value markers do not affect non-missing cells."""
+    data = [["First Entry", "present"], ["Second Entry", "available"]]
+    result = tabulate(data, tablefmt="plain", maxcolwidths=[7, 5], missingval=missingval)
+    expected = tabulate(data, tablefmt="plain", maxcolwidths=[7, 5])
     assert_equal(expected, result)
 
 
