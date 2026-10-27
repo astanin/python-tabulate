@@ -2871,6 +2871,38 @@ def test_intfmt_with_colors():
     assert_equal(expected, formatted)
 
 
+@mark.parametrize(
+    ("value", "intfmt", "expected"),
+    [
+        ("-1234", ",", "-1,234"),
+        ("+1234", "+,", "+1,234"),
+        ("-1234", "#x", "-0x4d2"),
+        ("+1234", "#x", "0x4d2"),
+        ("1234", ",", "1,234"),
+        ("0", ",", "0"),
+    ],
+)
+def test_intfmt_with_signed_colors(value, intfmt, expected):
+    "Integer formatting preserves ANSI colors around signed values."
+    colored = f"\x1b[31m{value}\x1b[0m"
+    result = tabulate([[colored]], intfmt=intfmt, tablefmt="plain")
+    assert_equal(f"\x1b[31m{expected}\x1b[0m", result)
+
+
+@mark.parametrize("value", ["+1234", "-001234", "-0"])
+def test_signed_colors_without_intfmt(value):
+    "An omitted format retains signed colored text as supplied."
+    colored = f"\x1b[31m{value}\x1b[0m"
+    assert_equal(colored, tabulate([[colored]], tablefmt="plain"))
+
+
+def test_signed_colors_without_column_intfmt():
+    "A column without a requested format retains its signed colored text."
+    colored = "\x1b[31m+1234\x1b[0m"
+    result = tabulate([[1234, colored]], intfmt=[","], tablefmt="plain")
+    assert_equal(f"1,234  {colored}", result)
+
+
 def test_empty_data_with_headers():
     "Output: table with empty data and headers as firstrow"
     expected = ""
