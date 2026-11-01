@@ -754,8 +754,8 @@ multiline_formats = {
 #       - tsv: TBD
 #       - textile: Replace \n with <br/> (must be well-formed XML)
 
-_multiline_codes = re.compile(r"\r|\n|\r\n")
-_multiline_codes_bytes = re.compile(b"\r|\n|\r\n")
+_multiline_codes = re.compile(r"\r\n|\r|\n")
+_multiline_codes_bytes = re.compile(b"\r\n|\r|\n")
 
 # Handle ANSI escape sequences for both control sequence introducer (CSI) and
 # operating system command (OSC). Both of these begin with 0x1b (or octal 033),
