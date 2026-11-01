@@ -598,3 +598,10 @@ def test_github_escape_pipe_character():
     result = tabulate([["foo|bar"]], headers=("spam|eggs",), tablefmt="github")
     expected = "| spam\\|eggs   |\n|:------------|\n| foo\\|bar     |"
     assert_equal(expected, result)
+
+
+def test_regression_crlf_multiline_header():
+    """Regression: a CRLF line break in a header must not add an extra blank row (issue #488)."""
+    lf = tabulate([[1]], headers=["A\nB"], tablefmt="grid")
+    crlf = tabulate([[1]], headers=["A\r\nB"], tablefmt="grid")
+    assert_equal(lf, crlf)
