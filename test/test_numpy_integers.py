@@ -37,3 +37,10 @@ def test_numpy_integer_formats(input_type, intfmt, dtype):
 
     options = {"tablefmt": "plain", "showindex": False, "intfmt": intfmt, "floatfmt": ".0f"}
     assert tabulate(table, **options) == tabulate([[int(value)]], **options)
+
+
+def test_numpy_duration_is_not_formatted_as_integer():
+    numpy = pytest.importorskip("numpy")
+    value = numpy.timedelta64(1, "D")
+
+    assert tabulate([[value]], tablefmt="plain", intfmt="x") == str(value)
