@@ -151,7 +151,9 @@ called row index. To add a similar column to any other type of table,
 pass `showindex="always"` or `showindex=True` argument to `tabulate()`.
 To suppress row indices for all types of data, pass `showindex="never"`
 or `showindex=False`. To add a custom row index column, pass
-`showindex=rowIDs`, where `rowIDs` is some iterable:
+`showindex=rowIDs`, where `rowIDs` is some iterable, such as a list,
+NumPy array, or pandas Index. Custom row indices replace a DataFrame's
+original index and do not inherit its name:
 
 ```pycon
 >>> print(tabulate([["F",24],["M",19]], showindex="always"))
