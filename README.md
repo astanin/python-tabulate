@@ -162,6 +162,9 @@ or `showindex=False`. To add a custom row index column, pass
 
 ```
 
+With `headers="firstrow"`, hiding a DataFrame's row index also omits its
+first index value from the header.
+
 ### Table format
 
 There is more than one way to format a table in plain text. The third
