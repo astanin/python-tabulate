@@ -11,6 +11,7 @@ from importlib.metadata import PackageNotFoundError, version
 import io
 from itertools import chain, zip_longest as izip_longest
 import math
+from numbers import Integral
 import re
 import textwrap
 import warnings
@@ -935,9 +936,10 @@ def _isint(string, inttype=int):
     return (
         type(string) is inttype
         or (
-            (hasattr(string, "is_integer") or hasattr(string, "__array__"))
-            and str(type(string)).startswith("<class 'numpy.int")
-        )  # numpy.int64 and similar
+            type(string).__module__ == "numpy"
+            and isinstance(string, Integral)
+            and string.dtype.kind in ("i", "u")
+        )  # NumPy integer scalars, excluding timedelta64
         or (
             isinstance(string, (bytes, str)) and _isconvertible(inttype, string)
         )  # integer as string
