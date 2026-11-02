@@ -105,6 +105,9 @@ Mars          3390         641.85
 
 ```
 
+An iterable of column labels, including a NumPy array, supplies literal
+labels such as `"firstrow"` or `"keys"`.
+
 If `headers="firstrow"`, then the first row of data is used:
 
 ```pycon

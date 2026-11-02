@@ -1459,9 +1459,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
     """
 
-    try:
-        bool(headers)
-    except ValueError:  # numpy.ndarray, pandas.core.index.Index, ...
+    if not isinstance(headers, (str, dict)):
         headers = list(headers)
 
     err_msg = (
