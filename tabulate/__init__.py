@@ -1459,9 +1459,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
     """
 
-    try:
-        bool(headers)
-    except ValueError:  # numpy.ndarray, pandas.core.index.Index, ...
+    if not isinstance(headers, (str, dict)):
         headers = list(headers)
 
     err_msg = (
@@ -1469,6 +1467,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         "like a list of lists or similar."
         "\nDid you forget a pair of extra [] or ',' in ()?"
     )
+    showindex_is_a_str = type(showindex) in [str, bytes]
     index = None
     if hasattr(tabular_data, "keys") and hasattr(tabular_data, "values"):
         # dict-like and pandas.DataFrame?
@@ -1483,7 +1482,11 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         elif hasattr(tabular_data, "index"):
             # values is a property, has .index => it's likely a pandas.DataFrame (pandas 0.11.0)
             keys = list(tabular_data)
-            if showindex in ["default", "always", True] and tabular_data.index.name is not None:
+            if (
+                (showindex_is_a_str or not isinstance(showindex, (Sized, Iterable)))
+                and showindex in ["default", "always", True]
+                and tabular_data.index.name is not None
+            ):
                 if isinstance(tabular_data.index.name, list):
                     keys[:0] = tabular_data.index.name
                 else:
@@ -1590,7 +1593,6 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     rows = [r if _is_separating_line(r) else list(r) for r in rows]
 
     # add or remove an index column
-    showindex_is_a_str = type(showindex) in [str, bytes]
     if showindex_is_a_str and showindex == "default" and index is not None:
         rows = _prepend_row_index(rows, index)
     elif isinstance(showindex, Sized) and not showindex_is_a_str:
