@@ -1168,6 +1168,9 @@ OUTPUT:
 -o FILE, --output FILE    print table to FILE (default: stdout)
 ```
 
+The output file must differ from every named input file. The command rejects
+paths referring to the same file, including hard links, before writing output.
+
 Performance considerations
 --------------------------
 
