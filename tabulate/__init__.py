@@ -1574,6 +1574,7 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             headers = list(map(str, range(len(rows[0]))))
 
     # take headers from the first row if necessary
+    index_header_from_firstrow = headers == "firstrow" and index is not None
     if headers == "firstrow" and len(rows) > 0:
         if index is not None:
             headers = [index[0]] + list(rows[0])
@@ -1602,7 +1603,8 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
             index = list(range(len(rows)))
         rows = _prepend_row_index(rows, index)
     elif showindex == "never" or (not _bool(showindex) and not showindex_is_a_str):
-        pass
+        if index_header_from_firstrow:
+            headers = headers[1:]
 
     # pad with empty headers for initial columns if necessary
     headers_pad = 0
