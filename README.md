@@ -766,7 +766,8 @@ column, in which case every column may have different number formatting:
 
 ```
 
-`intfmt` works similarly for integers
+`intfmt` works similarly for integers, including signed and unsigned NumPy
+integer scalars:
 
     >>> print(tabulate([["a",1000],["b",90000]], intfmt=","))
     -  ------
