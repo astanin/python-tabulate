@@ -1,6 +1,7 @@
 """Command-line interface for tabulate."""
 
 from functools import partial
+import os
 import re
 import sys
 import textwrap
@@ -160,6 +161,15 @@ def _main():
     else:
         print(f"{fileformat} is not a supported file format")
         sys.exit(3)
+    if outfile != "-" and os.path.exists(outfile):
+        for filename in args:
+            if (
+                filename != "-"
+                and os.path.exists(filename)
+                and os.path.samefile(filename, outfile)
+            ):
+                print(f"input and output refer to the same file: {filename}", file=sys.stderr)
+                sys.exit(2)
     # format all input files
     files = [sys.stdin] if not args else args
     with sys.stdout if outfile == "-" else open(outfile, "w") as out:
