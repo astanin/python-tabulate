@@ -598,3 +598,21 @@ def test_github_escape_pipe_character():
     result = tabulate([["foo|bar"]], headers=("spam|eggs",), tablefmt="github")
     expected = "| spam\\|eggs   |\n|:------------|\n| foo\\|bar     |"
     assert_equal(expected, result)
+
+
+def test_crlf_multiline_header_matches_lf():
+    "Regression: CRLF in a header is one line break, same as LF (issue #488)"
+    expected = "\n".join(
+        [
+            "+-----+",
+            "|   A |",
+            "|   B |",
+            "+=====+",
+            "|   1 |",
+            "+-----+",
+        ]
+    )
+    lf = tabulate([[1]], headers=["A\nB"], tablefmt="grid")
+    crlf = tabulate([[1]], headers=["A\r\nB"], tablefmt="grid")
+    assert_equal(expected, lf)
+    assert_equal(expected, crlf)
