@@ -783,7 +783,7 @@ _multiline_codes_bytes = re.compile(b"\r|\n|\r\n")
 _esc = r"\x1b"
 _csi = rf"{_esc}\["
 _osc = rf"{_esc}\]"
-_st = rf"{_esc}\\"
+_st = rf"(?:{_esc}\\|\x07)"
 
 _ansi_escape_pat = rf"""
     (
@@ -795,11 +795,11 @@ _ansi_escape_pat = rf"""
     |
         # terminal hyperlinks
         {_osc}8;        # OSC opening
-        (\w+=\w+:?)*    # key=value params list (submatch 2)
+        ([\w.-]+=[\w.-]+:?)*  # key=value params list (submatch 2)
         ;               # delimiter
-        ([^{_esc}]+)    # URI - anything but ESC (submatch 3)
+        ([^{_esc}\x07]+)    # URI - anything but ESC or BEL (submatch 3)
         {_st}           # ST
-        ([^{_esc}]+)    # link text - anything but ESC (submatch 4)
+        ([^{_esc}\x07]+)    # link text - anything but ESC or BEL (submatch 4)
         {_osc}8;;{_st}  # "closing" OSC sequence
     )
 """

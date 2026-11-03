@@ -598,3 +598,25 @@ def test_github_escape_pipe_character():
     result = tabulate([["foo|bar"]], headers=("spam|eggs",), tablefmt="github")
     expected = "| spam\\|eggs   |\n|:------------|\n| foo\\|bar     |"
     assert_equal(expected, result)
+
+
+def test_alignment_of_bel_and_param_link_cells():
+    "Regression: Align OSC-8 links terminated by BEL (0x07) or with hyphenated params."
+    linktable = [
+        ("test", 42, "\x1b]8;;target\x07test\x1b]8;;\x07"),
+        ("test", 101, "\x1b]8;id=doc-1;target\x1b\\test\x1b]8;;\x1b\\"),
+    ]
+    linkheaders = ("test", "\x1b]8;;target\x07test\x1b]8;;\x07", "test")
+    formatted = tabulate(linktable, linkheaders, "grid")
+    expected = "\n".join(
+        [
+            "+--------+--------+--------+",
+            "| test   |   \x1b]8;;target\x07test\x1b]8;;\x07 | test   |",
+            "+========+========+========+",
+            "| test   |     42 | \x1b]8;;target\x07test\x1b]8;;\x07   |",
+            "+--------+--------+--------+",
+            "| test   |    101 | \x1b]8;id=doc-1;target\x1b\\test\x1b]8;;\x1b\\   |",
+            "+--------+--------+--------+",
+        ]
+    )
+    assert_equal(expected, formatted)
