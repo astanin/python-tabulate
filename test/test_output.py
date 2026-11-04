@@ -2288,6 +2288,37 @@ def test_pretty_headerless():
     assert_equal(expected, result)
 
 
+def test_pretty_floatfmt():
+    "Output: pretty respects an explicitly given floatfmt (issue #71)"
+    expected = "\n".join(
+        [
+            "+---------+---------+",
+            "| strings | numbers |",
+            "+---------+---------+",
+            "|  spam   |  42.00  |",
+            "|  eggs   | 451.00  |",
+            "+---------+---------+",
+        ]
+    )
+    result = tabulate(
+        _test_table, _test_table_headers, tablefmt="pretty", floatfmt=".2f"
+    )
+    assert_equal(expected, result)
+
+
+def test_pretty_intfmt():
+    "Output: pretty respects an explicitly given intfmt (issue #71)"
+    expected = "\n".join(
+        [
+            "+-----+",
+            "| 042 |",
+            "+-----+",
+        ]
+    )
+    result = tabulate([[42]], tablefmt="pretty", intfmt="03d")
+    assert_equal(expected, result)
+
+
 def test_pretty_multiline_headerless():
     "Output: pretty with multiline cells without headers"
     table = [["foo bar\nbaz\nbau", "hello"], ["", "multiline\nworld"]]
