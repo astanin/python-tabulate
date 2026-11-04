@@ -2287,13 +2287,16 @@ def tabulate(
         list_of_lists, headers = _rst_escape_first_column(list_of_lists, headers)
 
     # PrettyTable formatting does not use any extra padding.
-    # Numbers are not parsed and are treated the same as strings for alignment.
+    # Numbers are not parsed and are treated the same as strings for alignment,
+    # unless the user explicitly asks for numbers to be reformatted by passing
+    # a custom floatfmt or intfmt (issue #71).
     # Check if pretty is the format being used and override the defaults so it
     # does not impact other formats.
     min_padding = MIN_PADDING
     if tablefmt == "pretty":
         min_padding = 0
-        disable_numparse = True
+        if floatfmt == _DEFAULT_FLOATFMT and intfmt == _DEFAULT_INTFMT:
+            disable_numparse = True
         numalign = "center" if numalign == _DEFAULT_ALIGN else numalign
         stralign = "center" if stralign == _DEFAULT_ALIGN else stralign
     else:
