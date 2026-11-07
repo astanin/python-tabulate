@@ -795,7 +795,7 @@ _ansi_escape_pat = rf"""
     |
         # terminal hyperlinks
         {_osc}8;        # OSC opening
-        (\w+=\w+:?)*    # key=value params list (submatch 2)
+        (\w+=\w+(?::\w+=\w+)*:?)?  # key=value params list (submatch 2)
         ;               # delimiter
         ([^{_esc}]+)    # URI - anything but ESC (submatch 3)
         {_st}           # ST

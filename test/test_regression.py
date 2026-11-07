@@ -1,5 +1,7 @@
 """Regression tests."""
 
+import time
+
 from tabulate import DataRow, Line, TableFormat, tabulate
 
 from common import assert_equal, skip
@@ -598,3 +600,13 @@ def test_github_escape_pipe_character():
     result = tabulate([["foo|bar"]], headers=("spam|eggs",), tablefmt="github")
     expected = "| spam\\|eggs   |\n|:------------|\n| foo\\|bar     |"
     assert_equal(expected, result)
+
+
+def test_osc8_link_params_no_catastrophic_backtracking():
+    "Regression: unterminated OSC 8 link params must not backtrack exponentially"
+    cell = "\x1b]8;a=" + "aaaa=" * 16
+    start = time.perf_counter()
+    result = tabulate([[cell]], tablefmt="plain")
+    elapsed = time.perf_counter() - start
+    assert_equal(cell, result)
+    assert elapsed < 1.0
