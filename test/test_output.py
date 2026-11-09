@@ -2584,6 +2584,34 @@ def test_moinmoin_headerless():
     assert_equal(expected, result)
 
 
+def test_moinmoin_escapes_pipes():
+    "Output: moinmoin with literal pipes in cell and header content"
+    # https://github.com/astanin/python-tabulate/issues/501
+    expected = "\n".join(
+        [
+            '||<style="text-align: left;"> \'\'\' h &#124; 1   \'\'\' '
+            '||<style="text-align: left;"> \'\'\' h2     \'\'\' ||',
+            '||<style="text-align: left;">  x &#124; y    '
+            '||<style="text-align: left;">  a &#124;&#124; b  ||',
+        ]
+    )
+    result = tabulate([["x | y", "a || b"]], headers=["h | 1", "h2"], tablefmt="moinmoin")
+    assert_equal(expected, result)
+
+
+def test_textile_escapes_pipes():
+    "Output: textile with literal pipes in cell and header content"
+    # https://github.com/astanin/python-tabulate/issues/501
+    expected = "\n".join(
+        [
+            "|_.  h &#124; 1   |_. h2     |",
+            "|<. x &#124; y    |<. a &#124;&#124; b |",
+        ]
+    )
+    result = tabulate([["x | y", "a || b"]], headers=["h | 1", "h2"], tablefmt="textile")
+    assert_equal(expected, result)
+
+
 _test_table_html_headers = ["<strings>", "<&numbers&>"]
 _test_table_html = [["spam >", 41.9999], ["eggs &", 451.0]]
 _test_table_unsafehtml_headers = ["strings", "numbers"]
