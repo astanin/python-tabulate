@@ -187,10 +187,21 @@ def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
     # hard-coded padding _around_ align attribute and value together
     # rather than padding parameter which affects only the value
     values_with_attrs = [
-        " " + alignment.get(a, "") + c + " " for c, a in zip(cell_values, colaligns)
+        " "
+        + alignment.get(a, "")
+        + _escape_mediawiki_value(c, separator)
+        + " "
+        for c, a in zip(cell_values, colaligns)
     ]
     colsep = separator * 2
     return (separator + colsep.join(values_with_attrs)).rstrip()
+
+
+def _escape_mediawiki_value(value, separator):
+    value = value.replace("|", "&#124;")
+    if separator == "!":
+        value = value.replace("!", "&#33;")
+    return value
 
 
 def _textile_row_with_attrs(cell_values, colwidths, colaligns):
