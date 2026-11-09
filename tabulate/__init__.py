@@ -193,10 +193,16 @@ def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
     return (separator + colsep.join(values_with_attrs)).rstrip()
 
 
+def _escape_pipe(value):
+    return value.replace("|", "&#124;")
+
+
 def _textile_row_with_attrs(cell_values, colwidths, colaligns):
     cell_values[0] += " "
     alignment = {"left": "<.", "right": ">.", "center": "=.", "decimal": ">."}
-    values = "|".join(alignment.get(a, "") + v for a, v in zip(colaligns, cell_values))
+    values = "|".join(
+        alignment.get(a, "") + _escape_pipe(v) for a, v in zip(colaligns, cell_values)
+    )
     return f"|{values}|"
 
 
@@ -236,7 +242,11 @@ def _moin_row_with_attrs(celltag, cell_values, colwidths, colaligns, header=""):
         "decimal": '<style="text-align: right;">',
     }
     values_with_attrs = [
-        "{}{} {} ".format(celltag, alignment.get(a, ""), header + c + header)
+        "{}{} {} ".format(
+            celltag,
+            alignment.get(a, ""),
+            header + _escape_pipe(c) + header,
+        )
         for c, a in zip(cell_values, colaligns)
     ]
     return "".join(values_with_attrs) + "||"
@@ -690,7 +700,7 @@ _table_formats = {
         linebelowheader=None,
         linebetweenrows=None,
         linebelow=None,
-        headerrow=DataRow("|_. ", "|_.", "|"),
+        headerrow=DataRow("|_. ", "|_.", "|", {r"|": r"&#124;"}),
         datarow=_textile_row_with_attrs,
         padding=1,
         with_header_hide=None,
