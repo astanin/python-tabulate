@@ -420,6 +420,14 @@ def test_ragged_rows():
     assert_equal(expected, result)
 
 
+def test_ragged_rows_with_short_headers():
+    "Regression: headers should not drop columns from ragged rows (issue #494)"
+    table = [["a"], ["b", "KEEP"]]
+    expected = "\n".join(["    tail", "--  ------", "a", "b   KEEP"])
+    result = tabulate(table, headers=["tail"])
+    assert_equal(expected, result)
+
+
 def test_empty_pipe_table_with_columns():
     "Regression: allow empty pipe tables with columns, like empty dataframes (github issue #15)"
     table = []

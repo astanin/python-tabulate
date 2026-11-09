@@ -1607,7 +1607,8 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     # pad with empty headers for initial columns if necessary
     headers_pad = 0
     if headers and len(rows) > 0:
-        headers_pad = max(0, len(rows[0]) - len(headers))
+        max_row_cols = max(len(r) for r in rows if not _is_separating_line(r)) if rows else 0
+        headers_pad = max(0, max_row_cols - len(headers))
         headers = [""] * headers_pad + headers
 
     return rows, headers, headers_pad
