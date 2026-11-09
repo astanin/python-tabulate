@@ -2559,6 +2559,44 @@ def test_mediawiki_headerless():
     assert_equal(expected, result)
 
 
+def test_mediawiki_escapes_pipes_in_cells_and_headers():
+    "Output: mediawiki with literal pipes in cell and header content"
+    # https://github.com/astanin/python-tabulate/issues/499
+    expected = "\n".join(
+        [
+            '{| class="wikitable" style="text-align: left;"',
+            "|+ <!-- caption -->",
+            "|-",
+            "! h &#124; 1",
+            "|-",
+            "| x &#124; y",
+            "|-",
+            "| a &#124;&#124; b",
+            "|}",
+        ]
+    )
+    result = tabulate([["x | y"], ["a || b"]], headers=["h | 1"], tablefmt="mediawiki")
+    assert_equal(expected, result)
+
+
+def test_mediawiki_escapes_bang_in_headers():
+    "Output: mediawiki header cells containing double exclamation marks"
+    # https://github.com/astanin/python-tabulate/issues/499
+    expected = "\n".join(
+        [
+            '{| class="wikitable" style="text-align: left;"',
+            "|+ <!-- caption -->",
+            "|-",
+            "! h &#33;&#33; 1",
+            "|-",
+            "| value",
+            "|}",
+        ]
+    )
+    result = tabulate([["value"]], headers=["h !! 1"], tablefmt="mediawiki")
+    assert_equal(expected, result)
+
+
 def test_moinmoin():
     "Output: moinmoin with headers"
     expected = "\n".join(
