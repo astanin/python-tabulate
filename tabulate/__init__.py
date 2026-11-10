@@ -2231,6 +2231,19 @@ def tabulate(
     +------------+------------+-------------------------------+
 
     Header column width can be specified in a similar way using `maxheadercolwidths`.
+    Row alignment
+    -------------
+
+    `rowalign` controls the vertical alignment of cell text within
+    rows that contain multiline cells: shorter cells are padded with
+    blank lines so that their text sits at the "top" (the default),
+    "center", or "bottom" of the row. A single string applies to
+    every row; a list applies one alignment per row, starting from
+    the first row (`None` in the list means the default top
+    alignment for that row). Rows without multiline cells are
+    unaffected, since there is nothing to align within a single
+    line. Note that `rowalign` only takes effect in formats that
+    draw a line between rows, such as "grid" and "fancy_grid".
 
     """
 
