@@ -531,6 +531,35 @@ def test_exception_on_empty_data_with_maxcolwidths():
     assert_equal(result, "")
 
 
+def test_thousands_separator_int_with_maxcolwidths():
+    "Regression: int-looking thousands separator crashed with maxcolwidths (github issue #359)"
+    result = tabulate([["1,000"]], maxcolwidths=10)
+    expected = tabulate([["1,000"]])
+    assert_equal(expected, result)
+
+
+def test_disable_numparse_with_maxcolwidths_does_not_crash():
+    "Regression: disable_numparse was ignored by maxcolwidths and int('100,120') crashed (github issue #448)"
+    result = tabulate([["100,120"]], maxcolwidths=10, disable_numparse=True)
+    expected = tabulate([["100,120"]], disable_numparse=True)
+    assert_equal(expected, result)
+
+
+def test_colored_numeric_cell_with_maxcolwidths():
+    "Regression: ANSI-colored numeric string crashed int() under maxcolwidths (github issue #359)"
+    result = tabulate([["\x1b[31m3\x1b[0m"]], maxcolwidths=10)
+    assert "\x1b[31m" in result
+    assert "3" in result
+    assert "\x1b[0m" in result
+
+
+def test_numeric_cast_failure_keeps_text_when_wrapping():
+    "Regression: when the deduced constructor rejects the raw value, wrapping keeps the original text"
+    # same value, wrapped vs unwrapped: no crash, same rendering
+    for value in ["1,000", "1,000.5", "100,120"]:
+        assert_equal(tabulate([[value]]), tabulate([[value]], maxcolwidths=10))
+
+
 def test_numpy_int64_as_integer():
     "Regression: format numpy.int64 as integer (github issue #18)"
     try:
