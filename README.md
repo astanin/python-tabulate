@@ -219,8 +219,8 @@ bacon       0
 ```
 
 `simple` is the default format (the default may change in future
-versions). It corresponds to `simple_tables` in [Pandoc Markdown
-extensions](http://johnmacfarlane.net/pandoc/README.html#tables):
+versions). It corresponds to `simple_tables` in Pandoc Markdown
+extensions:
 
 ```pycon
 >>> print(tabulate(table, headers, tablefmt="simple"))
