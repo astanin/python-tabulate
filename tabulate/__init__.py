@@ -2637,8 +2637,9 @@ def _format_table(
             _append_line(lines, padded_widths, colaligns, fmt.linebelowheader)
 
     if rows and fmt.linebetweenrows and "linebetweenrows" not in hidden:
-        # initial rows with a line below
-        for row, ralign in zip(rows[:-1], rowaligns):
+        # Separators have no row alignment and must not shorten the data-row iteration.
+        rowalign_iter = iter(rowaligns)
+        for index, row in enumerate(rows):
             if row != SEPARATING_LINE:
                 append_row(
                     lines,
@@ -2646,18 +2647,10 @@ def _format_table(
                     padded_widths,
                     colaligns,
                     fmt.datarow,
-                    rowalign=ralign,
+                    rowalign=next(rowalign_iter),
                 )
-            _append_line(lines, padded_widths, colaligns, fmt.linebetweenrows)
-        # the last row without a line below
-        append_row(
-            lines,
-            pad_row(rows[-1], pad),
-            padded_widths,
-            colaligns,
-            fmt.datarow,
-            rowalign=rowaligns[-1],
-        )
+            if index < len(rows) - 1:
+                _append_line(lines, padded_widths, colaligns, fmt.linebetweenrows)
     else:
         separating_line = (
             fmt.linebetweenrows

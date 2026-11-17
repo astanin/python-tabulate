@@ -1,6 +1,8 @@
 """Regression tests."""
 
-from tabulate import DataRow, Line, TableFormat, tabulate
+import pytest
+
+from tabulate import SEPARATING_LINE, DataRow, Line, TableFormat, tabulate
 
 from common import assert_equal, skip
 
@@ -598,3 +600,67 @@ def test_github_escape_pipe_character():
     result = tabulate([["foo|bar"]], headers=("spam|eggs",), tablefmt="github")
     expected = "| spam\\|eggs   |\n|:------------|\n| foo\\|bar     |"
     assert_equal(expected, result)
+
+
+@pytest.mark.parametrize("tablefmt", ["grid", "fancy_grid", "rounded_grid"])
+@pytest.mark.parametrize(
+    "separators",
+    [(), (1,), (4,), (1, 3), (0, 2, 3), (1, 2, 4), (0, 1, 3, 6), (1, 5)],
+)
+def test_grid_separators_preserve_every_data_row(tablefmt, separators):
+    rows = [[label] for label in ("Alpha", "Bravo", "Charlie", "Delta")]
+    for index in separators:
+        rows.insert(index, SEPARATING_LINE)
+
+    result = tabulate(rows, tablefmt=tablefmt)
+
+    assert SEPARATING_LINE not in result
+    for label in ("Alpha", "Bravo", "Charlie", "Delta"):
+        assert result.count(label) == 1
+
+
+def test_grid_multiple_separators_output():
+    rows = [["A"], SEPARATING_LINE, ["B"], SEPARATING_LINE, ["C"], ["D"]]
+
+    assert tabulate(rows, tablefmt="grid") == "\n".join(
+        [
+            "+---+",
+            "| A |",
+            "+---+",
+            "+---+",
+            "| B |",
+            "+---+",
+            "+---+",
+            "| C |",
+            "+---+",
+            "| D |",
+            "+---+",
+        ]
+    )
+
+
+@pytest.mark.parametrize("tablefmt", ["grid", "fancy_grid", "rounded_grid"])
+@pytest.mark.parametrize("alignment", ["top", "center", "bottom"])
+def test_grid_separators_do_not_consume_row_alignment(tablefmt, alignment):
+    rows = [
+        ["A1\nA2\nA3", "alpha"],
+        SEPARATING_LINE,
+        ["B1\nB2\nB3", "bravo"],
+        SEPARATING_LINE,
+        ["C1\nC2\nC3", "charlie"],
+        ["D1\nD2\nD3", "delta"],
+    ]
+    rowalign = ["top", alignment, "bottom", "center"]
+
+    result = tabulate(rows, tablefmt=tablefmt, rowalign=rowalign)
+
+    expected_lines = {
+        "alpha": "A1",
+        "bravo": {"top": "B1", "center": "B2", "bottom": "B3"}[alignment],
+        "charlie": "C3",
+        "delta": "D2",
+    }
+    for label, expected in expected_lines.items():
+        matching_lines = [line for line in result.splitlines() if label in line]
+        assert len(matching_lines) == 1
+        assert expected in matching_lines[0]
