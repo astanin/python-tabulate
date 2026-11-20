@@ -4,6 +4,7 @@ from functools import partial
 import re
 import sys
 import textwrap
+import functools
 
 try:
     from . import (
@@ -46,14 +47,16 @@ def _main():
                               rsv (REGEXP-separated values, default),
                               csv (comma-separated valued, Excel dialect),
                               jsonl (one JSON object per line)
+                              sqlite (file in SQLite3 format)
+    -T TABLE, --table TABLE   table name in sqlite db
     -s REGEXP, --sep REGEXP   column separator for rsv data (default: whitespace)
 
     FORMAT:
     --headers HEADERS         HEADERS can be one of:
                               "firstrow" (for csv and rsv data),
-                              "keys" (for jsonl data),
+                              "keys" (for jsonl or sqlite data),
                               "HEADER1,HEADER2,..." (for csv and rsv data),
-                              "KEY1:HEADER1,KEY2:HEADER2,..." (for jsonl data)
+                              "KEY1:HEADER1,KEY2:HEADER2,..." (for jsonl or sqlite data)
     -1                        use the first row of input data as a table header
                               (the same as --headers firstrow)
     -F FPFMT, --float FPFMT   floating point number format (default: g)
@@ -76,7 +79,7 @@ def _main():
     try:
         opts, args = getopt.getopt(
             sys.argv[1:],
-            "h1H:r:o:s:F:I:f:",
+            "h1H:r:o:s:F:I:f:T:",
             [
                 "help",
                 "header",  # deprecated in CLI > 0.10
@@ -88,6 +91,7 @@ def _main():
                 "int=",
                 "colalign=",
                 "format=",
+                "table=",
             ],
         )
     except getopt.GetoptError as e:
@@ -100,6 +104,7 @@ def _main():
     colalign = None
     tablefmt = "simple"
     fileformat = "rsv"
+    tablename = None
     sep = r"\s+"
     outfile = "-"
     special_headers_values = ["firstrow", "keys"]
@@ -129,6 +134,8 @@ def _main():
                 print(usage)
                 sys.exit(3)
             tablefmt = value
+        elif opt in ["-T", "--table"]:
+            tablename = value
         elif opt in ["-s", "--sep"]:
             sep = value
         elif opt in ["-h", "--help"]:
@@ -145,8 +152,7 @@ def _main():
         if type(headers) is str and headers not in special_headers_values:
             # parse as CSV values
             headers = headers.split(",")
-    elif fileformat == "jsonl":
-        reader = _read_jsonl_file
+    elif fileformat in ("jsonl", "sqlite", "sqlite3"):
         if not headers:
             headers = "keys"  # reasonable default
         if type(headers) is str and headers not in special_headers_values:
@@ -157,6 +163,10 @@ def _main():
                 print(f"cannot parse headers parameter: {headers}", file=sys.stderr)
                 headers2 = []
             headers = headers2
+        if fileformat == "jsonl":
+            reader = _read_jsonl_file
+        else:
+            reader = functools.partial(_read_sqlite_file, tablename=tablename)
     else:
         print(f"{fileformat} is not a supported file format")
         sys.exit(3)
@@ -198,6 +208,25 @@ def _read_csv_file(fobject):
     reader = csv.reader(fobject, dialect="excel")
     table = [list(row) for row in reader]
     return table
+
+
+def _read_sqlite_file(fobject, tablename=None):
+    import json
+    import sqlite3
+
+    con = sqlite3.connect(':memory:')
+    if hasattr(fobject, 'buffer'):
+        fobject = fobject.buffer
+    if hasattr(fobject, 'raw'):
+        fobject = fobject.raw
+    con.deserialize(fobject.read())
+    if tablename is None:
+        tablename = con.execute(
+            "select name from sqlite_master where type='table' order by rootpage desc"
+        ).fetchone()[0]
+    cursor = con.execute("select * from " + json.dumps(tablename, ensure_ascii=False))
+    cursor.row_factory = sqlite3.Row
+    return cursor
 
 
 def _open_and_pprint_file(reader, f, *args, **kwargs):

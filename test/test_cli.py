@@ -307,6 +307,48 @@ def test_module_csv_from_stdin():
     assert_equal(out.splitlines(), expected.splitlines())
 
 
+SAMPLE_INPUT_SQL = (
+    'BEGIN TRANSACTION;\n'
+    'CREATE TABLE people (id INTEGER, name TEXT, email TEXT, """favorite"" fruit" TEXT);\n'
+    "INSERT INTO people VALUES(1,'Alice','alice@example.com','apple, kiwi');\n"
+    "INSERT INTO people VALUES(2,'Bob','bob@example.com','banana,\norange,\n\"lychee');\n"
+    "INSERT INTO people VALUES(3,'Carol',NULL,'pear');\n"
+    'COMMIT;'
+)
+    
+
+SAMPLE_SQL_FORMAT = "\n".join(
+    [
+        '  id  name    email              "favorite" fruit',
+        "----  ------  -----------------  ------------------",
+        "   1  Alice   alice@example.com  apple, kiwi",
+        "   2  Bob     bob@example.com    banana,",
+        "                                 orange,",
+        "                                 \"lychee",
+        "   3  Carol                      pear",
+    ]
+)
+
+
+class FakeString(bytes):
+    def encode(self):
+        return self
+
+
+def test_module_sqlite_from_stdin():
+    """Command line utility: python -m tabulate with SQLITE3 input from stdin"""
+    import sqlite3
+    con = sqlite3.connect('')
+    con.executescript(SAMPLE_INPUT_SQL)
+    inputbytes = FakeString(con.serialize())
+    cmd = [sys.executable, "-m", "tabulate", "-r", "sqlite"]
+    out = run_and_capture_stdout(cmd, input=inputbytes)
+    expected = SAMPLE_SQL_FORMAT
+    print("got:     ", "\n", (out), sep='')
+    print("expected:", "\n", (expected), sep='')
+    assert_equal(out.splitlines(), expected.splitlines())
+
+
 def test_module_jsonl_remapped_headers():
     """Command line utility: --headers with key:header remapping for JSONL input"""
     cmd = [

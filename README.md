@@ -1144,14 +1144,16 @@ INPUT:
                           rsv (REGEXP-separated values, default),
                           csv (comma-separated valued, Excel dialect),
                           jsonl (one JSON object per line)
+                          sqlite (file in SQLite3 format)
+-T TABLE, --table TABLE   table name in sqlite db
 -s REGEXP, --sep REGEXP   column separator for rsv data (default: whitespace)
 
 FORMAT:
 --headers HEADERS         HEADERS can be one of:
                           "firstrow" (for csv and rsv data),
-                          "keys" (for jsonl data),
+                          "keys" (for jsonl or sqlite data),
                           "HEADER1,HEADER2,..." (for csv and rsv data),
-                          "KEY1:HEADER1,KEY2:HEADER2,..." (for jsonl data)
+                          "KEY1:HEADER1,KEY2:HEADER2,..." (for jsonl or sqlite data)
 -1                        use the first row of input data as a table header
                           (the same as --headers firstrow)
 -F FPFMT, --float FPFMT   floating point number format (default: g)
