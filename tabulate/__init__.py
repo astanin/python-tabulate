@@ -1091,7 +1091,7 @@ def _strip_ansi(s):
     if isinstance(s, str):
         return _ansi_codes.sub(r"\4", s)
     else:  # a bytestring
-        return _ansi_codes_bytes.sub(r"\4", s)
+        return _ansi_codes_bytes.sub(rb"\4", s)
 
 
 def _visible_width(s):
@@ -1299,6 +1299,22 @@ def _column_type(strings, has_invisible=True, numparse=True):
     return reduce(_more_generic, types, bool)
 
 
+def _format_float_callable(val, formatter, has_invisible):
+    """Convert a numeric cell before calling user code, preserving Decimal precision."""
+    text = _to_str(val) if isinstance(val, (str, bytes)) else None
+    raw = _strip_ansi(text) if text is not None and has_invisible else text
+    try:
+        number = val if isinstance(val, Decimal) else float(raw.replace(",", "") if raw else val)
+    except (ValueError, TypeError):
+        return _to_str(val)
+
+    # Formatter errors belong to the caller and must not be treated as parse failures.
+    result = formatter(number)
+    if not isinstance(result, str):
+        raise TypeError("floatfmt callable must return a string")
+    return text.replace(raw, result) if text is not None and raw != text else result
+
+
 def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
     """Format a value according to its deduced type.  Empty values are deemed valid for any type.
 
@@ -1337,6 +1353,8 @@ def _format(val, valtype, floatfmt, intfmt, missingval="", has_invisible=True):
         except (TypeError, UnicodeDecodeError):
             return str(val)
     elif valtype is float:
+        if callable(floatfmt):
+            return _format_float_callable(val, floatfmt, has_invisible)
         is_a_colored_number = has_invisible and isinstance(val, (str, bytes))
         if is_a_colored_number:
             raw_val = _strip_ansi(val)
@@ -1801,9 +1819,11 @@ def tabulate(
     contain numeric data without a decimal point. This can also be
     a list or tuple of format strings, one per column.
 
-    `floatfmt` is a format specification used for columns which
-    contain numeric data with a decimal point. This can also be
-    a list or tuple of format strings, one per column.
+    `floatfmt` is a format specification or callable used for columns
+    which contain numeric data with a decimal point. This can also be
+    a list or tuple of strings and callables, one per column. A callable
+    receives a float (or the original Decimal) and must return a string.
+    Missing values bypass the callable; its exceptions propagate.
 
     `None` values are replaced with a `missingval` string (like
     `floatfmt`, this can also be a list of values for different
@@ -2334,14 +2354,12 @@ def tabulate(
         is_multiline = True
     else:
         is_multiline = False
-    width_fn = _choose_width_fn(has_invisible, enable_widechars, is_multiline)
-
     # format rows and columns, convert numeric values to strings
     cols = list(izip_longest(*list_of_lists))
     numparses = _expand_numparse(disable_numparse, len(cols))
     coltypes = [_column_type(col, numparse=np) for col, np in zip(cols, numparses)]
-    if isinstance(floatfmt, str):  # old version
-        float_formats = len(cols) * [floatfmt]  # just duplicate the string to use in each column
+    if isinstance(floatfmt, str) or callable(floatfmt):
+        float_formats = len(cols) * [floatfmt]
     else:  # if floatfmt is list, tuple etc we have one per column
         float_formats = list(floatfmt)
         if len(float_formats) < len(cols):
@@ -2364,6 +2382,20 @@ def tabulate(
             cols, coltypes, float_formats, int_formats, missing_vals
         )
     ]
+
+    if any(callable(fmt) for fmt in float_formats):
+        # A formatter may introduce control codes or line breaks absent from the input.
+        formatted_text = "\t".join(chain.from_iterable(cols))
+        has_invisible = has_invisible or _ansi_codes.search(formatted_text) is not None
+        if (
+            not is_multiline
+            and not isinstance(tablefmt, TableFormat)
+            and tablefmt in multiline_formats
+            and _is_multiline(formatted_text)
+        ):
+            tablefmt = multiline_formats[tablefmt]
+            is_multiline = True
+    width_fn = _choose_width_fn(has_invisible, enable_widechars, is_multiline)
 
     # align columns
     # first set global alignment
