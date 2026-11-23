@@ -1,7 +1,7 @@
 """Pretty-print tabular data."""
 
 from collections import namedtuple
-from collections.abc import Callable, Iterable, Sized
+from collections.abc import Callable, Iterable, Mapping, Sized
 import dataclasses
 from dataclasses import dataclass
 from decimal import Decimal
@@ -1425,6 +1425,21 @@ def _bool(val):
         return False
 
 
+def _model_to_dict(row):
+    """Use Pydantic's public serialization API without importing an optional dependency."""
+    if hasattr(type(row), "model_fields") and callable(getattr(row, "model_dump", None)):
+        values = row.model_dump()
+        # RootModel serializes its value directly, but occupies one table cell.
+        if getattr(type(row), "__pydantic_root_model__", False):
+            return {"root": values}
+        if not isinstance(values, Mapping):
+            raise TypeError("Pydantic table rows must serialize to a mapping")
+        return values
+    if hasattr(type(row), "__fields__") and callable(getattr(row, "dict", None)):
+        return row.dict()  # Pydantic 1.x, including pydantic.v1 compatibility models.
+    return row
+
+
 def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     """Transform a supported data type to a list of lists, and a list of headers,
     with headers padding.
@@ -1441,6 +1456,8 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
     * list of dataclasses (usually used with headers="keys")
 
+    * list of Pydantic models (usually used with headers="keys")
+
     * 2D NumPy arrays
 
     * NumPy record arrays (usually used with headers="keys")
@@ -1448,6 +1465,8 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     * dict of iterables (usually used with headers="keys")
 
     * pandas.DataFrame (usually used with headers="keys")
+
+    * polars.DataFrame (usually used with headers="keys", no implicit row index)
 
     The first row can be used as headers if headers="firstrow",
     column indices can be used as headers if headers="keys".
@@ -1470,7 +1489,12 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         "\nDid you forget a pair of extra [] or ',' in ()?"
     )
     index = None
-    if hasattr(tabular_data, "keys") and hasattr(tabular_data, "values"):
+    if hasattr(tabular_data, "columns") and callable(getattr(tabular_data, "iter_rows", None)):
+        # Polars exposes rows directly; iterating the frame yields columns.
+        rows = list(tabular_data.iter_rows())
+        if headers == "keys":
+            headers = list(map(str, tabular_data.columns))
+    elif hasattr(tabular_data, "keys") and hasattr(tabular_data, "values"):
         # dict-like and pandas.DataFrame?
         if callable(tabular_data.values):
             # likely a conventional dict
@@ -1504,6 +1528,8 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
         except TypeError as e:  # not iterable
             raise TypeError(err_msg) from e
 
+        rows = [_model_to_dict(row) for row in rows]
+
         if headers == "keys" and not rows:
             # an empty table (issue #81)
             headers = []
@@ -1528,6 +1554,8 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
                 uniq_keys.update(keys)
                 rows = rows[1:]
             for row in rows:
+                if _is_separating_line(row):
+                    continue
                 for k in row.keys():
                     # Save unique items in input order
                     if k not in uniq_keys:
@@ -1547,7 +1575,9 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
                     headers = []
             elif headers:
                 raise ValueError("headers for a list of dicts is not a dict or a keyword")
-            rows = [[row.get(k) for k in keys] for row in rows]
+            rows = [
+                row if _is_separating_line(row) else [row.get(k) for k in keys] for row in rows
+            ]
 
         elif (
             headers == "keys"

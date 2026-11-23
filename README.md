@@ -83,11 +83,25 @@ The following tabular data types are supported:
 -   list or another iterable of dicts (keys as columns)
 -   dict of iterables (keys as columns)
 -   list of dataclasses (field names as columns)
+-   list or another iterable of Pydantic models (serialized field names as columns)
 -   two-dimensional NumPy array
 -   NumPy record arrays (names as columns)
 -   pandas.DataFrame
+-   polars.DataFrame (column names as headers with `headers="keys"`)
 
 Tabulate is a Python3 library.
+
+Polars frames use their row iterator and have no implicit row index. Empty
+frames retain their column names with `headers="keys"`; `showindex="always"`
+adds a numbered index as it does for ordinary rows. Lazy frames must be
+collected explicitly before calling `tabulate`.
+
+Pydantic models use `model_dump()` (version 2) or `dict()` (version 1), preserving
+their field exclusions and custom serializers. They follow the same header
+rules as lists of dictionaries, including header mappings, and fields from
+different model classes are combined in encounter order. Version 2 `RootModel`
+values occupy a single `root` column. Neither library is required to import or
+use `tabulate` with other inputs.
 
 ### Headers
 
