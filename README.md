@@ -1102,6 +1102,33 @@ linebetweenrows, linebelowheader, linebelow, lineabove or just a simple empty li
     Moon   1737
     -----  ----
 
+### Footer or total row
+
+Pass `footer` to display one summary row after the table body. Supply one
+cell per data column, in the same column order as the input; totals are
+calculated by the caller. Footer values participate in numeric type
+inference, formatting, column widths, alignment and text wrapping just like
+body cells.
+
+```python
+>>> print(tabulate([["A", 1.25], ["B", 2.5]], headers=["Item", "Cost"],
+...                footer=["Total", 3.75], floatfmt=".2f"))
+Item      Cost
+------  ------
+A         1.25
+B         2.50
+------  ------
+Total     3.75
+
+```
+
+The footer is separated by the table format's header rule, or a blank line
+in formats without rules. HTML output uses a `tfoot` section. A footer can
+also be used with an empty body. If row indices are shown, the footer's
+index cell is blank; custom index iterables contain entries for body rows
+only. The last entry of a per-row `rowalign` list can set footer alignment.
+`footer=None` keeps the usual output without a footer.
+
 ### ANSI support
 ANSI escape codes are non-printable byte sequences usually used for terminal operations like setting
 color output or modifying cursor positions. Because multi-byte ANSI sequences are inherently non-printable,
