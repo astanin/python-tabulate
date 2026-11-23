@@ -766,6 +766,26 @@ column, in which case every column may have different number formatting:
 
 ```
 
+For custom formats, `floatfmt` also accepts a callable, or a mixture of
+callables and format strings in its per-column list. The callable receives
+a `float`, except that `Decimal` values are passed through unchanged to
+preserve their precision, and must return a string. For example, engineering
+notation can be produced with `Decimal.to_eng_string`:
+
+```python
+>>> from decimal import Decimal
+>>> print(tabulate([[Decimal("1E-7")]], floatfmt=Decimal.to_eng_string, tablefmt="plain"))
+100E-9
+
+```
+
+Callables follow the same column type inference as format strings: they
+apply to floating-point columns, including parsed numeric strings, and do
+not apply to integer or text columns. `None` and empty strings bypass the
+callable. Returned text is not parsed again; normal alignment still applies.
+ANSI colors and multiline results are supported by the corresponding table
+formats. Exceptions raised by a callable propagate to the caller.
+
 `intfmt` works similarly for integers
 
     >>> print(tabulate([["a",1000],["b",90000]], intfmt=","))
