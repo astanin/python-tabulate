@@ -1425,7 +1425,7 @@ def _bool(val):
         return False
 
 
-def _normalize_tabular_data(tabular_data, headers, showindex="default"):
+def _normalize_tabular_data(tabular_data, headers, showindex="default", footer=None):
     """Transform a supported data type to a list of lists, and a list of headers,
     with headers padding.
 
@@ -1589,20 +1589,51 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
     #    rows = list(map(list, rows))
     rows = [r if _is_separating_line(r) else list(r) for r in rows]
 
+    if footer is not None:
+        if isinstance(footer, (str, bytes, dict)):
+            raise TypeError("footer must be an iterable of cell values")
+        footer = list(footer)
+        if not footer or _is_separating_line(footer):
+            raise ValueError(
+                "footer must contain at least one cell and cannot be a separating line"
+            )
+        column_count = max(
+            (len(row) for row in rows if not _is_separating_line(row)),
+            default=len(tabular_data.columns) if index is not None else len(headers),
+        )
+        if column_count and len(footer) != column_count:
+            raise ValueError(
+                "footer must have one cell per data column: "
+                f"len(footer)={len(footer)} columns={column_count}"
+            )
+
     # add or remove an index column
     showindex_is_a_str = type(showindex) in [str, bytes]
+    index_added = False
     if showindex_is_a_str and showindex == "default" and index is not None:
         rows = _prepend_row_index(rows, index)
+        index_added = True
     elif isinstance(showindex, Sized) and not showindex_is_a_str:
         rows = _prepend_row_index(rows, list(showindex))
+        index_added = True
     elif isinstance(showindex, Iterable) and not showindex_is_a_str:
         rows = _prepend_row_index(rows, showindex)
+        index_added = True
     elif showindex == "always" or (_bool(showindex) and not showindex_is_a_str):
         if index is None:
             index = list(range(len(rows)))
         rows = _prepend_row_index(rows, index)
+        index_added = True
     elif showindex == "never" or (not _bool(showindex) and not showindex_is_a_str):
         pass
+
+    if footer is not None:
+        footer = ([""] if index_added else []) + footer
+        rows = [
+            row if _is_separating_line(row) else row + [None] * (len(footer) - len(row))
+            for row in rows
+        ]
+        rows.append(footer)
 
     # pad with empty headers for initial columns if necessary
     headers_pad = 0
@@ -1714,6 +1745,7 @@ def tabulate(
     maxheadercolwidths=None,
     break_long_words=_BREAK_LONG_WORDS,
     break_on_hyphens=_BREAK_ON_HYPHENS,
+    footer=None,
 ):
     """Format a fixed width table for pretty printing.
 
@@ -2232,13 +2264,19 @@ def tabulate(
 
     Header column width can be specified in a similar way using `maxheadercolwidths`.
 
+    `footer` is an optional, non-empty iterable with one cell per data column.
+    It participates in type inference, numeric formatting, wrapping and alignment.
+    Its index cell is blank when a row index is shown. It is separated from the
+    body with the format's header rule (or a blank line for ruleless formats).
+    HTML uses a `tfoot` element. No totals are computed automatically.
+
     """
 
     if tabular_data is None:
         tabular_data = []
 
     list_of_lists, headers, headers_pad = _normalize_tabular_data(
-        tabular_data, headers, showindex=showindex
+        tabular_data, headers, showindex=showindex, footer=footer
     )
     list_of_lists, separating_lines = _remove_separating_lines(list_of_lists)
 
@@ -2448,6 +2486,8 @@ def tabulate(
 
     ra_default = rowalign if isinstance(rowalign, str) else None
     rowaligns = _expand_iterable(rowalign, len(rows), ra_default)
+    footer_row = rows.pop() if footer is not None else None
+    footeralign = rowaligns.pop() if footer is not None else None
     _reinsert_separating_lines(rows, separating_lines)
 
     return _format_table(
@@ -2459,6 +2499,8 @@ def tabulate(
         aligns,
         is_multiline,
         rowaligns=rowaligns,
+        footer=footer_row,
+        footeralign=footeralign,
     )
 
 
@@ -2610,7 +2652,16 @@ class JupyterHTMLStr(str):
 
 
 def _format_table(
-    fmt, headers, headersaligns, rows, colwidths, colaligns, is_multiline, rowaligns
+    fmt,
+    headers,
+    headersaligns,
+    rows,
+    colwidths,
+    colaligns,
+    is_multiline,
+    rowaligns,
+    footer=None,
+    footeralign=None,
 ):
     """Produce a plain-text representation of the table."""
     lines = []
@@ -2636,48 +2687,59 @@ def _format_table(
         if fmt.linebelowheader and "linebelowheader" not in hidden:
             _append_line(lines, padded_widths, colaligns, fmt.linebelowheader)
 
-    if rows and fmt.linebetweenrows and "linebetweenrows" not in hidden:
-        # initial rows with a line below
-        for row, ralign in zip(rows[:-1], rowaligns):
-            if row != SEPARATING_LINE:
-                append_row(
-                    lines,
-                    pad_row(row, pad),
-                    padded_widths,
-                    colaligns,
-                    fmt.datarow,
-                    rowalign=ralign,
-                )
-            _append_line(lines, padded_widths, colaligns, fmt.linebetweenrows)
-        # the last row without a line below
+    # An explicit trailing separator is replaced by the footer's own boundary.
+    if footer is not None:
+        while rows and _is_separating_line(rows[-1]):
+            rows.pop()
+
+    between_rows = fmt.linebetweenrows and "linebetweenrows" not in hidden
+    separating_line = (
+        fmt.linebetweenrows
+        or fmt.linebelowheader
+        or fmt.linebelow
+        or fmt.lineabove
+        or Line("", "", "", "")
+    )
+    align_iter = iter(rowaligns)
+    for index, row in enumerate(rows):
+        if _is_separating_line(row):
+            _append_line(lines, padded_widths, colaligns, separating_line)
+        else:
+            append_row(
+                lines,
+                pad_row(row, pad),
+                padded_widths,
+                colaligns,
+                fmt.datarow,
+                rowalign=next(align_iter, None),
+            )
+            if between_rows and index < len(rows) - 1:
+                _append_line(lines, padded_widths, colaligns, fmt.linebetweenrows)
+
+    is_html = fmt.lineabove == _html_begin_table_without_header
+    if footer is not None:
+        if is_html:
+            lines.append("</tbody>\n<tfoot>")
+        elif rows:
+            footer_line = fmt.linebelowheader or fmt.linebetweenrows or Line("", "", "", "")
+            if fmt == _table_formats["latex_longtable"]:
+                footer_line = Line("\\hline", "", "", "")
+            _append_line(lines, padded_widths, colaligns, footer_line)
         append_row(
             lines,
-            pad_row(rows[-1], pad),
+            pad_row(footer, pad),
             padded_widths,
             colaligns,
             fmt.datarow,
-            rowalign=rowaligns[-1],
+            rowalign=footeralign,
         )
-    else:
-        separating_line = (
-            fmt.linebetweenrows
-            or fmt.linebelowheader
-            or fmt.linebelow
-            or fmt.lineabove
-            or Line("", "", "", "")
-        )
-        for row in rows:
-            # test to see if either the 1st column or the 2nd column (account for showindex) has
-            # the SEPARATING_LINE flag
-            if _is_separating_line(row):
-                _append_line(lines, padded_widths, colaligns, separating_line)
-            else:
-                append_row(lines, pad_row(row, pad), padded_widths, colaligns, fmt.datarow)
 
-    if fmt.linebelow and "linebelow" not in hidden:
+    if is_html and footer is not None:
+        lines.append("</tfoot>\n</table>")
+    elif fmt.linebelow and "linebelow" not in hidden:
         _append_line(lines, padded_widths, colaligns, fmt.linebelow)
 
-    if headers or rows:
+    if headers or rows or footer is not None:
         output = "\n".join(lines)
         if fmt.lineabove == _html_begin_table_without_header:
             return JupyterHTMLStr(output)
