@@ -87,6 +87,30 @@ def test_list_of_lists_keys():
     assert_equal(expected, result)
 
 
+def test_iterable_of_iterables_keys():
+    "Input: an iterable of iterators with column indices as headers (issue #515)."
+    ii = [iter([1, 2]), iter([3, 4])]
+    expected = "\n".join(["  0    1", "  1    2", "  3    4"])
+    result = tabulate(ii, headers="keys", tablefmt="plain")
+    assert_equal(expected, result)
+
+
+def test_generator_of_iterators_keys():
+    "Input: a generator of iterators (single-use rows) with column-index headers (issue #515)."
+    gen = (iter([r, r + 1]) for r in range(3))
+    expected = "\n".join(["  0    1", "  0    1", "  1    2", "  2    3"])
+    result = tabulate(gen, headers="keys", tablefmt="plain")
+    assert_equal(expected, result)
+
+
+def test_iterable_of_iterables_keys_ragged():
+    "Input: iterator rows of unequal length with column-index headers (issue #515)."
+    ii = [iter([1, 2, 3]), iter([4])]
+    expected = "\n".join(["  0    1    2", "  1    2    3", "  4"])
+    result = tabulate(ii, headers="keys", tablefmt="plain")
+    assert_equal(expected, result)
+
+
 def test_dict_like():
     "Input: a dict of iterables with keys as headers."
     # columns should be padded with None, keys should be used as headers

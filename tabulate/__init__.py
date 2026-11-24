@@ -1571,6 +1571,10 @@ def _normalize_tabular_data(tabular_data, headers, showindex="default"):
 
         elif headers == "keys" and len(rows) > 0:
             # keys are column indices
+            if not hasattr(rows[0], "__len__"):
+                # iterator row: materialize it first so len() works
+                # (the general rows-to-lists conversion happens later)
+                rows[0] = list(rows[0])
             headers = list(map(str, range(len(rows[0]))))
 
     # take headers from the first row if necessary
