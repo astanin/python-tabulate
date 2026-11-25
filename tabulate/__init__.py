@@ -63,6 +63,14 @@ Line = namedtuple("Line", ["begin", "hline", "sep", "end"])
 
 @dataclass
 class DataRow:
+    """
+    How one row of cells is rendered in a table format.
+
+    `begin` is printed before the first cell, `sep` between cells and
+    `end` after the last cell. `escape_map` optionally maps characters
+    to their escaped form, applied to every cell before rendering.
+    """
+    
     begin: str
     sep: str
     end: str
