@@ -862,7 +862,7 @@ def _isnumber_with_thousands_separator(string):
     except (UnicodeDecodeError, AttributeError):
         pass
 
-    return bool(re.match(_float_with_thousands_separators, string))
+    return bool(_float_with_thousands_separators.match(string))
 
 
 def _isconvertible(conv, string):
@@ -932,9 +932,12 @@ def _isint(string, inttype=int):
     >>> _isint("123.45")
     False
     """
+    if type(string) is inttype:
+        return True
+    if type(string) is float:
+        return False
     return (
-        type(string) is inttype
-        or (
+        (
             (hasattr(string, "is_integer") or hasattr(string, "__array__"))
             and str(type(string)).startswith("<class 'numpy.int")
         )  # numpy.int64 and similar
@@ -988,19 +991,11 @@ def _type(string, has_invisible=True, numparse=True):
         return str
     elif _isbool(string):
         return bool
-    elif numparse and (
-        _isint(string)
-        or (
-            isinstance(string, str)
-            and _isnumber_with_thousands_separator(string)
-            and "." not in string
-        )
-    ):
+    elif numparse and _isint(string):
         return int
-    elif numparse and (
-        _isnumber(string)
-        or (isinstance(string, str) and _isnumber_with_thousands_separator(string))
-    ):
+    elif numparse and isinstance(string, str) and _isnumber_with_thousands_separator(string):
+        return int if "." not in string else float
+    elif numparse and _isnumber(string):
         return float
     elif isinstance(string, bytes):
         return bytes
@@ -1028,7 +1023,8 @@ def _afterpoint(string):
             return -1
         else:
             pos = string.rfind(".")
-            pos = string.lower().rfind("e") if pos < 0 else pos
+            if pos < 0:
+                pos = max(string.rfind("e"), string.rfind("E"))
             if pos >= 0:
                 return len(string) - pos - 1
             else:
@@ -1089,8 +1085,12 @@ def _strip_ansi(s):
 
     """
     if isinstance(s, str):
+        if "\x1b" not in s:
+            return s
         return _ansi_codes.sub(r"\4", s)
     else:  # a bytestring
+        if b"\x1b" not in s:
+            return s
         return _ansi_codes_bytes.sub(r"\4", s)
 
 
@@ -1122,9 +1122,9 @@ def _visible_width(s):
 
 def _is_multiline(s):
     if isinstance(s, str):
-        return bool(re.search(_multiline_codes, s))
+        return "\n" in s or "\r" in s
     else:  # a bytestring
-        return bool(re.search(_multiline_codes_bytes, s))
+        return b"\n" in s or b"\r" in s
 
 
 def _multiline_width(multiline_s, line_width_fn=len):
