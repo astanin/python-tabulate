@@ -293,7 +293,7 @@ def _asciidoc_row(is_header, *args):
         # print the table line and make the aboveline if it is a header
 
         cell_values, colwidths, colaligns = args
-        data_line = "|" + "|".join(cell_values)
+        data_line = "|" + "|".join(cell.replace("|", r"\|") for cell in cell_values)
 
         if is_header:
             line = make_header_line(True, colwidths, colaligns) + "\n" + data_line

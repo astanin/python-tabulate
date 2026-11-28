@@ -2137,6 +2137,15 @@ def test_asciidoc():
     assert_equal(expected, result)
 
 
+@mark.parametrize("headers", [[], ["left|right", "value"]])
+def test_asciidoc_literal_separators(headers):
+    result = tabulate([[r"a\|b||c", "tail"]], headers=headers, tablefmt="asciidoc")
+    lines = result.splitlines()
+    assert r"a\\|b\|\|c" in lines[-2]
+    if headers:
+        assert r"left\|right" in lines[2]
+
+
 def test_asciidoc_headerless():
     "Output: asciidoc without headers"
     expected = "\n".join(

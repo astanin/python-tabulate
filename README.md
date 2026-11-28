@@ -510,6 +510,8 @@ format:
 
 ```
 
+Literal pipes in AsciiDoc headers and cells are escaped automatically.
+
 `orgtbl` follows the conventions of Emacs
 [org-mode](http://orgmode.org/manual/Tables.html), and is editable also
 in the minor orgtbl-mode. Hence its name:
